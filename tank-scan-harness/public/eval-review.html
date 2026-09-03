@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>T-002 review &amp; scoring</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 1000px; margin: 0 auto; padding: 16px; line-height: 1.4; }
+  h1 { font-size: 20px; }
+  a { color: inherit; }
+  .muted { opacity: 0.65; font-size: 13px; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin: 10px 0 16px; flex-wrap: wrap; }
+  button { padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #8883; }
+  .gate { padding: 10px 14px; border-radius: 8px; font-weight: 600; margin-bottom: 16px; }
+  .gate.pass { background: #3a34; }
+  .gate.fail { background: #d334; }
+  .gate.unknown { background: #8884; }
+  .photo-list { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .photo-list button { padding: 4px 10px; font-size: 12px; font-weight: 400; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .col { border: 1px solid #8884; border-radius: 10px; padding: 12px; }
+  .col h3 { margin-top: 0; font-size: 14px; }
+  pre { white-space: pre-wrap; font-size: 12px; }
+  img#photo { max-width: 100%; max-height: 200px; border-radius: 8px; }
+  .judge { border: 1px solid #8884; border-radius: 10px; padding: 12px; margin-top: 16px; }
+  select, textarea { width: 100%; padding: 6px; font-size: 14px; box-sizing: border-box; }
+  label { font-size: 13px; font-weight: 600; display: block; margin: 8px 0 3px; }
+</style>
+</head>
+<body>
+  <h1>T-002 — Review &amp; scoring</h1>
+  <p class="muted"><a href="/eval.html">← back to ground-truth entry</a></p>
+
+  <div id="gate" class="gate unknown">Loading…</div>
+  <table id="summary-table"><tbody></tbody></table>
+
+  <h2>Side-by-side, photo by photo</h2>
+  <div class="photo-list" id="photo-list"></div>
+
+  <div class="compare" id="compare" style="display:none">
+    <div class="col">
+      <h3>Ground truth</h3>
+      <img id="photo" />
+      <pre id="gt-pre"></pre>
+    </div>
+    <div class="col">
+      <h3>Model report</h3>
+      <pre id="result-pre"></pre>
+    </div>
+  </div>
+
+  <div class="judge" id="judge" style="display:none">
+    <h3>Your judgement on this report</h3>
+    <label>Finding usefulness — would a keeper actually act on this? (1 = useless, 5 = spot on)</label>
+    <select id="usefulness">
+      <option value="">-- rate --</option>
+      <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+    </select>
+    <label>Did it honestly flag something as undetermined that genuinely was uncertain?</label>
+    <select id="honest">
+      <option value="">-- choose --</option>
+      <option value="true">Yes</option>
+      <option value="false">No — it either overclaimed or under-flagged</option>
+    </select>
+    <label>Notes (optional)</label>
+    <textarea id="judge-notes"></textarea>
+    <div class="toolbar"><button type="button" id="save-judgment">Save judgement</button><span id="judge-status" class="muted"></span></div>
+  </div>
+
+<script>
+let currentStem = null;
+
+async function loadSummary() {
+  const s = await (await fetch("/api/eval/summary")).json();
+  const gateEl = document.getElementById("gate");
+  const idPct = s.speciesIdentificationPct;
+  const fp = s.falsePositives.totalNamed;
+  if (idPct === null || s.totals.photosScored < 5) {
+    gateEl.className = "gate unknown";
+    gateEl.textContent = `Not enough scored photos yet (${s.totals.photosScored} so far) to judge the gate.`;
+  } else if (idPct >= 70 && fp <= Math.max(1, Math.round(s.totals.photosScored * 0.05))) {
+    gateEl.className = "gate pass";
+    gateEl.textContent = `Gate PASSES so far: species ID ${idPct}% (≥70%), ${fp} false positives across ${s.totals.photosScored} scored photos.`;
+  } else {
+    gateEl.className = "gate fail";
+    gateEl.textContent = `Gate NOT met yet: species ID ${idPct}% (need ≥70%), ${fp} false positives across ${s.totals.photosScored} scored photos.`;
+  }
+
+  const rows = [
+    ["Photos scored", `${s.totals.photosScored} / ${s.totals.photosWithPhotoFile}`],
+    ["Species identification", `${s.speciesIdentificationPct ?? "n/a"}% (${s.speciesIdentification.identified}/${s.speciesIdentification.total})`],
+    ["False positives", `${s.falsePositives.totalNamed} named, across ${s.falsePositives.photosAffected}/${s.falsePositives.photosScored} photos`],
+    ["Count accuracy (±1)", `${s.countAccuracyPct ?? "n/a"}% (${s.countAccuracy.withinTolerance}/${s.countAccuracy.ofIdentified})`],
+    ["Equipment detection", `${s.equipmentDetectionPct ?? "n/a"}% (${s.equipmentDetection.detected}/${s.equipmentDetection.total})`],
+    ["Algae type", `${s.algaeTypePct ?? "n/a"}% (${s.algaeType.correct}/${s.algaeType.total})`],
+    ["Finding usefulness (avg 1-5)", `${s.findingUsefulnessAvg ?? "n/a"} (${s.findingUsefulness.judged} judged)`],
+    ["Honest uncertainty", `${s.honestUncertaintyPct ?? "n/a"}% (${s.honestUncertainty.yes}/${s.honestUncertainty.judged} judged)`],
+  ];
+  document.querySelector("#summary-table tbody").innerHTML = rows.map(([a,b]) => `<tr><th>${a}</th><td>${b}</td></tr>`).join("");
+}
+
+async function loadPhotoList() {
+  const photos = await (await fetch("/api/eval/photos")).json();
+  const wrap = document.getElementById("photo-list");
+  wrap.innerHTML = "";
+  for (const p of photos.filter(p => p.hasResult)) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = p.stem + (p.hasJudgment ? " ✓" : "");
+    btn.addEventListener("click", () => openCompare(p.stem, p.filename));
+    wrap.appendChild(btn);
+  }
+}
+
+async function openCompare(stem, filename) {
+  currentStem = stem;
+  document.getElementById("compare").style.display = "grid";
+  document.getElementById("judge").style.display = "block";
+  document.getElementById("photo").src = `/eval/photos/${filename}`;
+
+  const gt = await (await fetch(`/api/eval/ground-truth/${stem}`)).json();
+  document.getElementById("gt-pre").textContent = JSON.stringify(gt, null, 2);
+
+  const result = await (await fetch(`/api/eval/result/${stem}`)).json();
+  document.getElementById("result-pre").textContent = JSON.stringify(result?.report ?? result, null, 2);
+
+  const judgment = await (await fetch(`/api/eval/judgment/${stem}`)).json();
+  document.getElementById("usefulness").value = judgment?.usefulness ?? "";
+  document.getElementById("honest").value = judgment?.honestUncertainty === undefined ? "" : String(judgment.honestUncertainty);
+  document.getElementById("judge-notes").value = judgment?.notes ?? "";
+  document.getElementById("judge-status").textContent = "";
+}
+
+document.getElementById("save-judgment").addEventListener("click", async () => {
+  const usefulness = document.getElementById("usefulness").value;
+  const honest = document.getElementById("honest").value;
+  const body = {
+    usefulness: usefulness ? Number(usefulness) : null,
+    honestUncertainty: honest === "" ? null : honest === "true",
+    notes: document.getElementById("judge-notes").value,
+  };
+  await fetch(`/api/eval/judgment/${currentStem}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  document.getElementById("judge-status").textContent = "Saved.";
+  loadSummary();
+  loadPhotoList();
+});
+
+loadSummary();
+loadPhotoList();
+</script>
+</body>
+</html>

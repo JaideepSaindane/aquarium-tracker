@@ -1,0 +1,33 @@
+{
+  "length_cm": 30,
+  "width_cm": 30,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "platy",
+      "common_name": "Platy",
+      "count": 6
+    },
+    {
+      "species_id": null,
+      "common_name": "Small yellow/orange cichlid-type fish at bottom, unclear species",
+      "count": 1
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "vallisneria/grass"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, not verified. Cherry shrimp and nerite/mystery snails also visible on substrate and glass but not counted as 'fish'. Two internal filters visible."
+}

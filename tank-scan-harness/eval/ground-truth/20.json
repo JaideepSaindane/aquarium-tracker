@@ -1,0 +1,17 @@
+{
+  "length_cm": 90,
+  "width_cm": 35,
+  "height_cm": 40,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [],
+  "equipment": [],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "This is NOT a real photo of a tank - it is a photo of a laptop screen playing a YouTube video titled '5 Aquascaping Tricks You Should Start Using Right Now'. It shows someone else's tank, a video player UI, a 'low battery' notification, and reflections off the laptop screen."
+  ],
+  "notes": "DELIBERATE INVALID/EDGE-CASE PHOTO for T-002. This tests whether the model recognises it is looking at a photographed screen (UI chrome, playback bar, glare) rather than a real aquarium and refuses to produce a confident report - it should NOT be treated as a real tank scan. Dimensions are meaningless placeholders since there is no real tank to measure."
+}

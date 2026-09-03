@@ -1,0 +1,29 @@
+{
+  "length_cm": 30,
+  "width_cm": 30,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": null,
+      "common_name": "Reddish/pink fish visible at surface, likely a betta - too dark to be confident",
+      "count": 1
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "unclear - too dark to see detail"
+    }
+  ],
+  "equipment": [
+    "filter"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Photo is very dark - room lighting insufficient, most detail lost in shadow"
+  ],
+  "notes": "DELIBERATELY BAD PHOTO for T-002 - underexposed/dark. Good test case for the quality gate."
+}

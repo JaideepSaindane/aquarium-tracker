@@ -1,0 +1,22 @@
+# Fixed vocabulary for `applies_to.species_traits` in a corpus entry's
+# frontmatter (docs/05-content-guide.md §2.1, §3). This is the hard filter
+# retrieval uses to decide whether an entry is relevant to a specific tank's
+# inhabitants — it is not free text. Add a trait here before using it in a
+# corpus entry; the validator rejects any `applies_to.species_traits` value
+# that isn't listed below.
+#
+# This is deliberately a short, general list covering the traits the first
+# five entries actually need (docs/05-content-guide.md §4's worked examples,
+# plus ph-ammonia-trap/nitrogen-cycle/temperature-swings). Writing the
+# remaining 57 corpus topics (T-004's own "out of scope" — that's Jaideep's
+# ongoing work, tracked in specs/PROGRESS.md) will need more of these; add
+# them there as each new entry actually requires one, not speculatively here.
+traits:
+  - all # applies regardless of species — the default for water-chemistry/environmental topics
+  - scaleless # catfish, loaches — salt- and some-medication-intolerant
+  - soft_water # tetras, most South American fish — narrower parameter tolerance
+  - cool_water # goldfish, White Clouds, hillstream loaches — heat-sensitive
+  - invert # shrimp, snails, crayfish — copper- and salt-intolerant as a group
+  - plant # live plants — some treatments and dosing harm plant tissue or the nitrogen balance they rely on
+  - fry # newly hatched/very young fish — lower tolerance for fasting, medication, parameter swings
+  - electroreceptive # elephant nose, black ghost knife, other fish that use electroreception — salt-intolerant

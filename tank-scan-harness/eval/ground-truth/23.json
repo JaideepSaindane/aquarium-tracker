@@ -1,0 +1,30 @@
+{
+  "length_cm": 25,
+  "width_cm": 20,
+  "height_cm": 22,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": null,
+      "common_name": "Single small orange fish, unclear species",
+      "count": 1
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "hornwort"
+    },
+    {
+      "common_name": "ludwigia"
+    }
+  ],
+  "equipment": [
+    "heater"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, not verified. Small nano tank photographed while held in hand. Cherry shrimp and snails also visible, not counted as fish. Heater marked 75W."
+}

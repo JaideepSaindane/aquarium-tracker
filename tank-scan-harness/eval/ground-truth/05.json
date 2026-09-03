@@ -1,0 +1,24 @@
+{
+  "length_cm": 30,
+  "width_cm": 30,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [
+    {
+      "common_name": "unclear - dense green planting"
+    }
+  ],
+  "equipment": [
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Photo is extremely blurry - appears to be a photo of a screen or through glass showing a shop/display row of tanks",
+    "Cannot reliably identify any livestock from this photo"
+  ],
+  "notes": "DELIBERATELY BAD PHOTO for T-002 - severe blur and moire pattern, looks like a photo of a monitor/screen showing multiple aquascaped display tanks, not a direct tank photo. Dimensions are a pure guess. This is exactly the kind of photo the quality gate (T-014) should catch."
+}

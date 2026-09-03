@@ -1,0 +1,1 @@
+ALTER TABLE `species` ADD `image_uri` text;

@@ -1,0 +1,162 @@
+{
+  "generatedAt": "2026-09-03T18:57:44.075Z",
+  "entries": [
+    {
+      "id": "ammonia-spike",
+      "title": "Ammonia Spike / New Tank Syndrome",
+      "aliases": [
+        "ammonia spike",
+        "amonia high",
+        "new tank syndrome",
+        "ammonia 2 ppm",
+        "paani kharab ho gaya",
+        "nayi tank mein machhli mar rahi hai",
+        "fish gasping at surface new tank",
+        "cloudy new tank fish dying",
+        "ammonia burn"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-08-30",
+      "review_due": "2027-02-28",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 369
+    },
+    {
+      "id": "ich-white-spot",
+      "title": "Ich / White Spot Disease (Ichthyophthirius multifiliis)",
+      "aliases": [
+        "ich",
+        "ick",
+        "white spot",
+        "whitespot",
+        "safed daane",
+        "machhli pe safed spot",
+        "suji jaisa daana",
+        "salt grain spots on fish",
+        "fish rubbing on gravel",
+        "flashing"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "contested",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-08-30",
+      "review_due": "2027-02-28",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 263
+    },
+    {
+      "id": "nitrogen-cycle",
+      "title": "The Nitrogen Cycle (How It Works)",
+      "aliases": [
+        "nitrogen cycle",
+        "cycling a tank",
+        "what is the cycle",
+        "cycle kya hota hai",
+        "naya tank kab tak wait karein",
+        "biofilter",
+        "beneficial bacteria",
+        "nitrifying bacteria"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-08-30",
+      "review_due": "2027-02-28",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 355
+    },
+    {
+      "id": "ph-ammonia-trap",
+      "title": "pH–Ammonia Trap (Low pH + Accumulated Ammonia)",
+      "aliases": [
+        "ph ammonia trap",
+        "water change killed my fish",
+        "fish died after water change",
+        "low ph high ammonia",
+        "acidic tank ammonia",
+        "paani badalne ke baad machhli mar gayi",
+        "ph kam ammonia zyada"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-08-30",
+      "review_due": "2027-02-28",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 340
+    },
+    {
+      "id": "temperature-swings",
+      "title": "Temperature Swings",
+      "aliases": [
+        "temperature swing",
+        "temperature dropped",
+        "heater failed temperature",
+        "paani thanda ho gaya",
+        "tank ka temperature girr gaya",
+        "fish stressed after cold water",
+        "sudden temperature change fish"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-08-30",
+      "review_due": "2027-02-28",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all",
+          "cool_water"
+        ]
+      },
+      "body_word_count": 285
+    }
+  ]
+}

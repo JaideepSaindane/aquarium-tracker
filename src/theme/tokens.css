@@ -1,0 +1,203 @@
+/* Mirrors src/theme/tokens.ts. See docs/04-design-system.md for the reasoning.
+   Light values live on :root. Dark values apply under prefers-color-scheme:
+   dark by default, and are overridden either way by an explicit [data-theme]
+   attribute set on <html> so a future manual toggle can win over the OS.
+
+   Palette rebased 2026-09-02 onto a tonal navy→sky blue system per a design
+   brief Jaideep shared (aquarium-tracker-design-brief.md) — this replaces
+   the app's earlier teal/burnt-orange identity everywhere (not just the
+   three screens the previous "soft" pass touched — see the --soft-* aliases
+   at the bottom, kept only so those screens' code didn't need editing).
+   Source hexes, used exactly as given: #021024 ink, #052659 deep/primary,
+   #5483B3 steel/secondary, #7DA0CA light blue-grey/border, #C1E8FF pale
+   sky/light-accent, #F3F8FD background. Severity colours are untouched —
+   they're a separate, safety-critical scale (docs/04-design-system.md). */
+
+:root {
+  /* Light mode: majority-white background — Jaideep's explicit call,
+     2026-09-04, over the previous pale-blue-tinted ground. Blue now shows
+     up tastefully in surfaces/buttons/sections (surfaceAlt, deep, accent)
+     instead of the page background itself. */
+  --color-ground: #ffffff;
+  --color-surface: #ffffff;
+  /* Darkened from #eaf2fb, 2026-09-04 — against a genuinely white ground
+     that pale a blue read as barely-there. This is the tone buttons,
+     inputs, and neutral chips actually sit on, so it needs to visibly
+     read as blue, not near-white. */
+  --color-surface-alt: #d6e8f7;
+  --color-ink: #021024;
+  --color-ink-muted: #3c6a93;
+  --color-line: #c7dced;
+  --color-line-soft: #dcebf7;
+
+  --color-accent: #5483b3;
+  --color-accent-soft: #d0e4f5;
+  --color-deep: #052659;
+  --color-deep-soft: #a8ddfa;
+
+  --color-fix-now: #a93520;
+  --color-watch: #9c6e0c;
+  --color-improve: #2c7a52;
+  --color-neutral: #57696b;
+
+  /* Matte elevation — soft, and deliberately *colored* navy rather than
+     neutral grey, per the brief ("soft and colored, not grey"). */
+  --shadow-sm: 0 1px 3px rgba(5, 38, 89, 0.08), 0 1px 2px rgba(5, 38, 89, 0.1);
+  --shadow-md: 0 8px 24px rgba(5, 38, 89, 0.12), 0 2px 6px rgba(5, 38, 89, 0.08);
+  --shadow-lift: 0 12px 32px rgba(5, 38, 89, 0.18), 0 4px 10px rgba(5, 38, 89, 0.1);
+
+  /* Glass — used sparingly, only for surfaces that genuinely float over
+     content (bottom nav, floating buttons, toasts/prompts). Everything
+     else stays flat matte. A faint navy tint, not neutral white, so it
+     reads as "blue glass" per the brief. See docs/04-design-system.md. */
+  --glass-bg: rgba(240, 247, 255, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-blur: 20px;
+
+  /* The bottom dock specifically needs more separation from whatever's
+     scrolling behind it (a hero photo, busy card grids) than the general
+     glass tokens give — Jaideep's feedback: the three tab buttons weren't
+     standing out. Same "blue glass" family, just less translucent and a
+     firmer border/shadow, so it still reads as glass, not a flat bar. */
+  --dock-bg: rgba(255, 255, 255, 0.88);
+  --dock-border: rgba(5, 38, 89, 0.1);
+  --dock-shadow: 0 10px 28px rgba(5, 38, 89, 0.22), 0 2px 8px rgba(5, 38, 89, 0.14);
+
+  /* The floating bottom dock's own height (56px) plus its bottom margin
+     (12px) plus a little breathing room — anything positioned above it
+     (FloatingAskButton, SurvivalPrompt) and any scrollable content behind
+     it reads this so they never get physically hidden underneath it. */
+  --dock-clearance: 84px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-xxxl: 48px;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  --font-display-size: 2.125rem; /* 34px — bumped from 30px per docs/07-design-brief.md's confident-headline guidance */
+  --font-display-line: 2.375rem;
+  --font-title-size: 1.5rem; /* 24px — bumped from 22px, same reasoning */
+  --font-title-line: 1.8125rem;
+  --font-heading-size: 1.0625rem; /* 17px */
+  --font-heading-line: 1.375rem;
+  --font-body-size: 1rem; /* 16px — minimum body text size, do not go smaller */
+  --font-body-line: 1.5rem;
+  --font-body-sm-size: 0.875rem; /* 14px */
+  --font-body-sm-line: 1.25rem;
+  --font-label-size: 0.75rem; /* 12px */
+  --font-label-line: 1rem;
+  --font-caption-size: 0.75rem;
+  --font-caption-line: 1rem;
+
+  /* --soft-* aliases: the Tanks home / Species Dex / species-detail screens
+     (2026-09-02) were built against their own scoped palette before this
+     token rebase. Since the app's main tokens above now *are* that same
+     blue family, these just point back at them — kept so those three
+     screens' code didn't need touching, not a second real palette. */
+  --soft-bg: var(--color-ground);
+  --soft-bg-alt: var(--color-surface-alt);
+  --soft-card-bg: var(--glass-bg);
+  --soft-card-border: var(--glass-border);
+  --soft-accent: var(--color-deep);
+  --soft-accent-strong: var(--color-ink);
+  --soft-accent-soft: var(--color-accent-soft);
+  --soft-ink: var(--color-ink);
+  --soft-ink-muted: var(--color-ink-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Dark mode flips the roles, per the brief's own suggested dark
+       direction: near-black navy background, pale sky ink, steel-blue
+       buttons (bright enough to read as an accent against near-black,
+       where the light-mode deep navy would just disappear). */
+    --color-ground: #021024;
+    --color-surface: #0a1d3a;
+    --color-surface-alt: #0e2749;
+    --color-ink: #e7f3ff;
+    --color-ink-muted: #8fb4d6;
+    --color-line: #173a63;
+    --color-line-soft: #102c50;
+
+    --color-accent: #7da0ca;
+    --color-accent-soft: #0e2749;
+    --color-deep: #5483b3;
+    --color-deep-soft: #123458;
+
+    --color-fix-now: #e0725c;
+    --color-watch: #d6a63c;
+    --color-improve: #5fbe8a;
+    --color-neutral: #94a8a9;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.36);
+
+    --glass-bg: rgba(5, 38, 89, 0.55);
+    --glass-border: rgba(196, 224, 255, 0.12);
+
+    --dock-bg: rgba(8, 24, 48, 0.92);
+    --dock-border: rgba(196, 224, 255, 0.22);
+    --dock-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+
+    --soft-bg: var(--color-ground);
+    --soft-bg-alt: var(--color-surface-alt);
+    --soft-card-bg: var(--glass-bg);
+    --soft-card-border: var(--glass-border);
+    --soft-accent: var(--color-deep);
+    --soft-accent-strong: var(--color-accent);
+    --soft-accent-soft: var(--color-accent-soft);
+    --soft-ink: var(--color-ink);
+    --soft-ink-muted: var(--color-ink-muted);
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-ground: #021024;
+  --color-surface: #0a1d3a;
+  --color-surface-alt: #0e2749;
+  --color-ink: #e7f3ff;
+  --color-ink-muted: #8fb4d6;
+  --color-line: #173a63;
+  --color-line-soft: #102c50;
+
+  --color-accent: #7da0ca;
+  --color-accent-soft: #0e2749;
+  --color-deep: #5483b3;
+  --color-deep-soft: #123458;
+
+  --color-fix-now: #e0725c;
+  --color-watch: #d6a63c;
+  --color-improve: #5fbe8a;
+  --color-neutral: #94a8a9;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.36);
+
+  --glass-bg: rgba(5, 38, 89, 0.55);
+  --glass-border: rgba(196, 224, 255, 0.12);
+
+  --dock-bg: rgba(8, 24, 48, 0.92);
+  --dock-border: rgba(196, 224, 255, 0.22);
+  --dock-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+
+  --soft-bg: var(--color-ground);
+  --soft-bg-alt: var(--color-surface-alt);
+  --soft-card-bg: var(--glass-bg);
+  --soft-card-border: var(--glass-border);
+  --soft-accent: var(--color-deep);
+  --soft-accent-strong: var(--color-accent);
+  --soft-accent-soft: var(--color-accent-soft);
+  --soft-ink: var(--color-ink);
+  --soft-ink-muted: var(--color-ink-muted);
+}

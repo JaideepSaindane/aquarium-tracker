@@ -1,0 +1,33 @@
+{
+  "length_cm": 60,
+  "width_cm": 30,
+  "height_cm": 36,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "guppy",
+      "common_name": "Guppy",
+      "count": 6
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "vallisneria/grass"
+    },
+    {
+      "common_name": "java fern"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Heavy visible snail population on the glass"
+  ],
+  "notes": "Claude's own visual read, not verified. Likely the same tank/setup as photos 17-18, different day/angle."
+}

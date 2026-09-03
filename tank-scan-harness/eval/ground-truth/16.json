@@ -1,0 +1,39 @@
+{
+  "length_cm": 45,
+  "width_cm": 25,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "ember-tetra",
+      "common_name": "Ember Tetra / small orange fish (possibly guppy fry)",
+      "count": 10
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "hornwort"
+    },
+    {
+      "common_name": "vallisneria/grass"
+    },
+    {
+      "common_name": "moneywort"
+    },
+    {
+      "common_name": "ludwigia (red)"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Very heavy visible snail population on the glass and substrate - worth a keeper flagging as possibly overpopulated"
+  ],
+  "notes": "Claude's own visual read, not verified. Likely the same physical tank as photo 15, different day/angle. Fish ID genuinely uncertain - could be ember tetra or guppy fry, left at moderate confidence."
+}

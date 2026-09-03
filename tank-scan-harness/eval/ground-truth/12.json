@@ -1,0 +1,21 @@
+{
+  "length_cm": 45,
+  "width_cm": 30,
+  "height_cm": 36,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [
+    {
+      "common_name": "floating plants at surface"
+    }
+  ],
+  "equipment": [
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, not verified. Tall driftwood arrangement breaching the waterline, purple ambient lighting in the photo, no fish clearly visible."
+}

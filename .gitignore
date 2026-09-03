@@ -1,0 +1,62 @@
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Testing
+coverage/
+
+# tank-scan-harness (T-001/T-002) — real people's tank photos and API responses, do not commit
+tank-scan-harness/node_modules/
+tank-scan-harness/responses/*.json
+tank-scan-harness/eval/photos/*
+!tank-scan-harness/eval/photos/.gitkeep
+tank-scan-harness/eval/results/*
+!tank-scan-harness/eval/results/.gitkeep
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.pnpm-debug.log*
+*.log
+
+# Local database dumps
+*.db
+*.sqlite
+*.sqlite3
+.env*
+
+# Real personal tank photos used for local testing — not for git history
+Fish tanks/

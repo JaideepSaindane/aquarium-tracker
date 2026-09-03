@@ -1,0 +1,56 @@
+.bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 0);
+  display: flex;
+  width: calc(100% - 24px);
+  max-width: 480px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--dock-border);
+  background: var(--dock-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--dock-shadow);
+  z-index: 20;
+  transition: transform 220ms ease;
+}
+
+/* Smart-hide (TabBar.tsx tracks scroll direction): slides the whole dock
+   down out of the way while scrolling down through a long list, and back
+   up the moment scrolling stops or reverses — same idea as a MacBook dock
+   auto-hiding, so it never permanently blocks content on a long page. */
+.barHidden {
+  transform: translate(-50%, calc(100% + 24px));
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-sm) 0 6px;
+  min-height: 44px;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  font-size: var(--font-caption-size);
+  line-height: var(--font-caption-line);
+  font-weight: 600;
+}
+
+.tabActive {
+  color: var(--color-deep);
+}
+
+.icon {
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  transition: background 150ms ease;
+}
+
+.tabActive .icon {
+  background: var(--color-deep-soft);
+}

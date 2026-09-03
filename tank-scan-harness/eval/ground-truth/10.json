@@ -1,0 +1,27 @@
+{
+  "length_cm": 30,
+  "width_cm": 25,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [
+    {
+      "common_name": "vallisneria/grass"
+    },
+    {
+      "common_name": "java fern"
+    },
+    {
+      "common_name": "anubias"
+    }
+  ],
+  "equipment": [
+    "heater"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, not verified. Close-up hardscape/plant shot, one nerite or mystery snail visible on the glass, no fish clearly visible in frame. Two heater tubes visible (one marked 50W)."
+}

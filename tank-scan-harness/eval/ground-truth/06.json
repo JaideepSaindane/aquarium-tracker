@@ -1,0 +1,22 @@
+{
+  "length_cm": 30,
+  "width_cm": 30,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [
+    {
+      "common_name": "unclear - dense green planting, vallisneria-like grass"
+    }
+  ],
+  "equipment": [],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Photo is extremely blurry - same screen/monitor photo issue as 05",
+    "Cannot reliably identify any livestock from this photo"
+  ],
+  "notes": "DELIBERATELY BAD PHOTO for T-002 - same issue as photo 05, severe blur, looks like a photographed screen showing a row of shop display tanks. Dimensions are a pure guess."
+}

@@ -1,0 +1,43 @@
+{
+  "length_cm": 30,
+  "width_cm": 25,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": null,
+      "common_name": "Small blue and white fish, possibly a cichlid/ram morph - not confident, not in our 30-species list",
+      "count": 1
+    },
+    {
+      "species_id": null,
+      "common_name": "Small yellow cichlid-type fish - not in our 30-species list",
+      "count": 1
+    },
+    {
+      "species_id": null,
+      "common_name": "Small orange fish top-left corner, unclear species",
+      "count": 2
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "java fern"
+    },
+    {
+      "common_name": "anubias"
+    },
+    {
+      "common_name": "cabomba/hornwort"
+    }
+  ],
+  "equipment": [
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, genuinely uncertain on these species IDs - they may be African cichlid morphs or ram cichlid color forms, none map confidently to our 30-species seed list, so species_id is left null on purpose. This photo is a good test of whether the model also admits uncertainty here rather than confidently naming a wrong species."
+}

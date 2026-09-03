@@ -1,0 +1,13 @@
+.confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-caption-size);
+  line-height: var(--font-caption-line);
+  color: var(--color-ink-muted);
+  font-weight: 600;
+}
+
+.notSure {
+  color: var(--color-watch);
+}

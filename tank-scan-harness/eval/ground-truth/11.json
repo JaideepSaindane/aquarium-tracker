@@ -1,0 +1,25 @@
+{
+  "length_cm": 30,
+  "width_cm": 20,
+  "height_cm": 25,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "betta",
+      "common_name": "Betta",
+      "count": 1
+    }
+  ],
+  "plants": [],
+  "equipment": [
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Water level looks low/partial and there is no substrate or planting yet visible - this looks like a tank mid-setup or mid-fill rather than a finished, stable tank"
+  ],
+  "notes": "Claude's own visual read, not verified. Driftwood positioned above the waterline suggests this may be a dry-start or in-progress aquascape rather than a stocked tank; only one fish (tail visible, likely betta) glimpsed at bottom left."
+}

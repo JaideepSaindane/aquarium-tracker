@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tank Scan harness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; line-height: 1.4; }
+  h1 { font-size: 20px; }
+  .muted { opacity: 0.65; font-size: 13px; }
+  form { display: grid; gap: 10px; border: 1px solid #8884; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+  label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px; }
+  input[type="text"], input[type="number"] { width: 100%; padding: 8px; box-sizing: border-box; font-size: 14px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  button { padding: 10px 16px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  #preview { max-width: 100%; max-height: 240px; margin-top: 8px; border-radius: 8px; display: none; }
+  .card { border: 1px solid #8884; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+  .sev-fix_now { border-left: 5px solid #d33; }
+  .sev-watch { border-left: 5px solid #d90; }
+  .sev-improve { border-left: 5px solid #3a3; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 6px; border-radius: 999px; background: #8884; margin-right: 4px; }
+  .conf { font-size: 12px; opacity: 0.7; }
+  #meta { font-size: 13px; background: #8882; padding: 10px; border-radius: 8px; margin-bottom: 16px; }
+  #error { color: #d33; font-weight: 600; white-space: pre-wrap; }
+  ul { margin: 4px 0; padding-left: 20px; }
+  #status { font-size: 14px; margin: 8px 0; }
+  section h2 { font-size: 15px; border-bottom: 1px solid #8884; padding-bottom: 4px; }
+</style>
+</head>
+<body>
+  <h1>Tank Scan harness</h1>
+  <p class="muted">T-001 workbench. Not the app — a place to iterate on the prompt in <code>prompts/tank-scan.v1.md</code> and see the result immediately.</p>
+
+  <form id="scan-form">
+    <div>
+      <label for="photo">Tank photo</label>
+      <input type="file" id="photo" name="photo" accept="image/*" required />
+      <img id="preview" />
+    </div>
+    <div class="row">
+      <div>
+        <label for="length_cm">Length (cm)</label>
+        <input type="number" id="length_cm" name="length_cm" required />
+      </div>
+      <div>
+        <label for="width_cm">Width (cm)</label>
+        <input type="number" id="width_cm" name="width_cm" required />
+      </div>
+      <div>
+        <label for="height_cm">Height (cm)</label>
+        <input type="number" id="height_cm" name="height_cm" required />
+      </div>
+    </div>
+    <div>
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" placeholder="e.g. Bangalore" />
+    </div>
+    <button type="submit">Scan tank</button>
+    <div id="status"></div>
+  </form>
+
+  <div id="error"></div>
+  <div id="meta" style="display:none"></div>
+  <div id="result"></div>
+
+<script>
+const form = document.getElementById("scan-form");
+const statusEl = document.getElementById("status");
+const errorEl = document.getElementById("error");
+const metaEl = document.getElementById("meta");
+const resultEl = document.getElementById("result");
+const photoInput = document.getElementById("photo");
+const preview = document.getElementById("preview");
+
+photoInput.addEventListener("change", () => {
+  const file = photoInput.files[0];
+  if (!file) { preview.style.display = "none"; return; }
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+});
+
+function sevClass(s) { return "sev-" + (s || "improve"); }
+
+function renderReport(report) {
+  resultEl.innerHTML = "";
+
+  if (report.image_quality && report.image_quality.usable === false) {
+    resultEl.innerHTML = `<div class="card sev-fix_now">
+      <strong>Photo not usable</strong>
+      <p>${(report.image_quality.issues || []).map(i => `<span class="badge">${i}</span>`).join("")}</p>
+      <p>${report.image_quality.advice || ""}</p>
+    </div>`;
+    return;
+  }
+
+  const sections = [];
+
+  if (report.findings && report.findings.length) {
+    const order = { fix_now: 0, watch: 1, improve: 2 };
+    const sorted = [...report.findings].sort((a, b) => (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
+    sections.push(`<section><h2>Findings</h2>` + sorted.map(f => `
+      <div class="card ${sevClass(f.severity)}">
+        <span class="badge">${f.severity}</span> <strong>${f.title}</strong>
+        <span class="conf">confidence ${f.confidence}</span>
+        <p>${f.explanation}</p>
+        <p><em>${f.recommended_action || ""}</em></p>
+        <p class="muted">grounded on: ${(f.grounding_refs || []).join(", ") || "none"}</p>
+      </div>`).join("") + `</section>`);
+  }
+
+  if (report.setup) {
+    sections.push(`<section><h2>Setup</h2>
+      <div class="card">
+        <strong>${report.setup.type}</strong>
+        <span class="conf">confidence ${report.setup.confidence}</span>
+        <p class="muted">${report.setup.note || ""}</p>
+      </div></section>`);
+  }
+
+  if (report.plants && report.plants.length) {
+    sections.push(`<section><h2>Plants</h2>` + report.plants.map(p => `
+      <div class="card">${p.label} — ${p.condition} <span class="conf">confidence ${p.confidence}</span></div>`).join("") + `</section>`);
+  }
+
+  if (report.algae && report.algae.filter(a => a.type !== "none").length) {
+    sections.push(`<section><h2>Algae</h2>` + report.algae.filter(a => a.type !== "none").map(a => `
+      <div class="card">${a.type} — ${a.severity} on ${a.location} <span class="conf">confidence ${a.confidence}</span></div>`).join("") + `</section>`);
+  }
+
+  if (report.recommended_maintenance && report.recommended_maintenance.length) {
+    sections.push(`<section><h2>Recommended maintenance</h2>` + report.recommended_maintenance.map(m => `
+      <div class="card">${m.preset_type} every ${m.interval_days} days — ${m.suggested_amount || ""}<p class="muted">${m.why}</p></div>`).join("") + `</section>`);
+  }
+
+  if (report.could_not_determine && report.could_not_determine.length) {
+    sections.push(`<section><h2>Could not determine</h2><ul>${report.could_not_determine.map(c => `<li>${c}</li>`).join("")}</ul></section>`);
+  }
+
+  if (report.clarifying_questions && report.clarifying_questions.length) {
+    sections.push(`<section><h2>Clarifying questions</h2><ul>${report.clarifying_questions.map(q => `<li>${q.question} <span class="muted">(${q.why})</span></li>`).join("")}</ul></section>`);
+  }
+
+  sections.push(`<section><h2>Scores</h2><p class="muted">${JSON.stringify(report.scores)}</p></section>`);
+  sections.push(`<section><h2>Raw JSON</h2><details><summary>show</summary><pre style="white-space:pre-wrap;font-size:11px;">${JSON.stringify(report, null, 2)}</pre></details></section>`);
+
+  resultEl.innerHTML = sections.join("");
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorEl.textContent = "";
+  metaEl.style.display = "none";
+  resultEl.innerHTML = "";
+  statusEl.textContent = "Scanning… (usually under 20 seconds)";
+
+  const fd = new FormData(form);
+  const started = Date.now();
+  try {
+    const res = await fetch("/api/scan", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) {
+      errorEl.textContent = (data.error || "Unknown error") + (data.detail ? "\n\n" + data.detail : "");
+      statusEl.textContent = "";
+      return;
+    }
+    const secs = ((Date.now() - started) / 1000).toFixed(1);
+    metaEl.style.display = "block";
+    metaEl.innerHTML = `Tokens in: ${data.meta.tokensIn} · Tokens out: ${data.meta.tokensOut} · Est. cost: $${data.meta.costUsd.toFixed(6)}
+      <br/>Image: ${(data.meta.originalBytes/1024).toFixed(0)} KB → ${(data.meta.resizedBytes/1024).toFixed(0)} KB after downscale
+      <br/>Took ${secs}s · saved as <code>responses/${data.meta.savedFile}</code>`;
+    renderReport(data.report);
+    statusEl.textContent = "";
+  } catch (err) {
+    errorEl.textContent = String(err);
+    statusEl.textContent = "";
+  }
+});
+</script>
+</body>
+</html>

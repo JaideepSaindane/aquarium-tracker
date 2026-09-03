@@ -1,0 +1,17 @@
+{
+  "length_cm": 30,
+  "width_cm": 20,
+  "height_cm": 25,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [],
+  "equipment": [
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, not verified. Empty new tank/hardscape-only setup - just driftwood in bare water, no substrate, no plants, no livestock visible. Good test of whether the model correctly reports an unstocked tank rather than inventing fish."
+}

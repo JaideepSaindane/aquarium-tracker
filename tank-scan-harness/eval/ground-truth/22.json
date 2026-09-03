@@ -1,0 +1,46 @@
+{
+  "length_cm": 60,
+  "width_cm": 30,
+  "height_cm": 36,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "platy",
+      "common_name": "Platy",
+      "count": 2
+    },
+    {
+      "species_id": "swordtail",
+      "common_name": "Swordtail",
+      "count": 1
+    },
+    {
+      "species_id": null,
+      "common_name": "Larger gold/white fish with black markings, possibly a cichlid - not in our 30-species list",
+      "count": 1
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "alternanthera (red)"
+    },
+    {
+      "common_name": "java fern"
+    },
+    {
+      "common_name": "hornwort"
+    }
+  ],
+  "equipment": [
+    "heater",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "A larger, possibly semi-aggressive cichlid-type fish appears to be housed with small livebearers - worth flagging as a compatibility question depending on the actual species"
+  ],
+  "notes": "Claude's own visual read, not verified, and genuinely uncertain on the larger fish's identity. Heater visible, marked 75W. Water has a slight blue/hazy tint in the photo."
+}

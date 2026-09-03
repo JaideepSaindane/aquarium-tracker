@@ -1,0 +1,26 @@
+{
+  "length_cm": 45,
+  "width_cm": 30,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [
+    {
+      "common_name": "anubias"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "heater",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Photo is dark/underlit, hard to confirm livestock",
+    "Sparse planting relative to tank size"
+  ],
+  "notes": "Claude's own visual read, not verified. A 'Let's Go!' sign in the background suggests this may be a shop or office display tank rather than a home tank. No fish confidently visible."
+}

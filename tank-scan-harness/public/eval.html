@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>T-002 evaluation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; line-height: 1.4; }
+  h1 { font-size: 20px; }
+  .muted { opacity: 0.65; font-size: 13px; }
+  a { color: inherit; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin: 10px 0 16px; flex-wrap: wrap; }
+  button { padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #8883; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px; margin-right: 4px; }
+  .ok { background: #3a34; }
+  .missing { background: #d334; }
+  .fail { background: #d904; }
+  .thumb { width: 60px; height: 45px; object-fit: cover; border-radius: 4px; vertical-align: middle; }
+  #editor { display: none; border: 1px solid #8884; border-radius: 10px; padding: 16px; margin-top: 16px; }
+  #editor.open { display: block; }
+  label { font-size: 13px; font-weight: 600; display: block; margin: 10px 0 3px; }
+  input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 7px; box-sizing: border-box; font-size: 14px; }
+  textarea { min-height: 60px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .repeat-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .checks { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; font-weight: 400; }
+  .checks label { display: flex; gap: 4px; align-items: center; font-weight: 400; margin: 0; }
+  .small-btn { padding: 4px 8px; font-size: 12px; }
+  #status { font-size: 13px; margin-top: 8px; }
+  img#preview { max-width: 100%; max-height: 260px; border-radius: 8px; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <h1>T-002 — Tank Scan accuracy evaluation</h1>
+  <p class="muted">Drop tank photos into <code>tank-scan-harness/eval/photos/</code>, then enter what's actually in each one here. No JSON hand-writing.</p>
+
+  <div class="toolbar">
+    <a href="/eval-review.html"><button type="button">Go to review &amp; scoring →</button></a>
+    <span class="muted" id="counts"></span>
+  </div>
+
+  <table id="photo-table">
+    <thead><tr><th></th><th>Photo</th><th>Ground truth</th><th>Scan result</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="editor">
+    <h2 id="editor-title"></h2>
+    <img id="preview" />
+    <label>Tank dimensions (cm)</label>
+    <div class="row3">
+      <input type="number" id="length_cm" placeholder="length" />
+      <input type="number" id="width_cm" placeholder="width" />
+      <input type="number" id="height_cm" placeholder="height" />
+    </div>
+    <label>City</label>
+    <input type="text" id="city" placeholder="e.g. Bangalore" />
+
+    <label>Fish actually in the tank</label>
+    <div id="fish-rows"></div>
+    <button type="button" class="small-btn" id="add-fish">+ add fish</button>
+
+    <label>Plants actually in the tank (one per line)</label>
+    <textarea id="plants"></textarea>
+
+    <label>Equipment actually visible</label>
+    <div class="checks" id="equipment-checks"></div>
+
+    <label>Algae</label>
+    <div class="row3">
+      <select id="algae_type">
+        <option value="none">none</option>
+        <option value="green_spot">green_spot</option>
+        <option value="green_dust">green_dust</option>
+        <option value="hair">hair</option>
+        <option value="black_beard">black_beard</option>
+        <option value="staghorn">staghorn</option>
+        <option value="diatom">diatom</option>
+        <option value="cyanobacteria">cyanobacteria</option>
+      </select>
+      <select id="algae_severity">
+        <option value="trace">trace</option>
+        <option value="moderate">moderate</option>
+        <option value="heavy">heavy</option>
+      </select>
+      <div></div>
+    </div>
+
+    <label>Problems a knowledgeable keeper would flag (one per line)</label>
+    <textarea id="problems"></textarea>
+
+    <label>Notes</label>
+    <textarea id="notes"></textarea>
+
+    <div class="toolbar">
+      <button type="button" id="save-btn">Save ground truth</button>
+      <button type="button" id="run-btn">Run scan for this photo</button>
+      <button type="button" id="close-btn">Close</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+<script>
+const EQUIPMENT_TYPES = ["filter", "heater", "light", "co2", "air_stone"];
+let species = [];
+let currentStem = null;
+
+async function loadSpecies() {
+  species = await (await fetch("/api/eval/species")).json();
+}
+
+async function loadPhotos() {
+  const photos = await (await fetch("/api/eval/photos")).json();
+  const tbody = document.querySelector("#photo-table tbody");
+  tbody.innerHTML = "";
+  let withGT = 0, withResult = 0;
+  for (const p of photos) {
+    if (p.hasGroundTruth) withGT++;
+    if (p.hasResult) withResult++;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><img class="thumb" src="/eval/photos/${p.filename}" /></td>
+      <td>${p.stem}</td>
+      <td>${p.hasGroundTruth ? '<span class="badge ok">entered</span>' : '<span class="badge missing">missing</span>'}</td>
+      <td>${p.hasResult ? (p.resultOk ? '<span class="badge ok">scanned</span>' : '<span class="badge fail">failed</span>') : '<span class="badge missing">not run</span>'}</td>
+      <td><button type="button" data-stem="${p.stem}" class="small-btn edit-btn">Edit</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  document.getElementById("counts").textContent = `${photos.length} photos · ${withGT} have ground truth · ${withResult} have been scanned`;
+  document.querySelectorAll(".edit-btn").forEach((b) => b.addEventListener("click", () => openEditor(b.dataset.stem, photos.find(x => x.stem === b.dataset.stem).filename)));
+}
+
+function renderFishRow(value = { species_id: "", common_name: "", count: "" }) {
+  const div = document.createElement("div");
+  div.className = "repeat-row";
+  const options = ['<option value="">-- not in seed list / unidentified --</option>']
+    .concat(species.map(s => `<option value="${s.id}" ${s.id === value.species_id ? "selected" : ""}>${s.name} (${s.id})</option>`));
+  div.innerHTML = `
+    <select class="fish-species">${options.join("")}</select>
+    <input type="number" class="fish-count" placeholder="count" value="${value.count ?? ""}" />
+    <button type="button" class="small-btn remove-fish">✕</button>
+  `;
+  div.querySelector(".remove-fish").addEventListener("click", () => div.remove());
+  return div;
+}
+
+function renderEquipmentChecks(selected = []) {
+  const wrap = document.getElementById("equipment-checks");
+  wrap.innerHTML = EQUIPMENT_TYPES.map(t => `
+    <label><input type="checkbox" class="equip-check" value="${t}" ${selected.includes(t) ? "checked" : ""}/> ${t}</label>
+  `).join("");
+}
+
+async function openEditor(stem, filename) {
+  currentStem = stem;
+  document.getElementById("editor").classList.add("open");
+  document.getElementById("editor-title").textContent = stem;
+  document.getElementById("preview").src = `/eval/photos/${filename}`;
+  document.getElementById("status").textContent = "";
+
+  const gt = await (await fetch(`/api/eval/ground-truth/${stem}`)).json() || {};
+  document.getElementById("length_cm").value = gt.length_cm ?? "";
+  document.getElementById("width_cm").value = gt.width_cm ?? "";
+  document.getElementById("height_cm").value = gt.height_cm ?? "";
+  document.getElementById("city").value = gt.city ?? "";
+  document.getElementById("plants").value = (gt.plants || []).map(p => p.common_name).join("\n");
+  document.getElementById("problems").value = (gt.problems || []).join("\n");
+  document.getElementById("notes").value = gt.notes ?? "";
+  document.getElementById("algae_type").value = gt.algae?.type ?? "none";
+  document.getElementById("algae_severity").value = gt.algae?.severity ?? "trace";
+  renderEquipmentChecks(gt.equipment || []);
+
+  const fishRows = document.getElementById("fish-rows");
+  fishRows.innerHTML = "";
+  (gt.fish && gt.fish.length ? gt.fish : [{}]).forEach(f => fishRows.appendChild(renderFishRow(f)));
+
+  document.getElementById("editor").scrollIntoView({ behavior: "smooth" });
+}
+
+document.getElementById("add-fish").addEventListener("click", () => {
+  document.getElementById("fish-rows").appendChild(renderFishRow());
+});
+document.getElementById("close-btn").addEventListener("click", () => {
+  document.getElementById("editor").classList.remove("open");
+});
+
+function collectGroundTruth() {
+  const fish = [...document.querySelectorAll("#fish-rows .repeat-row")].map(row => {
+    const select = row.querySelector(".fish-species");
+    const speciesId = select.value || null;
+    const name = speciesId ? select.options[select.selectedIndex].text : "";
+    return {
+      species_id: speciesId,
+      common_name: name,
+      count: Number(row.querySelector(".fish-count").value) || 0,
+    };
+  }).filter(f => f.count > 0);
+
+  const equipment = [...document.querySelectorAll(".equip-check:checked")].map(c => c.value);
+  const plants = document.getElementById("plants").value.split("\n").map(s => s.trim()).filter(Boolean).map(common_name => ({ common_name }));
+  const problems = document.getElementById("problems").value.split("\n").map(s => s.trim()).filter(Boolean);
+
+  return {
+    length_cm: Number(document.getElementById("length_cm").value) || 0,
+    width_cm: Number(document.getElementById("width_cm").value) || 0,
+    height_cm: Number(document.getElementById("height_cm").value) || 0,
+    city: document.getElementById("city").value,
+    fish,
+    plants,
+    equipment,
+    algae: { type: document.getElementById("algae_type").value, severity: document.getElementById("algae_severity").value },
+    problems,
+    notes: document.getElementById("notes").value,
+  };
+}
+
+document.getElementById("save-btn").addEventListener("click", async () => {
+  const body = collectGroundTruth();
+  await fetch(`/api/eval/ground-truth/${currentStem}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  document.getElementById("status").textContent = "Saved.";
+  loadPhotos();
+});
+
+document.getElementById("run-btn").addEventListener("click", async () => {
+  document.getElementById("status").textContent = "Saving ground truth, then scanning (~10-20s)…";
+  const body = collectGroundTruth();
+  await fetch(`/api/eval/ground-truth/${currentStem}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const res = await fetch(`/api/eval/run/${currentStem}`, { method: "POST" });
+  const data = await res.json();
+  document.getElementById("status").textContent = data.ok === false ? `Scan failed: ${data.error}` : "Scanned. See the review page for the report.";
+  loadPhotos();
+});
+
+loadSpecies().then(loadPhotos);
+</script>
+</body>
+</html>

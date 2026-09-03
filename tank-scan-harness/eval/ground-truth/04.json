@@ -1,0 +1,35 @@
+{
+  "length_cm": 25,
+  "width_cm": 20,
+  "height_cm": 25,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "guppy",
+      "common_name": "Guppy",
+      "count": 4
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "ludwigia (red)"
+    },
+    {
+      "common_name": "hornwort"
+    },
+    {
+      "common_name": "java fern"
+    }
+  ],
+  "equipment": [
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "No heater or filter visible"
+  ],
+  "notes": "Claude's own visual read, not verified."
+}

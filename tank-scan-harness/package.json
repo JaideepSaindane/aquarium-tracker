@@ -1,0 +1,20 @@
+{
+  "name": "tank-scan-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "T-001/T-002: local workbench for the Tank Scan prompt, plus the accuracy evaluation tools. Not part of the shipped app.",
+  "scripts": {
+    "start": "node server.js",
+    "eval:run": "node eval/eval-run.js",
+    "eval:score": "node eval/eval-score.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "multer": "^2.0.1",
+    "sharp": "^0.35.4",
+    "zod": "^3.23.8"
+  }
+}

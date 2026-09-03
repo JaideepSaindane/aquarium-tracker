@@ -1,0 +1,30 @@
+{
+  "length_cm": 20,
+  "width_cm": 15,
+  "height_cm": 18,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "guppy",
+      "common_name": "Guppy",
+      "count": 2
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "plastic decorative plants (not real)"
+    }
+  ],
+  "equipment": [],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "No filter visible",
+    "No heater visible",
+    "No light fixture visible - likely just ambient room light",
+    "Decorative plants appear to be plastic, not live"
+  ],
+  "notes": "Claude's own visual read, not verified. Small unfiltered/unheated bowl-style setup - exactly the kind of setup the app should flag as risky per Principle 01 (advise, don't block)."
+}

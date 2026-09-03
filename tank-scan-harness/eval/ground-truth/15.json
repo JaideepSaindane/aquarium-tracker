@@ -1,0 +1,34 @@
+{
+  "length_cm": 45,
+  "width_cm": 25,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "ember-tetra",
+      "common_name": "Ember Tetra",
+      "count": 8
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "hornwort"
+    },
+    {
+      "common_name": "vallisneria/grass"
+    },
+    {
+      "common_name": "moneywort"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [],
+  "notes": "Claude's own visual read, not verified. Small shrimp visible near substrate as well. Species ID is a moderate-confidence guess."
+}

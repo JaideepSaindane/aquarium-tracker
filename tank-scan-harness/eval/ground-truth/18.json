@@ -1,0 +1,44 @@
+{
+  "length_cm": 60,
+  "width_cm": 30,
+  "height_cm": 36,
+  "city": "Bangalore",
+  "fish": [
+    {
+      "species_id": "neon-tetra",
+      "common_name": "Neon Tetra / small tetra",
+      "count": 6
+    },
+    {
+      "species_id": "guppy",
+      "common_name": "Guppy",
+      "count": 4
+    }
+  ],
+  "plants": [
+    {
+      "common_name": "java fern"
+    },
+    {
+      "common_name": "hornwort"
+    },
+    {
+      "common_name": "vallisneria/grass"
+    },
+    {
+      "common_name": "peace lily (emersed)"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "Heavy visible snail population on the glass"
+  ],
+  "notes": "Claude's own visual read, not verified. Likely the same tank as photo 17, different angle/day."
+}

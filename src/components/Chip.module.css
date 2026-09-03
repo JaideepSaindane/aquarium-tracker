@@ -1,0 +1,42 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-label-size);
+  line-height: var(--font-label-line);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.neutral {
+  background: var(--color-surface-alt);
+  color: var(--color-ink-muted);
+}
+
+.fixNow {
+  background: var(--color-fix-now);
+  color: white;
+}
+.watch {
+  background: var(--color-watch);
+  color: white;
+}
+.improve {
+  background: var(--color-improve);
+  color: white;
+}
+
+.unverified {
+  background: transparent;
+  color: var(--color-ink-muted);
+  border-color: var(--color-line);
+}
+
+.pro {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}

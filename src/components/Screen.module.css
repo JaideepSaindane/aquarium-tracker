@@ -1,0 +1,47 @@
+.screen {
+  min-height: 100dvh;
+  background: var(--color-ground);
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-lg);
+  /* The tab bar floats over content now (TabBar.module.css) instead of
+     sitting in the page's flex flow, so content needs its own clearance
+     at the bottom or the last card ends up underneath the dock. */
+  padding-bottom: calc(var(--dock-clearance) + var(--space-lg) + env(safe-area-inset-bottom));
+}
+
+/* A screen using the `footer` prop reserves this much space instead, so
+   the sticky footer itself (not the dock) is what the content clears. */
+.contentWithFooter {
+  padding-bottom: calc(96px + var(--space-lg) + env(safe-area-inset-bottom));
+}
+
+/* Pinned to the bottom of the viewport regardless of scroll position or
+   content height — the fix for buttons getting scrolled out of reach on a
+   tall form (a real bug Jaideep hit: primary CTAs across the onboarding
+   scan/report/livestock flow were in normal document flow and could end up
+   below the fold with nothing on screen indicating there was more below). */
+.stickyFooter {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px var(--space-lg) calc(12px + env(safe-area-inset-bottom));
+  background: var(--color-surface, var(--color-ground));
+  border-top: 1px solid var(--color-line);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}

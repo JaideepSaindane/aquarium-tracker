@@ -1,0 +1,568 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Screen } from "@/components/Screen";
+import { TankThumbnail } from "@/components/TankThumbnail";
+import { TankHeroPhoto } from "@/components/TankHeroPhoto";
+import { SpeciesThumb } from "@/components/SpeciesThumb";
+import { SecondaryButton, DangerButton } from "@/components/Button";
+import { FloatingAskButton } from "@/components/FloatingAskButton";
+import { FirstTankTour } from "@/components/FirstTankTour";
+import { useLiveQuery } from "@/db/live";
+import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
+import { listAllAliveLivestock } from "@/db/queries/livestock";
+import { listSpecies } from "@/db/queries/species";
+import { listAllActiveTasks } from "@/db/queries/tasks";
+import { getProfile } from "@/db/queries/profile";
+import { bucketFor } from "@/lib/schedule";
+import { useTranslation } from "@/i18n/use-translation";
+
+type TankLivestockThumb = { speciesId: string; count: number; imageUri?: string | null; category?: string | null };
+
+async function loadHomeData() {
+  const [allTanks, livestock, species, tasks, profile] = await Promise.all([
+    listTanks(),
+    listAllAliveLivestock(),
+    listSpecies(),
+    listAllActiveTasks(),
+    getProfile(),
+  ]);
+  // "Hide Tank" (Edit Tank screen) sets status to archived — hidden from
+  // this list but not deleted, so it's still in exports and can be
+  // recovered by editing status back. Only a real Delete removes a tank.
+  const tanks = allTanks.filter((t) => t.status !== "archived");
+  const speciesById = new Map(species.map((s) => [s.id, s]));
+
+  const livestockByTank = new Map<string, TankLivestockThumb[]>();
+  for (const row of livestock) {
+    const sp = speciesById.get(row.speciesId);
+    const list = livestockByTank.get(row.tankId) ?? [];
+    list.push({ speciesId: row.speciesId, count: row.count, imageUri: sp?.imageUri, category: sp?.category });
+    livestockByTank.set(row.tankId, list);
+  }
+
+  const now = new Date();
+  const dueTodayByTank = new Map<string, number>();
+  let dueTodayTotal = 0;
+  for (const task of tasks) {
+    const bucket = bucketFor(task.nextDueAt, now);
+    if (bucket === "overdue" || bucket === "today") {
+      dueTodayByTank.set(task.tankId, (dueTodayByTank.get(task.tankId) ?? 0) + 1);
+      dueTodayTotal++;
+    }
+  }
+
+  return { tanks, livestockByTank, dueTodayByTank, dueTodayTotal, profileName: profile?.name };
+}
+
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+// Tanks list — the app's home screen. Restyled 2026-09-04 to match a
+// reference screenshot Jaideep shared: hero + greeting + search/filter row,
+// a plain "N tasks due today" card ahead of the tank list (was a coloured
+// banner after it), and tank cards redesigned with a bigger photo, water-type
+// icon, Planted/CO2 pills, creation date, per-fish circular thumbnails, and
+// a per-card "⋮" quick-actions menu (Edit/Hide/Delete). Bottom nav and the
+// name-based greeting were deliberately kept as-is — Jaideep's call when
+// asked, over switching to the mockup's own nav/persona-title styling.
+export default function TanksPage() {
+  const router = useRouter();
+  const { data, loading } = useLiveQuery(loadHomeData, []);
+  const tanks = data?.tanks;
+  const t = useTranslation();
+  const [query, setQuery] = useState("");
+  const [openMenuTankId, setOpenMenuTankId] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const filteredTanks = (tanks ?? [])
+    .filter((tank) => tank.name.toLowerCase().includes(query.trim().toLowerCase()))
+    .sort((a, b) => {
+      return b.createdAt.localeCompare(a.createdAt);
+    });
+  const mostRecentPhotoTank = (tanks ?? [])
+    .filter((t) => t.photoUri)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  const deleteTarget = (tanks ?? []).find((t) => t.id === deleteTargetId);
+
+  async function handleHide(tankId: string) {
+    setOpenMenuTankId(null);
+    await updateTank(tankId, { status: "archived" });
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTargetId) return;
+    setDeleting(true);
+    await deleteTank(deleteTargetId);
+    setDeleting(false);
+    setDeleteTargetId(null);
+  }
+
+  return (
+    <Screen background="var(--soft-bg)">
+      <TankHeroPhoto photoUri={mostRecentPhotoTank?.photoUri}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>{greeting()},</p>
+            <h1 style={{ fontSize: "var(--font-title-size)", color: "#fff" }}>
+              {data?.profileName ? data.profileName : "Aquarist"} 🐟
+            </h1>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <Link
+              href="/home"
+              aria-label="Schedule"
+              style={{
+                position: "relative",
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.28)",
+                backdropFilter: "blur(var(--glass-blur))",
+                WebkitBackdropFilter: "blur(var(--glass-blur))",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 18,
+                flexShrink: 0,
+                color: "#fff",
+              }}
+            >
+              🔔
+              {(data?.dueTodayTotal ?? 0) > 0 && (
+                <span
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    top: 6,
+                    right: 6,
+                    width: 9,
+                    height: 9,
+                    borderRadius: "50%",
+                    background: "var(--color-improve)",
+                    border: "1.5px solid rgba(255,255,255,0.9)",
+                  }}
+                />
+              )}
+            </Link>
+            <Link
+              href="/settings"
+              aria-label="Settings"
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.28)",
+                backdropFilter: "blur(var(--glass-blur))",
+                WebkitBackdropFilter: "blur(var(--glass-blur))",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 18,
+                flexShrink: 0,
+                color: "#fff",
+              }}
+            >
+              ⚙️
+            </Link>
+          </div>
+        </div>
+
+        <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 12 }}>
+          {tanks && tanks.length > 0 ? "Here's how your tanks are doing." : "Let's get your first tank set up."}
+        </p>
+      </TankHeroPhoto>
+
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search tanks..."
+        style={{
+          width: "100%",
+          padding: "12px 16px",
+          borderRadius: "var(--radius-pill)",
+          border: "1px solid var(--soft-card-border)",
+          background: "var(--soft-card-bg)",
+          backdropFilter: "blur(var(--glass-blur))",
+          WebkitBackdropFilter: "blur(var(--glass-blur))",
+          color: "var(--soft-ink)",
+          fontSize: "var(--font-body-size)",
+          marginBottom: 20,
+          boxSizing: "border-box",
+        }}
+      />
+
+      {!loading && tanks && tanks.length === 0 && (
+        <>
+          <p style={{ fontWeight: 700, fontSize: "var(--font-heading-size)", color: "var(--soft-ink)", textAlign: "center", marginBottom: 20 }}>
+            {t.home.emptyHeading}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+            <Link
+              href="/onboarding/scan"
+              style={{
+                display: "block",
+                textAlign: "center",
+                padding: "16px 20px",
+                borderRadius: "var(--radius-lg)",
+                background: "var(--soft-accent)",
+                color: "#fff",
+                fontWeight: 700,
+                boxShadow: "var(--shadow-sm)",
+              }}
+            >
+              🐟 {t.home.haveTankCta}
+            </Link>
+            <Link
+              href="/onboarding/planner"
+              style={{
+                display: "block",
+                textAlign: "center",
+                padding: "16px 20px",
+                borderRadius: "var(--radius-lg)",
+                background: "var(--soft-card-bg)",
+                border: "1px solid var(--soft-card-border)",
+                color: "var(--soft-ink)",
+                fontWeight: 700,
+              }}
+            >
+              🧭 {t.home.plannerCta}
+            </Link>
+          </div>
+          <Link href="/emergency" style={{ display: "block", textAlign: "center", color: "var(--color-fix-now)" }}>
+            {t.home.emergencyLink}
+          </Link>
+        </>
+      )}
+
+      {tanks && tanks.length > 0 && (
+        <>
+          <Link href="/home" style={{ display: "block", marginBottom: 20 }}>
+            {data?.dueTodayTotal ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: 14,
+                  borderRadius: "var(--radius-lg)",
+                  background: "var(--soft-card-bg)",
+                  border: "1px solid var(--soft-card-border)",
+                  backdropFilter: "blur(var(--glass-blur))",
+                  WebkitBackdropFilter: "blur(var(--glass-blur))",
+                }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    width: 40,
+                    height: 40,
+                    flexShrink: 0,
+                    borderRadius: "50%",
+                    background: "var(--soft-accent-soft)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 18,
+                  }}
+                >
+                  📅
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>{data.dueTodayTotal} tasks due today</p>
+                  <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>Tap to view your calendar</p>
+                </div>
+                <span aria-hidden style={{ color: "var(--soft-ink-muted)", fontSize: 18 }}>
+                  ›
+                </span>
+              </div>
+            ) : (
+              // Thin, low-emphasis strip when there's nothing due — this
+              // card carries no actionable information in that state, so it
+              // shouldn't take up the same visual weight as when it does.
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "6px 12px",
+                  borderRadius: "var(--radius-pill)",
+                  background: "var(--soft-card-bg)",
+                  border: "1px solid var(--soft-card-border)",
+                }}
+              >
+                <span aria-hidden style={{ fontSize: 13 }}>
+                  ✅
+                </span>
+                <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", flex: 1 }}>All caught up today</p>
+              </div>
+            )}
+          </Link>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, position: "relative" }}>
+            <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>My tanks</p>
+            <Link
+              href="/tank/new"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 16px",
+                borderRadius: "var(--radius-pill)",
+                background: "var(--soft-accent)",
+                color: "#fff",
+                fontSize: "var(--font-caption-size)",
+                fontWeight: 700,
+                boxShadow: "var(--shadow-sm)",
+                flexShrink: 0,
+              }}
+            >
+              + Add tank
+            </Link>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+            {filteredTanks.map((tank) => {
+              const livestockThumbs = data?.livestockByTank.get(tank.id) ?? [];
+              const visibleThumbs = livestockThumbs.slice(0, 4);
+              const overflowCount = livestockThumbs.length - visibleThumbs.length;
+              const dueCount = data?.dueTodayByTank.get(tank.id) ?? 0;
+              const needsAttention = dueCount > 0;
+              const isBrackish = tank.waterType === "brackish";
+
+              return (
+                <div
+                  key={tank.id}
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    gap: 12,
+                    padding: 12,
+                    borderRadius: "var(--radius-lg)",
+                    background: "var(--soft-card-bg)",
+                    border: "1px solid var(--soft-card-border)",
+                    backdropFilter: "blur(var(--glass-blur))",
+                    WebkitBackdropFilter: "blur(var(--glass-blur))",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  <Link href={`/tank/${tank.id}`} style={{ flexShrink: 0 }}>
+                    <TankThumbnail photoUri={tank.photoUri} size={84} />
+                  </Link>
+
+                  <Link href={`/tank/${tank.id}`} style={{ flex: 1, minWidth: 0, color: "inherit", display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, paddingRight: 24 }}>
+                      <strong style={{ color: "var(--soft-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tank.name}</strong>
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4,
+                          fontSize: "var(--font-caption-size)",
+                          fontWeight: 600,
+                          padding: "2px 10px",
+                          borderRadius: "var(--radius-pill)",
+                          color: needsAttention ? "var(--color-watch)" : "var(--color-improve)",
+                          background: needsAttention ? "var(--color-accent-soft)" : "var(--color-deep-soft)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {needsAttention ? `● ${dueCount} due` : "● Healthy"}
+                      </span>
+                    </div>
+
+                    <p
+                      style={{
+                        color: "var(--soft-ink-muted)",
+                        fontSize: "var(--font-caption-size)",
+                        margin: "4px 0 0",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {isBrackish ? "Brackish" : "Freshwater"}
+                      {tank.isPlanted ? " · Planted" : ""}
+                      {tank.hasCo2 ? " · CO₂" : ""}
+                      {" · "}
+                      {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+                    </p>
+
+                    <div style={{ flex: 1 }} />
+
+                    <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
+                      {visibleThumbs.map((l, i) => (
+                        <SpeciesThumb key={`${l.speciesId}-${i}`} imageUri={l.imageUri} category={l.category} size={24} />
+                      ))}
+                      {overflowCount > 0 && (
+                        <span
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: "50%",
+                            background: "var(--soft-bg-alt)",
+                            color: "var(--soft-ink-muted)",
+                            fontSize: 10,
+                            fontWeight: 700,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          +{overflowCount}
+                        </span>
+                      )}
+                      {visibleThumbs.length === 0 && (
+                        <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>No fish yet</span>
+                      )}
+                    </div>
+                  </Link>
+
+                  <button
+                    onClick={() => setOpenMenuTankId((cur) => (cur === tank.id ? null : tank.id))}
+                    aria-label={`More actions for ${tank.name}`}
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      width: 28,
+                      height: 28,
+                      borderRadius: "50%",
+                      border: "none",
+                      background: "transparent",
+                      color: "var(--soft-ink-muted)",
+                      fontSize: 16,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    ⋮
+                  </button>
+
+                  {openMenuTankId === tank.id && (
+                    <>
+                      <div
+                        onClick={() => setOpenMenuTankId(null)}
+                        style={{ position: "fixed", inset: 0, zIndex: 29 }}
+                        aria-hidden
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 38,
+                          right: 8,
+                          zIndex: 30,
+                          background: "var(--soft-card-bg)",
+                          border: "1px solid var(--soft-card-border)",
+                          borderRadius: "var(--radius-md)",
+                          boxShadow: "var(--shadow-md, 0 8px 24px rgba(0,0,0,0.15))",
+                          overflow: "hidden",
+                          minWidth: 140,
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            setOpenMenuTankId(null);
+                            router.push(`/tank/${tank.id}/edit`);
+                          }}
+                          style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleHide(tank.id)}
+                          style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}
+                        >
+                          Hide
+                        </button>
+                        <button
+                          onClick={() => {
+                            setOpenMenuTankId(null);
+                            setDeleteTargetId(tank.id);
+                          }}
+                          style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+
+            {filteredTanks.length === 0 && (
+              <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", padding: "16px 0" }}>No tanks match your search.</p>
+            )}
+          </div>
+
+          <Link href="/onboarding/planner" style={{ display: "block", textAlign: "center", color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 8 }}>
+            🧭 {t.home.plannerCta}
+          </Link>
+          <Link href="/emergency" style={{ display: "block", textAlign: "center", color: "var(--color-fix-now)" }}>
+            {t.home.emergencyLink}
+          </Link>
+        </>
+      )}
+
+      {deleteTarget && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Delete tank"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0, 0, 0, 0.5)",
+            padding: 24,
+          }}
+          onClick={() => !deleting && setDeleteTargetId(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: 340,
+              background: "var(--soft-bg)",
+              borderRadius: "var(--radius-lg)",
+              padding: 20,
+              textAlign: "center",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
+            }}
+          >
+            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 6, color: "var(--soft-ink)" }}>Delete tank?</p>
+            <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 20 }}>
+              This permanently deletes {deleteTarget.name} and everything logged under it. This can&apos;t be undone.
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <SecondaryButton onClick={() => setDeleteTargetId(null)} disabled={deleting}>
+                No
+              </SecondaryButton>
+              <DangerButton onClick={handleConfirmDelete} disabled={deleting}>
+                {deleting ? "Deleting..." : "Yes, delete"}
+              </DangerButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <FloatingAskButton />
+      <FirstTankTour hasTanks={(tanks?.length ?? 0) > 0} />
+    </Screen>
+  );
+}

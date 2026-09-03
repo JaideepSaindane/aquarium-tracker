@@ -1,0 +1,1 @@
+ALTER TABLE `tanks` ADD `setup_type` text;

@@ -1,0 +1,36 @@
+{
+  "length_cm": 30,
+  "width_cm": 30,
+  "height_cm": 30,
+  "city": "Bangalore",
+  "fish": [],
+  "plants": [
+    {
+      "common_name": "rotala"
+    },
+    {
+      "common_name": "java fern"
+    },
+    {
+      "common_name": "anubias"
+    },
+    {
+      "common_name": "hairgrass carpet"
+    },
+    {
+      "common_name": "cryptocoryne"
+    }
+  ],
+  "equipment": [
+    "filter",
+    "light"
+  ],
+  "algae": {
+    "type": "none",
+    "severity": "trace"
+  },
+  "problems": [
+    "No heater visible - unclear if this nano cube is heated"
+  ],
+  "notes": "Claude's own visual read (Jaideep did not confirm), not verified fact. Dimensions estimated from photo, not measured. No fish confidently visible in this shot - possibly unstocked hardscape/plant-only tank."
+}
