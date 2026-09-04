@@ -1,6 +1,7 @@
 "use client";
 
 import { PrimaryButton } from "./Button";
+import { LottiePlayer } from "./LottiePlayer";
 import styles from "./DexUnlockToast.module.css";
 
 /**
@@ -14,9 +15,9 @@ export function DexUnlockToast({ speciesName, onDismiss }: { speciesName: string
   return (
     <div className={styles.overlay} onClick={onDismiss}>
       <div className={styles.card} onClick={(e) => e.stopPropagation()}>
-        <span className={styles.icon} aria-hidden>
-          ✨
-        </span>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <LottiePlayer name="unlock" loop={false} size={96} respectReducedMotion />
+        </div>
         <p style={{ fontWeight: 700, fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Dex card unlocked!</p>
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>{speciesName}</p>
         <PrimaryButton onClick={onDismiss}>Nice!</PrimaryButton>

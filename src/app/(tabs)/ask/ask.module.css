@@ -52,45 +52,30 @@
 
 .thinking {
   display: flex;
-  gap: 4px;
   align-items: center;
-  padding: 14px 18px;
+  padding: 6px 14px;
   border-radius: 4px 18px 18px 18px;
   background: var(--color-surface-alt);
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-ink-muted);
-  animation: bounce 1.1s infinite ease-in-out;
+.emptyStateAnim {
+  margin-bottom: 4px;
 }
 
-.dot:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.dot:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-@keyframes bounce {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  30% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
+.offlineNotice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  border-left: 3px solid var(--color-watch);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .dot {
-    animation: none;
-  }
+.offlineNotice p {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: var(--font-body-sm-size);
 }
 
 .feedbackButton {

@@ -6,6 +6,7 @@ import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { addLogEntry } from "@/db/queries/log-entries";
@@ -349,7 +350,20 @@ export default function EmergencyPage() {
 
       {error && (
         <div style={{ marginBottom: 16 }}>
-          <Banner severity="fixNow">{error}</Banner>
+          {error.includes("Couldn't reach the server") ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)", borderLeft: "3px solid var(--color-watch)" }}>
+              <LottiePlayer name="offline" size={40} />
+              <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)" }}>{error}</p>
+            </div>
+          ) : (
+            <Banner severity="fixNow">{error}</Banner>
+          )}
+        </div>
+      )}
+
+      {stage === "loading" && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+          <LottiePlayer name="triage" size={56} />
         </div>
       )}
 

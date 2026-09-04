@@ -8,6 +8,7 @@ import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { Banner } from "@/components/Banner";
+import { LottiePlayer } from "@/components/LottiePlayer";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
 import { writePhotoFile } from "@/lib/opfs-files";
@@ -274,13 +275,23 @@ export default function ScanCapturePage() {
 
             {stage === "scan-error" && scanError && (
               <div style={{ marginTop: 12 }}>
-                <Banner severity="fixNow">{scanError}</Banner>
+                {scanError.includes("Couldn't reach the server") ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)", borderLeft: "3px solid var(--color-watch)" }}>
+                    <LottiePlayer name="offline" size={40} />
+                    <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)" }}>{scanError}</p>
+                  </div>
+                ) : (
+                  <Banner severity="fixNow">{scanError}</Banner>
+                )}
               </div>
             )}
             {stage === "scanning" && (
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12, textAlign: "center" }}>
-                This usually takes 10–20 seconds.
-              </p>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 12 }}>
+                <LottiePlayer name="scanning" size={88} />
+                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
+                  This usually takes 10–20 seconds.
+                </p>
+              </div>
             )}
           </Card>
         </div>

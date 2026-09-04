@@ -10,6 +10,7 @@ import { SeverityCard } from "@/components/SeverityCard";
 import { Confidence } from "@/components/Confidence";
 import { GroundingLink } from "@/components/GroundingLink";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { getTank } from "@/db/queries/tanks";
 import { createScan } from "@/db/queries/scans";
@@ -168,6 +169,9 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     return (
       <Screen>
         <BackHeader title="Tank Check" fallbackHref={backTarget} />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <LottiePlayer name="success" loop={false} size={100} respectReducedMotion />
+        </div>
         <Banner severity="improve">Saved to your Journal.</Banner>
         <div style={{ height: 12 }} />
         <PrimaryButton onClick={() => router.push(`/tank/${id}`)}>Back to my tank</PrimaryButton>
@@ -338,7 +342,10 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
             <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 8 }} />
           )}
-          <p>Analysing your tank...</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <LottiePlayer name="scanning" size={72} />
+            <p>Analysing your tank...</p>
+          </div>
         </Card>
       )}
 
@@ -360,7 +367,14 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
 
       {stage === "scan-error" && (
         <div>
-          <Banner severity="fixNow">{scanError}</Banner>
+          {scanError?.includes("Couldn't reach the server") ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)", borderLeft: "3px solid var(--color-watch)" }}>
+              <LottiePlayer name="offline" size={40} />
+              <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)" }}>{scanError}</p>
+            </div>
+          ) : (
+            <Banner severity="fixNow">{scanError}</Banner>
+          )}
           <div style={{ height: 8 }} />
           <PrimaryButton onClick={() => uploadBlob && runScan(uploadBlob)}>Try again</PrimaryButton>
           <div style={{ height: 8 }} />

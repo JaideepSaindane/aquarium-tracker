@@ -5,6 +5,7 @@ import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Banner } from "@/components/Banner";
 import { Chip } from "@/components/Chip";
+import { LottiePlayer } from "@/components/LottiePlayer";
 import { getCorpusEntry } from "@/server/ai/retrieval";
 
 // Server Component, statically generated (generateStaticParams below) — the
@@ -63,7 +64,11 @@ export default async function CorpusEntryPage({ params }: { params: Promise<{ id
   return (
     <Screen>
       <BackHeader fallbackHref="/" />
-      <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4 }}>{entry.title}</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: -8 }}>
+        <LottiePlayer name="grounding" loop={false} size={36} respectReducedMotion />
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>Grounded reference entry</p>
+      </div>
+      <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4, marginTop: 8 }}>{entry.title}</h1>
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
         <Chip variant={entry.severity === "critical" || entry.severity === "high" ? "fixNow" : entry.severity === "medium" ? "watch" : "neutral"}>
           {entry.severity}

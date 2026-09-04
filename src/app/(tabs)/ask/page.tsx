@@ -8,6 +8,7 @@ import { Card } from "@/components/Card";
 import { Banner } from "@/components/Banner";
 import { GroundingLink } from "@/components/GroundingLink";
 import { SecondaryButton } from "@/components/Button";
+import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { listAiInteractions, rateAiInteraction } from "@/db/queries/ai-interactions";
@@ -206,7 +207,7 @@ export default function AskPage() {
 
       {askHistory.length === 0 && !pendingQuestion && (
         <div className={styles.emptyState}>
-          <p style={{ fontSize: 40, marginBottom: 8 }}>🐠</p>
+          <LottiePlayer name="listening" size={72} className={styles.emptyStateAnim} />
           <p style={{ fontWeight: 600, marginBottom: 4 }}>Ask me anything about your tank</p>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
             Water parameters, compatibility, a fish acting strangely — I&apos;ll ground the answer in your own tank&apos;s data where I can.
@@ -246,9 +247,7 @@ export default function AskPage() {
             </div>
             <div className={styles.assistantBubbleWrap}>
               <div className={styles.thinking}>
-                <span className={styles.dot} />
-                <span className={styles.dot} />
-                <span className={styles.dot} />
+                <LottiePlayer name="thinking" size={32} />
               </div>
             </div>
           </>
@@ -256,7 +255,14 @@ export default function AskPage() {
 
         {error && (
           <div style={{ marginTop: 8 }}>
-            <Banner severity="fixNow">{error}</Banner>
+            {error.includes("Couldn't reach the server") ? (
+              <div className={styles.offlineNotice}>
+                <LottiePlayer name="offline" size={40} />
+                <p>{error}</p>
+              </div>
+            ) : (
+              <Banner severity="fixNow">{error}</Banner>
+            )}
           </div>
         )}
         <div ref={bottomRef} />
