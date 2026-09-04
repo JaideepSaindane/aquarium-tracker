@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function distance(t1: React.Touch, t2: React.Touch): number {
   return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
@@ -19,6 +19,28 @@ export function PhotoViewer({ src, onClose }: { src: string; onClose: () => void
   const pinchStart = useRef<{ distance: number; scale: number } | null>(null);
   const dragStart = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
   const lastTap = useRef(0);
+
+  // This overlay is plain component state, not a route — so without this, the
+  // phone/browser back button skips straight past it and navigates the page
+  // underneath away entirely (e.g. out of the tank back to My Tanks) instead
+  // of just closing the photo. Push a throwaway history entry while open and
+  // treat back-press the same as tapping the close button; consume that same
+  // entry on close so the two paths don't stack up an extra "back" the user
+  // has to press twice.
+  const closedByPop = useRef(false);
+  useEffect(() => {
+    window.history.pushState({ photoViewer: true }, "");
+    const onPopState = () => {
+      closedByPop.current = true;
+      onClose();
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      if (!closedByPop.current) window.history.back();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleTouchStart(e: React.TouchEvent) {
     setIsGesturing(true);
