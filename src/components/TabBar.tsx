@@ -27,6 +27,8 @@ export function TabBar() {
     setHidden(false);
   }
 
+  const onChatScreen = pathname.startsWith("/ask");
+
   useEffect(() => {
     // In practice the page itself (window/body) ends up as the scroller on
     // most screens here — Screen's .content only becomes its own scroll
@@ -61,6 +63,11 @@ export function TabBar() {
     document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     return () => document.removeEventListener("scroll", onScroll, true);
   }, []);
+
+  // Ask AquaAI is now a full-screen chat with its own sticky input bar
+  // pinned to the same bottom edge — hide the dock here instead of the two
+  // fixed bars stacking/overlapping.
+  if (onChatScreen) return null;
 
   return (
     <nav className={`${styles.bar} ${hidden ? styles.barHidden : ""}`} aria-label="Main">

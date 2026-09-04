@@ -8,7 +8,6 @@ import { TankThumbnail } from "@/components/TankThumbnail";
 import { TankHeroPhoto } from "@/components/TankHeroPhoto";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { SecondaryButton, DangerButton } from "@/components/Button";
-import { FloatingAskButton } from "@/components/FloatingAskButton";
 import { FirstTankTour } from "@/components/FirstTankTour";
 import { useLiveQuery } from "@/db/live";
 import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
@@ -561,7 +560,6 @@ export default function TanksPage() {
         </div>
       )}
 
-      <FloatingAskButton />
       <FirstTankTour hasTanks={(tanks?.length ?? 0) > 0} />
     </Screen>
   );

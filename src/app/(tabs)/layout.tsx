@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { TabBar } from "@/components/TabBar";
 import { OnboardingGate } from "@/components/OnboardingGate";
 import { SurvivalPrompt } from "@/components/SurvivalPrompt";
+import { FloatingAskButton } from "@/components/FloatingAskButton";
 
 export default function TabsLayout({ children }: { children: ReactNode }) {
   return (
@@ -9,6 +10,7 @@ export default function TabsLayout({ children }: { children: ReactNode }) {
       <OnboardingGate />
       <div style={{ flex: 1, minHeight: 0 }}>{children}</div>
       <SurvivalPrompt />
+      <FloatingAskButton />
       <TabBar />
     </div>
   );
