@@ -85,17 +85,20 @@ export default function OnboardingPage() {
         <p style={{ color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>{t.onboarding.welcomeSubtitle}</p>
       </div>
 
-      {/* Pushes the rest of the controls down toward the bottom, leaving
-          the middle of the photo uncovered. */}
-      <div style={{ flex: 1 }} />
+      {/* Balances the space above and below the name/city + toggles block
+          so it sits around the vertical centre of the screen, rather than
+          pinned to the bottom. The bottom spacer is deliberately smaller
+          so Get Started ends up a little above dead-centre, not exactly
+          centred with equal space below it. */}
+      <div style={{ flex: 1.15 }} />
 
       <div
         style={{
           position: "relative",
-          padding: "0 20px calc(24px + env(safe-area-inset-bottom, 0px))",
+          padding: "0 20px",
           display: "flex",
           flexDirection: "column",
-          gap: 14,
+          gap: 12,
         }}
       >
         <div style={{ display: "flex", gap: 10 }}>
@@ -103,27 +106,26 @@ export default function OnboardingPage() {
           <FloatingField label="City" value={city} onChange={setCity} placeholder="Your city" />
         </div>
 
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
-          <div style={{ flex: 1 }}>
-            <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Language</p>
-            <SegmentedToggle
-              options={([["en", "English"], ["hi-latn", "Hinglish"]] as [Locale, string][]).map(([value, label]) => ({ value, label }))}
-              value={locale}
-              onChange={setLocale}
-            />
-          </div>
-          <div>
-            <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Theme</p>
-            <SegmentedToggle
-              options={[
-                { value: "system" as ThemeChoice, label: "⚙️" },
-                { value: "light" as ThemeChoice, label: "☀️" },
-                { value: "dark" as ThemeChoice, label: "🌙" },
-              ]}
-              value={theme}
-              onChange={setTheme}
-            />
-          </div>
+        <div>
+          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Language</p>
+          <SegmentedToggle
+            options={([["en", "English"], ["hi-latn", "Hinglish"]] as [Locale, string][]).map(([value, label]) => ({ value, label }))}
+            value={locale}
+            onChange={setLocale}
+          />
+        </div>
+
+        <div>
+          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Theme</p>
+          <SegmentedToggle
+            options={[
+              { value: "system" as ThemeChoice, label: "⚙️" },
+              { value: "light" as ThemeChoice, label: "☀️" },
+              { value: "dark" as ThemeChoice, label: "🌙" },
+            ]}
+            value={theme}
+            onChange={setTheme}
+          />
         </div>
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
@@ -147,6 +149,8 @@ export default function OnboardingPage() {
           </button>
         </div>
       </div>
+
+      <div style={{ flex: 0.85, minHeight: "calc(16px + env(safe-area-inset-bottom, 0px))" }} />
     </div>
   );
 }
