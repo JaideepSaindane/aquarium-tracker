@@ -1,0 +1,7 @@
+/* Placeholder colour for the floating name/city fields on the welcome
+   screen — can't be set via inline style (no ::placeholder in React's
+   style prop), and the browser default placeholder grey read as barely
+   visible against the photo background (Jaideep's feedback, 2026-09-05). */
+.floatingInput::placeholder {
+  color: rgba(255, 255, 255, 0.62);
+}

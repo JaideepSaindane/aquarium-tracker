@@ -3,25 +3,30 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IntroAnimation } from "@/components/IntroAnimation";
-import { PrimaryButton } from "@/components/Button";
 import { markOnboardingComplete } from "@/db/queries/settings";
 import { saveProfile } from "@/db/queries/profile";
 import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
 import { useTheme, type ThemeChoice } from "@/theme/ThemeProvider";
 import type { Locale } from "@/i18n/types";
+import styles from "./onboarding.module.css";
 
 /**
  * The very first screen a brand-new user sees. Redesigned 2026-09-04 per
  * Jaideep's spec (name/city/language, no "what brings you here?" picker —
  * that choice lives on the My Tanks zero-state instead), then again
- * 2026-09-05 per a reference screenshot he shared: a full-bleed aquarium
- * photo behind the whole screen instead of the plain `Screen` background,
- * with name/city as floating glass cards over it and language/theme as
- * compact toggles rather than a stacked form. Deliberately doesn't use
- * `Screen` — that component's own background/padding assumes a flat
- * surface, and this page needs the photo to run edge-to-edge including
- * behind the safe-area insets.
+ * 2026-09-05 per a reference screenshot: a full-bleed aquarium photo behind
+ * the whole screen with name/city as floating glass cards and language/
+ * theme as compact toggles, then tuned once more the same day on his live
+ * feedback — title moved up to the top third instead of sitting at the
+ * bottom, the two fields sit side by side and narrower instead of two
+ * full-width stacked pills, placeholder text got a real visible colour
+ * (see onboarding.module.css — inline styles can't reach ::placeholder),
+ * and Get Started became a compact bright-blue pill instead of the app's
+ * standard full-width `PrimaryButton`. Deliberately doesn't use `Screen` —
+ * that component's own background/padding assumes a flat surface, and this
+ * page needs the photo to run edge-to-edge including behind the safe-area
+ * insets.
  */
 export default function OnboardingPage() {
   const router = useRouter();
@@ -47,46 +52,60 @@ export default function OnboardingPage() {
         minHeight: "100dvh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-end",
         background: "#021024 url(/onboarding/welcome-bg.jpg) center / cover no-repeat",
       }}
     >
       <IntroAnimation />
 
-      {/* Bottom-to-top scrim so the floating cards and text stay readable
-          against any part of the photo, without dimming the top of the
-          image where it's already dark and moody. */}
+      {/* Top-to-bottom scrim so the title reads clearly against the photo
+          up near the top third, on top of the existing bottom scrim that
+          keeps the lower controls readable. */}
       <div
         style={{
           position: "fixed",
           inset: 0,
-          background: "linear-gradient(to top, rgba(2,16,36,0.85) 0%, rgba(2,16,36,0.35) 45%, rgba(2,16,36,0) 70%)",
+          background:
+            "linear-gradient(to bottom, rgba(2,16,36,0.55) 0%, rgba(2,16,36,0.1) 22%, rgba(2,16,36,0) 40%), " +
+            "linear-gradient(to top, rgba(2,16,36,0.85) 0%, rgba(2,16,36,0.35) 42%, rgba(2,16,36,0) 68%)",
           pointerEvents: "none",
         }}
       />
 
+      {/* Title sits at roughly the top third of the screen, not stacked
+          above the form at the bottom. */}
       <div
         style={{
           position: "relative",
-          padding: "0 20px calc(28px + env(safe-area-inset-bottom, 0px))",
+          padding: "calc(9dvh + env(safe-area-inset-top, 0px)) 20px 0",
+        }}
+      >
+        <h1 style={{ fontSize: "var(--font-display-size)", lineHeight: "var(--font-title-line)", color: "#fff", marginBottom: 6, textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>
+          {t.onboarding.welcomeTitle}
+        </h1>
+        <p style={{ color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>{t.onboarding.welcomeSubtitle}</p>
+      </div>
+
+      {/* Pushes the rest of the controls down toward the bottom, leaving
+          the middle of the photo uncovered. */}
+      <div style={{ flex: 1 }} />
+
+      <div
+        style={{
+          position: "relative",
+          padding: "0 20px calc(24px + env(safe-area-inset-bottom, 0px))",
           display: "flex",
           flexDirection: "column",
           gap: 14,
         }}
       >
-        <div>
-          <h1 style={{ fontSize: "var(--font-display-size)", lineHeight: "var(--font-title-line)", color: "#fff", marginBottom: 4, textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}>
-            {t.onboarding.welcomeTitle}
-          </h1>
-          <p style={{ color: "rgba(255,255,255,0.82)", textShadow: "0 1px 8px rgba(0,0,0,0.4)" }}>{t.onboarding.welcomeSubtitle}</p>
+        <div style={{ display: "flex", gap: 10 }}>
+          <FloatingField label="Name" value={name} onChange={setName} placeholder="Your name" />
+          <FloatingField label="City" value={city} onChange={setCity} placeholder="Your city" />
         </div>
 
-        <FloatingField label="Name (optional)" value={name} onChange={setName} placeholder="What should we call you?" />
-        <FloatingField label="City (optional)" value={city} onChange={setCity} placeholder="Helps suggest local defaults" />
-
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
           <div style={{ flex: 1 }}>
-            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Language</p>
+            <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Language</p>
             <SegmentedToggle
               options={([["en", "English"], ["hi-latn", "Hinglish"]] as [Locale, string][]).map(([value, label]) => ({ value, label }))}
               value={locale}
@@ -94,7 +113,7 @@ export default function OnboardingPage() {
             />
           </div>
           <div>
-            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Theme</p>
+            <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Theme</p>
             <SegmentedToggle
               options={[
                 { value: "system" as ThemeChoice, label: "⚙️" },
@@ -107,9 +126,26 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        <PrimaryButton onClick={handleContinue} disabled={saving}>
-          {saving ? "..." : t.onboarding.getStarted}
-        </PrimaryButton>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+          <button
+            type="button"
+            onClick={handleContinue}
+            disabled={saving}
+            style={{
+              padding: "12px 40px",
+              borderRadius: "var(--radius-pill)",
+              border: "none",
+              background: "#2f7dfa",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "var(--font-body-size)",
+              boxShadow: "0 8px 20px rgba(47,125,250,0.45)",
+              opacity: saving ? 0.7 : 1,
+            }}
+          >
+            {saving ? "..." : t.onboarding.getStarted}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -120,22 +156,26 @@ function FloatingField({ label, value, onChange, placeholder }: { label: string;
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.14)",
+        flex: 1,
+        minWidth: 0,
+        background: "rgba(255,255,255,0.16)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.28)",
+        border: "1px solid rgba(255,255,255,0.3)",
         borderRadius: "var(--radius-lg)",
-        padding: "10px 14px",
+        padding: "9px 12px",
         boxShadow: "var(--shadow-md)",
       }}
     >
-      <label style={{ display: "block", color: "rgba(255,255,255,0.7)", fontSize: "var(--font-caption-size)", marginBottom: 2 }}>{label}</label>
+      <label style={{ display: "block", color: "rgba(255,255,255,0.82)", fontSize: "var(--font-caption-size)", marginBottom: 2 }}>{label}</label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        className={styles.floatingInput}
         style={{
           width: "100%",
+          minWidth: 0,
           background: "transparent",
           border: "none",
           outline: "none",
@@ -154,10 +194,10 @@ function SegmentedToggle<T extends string>({ options, value, onChange }: { optio
       style={{
         display: "flex",
         gap: 2,
-        background: "rgba(255,255,255,0.14)",
+        background: "rgba(255,255,255,0.16)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.28)",
+        border: "1px solid rgba(255,255,255,0.3)",
         borderRadius: "var(--radius-pill)",
         padding: 3,
       }}
@@ -173,7 +213,7 @@ function SegmentedToggle<T extends string>({ options, value, onChange }: { optio
             borderRadius: "var(--radius-pill)",
             border: "none",
             background: value === opt.value ? "#fff" : "transparent",
-            color: value === opt.value ? "var(--color-deep)" : "#fff",
+            color: value === opt.value ? "var(--color-deep)" : "rgba(255,255,255,0.92)",
             fontWeight: 600,
             fontSize: "var(--font-caption-size)",
             whiteSpace: "nowrap",
