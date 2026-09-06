@@ -54,6 +54,8 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
   const [genError, setGenError] = useState<string | null>(null);
   const [compatResult, setCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
+  const [justAdded, setJustAdded] = useState<{ speciesId: string; count: number }[]>([]);
+  const [saving, setSaving] = useState(false);
 
   async function handleSearch(value: string) {
     setQuery(value);
@@ -114,14 +116,23 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
   async function handleConfirmAdd() {
     if (!selectedSpeciesId || !count || Number(count) < 1) return;
     const species = speciesById.get(selectedSpeciesId);
+    setSaving(true);
     await addLivestock({ tankId: id, speciesId: selectedSpeciesId, count: Number(count) });
     const { isNewUnlock } = await unlockDexCard({ speciesId: selectedSpeciesId, unlockSource: "added_to_tank" });
     if (isNewUnlock) {
       setUnlockToast(firstName(species?.commonNames) ?? selectedSpeciesId);
-      setTimeout(() => router.replace(`/tank/${id}`), 900);
-      return;
     }
-    router.replace(`/tank/${id}`);
+    // Stay on this page — adding is additive (Jaideep, 2026-09-06): the
+    // user adds one fish after another from here, no exit per add. The
+    // just-added species joins the "already in this tank" list below, the
+    // search resets for the next one, and Done goes back to the tank.
+    setJustAdded((prev) => [...prev, { speciesId: selectedSpeciesId, count: Number(count) }]);
+    setSelectedSpeciesId(null);
+    setCount("1");
+    setQuery("");
+    setSearchResults([]);
+    setCompatResult(null);
+    setSaving(false);
   }
 
   if (!tank) return <Screen>Loading...</Screen>;
@@ -129,7 +140,18 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
 
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+          {justAdded.length > 0 && (
+            <p style={{ margin: "0 0 8px", color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, textAlign: "center" }}>
+              ✓ {justAdded.length} fish added this session
+            </p>
+          )}
+          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
+        </>
+      }
+    >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
       <BackHeader title="Add a fish" fallbackHref={`/tank/${id}`} />
 
@@ -220,9 +242,31 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
           )}
 
           <div style={{ height: 8 }} />
-          <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1}>
-            Add to tank
+          <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1 || saving}>
+            {saving ? "Adding…" : "Add to tank"}
           </PrimaryButton>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8, textAlign: "center" }}>
+            You can keep adding more fish after this — the page stays open.
+          </p>
+        </div>
+      )}
+
+      {/* What this session has added so far — additive flow (Jaideep, 2026-09-06). */}
+      {justAdded.length > 0 && (
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Added just now</p>
+          {justAdded.map((j, i) => {
+            const s = speciesById.get(j.speciesId);
+            return (
+              <div key={`${j.speciesId}-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={28} />
+                <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
+                  {j.count}× {firstName(s?.commonNames ?? null) ?? j.speciesId}
+                </span>
+                <Chip variant="improve">added</Chip>
+              </div>
+            );
+          })}
         </div>
       )}
     </Screen>
