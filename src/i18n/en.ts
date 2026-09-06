@@ -23,7 +23,7 @@ const en = {
   },
   onboarding: {
     welcomeTitle: "Welcome to AquaAI",
-    welcomeSubtitle: "Just a couple of quick things before you dive in.",
+    welcomeSubtitle: "Photograph your tank, get expert advice — from your first fish to a thriving planted tank.",
     getStarted: "Get started",
     plannerTitle: "Help me build a tank",
     plannerBody:

@@ -75,7 +75,9 @@ export default function DexPage() {
   const [suggestNote, setSuggestNote] = useState("");
   const [suggestSubmitting, setSuggestSubmitting] = useState(false);
   const [suggestSubmitted, setSuggestSubmitted] = useState(false);
-  const photoInputRef = useRef<HTMLInputElement>(null);
+  const scanCameraInputRef = useRef<HTMLInputElement>(null);
+  const scanGalleryInputRef = useRef<HTMLInputElement>(null);
+  const [scanPickerOpen, setScanPickerOpen] = useState(false);
 
   const species = data?.species ?? [];
   const cardsBySpecies = new Map((data?.cards ?? []).map((c) => [c.speciesId, c]));
@@ -222,38 +224,93 @@ export default function DexPage() {
                 color: "var(--soft-ink)",
               }}
             />
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (file) handleScanPhoto(file);
-              }}
-            />
-            <button
-              onClick={() => photoInputRef.current?.click()}
-              disabled={scanning}
-              aria-label="Scan a photo to find a species"
-              style={{
-                width: 44,
-                height: 44,
-                flexShrink: 0,
-                borderRadius: "50%",
-                border: "1px solid var(--soft-card-border)",
-                background: "var(--soft-card-bg)",
-                color: "var(--soft-ink)",
-                fontSize: 18,
-                opacity: scanning ? 0.6 : 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {scanning ? <span className="spinner" aria-label="Scanning..." /> : "📷"}
-            </button>
+            <div style={{ position: "relative" }}>
+              <input
+                ref={scanCameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) handleScanPhoto(file);
+                }}
+              />
+              <input
+                ref={scanGalleryInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) handleScanPhoto(file);
+                }}
+              />
+              <button
+                onClick={() => setScanPickerOpen((v) => !v)}
+                disabled={scanning}
+                aria-label="Scan a photo to find a species"
+                style={{
+                  width: 44,
+                  height: 44,
+                  flexShrink: 0,
+                  borderRadius: "50%",
+                  border: "1px solid var(--soft-card-border)",
+                  background: "var(--soft-card-bg)",
+                  color: "var(--soft-ink)",
+                  fontSize: 18,
+                  opacity: scanning ? 0.6 : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {scanning ? <span className="spinner" aria-label="Scanning..." /> : "📷"}
+              </button>
+              {scanPickerOpen && (
+                <>
+                  <div onClick={() => setScanPickerOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      right: 0,
+                      marginTop: 6,
+                      zIndex: 30,
+                      background: "var(--soft-card-bg)",
+                      border: "1px solid var(--soft-card-border)",
+                      borderRadius: "var(--radius-md)",
+                      boxShadow: "var(--shadow-lift)",
+                      overflow: "hidden",
+                      minWidth: 190,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setScanPickerOpen(false);
+                        scanCameraInputRef.current?.click();
+                      }}
+                      style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
+                    >
+                      📷 Take photo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setScanPickerOpen(false);
+                        scanGalleryInputRef.current?.click();
+                      }}
+                      style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", borderTop: "1px solid var(--soft-card-border)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
+                    >
+                      🖼️ Choose from gallery
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {scanError && (

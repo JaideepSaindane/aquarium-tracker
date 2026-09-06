@@ -379,10 +379,12 @@ export default function SettingsPage() {
         )}
       </Card>
 
-      {/* Everything else — real functionality, tucked away to keep the main screen sleek */}
+      {/* Everything else — real functionality, tucked away to keep the main screen sleek.
+          Named plainly (not just "More") since data export is a stated core promise,
+          not something a returning user should have to guess is hidden behind a triangle. */}
       <details>
-        <summary style={{ cursor: "pointer", color: "var(--color-ink-muted)", fontWeight: 600, fontSize: "var(--font-body-sm-size)", padding: "8px 0" }}>
-          More (export, reminders diagnostics, etc.)
+        <summary style={{ cursor: "pointer", color: "var(--color-ink)", fontWeight: 700, fontSize: "var(--font-body-size)", padding: "10px 0" }}>
+          More: export &amp; import your data, notification diagnostics, restart the tour
         </summary>
 
         <div style={{ height: 8 }} />

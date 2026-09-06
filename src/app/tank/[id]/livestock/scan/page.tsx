@@ -50,6 +50,8 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<string | null>(null);
   const [count, setCount] = useState("1");
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
+  const [justAdded, setJustAdded] = useState<{ speciesId: string; count: number }[]>([]);
+  const [saving, setSaving] = useState(false);
 
   async function handlePhoto(file: File) {
     setBusy("identify");
@@ -88,15 +90,21 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
   async function handleConfirmAdd() {
     if (!selectedSpeciesId || !count || Number(count) < 1) return;
     const species = speciesById.get(selectedSpeciesId);
+    setSaving(true);
     await addLivestock({ tankId: id, speciesId: selectedSpeciesId, count: Number(count) });
     const { isNewUnlock } = await unlockDexCard({ speciesId: selectedSpeciesId, unlockSource: "added_to_tank" });
     if (isNewUnlock) {
       setUnlockToast(firstName(species?.commonNames) ?? selectedSpeciesId);
-      // Give the unlock animation a beat before leaving the page.
-      setTimeout(() => router.replace(`/tank/${id}`), 900);
-      return;
     }
-    router.replace(`/tank/${id}`);
+    // Stay on this page — adding is additive, same pattern as the by-name
+    // search flow (Jaideep, 2026-09-06): identify and add one fish after
+    // another without being bounced back to the tank each time.
+    setJustAdded((prev) => [...prev, { speciesId: selectedSpeciesId, count: Number(count) }]);
+    setCandidates(null);
+    setSelectedSpeciesId(null);
+    setCount("1");
+    setError(null);
+    setSaving(false);
   }
 
   if (!tank) return <Screen>Loading...</Screen>;
@@ -104,7 +112,18 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
 
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+          {justAdded.length > 0 && (
+            <p style={{ margin: "0 0 8px", color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, textAlign: "center" }}>
+              ✓ {justAdded.length} fish added this session
+            </p>
+          )}
+          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
+        </>
+      }
+    >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
       <BackHeader title="Identify by photo" fallbackHref={`/tank/${id}`} />
 
@@ -168,10 +187,31 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
           </div>
           <Field label="Count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
           <div style={{ height: 12 }} />
-          <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1}>
-            Add to tank
+          <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1 || saving}>
+            {saving ? "Adding…" : "Add to tank"}
           </PrimaryButton>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8, textAlign: "center" }}>
+            You can keep identifying more fish after this — the page stays open.
+          </p>
         </Card>
+      )}
+
+      {justAdded.length > 0 && (
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Added just now</p>
+          {justAdded.map((j, i) => {
+            const s = speciesById.get(j.speciesId);
+            return (
+              <div key={`${j.speciesId}-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={28} />
+                <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
+                  {j.count}× {firstName(s?.commonNames ?? null) ?? j.speciesId}
+                </span>
+                <Chip variant="improve">added</Chip>
+              </div>
+            );
+          })}
+        </div>
       )}
     </Screen>
   );

@@ -27,7 +27,7 @@ const hiLatn: Dictionary = {
   },
   onboarding: {
     welcomeTitle: "AquaAI mein swagat hai",
-    welcomeSubtitle: "Shuru karne se pehle bas do-teen chhoti si baatein.",
+    welcomeSubtitle: "Apne tank ki photo lijiye, expert advice paaiye — pehli machli se lekar ek thriving planted tank tak.",
     getStarted: "Shuru karein",
     plannerTitle: "Tank banane mein madad karein",
     plannerBody:

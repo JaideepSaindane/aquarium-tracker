@@ -331,7 +331,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       ))}
 
       <CollapsedSectionCard
-        label="Livestock"
+        label="Fish"
         onToggle={() => setLivestockExpanded((v) => !v)}
         onAdd={() => setShowAddPopup(true)}
         expanded={livestockExpanded}

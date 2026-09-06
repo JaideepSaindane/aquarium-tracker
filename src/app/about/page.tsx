@@ -37,7 +37,7 @@ export default function AboutPage() {
       <Card style={{ marginBottom: 16 }}>
         <p style={{ marginBottom: 12 }}>
           {APP_NAME} is a mobile-first app for freshwater and planted aquariums — from &quot;I think I want fish&quot; to a
-          thriving tank. Point your camera at a tank and get a structured report: detected livestock, plants, algae,
+          thriving tank. Point your camera at a tank and get a structured report: setup type, plants, algae,
           equipment, and a ranked list of what to do next.
         </p>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>

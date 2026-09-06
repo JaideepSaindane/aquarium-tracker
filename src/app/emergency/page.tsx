@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
@@ -51,7 +52,6 @@ export default function EmergencyPage() {
   const [error, setError] = useState<string | null>(null);
   const [savedIncident, setSavedIncident] = useState(false);
   const [reminderMessage, setReminderMessage] = useState<string | null>(null);
-  const photoInputRef = useRef<HTMLInputElement>(null);
 
   function toggleSymptom(s: string) {
     setSelectedSymptoms((prev) => {
@@ -336,16 +336,7 @@ export default function EmergencyPage() {
 
       <Card style={{ marginBottom: 16 }}>
         <p style={{ fontWeight: 600, marginBottom: 8 }}>Photo (optional)</p>
-        <input
-          ref={photoInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-        />
-        <SecondaryButton onClick={() => photoInputRef.current?.click()}>
-          {photo ? "Photo attached ✓" : "Add a photo"}
-        </SecondaryButton>
+        <PhotoPickerButton label={photo ? "Photo attached ✓" : "📷 Add a photo"} onPick={setPhoto} />
       </Card>
 
       {error && (
