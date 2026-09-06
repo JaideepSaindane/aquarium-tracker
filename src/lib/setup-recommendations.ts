@@ -18,15 +18,43 @@
 
 export type PlantedTier = "bare_bottom" | "hardscape" | "planted";
 
-// T-027 fish-first flow (Jaideep, 2026-09-06): the user picks a SIZE BAND,
-// not exact dimensions — small/medium/large with honest ranges. The plan
-// uses the band's working volume (low-middle of the range) so every
-// recommendation holds for any tank they actually buy in that band.
-export const SIZE_BANDS: Record<"small" | "medium" | "large", { label: string; hint: string; minL: number; maxL: number; planL: number; exampleCm: string }> = {
-  small: { label: "Small", hint: "A desk or bedside tank", minL: 20, maxL: 45, planL: 35, exampleCm: "45×30×30 cm" },
-  medium: { label: "Medium", hint: "The classic living-room tank", minL: 45, maxL: 120, planL: 75, exampleCm: "75×30×36 cm" },
-  large: { label: "Large", hint: "A statement piece — needs real floor space", minL: 120, maxL: 400, planL: 180, exampleCm: "120×40×45 cm" },
+// Tank sizes in FEET — how tanks are actually sold and talked about in
+// India (Jaideep, 2026-09-06: "litres is not the standard way of
+// measurement; tanks are generally cube or long"). Long = the classic
+// showcase shape (roughly 2:1:1); cube = equal sides. Dimensions are the
+// common retail sizes, so the computed volume matches what's on the
+// shop's label.
+export const TANK_LENGTHS_FT = [1, 1.5, 2, 2.5, 3, 4, 5, 6] as const;
+export type TankShape = "long" | "cube";
+
+const TANK_DIMS: Record<number, { long: [number, number]; cube?: number }> = {
+  1: { long: [23, 25], cube: 30 },
+  1.5: { long: [30, 30], cube: 40 },
+  2: { long: [30, 30], cube: 45 },
+  2.5: { long: [30, 38], cube: 50 },
+  3: { long: [45, 45], cube: 60 },
+  4: { long: [45, 45] },
+  5: { long: [50, 50] },
+  6: { long: [60, 60] },
 };
+
+export function tankDimensions(
+  lengthFt: number,
+  shape: TankShape
+): { lengthCm: number; widthCm: number; heightCm: number; volumeL: number } {
+  const entry = TANK_DIMS[lengthFt] ?? TANK_DIMS[2];
+  const useCube = shape === "cube" && entry.cube != null;
+  const lengthCm = Math.round(lengthFt * 30.48);
+  const widthCm = useCube ? (entry.cube as number) : entry.long[0];
+  const heightCm = useCube ? (entry.cube as number) : entry.long[1];
+  const volumeL = Math.round(((lengthCm * widthCm * heightCm) / 1000) * 10) / 10;
+  return { lengthCm, widthCm, heightCm, volumeL };
+}
+
+/** Cube shapes only make sense up to 3ft — beyond that the toggle hides. */
+export function cubeAvailable(lengthFt: number): boolean {
+  return TANK_DIMS[lengthFt]?.cube != null;
+}
 
 export type CityClimate = {
   /** Representative indoor winter low, °C — the worst case the heater must hold against. */
@@ -99,6 +127,20 @@ export const CITY_CLIMATE: Record<string, CityClimate> = {
   raipur: { winterLowC: 16, summerHighC: 33, band: "Central India" },
   // Northwest arid
   jodhpur: { winterLowC: 14, summerHighC: 33, band: "Northwest arid" },
+  // Maharashtra interior (Dhule, Nashik, Aurangabad, Solapur, Kolhapur…)
+  dhule: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  nashik: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  aurangabad: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  solapur: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  kolhapur: { winterLowC: 18, summerHighC: 32, band: "Maharashtra interior" },
+  amravati: { winterLowC: 16, summerHighC: 33, band: "Central India" },
+  akola: { winterLowC: 16, summerHighC: 33, band: "Central India" },
+  nanded: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  jalgaon: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  sangli: { winterLowC: 18, summerHighC: 32, band: "Maharashtra interior" },
+  satara: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  latur: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
+  ahmednagar: { winterLowC: 17, summerHighC: 32, band: "Maharashtra interior" },
   // Hills — genuinely cold winters
   srinagar: { winterLowC: 8, summerHighC: 24, band: "Hills" },
   shimla: { winterLowC: 8, summerHighC: 24, band: "Hills" },
@@ -195,20 +237,54 @@ export function winterNeedsHigherRating(volumeL: number, ambientTempC: number, t
 
 // Same 4×/hour turnover constant checkFilterFlow() enforces on real
 // equipment (specs/T-016) — the spec explicitly says reuse it, don't
-// diverge. Planted tanks and heavier bioload get one extra turnover.
+// diverge. Used internally to sanity-check that the recommended filter
+// TYPE can actually move enough water; the user never sees L/h
+// (Jaideep, 2026-09-06: "you should not recommend L/h — just recommend
+// hang-on-back, small canister, big canister, internal, etc.").
 export const FILTER_TURNOVER_STANDARD = 4;
 
-export function recommendFilterFlowRate(volumeL: number, planted: boolean, heavyBioload: boolean): number {
-  if (volumeL <= 0) return 0;
-  const turnover = FILTER_TURNOVER_STANDARD + (planted ? 1 : 0) + (heavyBioload ? 1 : 0);
-  return Math.round(volumeL * turnover / 10) * 10;
-}
-
-/** Filter style by tank size — sponge for small/quarantine tanks, hang-on-back for mid, canister for large. Values match FILTER_SUBTYPES. */
+/** Filter style by tank size — sponge for small tanks, hang-on-back for mid, canister for large. Values match FILTER_SUBTYPES. */
 export function recommendFilterSubtype(volumeL: number): "sponge" | "hang_on_back" | "canister" {
   if (volumeL <= 40) return "sponge";
   if (volumeL <= 120) return "hang_on_back";
   return "canister";
+}
+
+export type FilterRecommendation = {
+  /** What to ask for at the shop, in plain language. */
+  shopLabel: string;
+  /** The equipment-table subtype value. */
+  subtype: "sponge" | "hang_on_back" | "canister";
+  /** Why this type for this tank — one line. */
+  why: string;
+};
+
+/**
+ * Filter by TYPE, not flow numbers — what a beginner can actually act on.
+ * The L/h math still runs underneath (the tank page's existing 4× check
+ * uses it later), but the recommendation is the type of filter.
+ */
+export function recommendFilter(volumeL: number, planted: boolean): FilterRecommendation {
+  const subtype = recommendFilterSubtype(volumeL);
+  if (subtype === "sponge") {
+    return {
+      subtype,
+      shopLabel: "A sponge filter (with an air pump)",
+      why: "Gentle and cheap — right for small tanks, shrimp, and fry",
+    };
+  }
+  if (subtype === "hang_on_back") {
+    return {
+      subtype,
+      shopLabel: planted ? "A hang-on-back filter, medium size" : "A hang-on-back filter",
+      why: "The workhorse for tanks this size — easy to clean, no extra plumbing",
+    };
+  }
+  return {
+    subtype,
+    shopLabel: "A canister filter (external, sits under the tank)",
+    why: "Tanks this size need the stronger, quieter filtration a canister gives",
+  };
 }
 
 export type LightingRecommendation = {
@@ -249,6 +325,8 @@ export type SubstrateRecommendation = {
   approxKg: number;
   /** null for bare bottom — nothing to buy. */
   kind: string | null;
+  /** What to actually ask for at the shop, in plain language (Jaideep, 2026-09-06: "just saying 'nutrition rich' does not make sense"). */
+  shopLabel: string | null;
 };
 
 const KG_PER_LITRE_SUBSTRATE = 1.5;
@@ -259,7 +337,7 @@ export function recommendSubstrate(
   tier: PlantedTier
 ): SubstrateRecommendation {
   if (tier === "bare_bottom") {
-    return { depthCm: 0, volumeL: 0, approxKg: 0, kind: null };
+    return { depthCm: 0, volumeL: 0, approxKg: 0, kind: null, shopLabel: null };
   }
   const depthCm = tier === "planted" ? 5 : 3;
   const volumeL = Math.round(((lengthCm * widthCm * depthCm) / 1000) * 10) / 10;
@@ -267,7 +345,12 @@ export function recommendSubstrate(
     depthCm,
     volumeL,
     approxKg: Math.round(volumeL * KG_PER_LITRE_SUBSTRATE),
-    kind: tier === "planted" ? "Planted-tank substrate (nutrient-rich)" : "Gravel or sand (inert)",
+    kind: tier === "planted" ? "Aquasoil (active planted substrate)" : "Gravel or sand (inert)",
+    // Named products, not adjectives — what a shop actually stocks.
+    shopLabel:
+      tier === "planted"
+        ? "Ask for aquasoil (Tropica Aquarium Soil, ADA Amazonia, or Dennerle DeponitMix — any brand works)"
+        : "Ask for 3–5mm gravel or play-sand (rinsed well before adding)",
   };
 }
 
@@ -382,14 +465,15 @@ export type SetupPlanInput = {
 export type SetupPlan = {
   heaterWatts: number | null;
   heaterNote: string | null;
-  filterFlowLph: number;
-  filterSubtype: "sponge" | "hang_on_back" | "canister";
+  filter: FilterRecommendation;
   lighting: LightingRecommendation;
   substrate: SubstrateRecommendation;
   hardscape: HardscapeRecommendation[];
   targetTempRange: { min: number; max: number } | null;
   /** The room temperature actually used for heater math, with its source — shown so the number never looks invented. */
   roomTempUsed: { value: number; source: "your home" | "city typical" | "India-wide typical" } | null;
+  /** The city's typical indoor range (winter low – summer high) shown to the user, so "18°C" reads as "winter nights" not a mystery number. */
+  cityTempRange: { lowC: number; highC: number; band: string } | null;
 };
 
 export function buildSetupPlan(input: SetupPlanInput): SetupPlan {
@@ -400,12 +484,15 @@ export function buildSetupPlan(input: SetupPlanInput): SetupPlan {
   // band. The source is surfaced so the UI can say plainly where the
   // number came from (spec: "based on typical [city] temperatures").
   let roomTempUsed: SetupPlan["roomTempUsed"] = null;
+  let cityTempRange: SetupPlan["cityTempRange"] = null;
   if (input.customRoomTempC != null) {
     roomTempUsed = { value: input.customRoomTempC, source: "your home" };
   } else if (input.climate) {
     roomTempUsed = { value: input.climate.winterLowC, source: "city typical" };
+    cityTempRange = { lowC: input.climate.winterLowC, highC: input.climate.summerHighC, band: input.climate.band };
   } else {
     roomTempUsed = { value: GENERIC_INDIA_CLIMATE.winterLowC, source: "India-wide typical" };
+    cityTempRange = { lowC: GENERIC_INDIA_CLIMATE.winterLowC, highC: GENERIC_INDIA_CLIMATE.summerHighC, band: GENERIC_INDIA_CLIMATE.band };
   }
 
   const heaterWatts = recommendHeaterWattage(input.volumeL, roomTempUsed.value, targetTemp);
@@ -415,18 +502,15 @@ export function buildSetupPlan(input: SetupPlanInput): SetupPlan {
       "Winters here can push a heater this size to its limit — if your room runs cold in winter, the next size up (or a second smaller heater) is the safer pick.";
   }
 
-  const heavyBioload = input.speciesRows.length >= 3;
-  const filterFlowLph = recommendFilterFlowRate(input.volumeL, input.tier === "planted", heavyBioload);
-
   return {
     heaterWatts,
     heaterNote,
-    filterFlowLph,
-    filterSubtype: recommendFilterSubtype(input.volumeL),
+    filter: recommendFilter(input.volumeL, input.tier === "planted"),
     lighting: recommendLighting(input.volumeL, input.lengthCm, input.tier, input.hasCo2),
     substrate: recommendSubstrate(input.lengthCm, input.widthCm, input.tier),
     hardscape: recommendHardscape(input.speciesRows),
     targetTempRange: targetRange,
     roomTempUsed,
+    cityTempRange,
   };
 }

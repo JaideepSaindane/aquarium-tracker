@@ -18,11 +18,14 @@ import {
   buildSetupPlan,
   matchCityClimate,
   GENERIC_INDIA_CLIMATE,
-  SIZE_BANDS,
+  TANK_LENGTHS_FT,
+  cubeAvailable,
+  tankDimensions,
   type PlantedTier,
   type SetupPlan,
+  type TankShape,
 } from "@/lib/setup-recommendations";
-import { FILTER_SUBTYPES, COMMON_CITIES } from "@/lib/common-options";
+import { COMMON_CITIES } from "@/lib/common-options";
 import { createTank } from "@/db/queries/tanks";
 import { addEquipment } from "@/db/queries/equipment";
 import { addLivestock } from "@/db/queries/livestock";
@@ -50,17 +53,22 @@ function daysFromNow(days: number): string {
   return new Date(Date.now() + days * 86400000).toISOString();
 }
 
+/** Two-line clamp for advisor suggestion rows (Jaideep, 2026-09-06: "don't keep more than 2 lines"). */
+const twoLineClamp: React.CSSProperties = {
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+};
+
 /**
- * T-027 — "Help me build a tank", rebuilt fish-first per Jaideep
- * (2026-09-06): "the whole point of making a tank is the fish. Tank type
- * first, then what fish they want, then size — then smart recommendations."
- *
- * Three quick choices, then the AI plans it like the expert the user
- * doesn't have yet: confirms their fish fit, suggests companions, flags
- * stocking problems, picks plants — all cited to the real catalog. The
- * deterministic engine (setup-recommendations.ts) sizes the equipment
- * instantly underneath, so numbers are on screen while the AI thinks and
- * the plan still ships if the network is down (never a dead end).
+ * T-027 — "Help me build a tank", AI-first (Jaideep's re-spec), tuned by
+ * his live feedback (2026-09-06): fish typing shows instant catalog
+ * suggestions; tank size is in FEET with cube/long shapes (how tanks are
+ * actually sold in India); advisor suggestion rows clamp to 2 lines; the
+ * heater section shows the city's temp RANGE so "18°C" reads as winter
+ * nights; filters are recommended by TYPE (hang-on-back / canister /
+ * sponge), never L/h; substrate names aquasoil explicitly.
  */
 export default function OnboardingPlannerPage() {
   const router = useRouter();
@@ -71,12 +79,13 @@ export default function OnboardingPlannerPage() {
   // Step 1 — tank type
   const [tier, setTier] = useState<PlantedTier>("planted");
 
-  // Step 2 — the fish they want (free text, their words)
+  // Step 2 — the fish they want (free text + instant catalog suggestions)
   const [wishInput, setWishInput] = useState("");
   const [wishes, setWishes] = useState<string[]>([]);
 
-  // Step 3 — size band + city
-  const [band, setBand] = useState<"small" | "medium" | "large">("medium");
+  // Step 3 — tank size in feet + shape + city
+  const [lengthFt, setLengthFt] = useState<number>(2);
+  const [shape, setShape] = useState<TankShape>("long");
   const [city, setCity] = useState("");
 
   // Step 4 — the plan
@@ -101,21 +110,45 @@ export default function OnboardingPlannerPage() {
 
   const speciesById = useMemo(() => new Map((allSpecies ?? []).map((s) => [s.id, s])), [allSpecies]);
 
-  const bandInfo = SIZE_BANDS[band];
-  const volumeL = bandInfo.planL;
-  // Working footprint for the chosen band — used for substrate/light math.
-  const [planLengthCm, planWidthCm] = useMemo(() => {
-    const m = bandInfo.exampleCm.match(/(\d+)×(\d+)×(\d+)/);
-    return m ? [Number(m[1]), Number(m[2])] : [60, 30];
-  }, [bandInfo]);
-
+  const dims = useMemo(() => tankDimensions(lengthFt, shape), [lengthFt, shape]);
+  const volumeL = dims.volumeL;
   const climate = matchCityClimate(city);
   const customTempNum = useCustomRoomTemp && customRoomTemp ? Number(customRoomTemp) : null;
 
-  function addWish() {
-    const w = wishInput.trim();
+  // Instant catalog suggestions while typing (Jaideep: "typing a fish
+  // name should show 2/3 recos"). Fish only, top 3 — the catalog is
+  // local so this is immediate. Derived during render, not an effect.
+  const typeahead = useMemo(() => {
+    const q = wishInput.trim().toLowerCase();
+    if (q.length < 2 || !allSpecies) return [];
+    return allSpecies
+      .filter((s) => {
+        if (s.category !== "fish") return false;
+        let names: string[] = [];
+        try {
+          names = s.commonNames ? JSON.parse(s.commonNames) : [];
+        } catch {
+          names = [];
+        }
+        return (
+          s.id.includes(q.replace(/\s+/g, "-")) ||
+          (s.scientificName ?? "").toLowerCase().includes(q) ||
+          names.some((n) => n.toLowerCase().includes(q))
+        );
+      })
+      .slice(0, 3);
+  }, [wishInput, allSpecies]);
+
+  function addWish(text?: string) {
+    const w = (text ?? wishInput).trim();
     if (!w) return;
     setWishes((prev) => (prev.some((x) => x.toLowerCase() === w.toLowerCase()) ? prev : [...prev, w]));
+    setWishInput("");
+  }
+
+  function addSpeciesWish(s: SpeciesRow) {
+    const name = firstName(s.commonNames) ?? s.id;
+    setWishes((prev) => (prev.some((x) => x.toLowerCase() === name.toLowerCase()) ? prev : [...prev, name]));
     setWishInput("");
   }
 
@@ -126,11 +159,10 @@ export default function OnboardingPlannerPage() {
     setAiPlan(null);
 
     // The deterministic plan is instant — numbers on screen immediately.
-    // Fish rows resolve later, once the AI's picks land (or don't).
     const basePlan = buildSetupPlan({
       volumeL,
-      lengthCm: planLengthCm,
-      widthCm: planWidthCm,
+      lengthCm: dims.lengthCm,
+      widthCm: dims.widthCm,
       tier,
       hasCo2: false,
       speciesRows: [],
@@ -138,12 +170,12 @@ export default function OnboardingPlannerPage() {
       customRoomTempC: customTempNum,
     });
     setPlan(basePlan);
-    setTankName(`${bandInfo.label} ${tier === "planted" ? "planted" : tier === "hardscape" ? "hardscape" : "bare-bottom"} tank`);
+    setTankName(`${lengthFt}ft ${shape} ${tier === "planted" ? "planted" : tier === "hardscape" ? "hardscape" : "bare-bottom"} tank`);
 
     try {
       const result = await getPlannerAdvice({
         tankType: tier,
-        band,
+        band: `${lengthFt}ft ${shape} (~${volumeL}L)`,
         city: city.trim(),
         wishList: wishes,
       });
@@ -152,8 +184,6 @@ export default function OnboardingPlannerPage() {
       } else {
         const p = result.data.plan as unknown as AiPlan;
         setAiPlan(p);
-        // Seed the wishlist from the AI's confirmed + suggested fish, then
-        // recompute equipment for the real bioload.
         const ids = [...new Set([...p.recommended_species_ids, ...p.suggested_fish.map((f) => f.species_id)])]
           .filter((id) => speciesById.has(id))
           .map((id) => ({
@@ -165,8 +195,8 @@ export default function OnboardingPlannerPage() {
         setPlan(
           buildSetupPlan({
             volumeL,
-            lengthCm: planLengthCm,
-            widthCm: planWidthCm,
+            lengthCm: dims.lengthCm,
+            widthCm: dims.widthCm,
             tier,
             hasCo2: false,
             speciesRows: rows,
@@ -188,10 +218,10 @@ export default function OnboardingPlannerPage() {
     setSaveError(null);
     try {
       const tankId = await createTank({
-        name: tankName.trim() || `${bandInfo.label} tank`,
-        lengthCm: planLengthCm,
-        widthCm: planWidthCm,
-        heightCm: Math.round((volumeL * 1000) / (planLengthCm * planWidthCm) * 10) / 10,
+        name: tankName.trim() || `${lengthFt}ft tank`,
+        lengthCm: dims.lengthCm,
+        widthCm: dims.widthCm,
+        heightCm: dims.heightCm,
         city: city.trim() || undefined,
         isPlanted: tier === "planted",
         hasCo2: false,
@@ -203,10 +233,9 @@ export default function OnboardingPlannerPage() {
       if (plan.heaterWatts != null) {
         await addEquipment({ tankId, type: "heater", wattage: plan.heaterWatts });
       }
-      await addEquipment({ tankId, type: "filter", subtype: plan.filterSubtype, ratedLph: plan.filterFlowLph });
+      await addEquipment({ tankId, type: "filter", subtype: plan.filter.subtype });
       await addEquipment({ tankId, type: "light", wattage: plan.lighting.wattage });
 
-      // AI-picked plants for a planted tank.
       if (tier === "planted") {
         const plantIds = new Set((aiPlan?.suggested_plants ?? []).map((p) => p.species_id));
         for (const pid of plantIds) {
@@ -215,27 +244,24 @@ export default function OnboardingPlannerPage() {
         }
       }
 
-      // Wishlist fish as real rows with status 'planned' — they never count
-      // as living in the tank until marked arrived on the Fish page.
       for (const p of picked) {
         await addLivestock({ tankId, speciesId: p.speciesId, count: p.count, status: "planned" });
         await unlockDexCard({ speciesId: p.speciesId, unlockSource: "added_to_tank" }).catch(() => {});
       }
 
-      // Starter reminders — same presets the manual wizard seeds.
       const defaults = new Set(["water_change", "feed", "test"]);
       for (const preset of REMINDER_PRESETS) {
         if (!defaults.has(preset.type)) continue;
         const nextDueAt = daysFromNow(preset.intervalDays);
         const rrule = presetRrule(preset.intervalDays);
         const taskId = await createTask({ tankId, title: preset.label, presetType: preset.type, rrule, nextDueAt });
-        await syncReminder({ taskId, title: preset.label, tankId, tankName: tankName.trim() || `${bandInfo.label} tank`, dueAt: nextDueAt, rrule }).catch(() => {});
+        await syncReminder({ taskId, title: preset.label, tankId, tankName: tankName.trim() || `${lengthFt}ft tank`, dueAt: nextDueAt, rrule }).catch(() => {});
       }
 
       const planLines = [
-        `Setup plan (${tier}, ${bandInfo.label} ${bandInfo.minL}–${bandInfo.maxL}L)`,
+        `Setup plan (${tier}, ${lengthFt}ft ${shape}, ~${volumeL}L)`,
         plan.heaterWatts != null ? `Heater: ${plan.heaterWatts}W` : "Heater: not needed",
-        `Filter: ${plan.filterSubtype.replace(/_/g, " ")}, ~${plan.filterFlowLph} L/h`,
+        `Filter: ${plan.filter.shopLabel}`,
         `Light: ~${plan.lighting.wattage}W (${plan.lighting.level})`,
         plan.substrate.kind ? `Substrate: ${plan.substrate.kind}, ${plan.substrate.depthCm}cm (~${plan.substrate.approxKg}kg)` : "Substrate: none",
         picked.length ? `Wishlist: ${picked.map((p) => `${p.count}× ${firstName(speciesById.get(p.speciesId)?.commonNames) ?? p.speciesId}`).join(", ")}` : "Wishlist: none yet",
@@ -313,27 +339,51 @@ export default function OnboardingPlannerPage() {
       >
         <BackHeader title="Help me build a tank" fallbackHref="/" />
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-          This is the fun part — what fish do you imagine in it? Type anything: a species (&quot;betta&quot;), a vibe (&quot;lots of tiny colourful schooling fish&quot;), or a colour.
+          What fish do you imagine in it? Type anything — a species, a vibe, a colour.
         </p>
 
         <Card style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", gap: 8 }}>
             <Field
               label=""
-              placeholder="e.g. guppies, or red shrimp, or a big centerpiece fish…"
+              placeholder="e.g. guppy, tetra, shrimp…"
               value={wishInput}
               onChange={(e) => setWishInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  addWish();
+                  if (typeahead.length > 0) addSpeciesWish(typeahead[0]);
+                  else addWish();
                 }
               }}
             />
-            <SecondaryButton style={{ width: "auto", padding: "8px 16px" }} onClick={addWish}>
+            <SecondaryButton style={{ width: "auto", padding: "8px 16px" }} onClick={() => addWish()}>
               Add
             </SecondaryButton>
           </div>
+
+          {/* Instant catalog suggestions while typing — 2/3 recos, tap to add */}
+          {typeahead.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              {typeahead.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => addSpeciesWish(s)}
+                  style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: 8, border: "1px solid var(--color-line)", borderRadius: 8, marginBottom: 4, background: "var(--color-surface)" }}
+                >
+                  <SpeciesThumb imageUri={s.imageUri} category={s.category} size={28} />
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>{firstName(s.commonNames) ?? s.id}</span>
+                    {s.minVolumeL != null && (
+                      <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>needs {s.minVolumeL}L or more</span>
+                    )}
+                  </span>
+                  <span style={{ color: "var(--color-deep)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>+ Add</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {wishes.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
@@ -350,27 +400,31 @@ export default function OnboardingPlannerPage() {
             </div>
           )}
 
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12, marginBottom: 6 }}>
-            Not sure yet? These are proven first fish:
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {["guppies", "neon tetras", "a betta", "cherry shrimp", "corydoras", "harlequin rasboras"].map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setWishes((prev) => (prev.some((x) => x.toLowerCase() === s) ? prev : [...prev, s]))}
-                style={{ padding: "6px 12px", borderRadius: "var(--radius-pill)", border: "1px solid var(--color-line)", background: "var(--color-surface)", fontSize: "var(--font-caption-size)" }}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+          {wishes.length === 0 && wishInput.trim().length < 2 && (
+            <>
+              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12, marginBottom: 6 }}>
+                Not sure yet? These are proven first fish:
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {["guppies", "neon tetras", "a betta", "cherry shrimp", "corydoras", "harlequin rasboras"].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => addWish(s)}
+                    style={{ padding: "6px 12px", borderRadius: "var(--radius-pill)", border: "1px solid var(--color-line)", background: "var(--color-surface)", fontSize: "var(--font-caption-size)" }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </Card>
       </Screen>
     );
   }
 
-  // ---- Step 3 — how big + where --------------------------------------------
+  // ---- Step 3 — how big (feet + shape) + where ------------------------------
   if (step === 3) {
     return (
       <Screen
@@ -389,33 +443,66 @@ export default function OnboardingPlannerPage() {
         </p>
 
         <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {(Object.keys(SIZE_BANDS) as ("small" | "medium" | "large")[]).map((key) => {
-              const b = SIZE_BANDS[key];
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setBand(key)}
-                  style={{
-                    padding: "14px 16px",
-                    borderRadius: 12,
-                    border: `1px solid ${band === key ? "var(--color-deep)" : "var(--color-line)"}`,
-                    background: band === key ? "var(--color-deep-soft, rgba(0,0,0,0.04))" : "transparent",
-                    color: "var(--color-ink)",
-                    textAlign: "left",
-                  }}
-                >
-                  <span style={{ display: "block", fontWeight: 700 }}>
-                    {b.label} · {b.minL}–{b.maxL}L
-                  </span>
-                  <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>
-                    {b.hint} — around {b.exampleCm}
-                  </span>
-                </button>
-              );
-            })}
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Tank length</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {TANK_LENGTHS_FT.map((ft) => (
+              <button
+                key={ft}
+                type="button"
+                onClick={() => {
+                  setLengthFt(ft);
+                  if (!cubeAvailable(ft)) setShape("long");
+                }}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  border: `1px solid ${lengthFt === ft ? "var(--color-deep)" : "var(--color-line)"}`,
+                  background: lengthFt === ft ? "var(--color-deep)" : "transparent",
+                  color: lengthFt === ft ? "#fff" : "var(--color-ink)",
+                  fontWeight: 700,
+                  fontSize: "var(--font-body-sm-size)",
+                }}
+              >
+                {ft} ft
+              </button>
+            ))}
           </div>
+
+          {cubeAvailable(lengthFt) && (
+            <div style={{ marginTop: 12 }}>
+              <p style={{ fontWeight: 600, marginBottom: 8 }}>Shape</p>
+              <div style={{ display: "flex", gap: 8 }}>
+                {(
+                  [
+                    ["long", "▭ Long", "Wider than tall — the classic showcase"],
+                    ["cube", "⬜ Cube", "Equal sides — a modern, compact look"],
+                  ] as [TankShape, string, string][]
+                ).map(([value, label, hint]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setShape(value)}
+                    style={{
+                      flex: 1,
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      border: `1px solid ${shape === value ? "var(--color-deep)" : "var(--color-line)"}`,
+                      background: shape === value ? "var(--color-deep-soft, rgba(0,0,0,0.04))" : "transparent",
+                      color: "var(--color-ink)",
+                      textAlign: "left",
+                    }}
+                  >
+                    <span style={{ display: "block", fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>{label}</span>
+                    <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>{hint}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12 }}>
+            {dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm · ≈ {volumeL} litres
+          </p>
         </Card>
 
         <Card>
@@ -435,11 +522,12 @@ export default function OnboardingPlannerPage() {
 
   // ---- Step 4 — the plan -----------------------------------------------------
   if (!plan) return null;
-  const roomTempSource =
+  const tempRange = plan.cityTempRange ?? { lowC: GENERIC_INDIA_CLIMATE.winterLowC, highC: GENERIC_INDIA_CLIMATE.summerHighC, band: GENERIC_INDIA_CLIMATE.band };
+  const tempSource =
     plan.roomTempUsed?.source === "your home"
       ? "your own room temperature"
       : climate
-        ? `typical ${climate.band} indoor temperatures`
+        ? `typical indoor temperatures in ${climate.band.toLowerCase()}`
         : "typical India-wide indoor temperatures";
 
   return (
@@ -475,7 +563,6 @@ export default function OnboardingPlannerPage() {
         </>
       ) : (
         <>
-          {/* The AI's expert read — the heart of the plan */}
           {aiLoading && (
             <Card style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
               <LottiePlayer name="thinking" size={48} />
@@ -494,7 +581,7 @@ export default function OnboardingPlannerPage() {
           {aiPlan && (
             <Card style={{ marginBottom: 12 }}>
               <p style={{ fontWeight: 600, marginBottom: 6 }}>🐠 The advisor says</p>
-              <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>{aiPlan.summary}</p>
+              <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8, ...twoLineClamp }}>{aiPlan.summary}</p>
               {aiPlan.stocking_notes.map((n, i) => (
                 <div key={i} style={{ marginBottom: 6 }}>
                   <Banner severity={n.severity === "warning" ? "fixNow" : n.severity === "watch" ? "watch" : "neutral"}>{n.note}</Banner>
@@ -513,7 +600,7 @@ export default function OnboardingPlannerPage() {
                             {(f.count ?? 1) > 1 ? `${f.count}× ` : ""}
                             {firstName(sp?.commonNames ?? null) ?? f.species_id}
                           </p>
-                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{f.why}</p>
+                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", ...twoLineClamp }}>{f.why}</p>
                         </div>
                       </div>
                     );
@@ -530,7 +617,7 @@ export default function OnboardingPlannerPage() {
                         <SpeciesThumb imageUri={sp?.imageUri} category={sp?.category} size={28} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{firstName(sp?.commonNames ?? null) ?? p.species_id}</p>
-                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{p.why}</p>
+                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", ...twoLineClamp }}>{p.why}</p>
                         </div>
                       </div>
                     );
@@ -540,12 +627,11 @@ export default function OnboardingPlannerPage() {
             </Card>
           )}
 
-          {/* The equipment plan — instant, deterministic, editable via band/room-temp */}
           <Card style={{ marginBottom: 12 }}>
             <p style={{ fontWeight: 600, marginBottom: 4 }}>Tank name</p>
-            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={`${bandInfo.label} tank`} />
+            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={`${lengthFt}ft tank`} />
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              {tier === "planted" ? "Planted" : tier === "hardscape" ? "Hardscape" : "Bare-bottom"} · {bandInfo.label} ({bandInfo.minL}–{bandInfo.maxL}L, planned around {volumeL}L)
+              {tier === "planted" ? "Planted" : tier === "hardscape" ? "Hardscape" : "Bare-bottom"} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
             </p>
           </Card>
 
@@ -561,7 +647,9 @@ export default function OnboardingPlannerPage() {
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
               {plan.heaterWatts == null
                 ? "Your room stays warm enough that a heater may never switch on."
-                : `For a room around ${plan.roomTempUsed?.value}°C (${roomTempSource}).`}
+                : city.trim()
+                  ? `${city.trim()} rooms typically sit around ${tempRange.lowC}°C on winter nights and ${tempRange.highC}°C in summer${plan.roomTempUsed?.source === "city typical" ? " — the heater is sized for the winter nights" : ""}.`
+                  : `Sized for a room around ${plan.roomTempUsed?.value}°C (${tempSource}).`}
             </p>
             {plan.heaterNote && (
               <div style={{ marginTop: 8 }}>
@@ -579,8 +667,8 @@ export default function OnboardingPlannerPage() {
                   setPlan(
                     buildSetupPlan({
                       volumeL,
-                      lengthCm: planLengthCm,
-                      widthCm: planWidthCm,
+                      lengthCm: dims.lengthCm,
+                      widthCm: dims.widthCm,
                       tier,
                       hasCo2: false,
                       speciesRows: rows,
@@ -599,7 +687,7 @@ export default function OnboardingPlannerPage() {
                   type="number"
                   value={customRoomTemp}
                   onChange={(e) => setCustomRoomTemp(e.target.value)}
-                  placeholder={`e.g. ${(climate ?? GENERIC_INDIA_CLIMATE).winterLowC}`}
+                  placeholder={`e.g. ${tempRange.lowC}`}
                 />
                 <SecondaryButton
                   style={{ width: "auto", padding: "6px 14px", marginTop: 4 }}
@@ -609,8 +697,8 @@ export default function OnboardingPlannerPage() {
                     setPlan(
                       buildSetupPlan({
                         volumeL,
-                        lengthCm: planLengthCm,
-                        widthCm: planWidthCm,
+                        lengthCm: dims.lengthCm,
+                        widthCm: dims.widthCm,
                         tier,
                         hasCo2: false,
                         speciesRows: rows,
@@ -627,13 +715,9 @@ export default function OnboardingPlannerPage() {
           </Card>
 
           <Card style={{ marginBottom: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ fontWeight: 600 }}>💧 Filter</p>
-              <span style={{ fontWeight: 700 }}>{plan.filterFlowLph} L/h</span>
-            </div>
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              A {FILTER_SUBTYPES.find((f) => f.value === plan.filterSubtype)?.label ?? plan.filterSubtype} filter turning the water over about {Math.round((plan.filterFlowLph / volumeL) * 10) / 10}× per hour.
-            </p>
+            <p style={{ fontWeight: 600 }}>💧 Filter</p>
+            <p style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, margin: "6px 0 0" }}>{plan.filter.shopLabel}</p>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>{plan.filter.why}</p>
           </Card>
 
           <Card style={{ marginBottom: 12 }}>
@@ -652,9 +736,12 @@ export default function OnboardingPlannerPage() {
             {plan.substrate.kind == null ? (
               <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>None needed for a bare-bottom tank.</p>
             ) : (
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-                {plan.substrate.kind}, {plan.substrate.depthCm}cm deep — about {plan.substrate.approxKg}kg for this footprint.
-              </p>
+              <>
+                <p style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, margin: "6px 0 0" }}>{plan.substrate.kind}</p>
+                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
+                  {plan.substrate.depthCm}cm deep — about {plan.substrate.approxKg}kg for this footprint. {plan.substrate.shopLabel}.
+                </p>
+              </>
             )}
           </Card>
 
