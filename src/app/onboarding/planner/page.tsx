@@ -590,12 +590,30 @@ export default function OnboardingPlannerPage() {
       ) : (
         <>
           {aiLoading && (
-            <Card style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
-              <LottiePlayer name="thinking" size={48} />
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
-                Our advisor is checking your fish list against the catalog…
+            <div
+              role="status"
+              aria-live="polite"
+              style={{
+                marginBottom: 12,
+                padding: "28px 20px",
+                borderRadius: "var(--radius-lg, 16px)",
+                background: "var(--color-deep)",
+                color: "#fff",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 12,
+                boxShadow: "var(--shadow-md, 0 8px 24px rgba(0,0,0,0.15))",
+              }}
+            >
+              <LottiePlayer name="thinking" size={110} />
+              <p style={{ margin: 0, fontSize: "var(--font-body-size)", fontWeight: 700, textAlign: "center" }}>
+                Our advisor is checking your fish list…
               </p>
-            </Card>
+              <p style={{ margin: 0, fontSize: "var(--font-caption-size)", opacity: 0.8, textAlign: "center" }}>
+                Matching against 445 species — usually 5–15 seconds.
+              </p>
+            </div>
           )}
 
           {aiError && !aiPlan && (
