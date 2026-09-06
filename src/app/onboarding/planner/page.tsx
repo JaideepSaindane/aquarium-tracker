@@ -116,14 +116,15 @@ export default function OnboardingPlannerPage() {
   const customTempNum = useCustomRoomTemp && customRoomTemp ? Number(customRoomTemp) : null;
 
   // Instant catalog suggestions while typing (Jaideep: "typing a fish
-  // name should show 2/3 recos"). Fish only, top 3 — the catalog is
-  // local so this is immediate. Derived during render, not an effect.
+  // name should show 2/3 recos"). Fish, shrimp AND snails — anything
+  // alive you can keep — top 3. The catalog is local so this is
+  // immediate. Derived during render, not an effect.
   const typeahead = useMemo(() => {
     const q = wishInput.trim().toLowerCase();
     if (q.length < 2 || !allSpecies) return [];
     return allSpecies
       .filter((s) => {
-        if (s.category !== "fish") return false;
+        if (s.category === "plant") return false;
         let names: string[] = [];
         try {
           names = s.commonNames ? JSON.parse(s.commonNames) : [];
@@ -184,12 +185,37 @@ export default function OnboardingPlannerPage() {
       } else {
         const p = result.data.plan as unknown as AiPlan;
         setAiPlan(p);
-        const ids = [...new Set([...p.recommended_species_ids, ...p.suggested_fish.map((f) => f.species_id)])]
+        // Seed the wishlist with the fish the user actually wished for
+        // (matched to catalog rows) — NOT with everything the advisor
+        // recommends. Suggestions stay as "+ Add" offers so the user
+        // chooses what goes in (Jaideep, 2026-09-06: "let me add recos
+        // but don't remove the suggested fish field").
+        const wishIds = new Set<string>();
+        for (const w of wishes) {
+          const q = w.trim().toLowerCase().replace(/\s+/g, "-");
+          for (const s of allSpecies ?? []) {
+            // The live-queried rows store commonNames as a JSON string;
+            // handle both that and a plain array defensively.
+            let names: string[] = [];
+            try {
+              names = typeof s.commonNames === "string" ? JSON.parse(s.commonNames) : s.commonNames ?? [];
+            } catch {
+              names = [];
+            }
+            if (
+              s.category !== "plant" &&
+              (s.id === q ||
+                (s.scientificName ?? "").toLowerCase().includes(q) ||
+                names.some((n) => n.toLowerCase().includes(w.trim().toLowerCase())))
+            ) {
+              wishIds.add(s.id);
+              break;
+            }
+          }
+        }
+        const ids = [...wishIds]
           .filter((id) => speciesById.has(id))
-          .map((id) => ({
-            speciesId: id,
-            count: p.suggested_fish.find((f) => f.species_id === id)?.count ?? 1,
-          }));
+          .map((id) => ({ speciesId: id, count: 1 }));
         setPicked(ids);
         const rows = ids.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
         setPlan(
@@ -587,21 +613,54 @@ export default function OnboardingPlannerPage() {
                   <Banner severity={n.severity === "warning" ? "fixNow" : n.severity === "watch" ? "watch" : "neutral"}>{n.note}</Banner>
                 </div>
               ))}
-              {aiPlan.suggested_fish.length > 0 && (
+              {(aiPlan.suggested_fish.length > 0 || aiPlan.recommended_species_ids.some((id) => !picked.some((p) => p.speciesId === id) && speciesById.get(id)?.category !== "plant")) && (
                 <div style={{ marginTop: 8 }}>
                   <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>Suggested for your tank:</p>
-                  {aiPlan.suggested_fish.map((f) => {
-                    const sp = speciesById.get(f.species_id);
+                  {/* Every species the advisor confirmed or suggested, as an addable row — including ones it merely
+                      confirmed (recommended_species_ids), so a confirmed companion is still one tap away. Rows already
+                      on the wishlist show "Added" instead. */}
+                  {[...aiPlan.suggested_fish.map((f) => ({ species_id: f.species_id, why: f.why })), ...aiPlan.recommended_species_ids.filter((id) => !aiPlan.suggested_fish.some((f) => f.species_id === id)).map((id) => ({ species_id: id, why: "Confirmed by the advisor for this tank" }))]
+                    .filter((row) => speciesById.has(row.species_id) && speciesById.get(row.species_id)?.category !== "plant")
+                    .map((row) => {
+                    const sp = speciesById.get(row.species_id);
+                    const already = picked.some((p) => p.speciesId === row.species_id);
                     return (
-                      <div key={f.species_id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <div key={row.species_id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                         <SpeciesThumb imageUri={sp?.imageUri} category={sp?.category} size={28} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>
-                            {(f.count ?? 1) > 1 ? `${f.count}× ` : ""}
-                            {firstName(sp?.commonNames ?? null) ?? f.species_id}
+                            {firstName(sp?.commonNames ?? null) ?? row.species_id}
                           </p>
-                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", ...twoLineClamp }}>{f.why}</p>
+                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", ...twoLineClamp }}>{row.why}</p>
                         </div>
+                        <SecondaryButton
+                          style={{ width: "auto", padding: "5px 12px", flexShrink: 0, fontSize: "var(--font-caption-size)" }}
+                          disabled={already}
+                          onClick={() => {
+                            setPicked((prev) =>
+                              prev.some((p) => p.speciesId === row.species_id)
+                                ? prev
+                                : [...prev, { speciesId: row.species_id, count: 1 }]
+                            );
+                            // Recompute the plan for the new bioload.
+                            const ids = [...picked, { speciesId: row.species_id, count: 1 }];
+                            const rows = ids.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
+                            setPlan(
+                              buildSetupPlan({
+                                volumeL,
+                                lengthCm: dims.lengthCm,
+                                widthCm: dims.widthCm,
+                                tier,
+                                hasCo2: false,
+                                speciesRows: rows,
+                                climate,
+                                customRoomTempC: customTempNum,
+                              })
+                            );
+                          }}
+                        >
+                          {already ? "Added" : "+ Add"}
+                        </SecondaryButton>
                       </div>
                     );
                   })}
@@ -754,14 +813,14 @@ export default function OnboardingPlannerPage() {
                   <div key={p.speciesId} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                     <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={28} />
                     <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
-                      {p.count}× {firstName(s?.commonNames ?? null) ?? p.speciesId}
+                      {firstName(s?.commonNames ?? null) ?? p.speciesId}
                     </span>
                     <Chip variant="neutral">planned</Chip>
                   </div>
                 );
               })}
               <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-                Saved as a wishlist — they only count as &quot;in the tank&quot; once you mark them arrived on the tank&apos;s Fish page.
+                Just choose the fish for now — you&apos;ll pick how many of each after the tank is saved, on its Fish page.
               </p>
             </Card>
           )}
