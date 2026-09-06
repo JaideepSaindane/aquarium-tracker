@@ -11,7 +11,7 @@ import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { useLiveQuery } from "@/db/live";
 import { getTank } from "@/db/queries/tanks";
-import { listLivestockForTank, addLivestock, removeLivestock, recordDeath, updateLivestockCount, listLivestockEvents } from "@/db/queries/livestock";
+import { listLivestockForTank, listPlannedLivestockForTank, addLivestock, removeLivestock, recordDeath, updateLivestockCount, markLivestockArrived, listLivestockEvents } from "@/db/queries/livestock";
 import { listSpecies, searchSpecies, insertGeneratedSpecies } from "@/db/queries/species";
 import { unlockDexCard } from "@/db/queries/dex";
 import { checkSchoolingMinimums } from "@/lib/derived-checks";
@@ -30,6 +30,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const searchParams = useSearchParams();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
+  const { data: plannedLivestock } = useLiveQuery(() => listPlannedLivestockForTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(listSpecies, []);
 
   const speciesById = new Map((allSpecies ?? []).map((s) => [s.id, s]));
@@ -333,6 +334,15 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
       {aliveLivestock.map((l) => (
         <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
       ))}
+
+      {(plannedLivestock ?? []).length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>On the wishlist — not in the tank yet</p>
+          {(plannedLivestock ?? []).map((l) => (
+            <PlannedLivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
+          ))}
+        </div>
+      )}
     </Screen>
   );
 }
@@ -345,6 +355,42 @@ function firstName(json: string | null | undefined): string | null {
   } catch {
     return null;
   }
+}
+
+/** A wishlist fish from the guided planner (T-027) — "Mark as arrived" flips it to a real, counted fish the day it comes home. */
+function PlannedLivestockRow({
+  livestock,
+  species,
+}: {
+  livestock: { id: string; speciesId: string; count: number; nickname: string | null; addedOn: string };
+  species: SpeciesRow | undefined;
+}) {
+  const [arriving, setArriving] = useState(false);
+  return (
+    <Card style={{ marginBottom: 8, borderStyle: "dashed" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          <SpeciesThumb imageUri={species?.imageUri} category={species?.category} size={36} />
+          <div style={{ minWidth: 0 }}>
+            <strong>
+              {firstName(species?.commonNames) ?? livestock.speciesId} × {livestock.count}
+            </strong>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>Planned — not added to the tank yet</p>
+          </div>
+        </div>
+        <SecondaryButton
+          style={{ width: "auto", padding: "6px 12px", flexShrink: 0 }}
+          disabled={arriving}
+          onClick={async () => {
+            setArriving(true);
+            await markLivestockArrived(livestock.id);
+          }}
+        >
+          {arriving ? "..." : "Arrived"}
+        </SecondaryButton>
+      </div>
+    </Card>
+  );
 }
 
 function LivestockRow({

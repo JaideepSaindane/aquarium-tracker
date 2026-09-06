@@ -96,12 +96,14 @@ export function computeAiTrust(interactions: AiInteraction[]): {
   return { totalAnswers: total, thumbsUpPer1000: per1000(up), thumbsDownPer1000: per1000(down), wrongReportsPer1000: per1000(wrong) };
 }
 
-/** Of livestock added more than 90 days ago, the proportion still marked alive. The one number no competitor claims. */
+/** Of livestock added more than 90 days ago, the proportion still marked alive. The one number no competitor claims. Planned rows (T-027 wishlist fish — wanted, never actually kept) are excluded: they were never living in a tank, so they can't be survival failures. */
 export function compute90DaySurvival(
   livestockRows: Livestock[],
   now = new Date()
 ): { eligibleCount: number; aliveCount: number; survivalPct: number | null } {
-  const eligible = livestockRows.filter((l) => !l.deletedAt && daysBetween(now, new Date(l.addedOn)) >= 90);
+  const eligible = livestockRows.filter(
+    (l) => !l.deletedAt && l.status !== "planned" && daysBetween(now, new Date(l.addedOn)) >= 90
+  );
   if (eligible.length === 0) return { eligibleCount: 0, aliveCount: 0, survivalPct: null };
   const alive = eligible.filter((l) => l.status === "alive").length;
   return { eligibleCount: eligible.length, aliveCount: alive, survivalPct: Math.round((alive / eligible.length) * 1000) / 10 };

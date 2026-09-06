@@ -25,6 +25,7 @@ type SeedSpecies = {
   social_min_group?: number;
   temperament?: string;
   incompatible_with?: string[];
+  difficulty?: string;
 };
 
 let cachedSpecies: SeedSpecies[] | null = null;

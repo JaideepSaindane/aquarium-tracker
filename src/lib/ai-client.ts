@@ -206,6 +206,31 @@ export async function identifySpecies(photo: File) {
   return result;
 }
 
+/** T-027 AI-first planner: one expert read on the user's tank-type + size-band + fish wish list. */
+export async function getPlannerAdvice(params: { tankType: string; band: string; city: string; wishList: string[] }) {
+  const res = await fetch("/api/planner", {
+    method: "POST",
+    headers: headers({ "Content-Type": "application/json" }),
+    body: JSON.stringify(params),
+  });
+  const result = await handleJsonResponse<{ plan: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
+
+  if (result.ok) {
+    await logAiInteraction({
+      kind: "planner",
+      promptVersion: String(result.data.plan.prompt_version),
+      userInput: `${params.tankType}/${params.band}: ${params.wishList.join(", ")}`,
+      groundingRefs: extractRefs(result.data.plan),
+      response: result.data.plan,
+      inputTokens: result.data.meta.tokensIn,
+      outputTokens: result.data.meta.tokensOut,
+      costUsd: result.data.meta.costUsd,
+      latencyMs: result.data.meta.latencyMs,
+    });
+  }
+  return result;
+}
+
 export type QuotaStatus =
   | { isByok: true }
   | { isByok: false; earlyBird: boolean; allowed: true; used: number; limit: number }

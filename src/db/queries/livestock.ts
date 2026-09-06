@@ -10,6 +10,8 @@ export type NewLivestock = {
   count: number;
   nickname?: string;
   addedOn?: string;
+  /** Defaults to 'alive'. 'planned' marks a fish the user WANTS (T-027 guided planner) — it must never count as living in the tank. */
+  status?: string;
 };
 
 export async function listLivestockForTank(tankId: string) {
@@ -17,6 +19,14 @@ export async function listLivestockForTank(tankId: string) {
     .select()
     .from(livestock)
     .where(and(eq(livestock.tankId, tankId), isNull(livestock.deletedAt)));
+}
+
+/** Livestock the user WANTS but doesn't have yet (T-027 guided planner) — shown separately in the Fish tab, never counted as living in the tank. */
+export async function listPlannedLivestockForTank(tankId: string) {
+  return db
+    .select()
+    .from(livestock)
+    .where(and(eq(livestock.tankId, tankId), eq(livestock.status, "planned"), isNull(livestock.deletedAt)));
 }
 
 /** All alive livestock rows across every tank — used by the My Tanks list to show a "N× Species" badge row per tank without a per-tank query loop. */
@@ -42,15 +52,17 @@ export async function addLivestock(input: NewLivestock) {
     count: input.count,
     nickname: input.nickname,
     addedOn: input.addedOn ?? now,
-    status: "alive",
+    status: input.status ?? "alive",
     createdAt: now,
     updatedAt: now,
   });
-  // Starting point for the per-livestock timeline (specs/T-022).
+  // Starting point for the per-livestock timeline (specs/T-022). A
+  // 'planned' row gets a 'planned' event instead — it hasn't been added
+  // to any real tank yet, and the timeline should say so.
   await db.insert(livestockEvents).values({
     id: newId(),
     livestockId: id,
-    type: "added",
+    type: input.status === "planned" ? "planned" : "added",
     occurredAt: input.addedOn ?? now,
     createdAt: now,
   });
@@ -60,6 +72,24 @@ export async function addLivestock(input: NewLivestock) {
 
 export async function listLivestockEvents(livestockId: string) {
   return db.select().from(livestockEvents).where(eq(livestockEvents.livestockId, livestockId)).orderBy(livestockEvents.occurredAt);
+}
+
+/**
+ * Marks a planned fish (T-027) as actually living in the tank — the day
+ * the real fish comes home. Writes a real "added" event so the timeline
+ * records the true arrival, not the planning date.
+ */
+export async function markLivestockArrived(id: string) {
+  const now = nowIso();
+  await db.update(livestock).set({ status: "alive", addedOn: now, updatedAt: now }).where(eq(livestock.id, id));
+  await db.insert(livestockEvents).values({
+    id: newId(),
+    livestockId: id,
+    type: "added",
+    occurredAt: now,
+    createdAt: now,
+  });
+  notifyChanged();
 }
 
 export async function updateLivestockCount(id: string, count: number) {

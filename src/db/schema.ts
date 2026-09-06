@@ -45,7 +45,11 @@ export const livestock = sqliteTable("livestock", {
   count: integer("count").notNull().default(1),
   addedOn: text("added_on").notNull(),
   removedOn: text("removed_on"),
-  status: text("status"), // alive | rehomed | died | unknown
+  // alive | rehomed | died | unknown | planned — 'planned' is a fish the
+  // user WANTS (T-027 guided planner), not one living in the tank yet.
+  // Every "actually in the tank" count must filter on status = 'alive',
+  // never just "not died".
+  status: text("status"),
   deathCause: text("death_cause"),
   source: text("source"),
   notes: text("notes"),
@@ -57,7 +61,8 @@ export const livestock = sqliteTable("livestock", {
 export const livestockEvents = sqliteTable("livestock_events", {
   id: text("id").primaryKey(),
   livestockId: text("livestock_id").notNull(),
-  type: text("type").notNull(), // added | died | rehomed | spawned | treated | observed | photo
+  // added | died | rehomed | spawned | treated | observed | photo | planned
+  type: text("type").notNull(),
   occurredAt: text("occurred_at").notNull(),
   note: text("note"),
   photoUri: text("photo_uri"),
