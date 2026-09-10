@@ -39,11 +39,17 @@ export function Screen({
       return;
     }
     const el = footerRef.current;
-    const observer = new ResizeObserver((entries) => {
-      const h = entries[0]?.contentRect.height;
-      if (h != null) setFooterHeight(h);
+    // `entry.contentRect` is content-box only — it excludes the footer's
+    // own padding and border, so it understated real height by ~25px (the
+    // footer's 12px top/bottom padding + 1px border). That gap was the
+    // actual reason "Add to tank" could still end up covered even after
+    // the first attempt at this fix. `getBoundingClientRect()` gives the
+    // true rendered (border-box) height.
+    const observer = new ResizeObserver(() => {
+      setFooterHeight(el.getBoundingClientRect().height);
     });
     observer.observe(el);
+    setFooterHeight(el.getBoundingClientRect().height);
     return () => observer.disconnect();
   }, [footer]);
 
@@ -51,7 +57,11 @@ export function Screen({
     <div className={styles.screen} style={background ? { background } : undefined}>
       <div
         className={`${styles.content} ${footer ? styles.contentWithFooter : ""} ${footer && footerAboveDock ? styles.contentWithFooterAboveDock : ""}`}
-        style={footer && footerHeight != null ? { paddingBottom: `calc(${footerHeight}px + var(--space-lg) + env(safe-area-inset-bottom)${footerAboveDock ? " + var(--dock-clearance)" : ""})` } : undefined}
+        style={
+          footer && footerHeight != null
+            ? { paddingBottom: `calc(${footerHeight}px + 8px + var(--space-lg) + env(safe-area-inset-bottom)${footerAboveDock ? " + var(--dock-clearance)" : ""})` }
+            : undefined
+        }
       >
         {children}
       </div>

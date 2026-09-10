@@ -25,6 +25,12 @@ type Verdict = "ok" | "watch" | "fixNow";
  * derived-only summary is what's left, shown the moment a species is
  * selected, immediately followed by "Add to tank" — see
  * src/app/tank/[id]/livestock/{page,search/page,scan/page}.tsx.
+ *
+ * Rewritten 2026-09-10 (same day, later feedback): every row was 2-3 lines
+ * of explanation ("overlaps your tank's current X-Y range", "doesn't
+ * overlap what you already keep") — Jaideep asked for exactly one short
+ * line per row and tighter padding, since the whole point is a fast glance
+ * before tapping "Add to tank", not a paragraph to read.
  */
 export function CompatibilitySummary({
   tank,
@@ -37,7 +43,7 @@ export function CompatibilitySummary({
 }) {
   const rows: { label: string; verdict: Verdict; text: string }[] = [];
 
-  // Size
+  // Size — unchanged, Jaideep confirmed this one already reads well.
   if (species.minVolumeL != null) {
     const ok = tank.volumeL >= species.minVolumeL;
     rows.push({
@@ -47,67 +53,64 @@ export function CompatibilitySummary({
     });
   }
 
-  // Temp — overlap against whatever's already alive in the tank, not just this one species in isolation.
+  // Temp — just the ideal range and a one-word verdict against the tank's
+  // existing fish, no overlap-math explanation.
   if (species.tempCMin != null && species.tempCMax != null) {
     const existingRanges = existingSpecies.filter((s) => s.tempCMin != null && s.tempCMax != null);
-    if (existingRanges.length > 0) {
-      const overlapMin = Math.max(species.tempCMin, ...existingRanges.map((s) => s.tempCMin as number));
-      const overlapMax = Math.min(species.tempCMax, ...existingRanges.map((s) => s.tempCMax as number));
-      const ok = overlapMin <= overlapMax;
-      rows.push({
-        label: "Temp",
-        verdict: ok ? "ok" : "fixNow",
-        text: ok ? `${species.tempCMin}–${species.tempCMax}°C — overlaps your tank's current ${overlapMin}–${overlapMax}°C range` : `${species.tempCMin}–${species.tempCMax}°C — doesn't overlap what you already keep (needs ${overlapMin}–${overlapMax}°C)`,
-      });
-    } else {
-      rows.push({ label: "Temp", verdict: "ok", text: `${species.tempCMin}–${species.tempCMax}°C` });
-    }
+    const ok =
+      existingRanges.length === 0 ||
+      Math.max(species.tempCMin, ...existingRanges.map((s) => s.tempCMin as number)) <=
+        Math.min(species.tempCMax, ...existingRanges.map((s) => s.tempCMax as number));
+    rows.push({
+      label: "Temp",
+      verdict: ok ? "ok" : "fixNow",
+      text: `${species.tempCMin}–${species.tempCMax}°C — ${ok ? "works for your tank" : "may not suit your tank"}`,
+    });
   }
 
-  // Parameters (pH)
+  // Parameters (pH) — same crisp treatment.
   if (species.phMin != null && species.phMax != null) {
     const existingRanges = existingSpecies.filter((s) => s.phMin != null && s.phMax != null);
-    if (existingRanges.length > 0) {
-      const overlapMin = Math.max(species.phMin, ...existingRanges.map((s) => s.phMin as number));
-      const overlapMax = Math.min(species.phMax, ...existingRanges.map((s) => s.phMax as number));
-      const ok = overlapMin <= overlapMax;
-      rows.push({
-        label: "Parameters",
-        verdict: ok ? "ok" : "watch",
-        text: ok ? `pH ${species.phMin}–${species.phMax} — overlaps your tank's current ${overlapMin.toFixed(1)}–${overlapMax.toFixed(1)} range` : `pH ${species.phMin}–${species.phMax} — narrow overlap with what you already keep`,
-      });
-    } else {
-      rows.push({ label: "Parameters", verdict: "ok", text: `pH ${species.phMin}–${species.phMax}` });
-    }
+    const ok =
+      existingRanges.length === 0 ||
+      Math.max(species.phMin, ...existingRanges.map((s) => s.phMin as number)) <=
+        Math.min(species.phMax, ...existingRanges.map((s) => s.phMax as number));
+    rows.push({
+      label: "Parameters",
+      verdict: ok ? "ok" : "watch",
+      text: `pH ${species.phMin}–${species.phMax} — ${ok ? "compatible" : "narrow fit"}`,
+    });
   }
 
-  // Setup — footprint, schooling, temperament: the "does my tank suit this fish's habits" facts.
+  // Setup — footprint, schooling, temperament, all on one line.
   const setupBits: string[] = [];
+  let setupWarning = false;
   if (species.minFootprintLengthCm != null && species.minFootprintWidthCm != null) {
     const ok = tank.lengthCm >= species.minFootprintLengthCm && tank.widthCm >= species.minFootprintWidthCm;
-    setupBits.push(`${ok ? "✓" : "⚠"} Needs ${species.minFootprintLengthCm}×${species.minFootprintWidthCm}cm floor space`);
+    if (!ok) setupWarning = true;
+    setupBits.push(`${ok ? "✓" : "⚠"} ${species.minFootprintLengthCm}×${species.minFootprintWidthCm}cm`);
   }
-  if (species.socialMinGroup != null && species.socialMinGroup > 1) {
-    setupBits.push(`Best kept in groups of ${species.socialMinGroup}+`);
-  }
-  if (species.temperament) setupBits.push(`Temperament: ${species.temperament}`);
-  if (species.swimLevel) setupBits.push(`Swims: ${species.swimLevel}`);
+  if (species.socialMinGroup != null && species.socialMinGroup > 1) setupBits.push(`Group of ${species.socialMinGroup}+`);
+  if (species.temperament) setupBits.push(species.temperament);
+  if (species.swimLevel) setupBits.push(species.swimLevel);
   if (setupBits.length > 0) {
-    const hasWarning = setupBits.some((b) => b.startsWith("⚠"));
-    rows.push({ label: "Setup", verdict: hasWarning ? "watch" : "ok", text: setupBits.join(" · ") });
+    rows.push({ label: "Setup", verdict: setupWarning ? "watch" : "ok", text: setupBits.join(" · ") });
   }
 
   if (rows.length === 0) return null;
 
   return (
-    <div style={{ margin: "12px 0" }}>
-      <p style={{ fontWeight: 600, marginBottom: 4 }}>Compatibility</p>
+    <div style={{ margin: "8px 0" }}>
+      <p style={{ fontWeight: 600, marginBottom: 2, fontSize: "var(--font-caption-size)" }}>Compatibility</p>
       {rows.map((r) => (
-        <div key={r.label} style={{ display: "flex", gap: 10, padding: "8px 0", borderTop: "1px solid var(--color-line-soft)" }}>
+        <div
+          key={r.label}
+          style={{ display: "flex", gap: 8, padding: "3px 0", borderTop: "1px solid var(--color-line-soft)" }}
+        >
           <span
             style={{
               flexShrink: 0,
-              width: 92,
+              width: 78,
               fontSize: "var(--font-caption-size)",
               fontWeight: 700,
               color:
@@ -116,7 +119,17 @@ export function CompatibilitySummary({
           >
             {r.label}
           </span>
-          <span style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink)" }}>{r.text}</span>
+          <span
+            style={{
+              fontSize: "var(--font-caption-size)",
+              color: "var(--color-ink)",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {r.text}
+          </span>
         </div>
       ))}
     </div>
