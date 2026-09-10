@@ -43,8 +43,9 @@ type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInteractions
  * appears the instant `logAiInteraction` writes it, no separate "current
  * answer" state to keep in sync with history. The input is a real sticky
  * chat composer (`Screen`'s `footer` prop) instead of a form embedded in
- * scrolling content; the bottom tab dock hides itself on this route
- * (TabBar.tsx) so the two fixed bottom bars don't stack.
+ * scrolling content. Ask is now a permanent centered tab in the bottom
+ * dock (2026-09-10) rather than a screen the dock hides itself for, so the
+ * composer uses `footerAboveDock` to sit above the dock instead of under it.
  */
 export default function AskPage() {
   const router = useRouter();
@@ -147,6 +148,7 @@ export default function AskPage() {
 
   return (
     <Screen
+      footerAboveDock
       footer={
         <>
           {isEarlyBird && (

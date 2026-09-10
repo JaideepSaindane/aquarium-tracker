@@ -9,13 +9,15 @@ import styles from "./TabBar.module.css";
 const TABS = [
   { href: "/dex", icon: "📇", key: "dex" as const },
   { href: "/", icon: "🐟", key: "tanks" as const },
+  { href: "/ask", icon: "💬", key: "ask" as const, center: true },
   { href: "/community", icon: "🌊", key: "community" as const },
+  { href: "/settings", icon: "👤", key: "profile" as const },
 ];
 
 const HIDE_THRESHOLD_PX = 8; // ignore tiny/bounce scrolls so the dock doesn't jitter
 const NEAR_TOP_PX = 40; // always show it near the top of a page regardless of direction
 
-/** Persistent bottom tab bar: Tanks, Dex, Community. Home was removed as a tab — Jaideep's call, 2026-09-04 (the cross-tank calendar it pointed to wasn't earning its slot); Settings moved up next to the notification bell on the Tanks page header instead of living down here. Ask AquaAI is a floating button — see FloatingAskButton. Floats like a dock and hides itself while scrolling down a long list, reappearing on scroll-up — Jaideep's feedback: "should not hide them (hide them smartly when required)." */
+/** Persistent bottom tab bar: Dex, Tanks, Ask Aqua, Community, My Profile. Home was removed as a tab — Jaideep's call, 2026-09-04 (the cross-tank calendar it pointed to wasn't earning its slot). Ask AquaAI moved from a floating button (see git history — FloatingAskButton was removed 2026-09-10) into a centered, visually raised tab per Jaideep's "AI-first" ask, so it's a permanent destination rather than something to discover. "My Profile" links to the existing Settings screen — no separate profile screen, just a relabeled/repositioned entry point. Floats like a dock and hides itself while scrolling down a long list, reappearing on scroll-up — Jaideep's feedback: "should not hide them (hide them smartly when required)." */
 export function TabBar() {
   const pathname = usePathname();
   const t = useTranslation();
@@ -26,8 +28,6 @@ export function TabBar() {
     setLastPathname(pathname);
     setHidden(false);
   }
-
-  const onChatScreen = pathname.startsWith("/ask");
 
   useEffect(() => {
     // In practice the page itself (window/body) ends up as the scroller on
@@ -64,11 +64,6 @@ export function TabBar() {
     return () => document.removeEventListener("scroll", onScroll, true);
   }, []);
 
-  // Ask AquaAI is now a full-screen chat with its own sticky input bar
-  // pinned to the same bottom edge — hide the dock here instead of the two
-  // fixed bars stacking/overlapping.
-  if (onChatScreen) return null;
-
   return (
     <nav className={`${styles.bar} ${hidden ? styles.barHidden : ""}`} aria-label="Main">
       {TABS.map((tab) => {
@@ -77,10 +72,10 @@ export function TabBar() {
           <Link
             key={tab.href}
             href={tab.href}
-            className={`${styles.tab} ${active ? styles.tabActive : ""}`}
+            className={`${styles.tab} ${tab.center ? styles.tabCenter : ""} ${active ? styles.tabActive : ""}`}
             aria-current={active ? "page" : undefined}
           >
-            <span className={styles.icon} aria-hidden>
+            <span className={`${styles.icon} ${tab.center ? styles.iconCenter : ""}`} aria-hidden>
               {tab.icon}
             </span>
             <span>{t.tabs[tab.key]}</span>

@@ -11,8 +11,10 @@ const hiLatn: Dictionary = {
     tanks: "Tanks",
     dex: "Dex",
     home: "Home",
+    ask: "Ask Aqua",
     community: "Community",
     settings: "Settings",
+    profile: "Mera Profile",
   },
   common: {
     comingSoon: "Ye screen abhi banaya nahi gaya hai.",

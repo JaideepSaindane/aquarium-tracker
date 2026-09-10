@@ -54,3 +54,23 @@
 .tabActive .icon {
   background: var(--color-deep-soft);
 }
+
+/* Ask Aqua sits in the center and is deliberately raised/filled so it reads
+   as the app's primary action, not just another tab — Jaideep's "AI-first"
+   ask to make Ask AquaAI a permanent, prominent destination. */
+.tabCenter {
+  transform: translateY(-14px);
+}
+
+.iconCenter {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: linear-gradient(135deg, #2f7dfa, #1a5fe0);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(47, 125, 250, 0.45), var(--shadow-lift);
+}

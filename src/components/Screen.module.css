@@ -26,6 +26,13 @@
   padding-bottom: calc(96px + var(--space-lg) + env(safe-area-inset-bottom));
 }
 
+/* The tab bar (a floating dock, see TabBar.module.css) now also renders on
+   this route, so the footer needs to clear it, not sit at the very bottom
+   edge underneath it. */
+.contentWithFooterAboveDock {
+  padding-bottom: calc(96px + var(--dock-clearance) + var(--space-lg) + env(safe-area-inset-bottom));
+}
+
 /* Pinned to the bottom of the viewport regardless of scroll position or
    content height — the fix for buttons getting scrolled out of reach on a
    tall form (a real bug Jaideep hit: primary CTAs across the onboarding
@@ -44,4 +51,9 @@
   background: var(--color-surface, var(--color-ground));
   border-top: 1px solid var(--color-line);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Sits above the floating tab-bar dock instead of underneath it. */
+.stickyFooterAboveDock {
+  bottom: var(--dock-clearance);
 }

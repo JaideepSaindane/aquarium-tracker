@@ -7,8 +7,10 @@ const en = {
     tanks: "Tanks",
     dex: "Dex",
     home: "Home",
+    ask: "Ask Aqua",
     community: "Community",
     settings: "Settings",
+    profile: "My Profile",
   },
   common: {
     comingSoon: "This screen isn't built yet.",
