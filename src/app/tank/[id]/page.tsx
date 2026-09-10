@@ -11,6 +11,8 @@ import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Butto
 import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { GalleryPanel } from "@/components/GalleryPanel";
 import { JournalPanel } from "@/components/JournalPanel";
+import { PhotoPickerButton } from "@/components/PhotoPickerButton";
+import { useLivestockScanSession } from "@/store/use-livestock-scan-session";
 import { useLiveQuery } from "@/db/live";
 import { getTank, deleteTank, updateTank } from "@/db/queries/tanks";
 import { listEquipmentForTank } from "@/db/queries/equipment";
@@ -44,6 +46,7 @@ function formatDate(date: Date): string {
 export default function TankOverviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const setPendingLivestockScanFile = useLivestockScanSession((s) => s.setPendingFile);
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: equipmentList } = useLiveQuery(() => listEquipmentForTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
@@ -406,7 +409,14 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
             <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 16 }}>Add a fish</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <PrimaryButton onClick={() => router.push(`/tank/${id}/livestock/search`)}>🔍 Search by name</PrimaryButton>
-              <SecondaryButton onClick={() => router.push(`/tank/${id}/livestock/scan`)}>📷 Take a pic</SecondaryButton>
+              <PhotoPickerButton
+                label="📷 Take a pic"
+                onPick={(file) => {
+                  setPendingLivestockScanFile(file);
+                  setShowAddPopup(false);
+                  router.push(`/tank/${id}/livestock/scan`);
+                }}
+              />
             </div>
             <div style={{ height: 10 }} />
             <SecondaryButton onClick={() => setShowAddPopup(false)}>Cancel</SecondaryButton>

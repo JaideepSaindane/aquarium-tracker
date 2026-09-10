@@ -1,7 +1,8 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLivestockScanSession } from "@/store/use-livestock-scan-session";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
@@ -52,6 +53,16 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
   const [justAdded, setJustAdded] = useState<{ speciesId: string; count: number }[]>([]);
   const [saving, setSaving] = useState(false);
+  const takePendingFile = useLivestockScanSession((s) => s.takePendingFile);
+
+  // Skips the extra "take/upload a photo" tap when arriving from the tank
+  // overview's "📷 Take a pic" option, which already opened the camera or
+  // gallery before navigating here.
+  useEffect(() => {
+    const pending = takePendingFile();
+    if (pending) handlePhoto(pending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handlePhoto(file: File) {
     setBusy("identify");
