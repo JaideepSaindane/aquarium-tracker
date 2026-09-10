@@ -72,3 +72,5 @@ Three things that are not code and gate the launch date:
 | T-027 | Guided Tank Setup Planner | T-015 |
 | T-028 | Home / Cross-Tank Calendar | T-011, T-016, T-018 |
 | T-029 | Always-on shared server (needs a decision session first — see the spec) | T-018 |
+| T-030 | App performance dashboard (needs a decision session first — see the spec) | T-026, accounts/Postgres backend |
+| T-031 | Full security review (needs a decision session first — see the spec) | accounts/Postgres backend |
