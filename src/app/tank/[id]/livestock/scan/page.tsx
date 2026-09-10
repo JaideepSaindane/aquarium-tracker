@@ -19,11 +19,10 @@ import { getTank } from "@/db/queries/tanks";
 import { listSpecies, insertGeneratedSpecies } from "@/db/queries/species";
 import { addLivestock, listLivestockForTank } from "@/db/queries/livestock";
 import { unlockDexCard } from "@/db/queries/dex";
-import { identifySpecies, generateSpecies, checkCompat } from "@/lib/ai-client";
-import { dismissWarning, isWarningDismissed, compatWarningKey } from "@/db/queries/dismissed-warnings";
+import { identifySpecies, generateSpecies } from "@/lib/ai-client";
+import { CompatibilitySummary } from "@/components/CompatibilitySummary";
 
 type Candidate = { species_id: string | null; common_name: string; scientific_name: string; confidence: number; why: string };
-type CompatConflict = { type: string; severity: string; explanation: string; with: string[]; mitigation: string };
 
 function firstName(json: string | null | undefined): string | null {
   if (!json) return null;
@@ -59,13 +58,6 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
   const [justAdded, setJustAdded] = useState<{ speciesId: string; count: number }[]>([]);
   const [saving, setSaving] = useState(false);
   const takePendingFile = useLivestockScanSession((s) => s.takePendingFile);
-
-  // Same batch-compatibility pattern as the by-name add flow
-  // (src/app/tank/[id]/livestock/page.tsx, 2026-09-10): one check covering
-  // everything added this visit, run on "Done", not per fish.
-  const [doneChecking, setDoneChecking] = useState(false);
-  const [doneCompatResult, setDoneCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
-  const [doneDismissedKeys, setDoneDismissedKeys] = useState<Set<string>>(new Set());
 
   // Skips the extra "take/upload a photo" tap when arriving from the tank
   // overview's "📷 Take a pic" option, which already opened the camera or
@@ -135,48 +127,6 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
     setSaving(false);
   }
 
-  async function handleDone() {
-    if (doneCompatResult) {
-      router.replace(`/tank/${id}`);
-      return;
-    }
-    if (!tank || justAdded.length === 0) {
-      router.replace(`/tank/${id}`);
-      return;
-    }
-    setDoneChecking(true);
-    const existingSpeciesIds = Array.from(new Set(aliveExisting.map((l) => l.speciesId)));
-    const newSpeciesIds = Array.from(new Set(justAdded.map((j) => j.speciesId)));
-    const result = await checkCompat({
-      lengthCm: tank.lengthCm,
-      widthCm: tank.widthCm,
-      heightCm: tank.heightCm,
-      existingSpeciesIds,
-      newSpeciesIds,
-      tankId: id,
-    });
-    setDoneChecking(false);
-    if (!result.ok) {
-      router.replace(`/tank/${id}`);
-      return;
-    }
-    const data = result.data.compat as unknown as { verdict: string; conflicts: CompatConflict[]; footprint_note: string };
-    const dismissed = new Set<string>();
-    for (const c of data.conflicts) {
-      const key = compatWarningKey(newSpeciesIds, c.type, c.with);
-      if (await isWarningDismissed(key)) dismissed.add(key);
-    }
-    setDoneDismissedKeys(dismissed);
-    setDoneCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
-  }
-
-  async function handleDismissDoneConflict(conflict: CompatConflict) {
-    const newSpeciesIds = Array.from(new Set(justAdded.map((j) => j.speciesId)));
-    const key = compatWarningKey(newSpeciesIds, conflict.type, conflict.with);
-    await dismissWarning({ tankId: id, warningKey: key });
-    setDoneDismissedKeys((prev) => new Set(prev).add(key));
-  }
-
   if (!tank) return <Screen>Loading...</Screen>;
 
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
@@ -190,9 +140,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
               ✓ {justAdded.length} fish added this session
             </p>
           )}
-          <PrimaryButton onClick={handleDone} disabled={doneChecking}>
-            {doneChecking ? "Checking compatibility..." : doneCompatResult ? "Continue to my tank" : "Done — back to my tank"}
-          </PrimaryButton>
+          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
         </>
       }
     >
@@ -202,27 +150,6 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
         Take a photo or upload one of the fish you want to add — we&apos;ll suggest what it might be.
       </p>
-
-      {doneCompatResult && (
-        <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Compatibility check</p>
-          {doneCompatResult.conflicts.filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(justAdded.map((j) => j.speciesId))), c.type, c.with))).length === 0 && (
-            <Banner severity="improve">No conflicts found between your fish.</Banner>
-          )}
-          {doneCompatResult.conflicts
-            .filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(justAdded.map((j) => j.speciesId))), c.type, c.with)))
-            .map((c, i) => (
-              <div key={i} style={{ marginBottom: 8 }}>
-                <Banner severity={c.severity === "critical" ? "fixNow" : "watch"} onDismiss={() => handleDismissDoneConflict(c)}>
-                  {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
-                </Banner>
-              </div>
-            ))}
-          {doneCompatResult.footprintNote && (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{doneCompatResult.footprintNote}</p>
-          )}
-        </Card>
-      )}
 
       <PhotoPickerButton label={busy === "identify" ? "Identifying..." : "📷 Take a photo or upload one"} onPick={handlePhoto} />
 
@@ -280,6 +207,13 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
           </div>
           <Field label="Count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
           <div style={{ height: 12 }} />
+          {tank && selectedSpecies && (
+            <CompatibilitySummary
+              tank={tank}
+              species={selectedSpecies}
+              existingSpecies={aliveExisting.map((l) => speciesById.get(l.speciesId)).filter((s): s is NonNullable<typeof s> => !!s)}
+            />
+          )}
           <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1 || saving}>
             {saving ? "Adding…" : "Add to tank"}
           </PrimaryButton>

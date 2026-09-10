@@ -16,14 +16,13 @@ import { listLivestockForTank, listPlannedLivestockForTank, addLivestock, remove
 import { listSpecies, searchSpecies, insertGeneratedSpecies } from "@/db/queries/species";
 import { unlockDexCard } from "@/db/queries/dex";
 import { checkSchoolingMinimums } from "@/lib/derived-checks";
-import { checkCompat, generateSpecies, identifySpecies } from "@/lib/ai-client";
-import { dismissWarning, isWarningDismissed, compatWarningKey } from "@/db/queries/dismissed-warnings";
+import { generateSpecies, identifySpecies } from "@/lib/ai-client";
 import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { isAiGenerated } from "@/lib/species-origin";
+import { CompatibilitySummary } from "@/components/CompatibilitySummary";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
-type CompatConflict = { type: string; severity: string; explanation: string; with: string[]; mitigation: string };
 
 export default function TankLivestockPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -34,8 +33,10 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
 
   // Captured once, the first time livestock loads, so the "already in this
   // tank" vs "added just now" split (below) stays stable across this visit
-  // even as new rows get added. Not a state update — a lazy-init ref
-  // written during render is the normal React pattern for this.
+  // even as new rows get added. A lazy-init ref written during render is
+  // safe here — it's a pure, idempotent snapshot used only for display
+  // grouping, never anything that needs to stay consistent under render
+  // deduplication/double-invocation.
   const initialAliveRef = useRef<{ id: string; speciesId: string }[] | null>(null);
   if (livestock && initialAliveRef.current === null) {
     initialAliveRef.current = livestock.filter((l) => l.status === "alive").map((l) => ({ id: l.id, speciesId: l.speciesId }));
@@ -61,14 +62,11 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  // Compatibility now runs once, in a single batch, when leaving via "Done"
-  // — not per fish while adding (Jaideep, 2026-09-10: it interrupted the add
-  // flow, and a one-at-a-time check can never catch a conflict between two
-  // fish added in the same visit, only new-vs-already-saved).
-  const [sessionAddedSpeciesIds, setSessionAddedSpeciesIds] = useState<string[]>([]);
-  const [doneChecking, setDoneChecking] = useState(false);
-  const [doneCompatResult, setDoneCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
-  const [doneDismissedKeys, setDoneDismissedKeys] = useState<Set<string>>(new Set());
+  // No AI compatibility check anywhere in this flow (Jaideep, 2026-09-10 —
+  // dropped a brief batch-on-"Done" version entirely: confusing in
+  // practice). The only compatibility signal now is the free, derived
+  // Size/Temp/Parameters/Setup summary shown the moment a species is
+  // selected — see CompatibilitySummary below.
 
   async function handleSearch(value: string) {
     setQuery(value);
@@ -127,58 +125,10 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     selectSpecies(id);
   }
 
-  /** "Done — go to my tank": if anything was added this visit, run one batch
-   *  compatibility check (existing-before-this-visit fish vs everything just
-   *  added) and show it before navigating; otherwise there's nothing new to
-   *  check, so just go. Never blocks leaving either way — Principle 01. */
-  async function handleDone() {
-    if (doneCompatResult) {
-      router.push(`/tank/${id}`);
-      return;
-    }
-    if (!tank || sessionAddedSpeciesIds.length === 0) {
-      router.push(`/tank/${id}`);
-      return;
-    }
-    setDoneChecking(true);
-    const existingSpeciesIds = Array.from(new Set((initialAliveRef.current ?? []).map((r) => r.speciesId)));
-    const newSpeciesIds = Array.from(new Set(sessionAddedSpeciesIds));
-    const result = await checkCompat({
-      lengthCm: tank.lengthCm,
-      widthCm: tank.widthCm,
-      heightCm: tank.heightCm,
-      existingSpeciesIds,
-      newSpeciesIds,
-      tankId: id,
-    });
-    setDoneChecking(false);
-    if (!result.ok) {
-      // Never block the save — Principle 01. Just go rather than dead-ending on a failed check.
-      router.push(`/tank/${id}`);
-      return;
-    }
-    const data = result.data.compat as unknown as { verdict: string; conflicts: CompatConflict[]; footprint_note: string };
-    const dismissed = new Set<string>();
-    for (const c of data.conflicts) {
-      const key = compatWarningKey(newSpeciesIds, c.type, c.with);
-      if (await isWarningDismissed(key)) dismissed.add(key);
-    }
-    setDoneDismissedKeys(dismissed);
-    setDoneCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
-  }
-
-  async function handleDismissDoneConflict(conflict: CompatConflict) {
-    const newSpeciesIds = Array.from(new Set(sessionAddedSpeciesIds));
-    const key = compatWarningKey(newSpeciesIds, conflict.type, conflict.with);
-    await dismissWarning({ tankId: id, warningKey: key });
-    setDoneDismissedKeys((prev) => new Set(prev).add(key));
-  }
-
   async function handleConfirmAdd() {
     if (!selectedSpeciesId || !count) return;
     const species = speciesById.get(selectedSpeciesId);
     await addLivestock({ tankId: id, speciesId: selectedSpeciesId, count: Number(count), nickname: nickname.trim() || undefined });
-    setSessionAddedSpeciesIds((prev) => [...prev, selectedSpeciesId]);
     const { isNewUnlock } = await unlockDexCard({ speciesId: selectedSpeciesId, unlockSource: "added_to_tank" });
     if (isNewUnlock) {
       setUnlockToast(firstName(species?.commonNames) ?? selectedSpeciesId);
@@ -206,9 +156,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     <Screen
       footer={
         <>
-          <PrimaryButton onClick={handleDone} disabled={doneChecking}>
-            {doneChecking ? "Checking compatibility..." : doneCompatResult ? "Continue to my tank" : "Done — go to my tank"}
-          </PrimaryButton>
+          <PrimaryButton onClick={() => router.push(`/tank/${id}`)}>Done — go to my tank</PrimaryButton>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
             You can always add more fish later from here.
           </p>
@@ -224,27 +172,6 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
           <Banner severity={w.severity}>{w.message}</Banner>
         </div>
       ))}
-
-      {doneCompatResult && (
-        <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Compatibility check</p>
-          {doneCompatResult.conflicts.filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(sessionAddedSpeciesIds)), c.type, c.with))).length === 0 && (
-            <Banner severity="improve">No conflicts found between your fish.</Banner>
-          )}
-          {doneCompatResult.conflicts
-            .filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(sessionAddedSpeciesIds)), c.type, c.with)))
-            .map((c, i) => (
-              <div key={i} style={{ marginBottom: 8 }}>
-                <Banner severity={c.severity === "critical" ? "fixNow" : "watch"} onDismiss={() => handleDismissDoneConflict(c)}>
-                  {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
-                </Banner>
-              </div>
-            ))}
-          {doneCompatResult.footprintNote && (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{doneCompatResult.footprintNote}</p>
-          )}
-        </Card>
-      )}
 
       {!showAdd && <PrimaryButton onClick={() => setShowAdd(true)}>+ Add Fish</PrimaryButton>}
 
@@ -377,6 +304,14 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
                 </button>
               )}
               <div style={{ height: 12 }} />
+
+              {tank && selectedSpecies && (
+                <CompatibilitySummary
+                  tank={tank}
+                  species={selectedSpecies}
+                  existingSpecies={aliveLivestock.map((l) => speciesById.get(l.speciesId)).filter((s): s is SpeciesRow => !!s)}
+                />
+              )}
 
               <PrimaryButton onClick={handleConfirmAdd}>Add to tank</PrimaryButton>
             </div>

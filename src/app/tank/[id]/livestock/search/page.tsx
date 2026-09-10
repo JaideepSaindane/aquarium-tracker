@@ -15,12 +15,11 @@ import { getTank } from "@/db/queries/tanks";
 import { listLivestockForTank, addLivestock } from "@/db/queries/livestock";
 import { listSpecies, searchSpecies, insertGeneratedSpecies } from "@/db/queries/species";
 import { unlockDexCard } from "@/db/queries/dex";
-import { checkCompat, generateSpecies } from "@/lib/ai-client";
-import { dismissWarning, isWarningDismissed, compatWarningKey } from "@/db/queries/dismissed-warnings";
+import { generateSpecies } from "@/lib/ai-client";
 import { isAiGenerated } from "@/lib/species-origin";
+import { CompatibilitySummary } from "@/components/CompatibilitySummary";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
-type CompatConflict = { type: string; severity: string; explanation: string; with: string[]; mitigation: string };
 
 function firstName(json: string | null | undefined): string | null {
   if (!json) return null;
@@ -57,14 +56,6 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
   const [justAdded, setJustAdded] = useState<{ speciesId: string; count: number }[]>([]);
   const [saving, setSaving] = useState(false);
 
-  // Compatibility runs once, in a single batch, when leaving via "Done" —
-  // not per fish while adding (2026-09-10, same pattern as the by-name add
-  // form and photo-ID screen: a one-at-a-time check while adding could
-  // never catch a conflict between two fish added in the same visit).
-  const [doneChecking, setDoneChecking] = useState(false);
-  const [doneCompatResult, setDoneCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
-  const [doneDismissedKeys, setDoneDismissedKeys] = useState<Set<string>>(new Set());
-
   async function handleSearch(value: string) {
     setQuery(value);
     setSelectedSpeciesId(null);
@@ -99,47 +90,6 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
     selectSpecies(newId);
   }
 
-  async function handleDone() {
-    if (doneCompatResult) {
-      router.replace(`/tank/${id}`);
-      return;
-    }
-    if (!tank || justAdded.length === 0) {
-      router.replace(`/tank/${id}`);
-      return;
-    }
-    setDoneChecking(true);
-    const existingSpeciesIds = Array.from(new Set(aliveLivestock.map((l) => l.speciesId)));
-    const newSpeciesIds = Array.from(new Set(justAdded.map((j) => j.speciesId)));
-    const result = await checkCompat({
-      lengthCm: tank.lengthCm,
-      widthCm: tank.widthCm,
-      heightCm: tank.heightCm,
-      existingSpeciesIds,
-      newSpeciesIds,
-      tankId: id,
-    });
-    setDoneChecking(false);
-    if (!result.ok) {
-      router.replace(`/tank/${id}`);
-      return;
-    }
-    const data = result.data.compat as unknown as { verdict: string; conflicts: CompatConflict[]; footprint_note: string };
-    const dismissed = new Set<string>();
-    for (const c of data.conflicts) {
-      const key = compatWarningKey(newSpeciesIds, c.type, c.with);
-      if (await isWarningDismissed(key)) dismissed.add(key);
-    }
-    setDoneDismissedKeys(dismissed);
-    setDoneCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
-  }
-
-  async function handleDismissDoneConflict(conflict: CompatConflict) {
-    const newSpeciesIds = Array.from(new Set(justAdded.map((j) => j.speciesId)));
-    const key = compatWarningKey(newSpeciesIds, conflict.type, conflict.with);
-    await dismissWarning({ tankId: id, warningKey: key });
-    setDoneDismissedKeys((prev) => new Set(prev).add(key));
-  }
 
   async function handleConfirmAdd() {
     if (!selectedSpeciesId || !count || Number(count) < 1) return;
@@ -175,35 +125,12 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
               ✓ {justAdded.length} fish added this session
             </p>
           )}
-          <PrimaryButton onClick={handleDone} disabled={doneChecking}>
-            {doneChecking ? "Checking compatibility..." : doneCompatResult ? "Continue to my tank" : "Done — back to my tank"}
-          </PrimaryButton>
+          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
         </>
       }
     >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
       <BackHeader title="Add a fish" fallbackHref={`/tank/${id}`} />
-
-      {doneCompatResult && (
-        <div style={{ marginBottom: 16, padding: 12, border: "1px solid var(--color-line)", borderRadius: "var(--radius-md)", background: "var(--color-surface)" }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Compatibility check</p>
-          {doneCompatResult.conflicts.filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(justAdded.map((j) => j.speciesId))), c.type, c.with))).length === 0 && (
-            <Banner severity="improve">No conflicts found between your fish.</Banner>
-          )}
-          {doneCompatResult.conflicts
-            .filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(justAdded.map((j) => j.speciesId))), c.type, c.with)))
-            .map((c, i) => (
-              <div key={i} style={{ marginBottom: 8 }}>
-                <Banner severity={c.severity === "critical" ? "fixNow" : "watch"} onDismiss={() => handleDismissDoneConflict(c)}>
-                  {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
-                </Banner>
-              </div>
-            ))}
-          {doneCompatResult.footprintNote && (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{doneCompatResult.footprintNote}</p>
-          )}
-        </div>
-      )}
 
       {/* Search goes first, right under the header — the "already in this
           tank" list used to sit above it, which could push search results
@@ -282,10 +209,8 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
           </div>
           <div style={{ height: 12 }} />
 
-          {/* Free, instant, no AI call — size/temp/pH/setup fit is computed
-              straight from species/tank data. Real AI compatibility (how
-              this species behaves around tankmates) now runs once, in a
-              batch, on "Done" — see handleDone above. */}
+          {/* Free, instant, no AI call — the only compatibility check in
+              this flow, per Jaideep's explicit call to drop the AI one. */}
           {tank && selectedSpecies && (
             <CompatibilitySummary
               tank={tank}
@@ -342,108 +267,5 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
         </div>
       )}
     </Screen>
-  );
-}
-
-type Verdict = "ok" | "watch" | "fixNow";
-
-/**
- * A crisp, always-the-same-shape compatibility readout — Size, Temp,
- * Parameters, and Setup are computed straight from species/tank data (no AI
- * round trip, no risk of vague prose), with a "Fish compatibility" section
- * underneath carrying the one thing that genuinely needs the model: how
- * this species behaves around what's already in the tank.
- */
-function CompatibilitySummary({
-  tank,
-  species,
-  existingSpecies,
-}: {
-  tank: { volumeL: number; lengthCm: number; widthCm: number };
-  species: SpeciesRow;
-  existingSpecies: SpeciesRow[];
-}) {
-  const rows: { label: string; verdict: Verdict; text: string }[] = [];
-
-  // Size
-  if (species.minVolumeL != null) {
-    const ok = tank.volumeL >= species.minVolumeL;
-    rows.push({
-      label: "Size",
-      verdict: ok ? "ok" : "fixNow",
-      text: ok ? `Needs ${species.minVolumeL}+ L — your ${tank.volumeL} L tank fits` : `Needs ${species.minVolumeL}+ L — your tank is only ${tank.volumeL} L`,
-    });
-  }
-
-  // Temp — overlap against whatever's already alive in the tank, not just this one species in isolation.
-  if (species.tempCMin != null && species.tempCMax != null) {
-    const existingRanges = existingSpecies.filter((s) => s.tempCMin != null && s.tempCMax != null);
-    if (existingRanges.length > 0) {
-      const overlapMin = Math.max(species.tempCMin, ...existingRanges.map((s) => s.tempCMin as number));
-      const overlapMax = Math.min(species.tempCMax, ...existingRanges.map((s) => s.tempCMax as number));
-      const ok = overlapMin <= overlapMax;
-      rows.push({
-        label: "Temp",
-        verdict: ok ? "ok" : "fixNow",
-        text: ok ? `${species.tempCMin}–${species.tempCMax}°C — overlaps your tank's current ${overlapMin}–${overlapMax}°C range` : `${species.tempCMin}–${species.tempCMax}°C — doesn't overlap what you already keep (needs ${overlapMin}–${overlapMax}°C)`,
-      });
-    } else {
-      rows.push({ label: "Temp", verdict: "ok", text: `${species.tempCMin}–${species.tempCMax}°C` });
-    }
-  }
-
-  // Parameters (pH)
-  if (species.phMin != null && species.phMax != null) {
-    const existingRanges = existingSpecies.filter((s) => s.phMin != null && s.phMax != null);
-    if (existingRanges.length > 0) {
-      const overlapMin = Math.max(species.phMin, ...existingRanges.map((s) => s.phMin as number));
-      const overlapMax = Math.min(species.phMax, ...existingRanges.map((s) => s.phMax as number));
-      const ok = overlapMin <= overlapMax;
-      rows.push({
-        label: "Parameters",
-        verdict: ok ? "ok" : "watch",
-        text: ok ? `pH ${species.phMin}–${species.phMax} — overlaps your tank's current ${overlapMin.toFixed(1)}–${overlapMax.toFixed(1)} range` : `pH ${species.phMin}–${species.phMax} — narrow overlap with what you already keep`,
-      });
-    } else {
-      rows.push({ label: "Parameters", verdict: "ok", text: `pH ${species.phMin}–${species.phMax}` });
-    }
-  }
-
-  // Setup — footprint, schooling, temperament: the "does my tank suit this fish's habits" facts.
-  const setupBits: string[] = [];
-  if (species.minFootprintLengthCm != null && species.minFootprintWidthCm != null) {
-    const ok = tank.lengthCm >= species.minFootprintLengthCm && tank.widthCm >= species.minFootprintWidthCm;
-    setupBits.push(`${ok ? "✓" : "⚠"} Needs ${species.minFootprintLengthCm}×${species.minFootprintWidthCm}cm floor space`);
-  }
-  if (species.socialMinGroup != null && species.socialMinGroup > 1) {
-    setupBits.push(`Best kept in groups of ${species.socialMinGroup}+`);
-  }
-  if (species.temperament) setupBits.push(`Temperament: ${species.temperament}`);
-  if (species.swimLevel) setupBits.push(`Swims: ${species.swimLevel}`);
-  if (setupBits.length > 0) {
-    const hasWarning = setupBits.some((b) => b.startsWith("⚠"));
-    rows.push({ label: "Setup", verdict: hasWarning ? "watch" : "ok", text: setupBits.join(" · ") });
-  }
-
-  return (
-    <div style={{ margin: "12px 0" }}>
-      {rows.map((r) => (
-        <div key={r.label} style={{ display: "flex", gap: 10, padding: "8px 0", borderTop: "1px solid var(--color-line-soft)" }}>
-          <span
-            style={{
-              flexShrink: 0,
-              width: 92,
-              fontSize: "var(--font-caption-size)",
-              fontWeight: 700,
-              color:
-                r.verdict === "fixNow" ? "var(--color-fix-now)" : r.verdict === "watch" ? "var(--color-watch)" : "var(--color-improve)",
-            }}
-          >
-            {r.label}
-          </span>
-          <span style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink)" }}>{r.text}</span>
-        </div>
-      ))}
-    </div>
   );
 }
