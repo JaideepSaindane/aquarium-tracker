@@ -16,11 +16,8 @@ import { getTank } from "@/db/queries/tanks";
 import { createScan } from "@/db/queries/scans";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { addPhoto } from "@/db/queries/photos";
-import { createTask } from "@/db/queries/tasks";
 import { buildTankContext } from "@/lib/tank-context";
 import { scanTank } from "@/lib/ai-client";
-import { presetRrule, presetLabel } from "@/lib/reminder-presets";
-import { syncReminder } from "@/lib/push-client";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
 import { writePhotoFile } from "@/lib/opfs-files";
@@ -32,10 +29,6 @@ const SEVERITY_ORDER: SeverityLevel[] = ["fixNow", "watch", "improve"];
 const SEVERITY_KEY: Record<string, SeverityLevel> = { fix_now: "fixNow", watch: "watch", improve: "improve" };
 const QUESTION_THRESHOLD = 0.35;
 const NEVER_PHOTO_ANSWERABLE = /\bph\b|ammonia|nitrite|nitrate|water parameter|temperature/i;
-
-function daysFromNow(days: number): string {
-  return new Date(Date.now() + days * 86400000).toISOString();
-}
 
 type Stage = "idle" | "checking" | "rejected" | "scanning" | "scan-error" | "report" | "saving" | "saved";
 
@@ -61,7 +54,6 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const [report, setReport] = useState<TankScanReport | null>(null);
-  const [addedReminders, setAddedReminders] = useState<Set<number>>(new Set());
 
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const libraryInputRef = useRef<HTMLInputElement>(null);
@@ -150,17 +142,6 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     setStage("saved");
   }
 
-  async function handleAddReminder(index: number) {
-    if (!report || !tank) return;
-    const rec = report.recommended_maintenance[index];
-    const nextDueAt = daysFromNow(rec.interval_days);
-    const title = presetLabel(rec.preset_type);
-    const rrule = presetRrule(rec.interval_days);
-    const taskId = await createTask({ tankId: id, title, presetType: rec.preset_type, rrule, nextDueAt });
-    await syncReminder({ taskId, title, tankId: id, tankName: tank.name, dueAt: nextDueAt, rrule });
-    setAddedReminders((prev) => new Set(prev).add(index));
-  }
-
   if (!tank) return <Screen>Loading...</Screen>;
 
   const backTarget = `/tank/${id}`;
@@ -243,27 +224,6 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
               <p key={f.id} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
                 {f.title}?
               </p>
-            ))}
-          </Card>
-        )}
-
-        {report.recommended_maintenance.length > 0 && (
-          <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Suggested reminders</p>
-            {report.recommended_maintenance.map((rec, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8 }}>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{presetLabel(rec.preset_type)}</p>
-                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{rec.why}</p>
-                </div>
-                {addedReminders.has(i) ? (
-                  <span style={{ color: "var(--color-improve)", fontSize: "var(--font-caption-size)", fontWeight: 600, flexShrink: 0 }}>Added ✓</span>
-                ) : (
-                  <SecondaryButton style={{ width: "auto", padding: "4px 12px", flexShrink: 0 }} onClick={() => handleAddReminder(i)}>
-                    + Add
-                  </SecondaryButton>
-                )}
-              </div>
             ))}
           </Card>
         )}

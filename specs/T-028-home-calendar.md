@@ -1,5 +1,7 @@
 # T-028 — Home / Cross-Tank Calendar
 
+**REMOVED 2026-09-10** — this whole screen was a cross-tank reminders calendar, so it was deleted along with the rest of T-018 (Reminders) at Jaideep's direction. See `specs/PROGRESS.md`'s 2026-09-10 entry. Kept below for historical context only.
+
 **Phase 1 · Depends on: T-016, T-018 · Size: 1–2 days**
 
 ## Goal

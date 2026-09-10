@@ -9,7 +9,6 @@ import { Chip } from "@/components/Chip";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { GalleryPanel } from "@/components/GalleryPanel";
-import { RemindersPanel } from "@/components/RemindersPanel";
 import { JournalPanel } from "@/components/JournalPanel";
 import { useLiveQuery } from "@/db/live";
 import { getTank, deleteTank, updateTank } from "@/db/queries/tanks";
@@ -17,13 +16,11 @@ import { listEquipmentForTank } from "@/db/queries/equipment";
 import { listLivestockForTank, removeLivestock, updateLivestockCount } from "@/db/queries/livestock";
 import { listPhotosForTank } from "@/db/queries/photos";
 import { listSpecies } from "@/db/queries/species";
-import { listTasksForTank } from "@/db/queries/tasks";
 import { listLogEntriesForTank } from "@/db/queries/log-entries";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { readPhotoFile } from "@/lib/opfs-files";
 import { checkFilterFlow, checkHeaterWattage } from "@/lib/derived-checks";
 import { isAiGenerated } from "@/lib/species-origin";
-import { bucketFor } from "@/lib/schedule";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
 
@@ -51,7 +48,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(() => listSpecies(), []);
   const { data: photos } = useLiveQuery(() => listPhotosForTank(id), [id]);
-  const { data: tasks } = useLiveQuery(() => listTasksForTank(id), [id]);
   const { data: journalEntries } = useLiveQuery(() => listLogEntriesForTank(id), [id]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -61,7 +57,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
   const [galleryExpanded, setGalleryExpanded] = useState(false);
-  const [remindersExpanded, setRemindersExpanded] = useState(false);
   const [journalExpanded, setJournalExpanded] = useState(false);
   const [journalAutoOpenNew, setJournalAutoOpenNew] = useState(false);
 
@@ -96,12 +91,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const setupDate = tank.startedOn ? new Date(tank.startedOn) : new Date(tank.createdAt);
   const dateLabel = `Created ${formatDate(setupDate)}`;
   const waterBadge = tank.waterType === "brackish" ? { label: "Brackish", color: "var(--color-deep)" } : { label: "Freshwater", color: "var(--color-improve)" };
-
-  const dueCount = (tasks ?? []).filter((t) => {
-    const bucket = bucketFor(t.nextDueAt, new Date());
-    return bucket === "overdue" || bucket === "today";
-  }).length;
-  const needsAttention = dueCount > 0;
 
   const aliveSpeciesRows = aliveLivestock
     .map((l) => (allSpecies ?? []).find((s) => s.id === l.speciesId))
@@ -229,9 +218,9 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           {dateLabel}
           {tank.isPlanted && " · Planted"}
         </p>
-        <p style={{ margin: "6px 0 0", display: "flex", alignItems: "center", gap: 6, fontSize: "var(--font-caption-size)", fontWeight: 600, color: needsAttention ? "var(--color-fix-now)" : "var(--color-improve)" }}>
+        <p style={{ margin: "6px 0 0", display: "flex", alignItems: "center", gap: 6, fontSize: "var(--font-caption-size)", fontWeight: 600, color: "var(--color-improve)" }}>
           <span aria-hidden>●</span>
-          {needsAttention ? `${dueCount} due` : "Healthy"}
+          Healthy
         </p>
       </div>
 
@@ -432,23 +421,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       )}
 
       <CollapsedSectionCard
-        label="Reminders"
-        onToggle={() => setRemindersExpanded((v) => !v)}
-        onAdd={() => setRemindersExpanded(true)}
-        expanded={remindersExpanded}
-        preview={
-          <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-            {dueCount > 0 ? `${dueCount} due` : (tasks ?? []).length > 0 ? `${(tasks ?? []).length} scheduled` : "None set up yet"}
-          </span>
-        }
-      />
-      {remindersExpanded && (
-        <div style={sectionBodyStyle}>
-          <RemindersPanel tankId={id} />
-        </div>
-      )}
-
-      <CollapsedSectionCard
         label="Journal"
         onToggle={() => setJournalExpanded((v) => !v)}
         onAdd={() => {
@@ -558,7 +530,7 @@ function CollapsedSectionCard({
   onAdd?: () => void;
   preview: ReactNode;
   expanded?: boolean;
-  /** Livestock's "+ Add" opens a popup (search/photo), not something already visible in the expanded list — unlike Gallery/Reminders/Journal, whose own panel surfaces its own add affordance once open, so keep it showing here. */
+  /** Livestock's "+ Add" opens a popup (search/photo), not something already visible in the expanded list — unlike Gallery/Journal, whose own panel surfaces its own add affordance once open, so keep it showing here. */
   keepAddWhenExpanded?: boolean;
 }) {
   const router = useRouter();

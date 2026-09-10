@@ -6,7 +6,7 @@ import { hasSeenFirstTankTour, markFirstTankTourShown } from "@/db/queries/setti
 
 const CARDS = [
   { icon: "📈", title: "Log parameters", body: "Track ammonia, pH and more with graphs and per-tank target ranges — open any tank's Measure tab." },
-  { icon: "⏰", title: "Reminders", body: "Water changes, feeds and doses on a schedule that keeps itself — set once from a tank's Schedule tab." },
+  { icon: "📓", title: "Journal", body: "Every scan, check and treatment builds its own timeline automatically — open any tank's Journal tab to see it." },
   { icon: "💬", title: "Ask AquaAI", body: "Got a question about your tank? Ask anything — the answer already knows your setup." },
 ];
 

@@ -55,7 +55,6 @@ export default function PrivacyPage() {
         <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 8 }}>What does leave your device</h2>
         <ul style={{ margin: 0, paddingLeft: 18, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", lineHeight: 1.8 }}>
           <li>Tank Scan, Ask {APP_NAME}, Emergency Triage, compatibility checks, and photo species-ID send the photo/question/tank details you choose to submit to our server, which forwards it to an AI provider (Google Gemini, or Anthropic Claude in some cases) to generate a response. Only what a feature genuinely needs is sent — not your whole database.</li>
-          <li>Reminders you create are mirrored to our server (title, due time, repeat schedule, and an anonymous device id) so a scheduled push notification can be sent even while the app isn&apos;t open. No tank, species, or photo data is included in that mirror.</li>
           <li>If you use &quot;bring your own API key&quot; mode, your key is used only in your browser for that session and is never sent to or stored on our server.</li>
         </ul>
       </Card>

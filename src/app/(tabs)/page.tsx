@@ -13,21 +13,13 @@ import { useLiveQuery } from "@/db/live";
 import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listAllAliveLivestock } from "@/db/queries/livestock";
 import { listSpecies } from "@/db/queries/species";
-import { listAllActiveTasks } from "@/db/queries/tasks";
 import { getProfile } from "@/db/queries/profile";
-import { bucketFor } from "@/lib/schedule";
 import { useTranslation } from "@/i18n/use-translation";
 
 type TankLivestockThumb = { speciesId: string; count: number; imageUri?: string | null; category?: string | null };
 
 async function loadHomeData() {
-  const [allTanks, livestock, species, tasks, profile] = await Promise.all([
-    listTanks(),
-    listAllAliveLivestock(),
-    listSpecies(),
-    listAllActiveTasks(),
-    getProfile(),
-  ]);
+  const [allTanks, livestock, species, profile] = await Promise.all([listTanks(), listAllAliveLivestock(), listSpecies(), getProfile()]);
   // "Hide Tank" (Edit Tank screen) sets status to archived — hidden from
   // this list but not deleted, so it's still in exports and can be
   // recovered by editing status back. Only a real Delete removes a tank.
@@ -42,18 +34,7 @@ async function loadHomeData() {
     livestockByTank.set(row.tankId, list);
   }
 
-  const now = new Date();
-  const dueTodayByTank = new Map<string, number>();
-  let dueTodayTotal = 0;
-  for (const task of tasks) {
-    const bucket = bucketFor(task.nextDueAt, now);
-    if (bucket === "overdue" || bucket === "today") {
-      dueTodayByTank.set(task.tankId, (dueTodayByTank.get(task.tankId) ?? 0) + 1);
-      dueTodayTotal++;
-    }
-  }
-
-  return { tanks, livestockByTank, dueTodayByTank, dueTodayTotal, profileName: profile?.name };
+  return { tanks, livestockByTank, profileName: profile?.name };
 }
 
 function greeting(): string {
@@ -65,12 +46,13 @@ function greeting(): string {
 
 // Tanks list — the app's home screen. Restyled 2026-09-04 to match a
 // reference screenshot Jaideep shared: hero + greeting + search/filter row,
-// a plain "N tasks due today" card ahead of the tank list (was a coloured
-// banner after it), and tank cards redesigned with a bigger photo, water-type
-// icon, Planted/CO2 pills, creation date, per-fish circular thumbnails, and
-// a per-card "⋮" quick-actions menu (Edit/Hide/Delete). Bottom nav and the
-// name-based greeting were deliberately kept as-is — Jaideep's call when
-// asked, over switching to the mockup's own nav/persona-title styling.
+// and tank cards redesigned with a bigger photo, water-type icon, Planted/CO2
+// pills, creation date, per-fish circular thumbnails, and a per-card "⋮"
+// quick-actions menu (Edit/Hide/Delete). Bottom nav and the name-based
+// greeting were deliberately kept as-is — Jaideep's call when asked, over
+// switching to the mockup's own nav/persona-title styling. The reminders
+// feature (task-due card/chip) was removed 2026-09-10 — reminders are gone
+// app-wide, so every tank now just shows a plain "Healthy" badge.
 export default function TanksPage() {
   const router = useRouter();
   const { data, loading } = useLiveQuery(loadHomeData, []);
@@ -115,43 +97,6 @@ export default function TanksPage() {
             </h1>
           </div>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-            <Link
-              href="/home"
-              aria-label="Schedule"
-              style={{
-                position: "relative",
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.14)",
-                border: "1px solid rgba(255,255,255,0.28)",
-                backdropFilter: "blur(var(--glass-blur))",
-                WebkitBackdropFilter: "blur(var(--glass-blur))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 18,
-                flexShrink: 0,
-                color: "#fff",
-              }}
-            >
-              🔔
-              {(data?.dueTodayTotal ?? 0) > 0 && (
-                <span
-                  aria-hidden
-                  style={{
-                    position: "absolute",
-                    top: 6,
-                    right: 6,
-                    width: 9,
-                    height: 9,
-                    borderRadius: "50%",
-                    background: "var(--color-improve)",
-                    border: "1.5px solid rgba(255,255,255,0.9)",
-                  }}
-                />
-              )}
-            </Link>
             <Link
               href="/settings"
               aria-label="Settings"
@@ -245,68 +190,6 @@ export default function TanksPage() {
 
       {tanks && tanks.length > 0 && (
         <>
-          <Link href="/home" style={{ display: "block", marginBottom: 20 }}>
-            {data?.dueTodayTotal ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
-                  padding: 14,
-                  borderRadius: "var(--radius-lg)",
-                  background: "var(--soft-card-bg)",
-                  border: "1px solid var(--soft-card-border)",
-                  backdropFilter: "blur(var(--glass-blur))",
-                  WebkitBackdropFilter: "blur(var(--glass-blur))",
-                }}
-              >
-                <span
-                  aria-hidden
-                  style={{
-                    width: 40,
-                    height: 40,
-                    flexShrink: 0,
-                    borderRadius: "50%",
-                    background: "var(--soft-accent-soft)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 18,
-                  }}
-                >
-                  📅
-                </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>{data.dueTodayTotal} tasks due today</p>
-                  <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>Tap to view your calendar</p>
-                </div>
-                <span aria-hidden style={{ color: "var(--soft-ink-muted)", fontSize: 18 }}>
-                  ›
-                </span>
-              </div>
-            ) : (
-              // Thin, low-emphasis strip when there's nothing due — this
-              // card carries no actionable information in that state, so it
-              // shouldn't take up the same visual weight as when it does.
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "6px 12px",
-                  borderRadius: "var(--radius-pill)",
-                  background: "var(--soft-card-bg)",
-                  border: "1px solid var(--soft-card-border)",
-                }}
-              >
-                <span aria-hidden style={{ fontSize: 13 }}>
-                  ✅
-                </span>
-                <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", flex: 1 }}>All caught up today</p>
-              </div>
-            )}
-          </Link>
-
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, position: "relative" }}>
             <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>My tanks</p>
             <Link
@@ -334,8 +217,6 @@ export default function TanksPage() {
               const livestockThumbs = data?.livestockByTank.get(tank.id) ?? [];
               const visibleThumbs = livestockThumbs.slice(0, 4);
               const overflowCount = livestockThumbs.length - visibleThumbs.length;
-              const dueCount = data?.dueTodayByTank.get(tank.id) ?? 0;
-              const needsAttention = dueCount > 0;
               const isBrackish = tank.waterType === "brackish";
 
               return (
@@ -370,12 +251,12 @@ export default function TanksPage() {
                           fontWeight: 600,
                           padding: "2px 10px",
                           borderRadius: "var(--radius-pill)",
-                          color: needsAttention ? "var(--color-watch)" : "var(--color-improve)",
-                          background: needsAttention ? "var(--color-accent-soft)" : "var(--color-deep-soft)",
+                          color: "var(--color-improve)",
+                          background: "var(--color-deep-soft)",
                           flexShrink: 0,
                         }}
                       >
-                        {needsAttention ? `● ${dueCount} due` : "● Healthy"}
+                        ● Healthy
                       </span>
                     </div>
 

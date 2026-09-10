@@ -3,13 +3,12 @@
 // returns a plain number/object — no DB calls, no network, so this file is
 // trivial to eyeball and to unit-test against seeded data. Definitions
 // match specs/T-026-metrics-and-survival-prompt.md exactly; don't drift.
-import type { tanks, livestock, logEntries, measurements, tasks, aiInteractions, scans } from "@/db/schema";
+import type { tanks, livestock, logEntries, measurements, aiInteractions, scans } from "@/db/schema";
 
 type Tank = typeof tanks.$inferSelect;
 type Livestock = typeof livestock.$inferSelect;
 type LogEntry = typeof logEntries.$inferSelect;
 type Measurement = typeof measurements.$inferSelect;
-type Task = typeof tasks.$inferSelect;
 type AiInteraction = typeof aiInteractions.$inferSelect;
 type Scan = typeof scans.$inferSelect;
 
@@ -19,18 +18,16 @@ function daysBetween(a: Date, b: Date): number {
   return (a.getTime() - b.getTime()) / DAY_MS;
 }
 
-/** Tanks with a log entry, measurement or completed task in the last 14 days. */
+/** Tanks with a log entry or measurement in the last 14 days. */
 export function computeActiveTanks(
   tanksRows: Tank[],
   logEntryRows: LogEntry[],
   measurementRows: Measurement[],
-  taskRows: Task[],
   now = new Date()
 ): { activeCount: number; totalCount: number } {
   const activeTankIds = new Set<string>();
   for (const e of logEntryRows) if (daysBetween(now, new Date(e.occurredAt)) <= 14) activeTankIds.add(e.tankId);
   for (const m of measurementRows) if (daysBetween(now, new Date(m.measuredAt)) <= 14) activeTankIds.add(m.tankId);
-  for (const t of taskRows) if (t.lastDoneAt && daysBetween(now, new Date(t.lastDoneAt)) <= 14) activeTankIds.add(t.tankId);
   return { activeCount: activeTankIds.size, totalCount: tanksRows.length };
 }
 
@@ -60,13 +57,8 @@ export function computeActivation(
   return { activated: true, reason: "Tank created, scanned and logged within 48h of install" };
 }
 
-/** Distinct calendar days (since install) with at least one log action — a log entry, measurement or completed task. */
-export function computeLoggingRetentionDays(
-  logEntryRows: LogEntry[],
-  measurementRows: Measurement[],
-  taskRows: Task[],
-  installedAt: string | null
-): number {
+/** Distinct calendar days (since install) with at least one log action — a log entry or measurement. */
+export function computeLoggingRetentionDays(logEntryRows: LogEntry[], measurementRows: Measurement[], installedAt: string | null): number {
   if (!installedAt) return 0;
   const installDate = new Date(installedAt);
   const days = new Set<string>();
@@ -76,7 +68,6 @@ export function computeLoggingRetentionDays(
   };
   for (const e of logEntryRows) add(e.occurredAt);
   for (const m of measurementRows) add(m.measuredAt);
-  for (const t of taskRows) if (t.lastDoneAt) add(t.lastDoneAt);
   return days.size;
 }
 

@@ -11,10 +11,7 @@ import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { addLogEntry } from "@/db/queries/log-entries";
-import { createTask } from "@/db/queries/tasks";
 import { runTriage } from "@/lib/ai-client";
-import { syncReminder } from "@/lib/push-client";
-import { presetRrule } from "@/lib/reminder-presets";
 import { TriageZod, type TriageReport } from "@/server/ai/schemas/triage";
 
 const SYMPTOMS = [
@@ -33,10 +30,6 @@ const AFFECTED_OPTIONS = ["Just one", "A few", "Most", "All"];
 const DURATION_OPTIONS = ["Under an hour", "A few hours", "About a day", "Several days", "Not sure"];
 const WATER_TEST_OPTIONS = ["Tested recently, results look fine", "Tested recently, something's off", "Haven't tested"];
 
-function daysFromNow(days: number): string {
-  return new Date(Date.now() + days * 86400000).toISOString();
-}
-
 type Stage = "intake" | "loading" | "result" | "error";
 
 export default function EmergencyPage() {
@@ -51,7 +44,6 @@ export default function EmergencyPage() {
   const [report, setReport] = useState<TriageReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedIncident, setSavedIncident] = useState(false);
-  const [reminderMessage, setReminderMessage] = useState<string | null>(null);
 
   function toggleSymptom(s: string) {
     setSelectedSymptoms((prev) => {
@@ -112,15 +104,6 @@ export default function EmergencyPage() {
       setError("Couldn't reach the server. Please try again.");
       setStage("error");
     }
-  }
-
-  async function handleAddFollowUp(label: string, presetType: string, intervalDays: number) {
-    if (!tankId || !selectedTank) return;
-    const nextDueAt = daysFromNow(intervalDays);
-    const rrule = presetRrule(intervalDays);
-    const taskId = await createTask({ tankId, title: label, presetType, rrule, nextDueAt });
-    await syncReminder({ taskId, title: label, tankId, tankName: selectedTank.name, dueAt: nextDueAt, rrule });
-    setReminderMessage(`Reminder set: ${label}`);
   }
 
   if (stage === "result" && report) {
@@ -222,21 +205,6 @@ export default function EmergencyPage() {
           </Card>
         )}
 
-        {tankId && (
-          <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Follow-up reminders</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <SecondaryButton onClick={() => handleAddFollowUp("Retest water", "test", 1)}>Retest in ~12–24 hours</SecondaryButton>
-              <SecondaryButton onClick={() => handleAddFollowUp("Follow-up water change", "water_change", 1)}>
-                Water change tomorrow
-              </SecondaryButton>
-            </div>
-            {reminderMessage && (
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>{reminderMessage}</p>
-            )}
-          </Card>
-        )}
-
         {savedIncident && (
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center", marginBottom: 16 }}>
             Saved to this tank&apos;s journal.
@@ -250,7 +218,6 @@ export default function EmergencyPage() {
             setSelectedSymptoms(new Set());
             setPhoto(null);
             setSavedIncident(false);
-            setReminderMessage(null);
           }}
         >
           Start a new triage

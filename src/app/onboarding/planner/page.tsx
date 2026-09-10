@@ -31,10 +31,7 @@ import { addEquipment } from "@/db/queries/equipment";
 import { addLivestock } from "@/db/queries/livestock";
 import { addPlant } from "@/db/queries/plants";
 import { unlockDexCard } from "@/db/queries/dex";
-import { createTask } from "@/db/queries/tasks";
 import { addLogEntry } from "@/db/queries/log-entries";
-import { syncReminder } from "@/lib/push-client";
-import { REMINDER_PRESETS, presetRrule } from "@/lib/reminder-presets";
 import { getPlannerAdvice } from "@/lib/ai-client";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
@@ -46,12 +43,6 @@ type AiPlan = {
   suggested_plants: { species_id: string; why: string }[];
   stocking_notes: { severity: string; note: string }[];
 };
-
-// Same tiny helper every other seeding page defines inline (tank/new,
-// onboarding/report, ask, emergency) — a due date N days out, ISO.
-function daysFromNow(days: number): string {
-  return new Date(Date.now() + days * 86400000).toISOString();
-}
 
 /** Two-line clamp for advisor suggestion rows (Jaideep, 2026-09-06: "don't keep more than 2 lines"). */
 const twoLineClamp: React.CSSProperties = {
@@ -273,15 +264,6 @@ export default function OnboardingPlannerPage() {
       for (const p of picked) {
         await addLivestock({ tankId, speciesId: p.speciesId, count: p.count, status: "planned" });
         await unlockDexCard({ speciesId: p.speciesId, unlockSource: "added_to_tank" }).catch(() => {});
-      }
-
-      const defaults = new Set(["water_change", "feed", "test"]);
-      for (const preset of REMINDER_PRESETS) {
-        if (!defaults.has(preset.type)) continue;
-        const nextDueAt = daysFromNow(preset.intervalDays);
-        const rrule = presetRrule(preset.intervalDays);
-        const taskId = await createTask({ tankId, title: preset.label, presetType: preset.type, rrule, nextDueAt });
-        await syncReminder({ taskId, title: preset.label, tankId, tankName: tankName.trim() || `${lengthFt}ft tank`, dueAt: nextDueAt, rrule }).catch(() => {});
       }
 
       const planLines = [
@@ -584,7 +566,7 @@ export default function OnboardingPlannerPage() {
             Plan saved. You&apos;re offline right now, so the tank page couldn&apos;t load — your tank is safe on this phone and will open normally once you&apos;re back online.
           </Banner>
           <p style={{ color: "var(--color-ink-muted)", marginTop: 12 }}>
-            Everything you planned — equipment, wishlist fish, and three starter reminders — is already on this device.
+            Everything you planned — equipment and wishlist fish — is already on this device.
           </p>
         </>
       ) : (
@@ -844,7 +826,7 @@ export default function OnboardingPlannerPage() {
           )}
 
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
-            Saving creates the tank as <strong>Planned</strong> with three starter reminders (water change, feed, test water). You can adjust everything later.
+            Saving creates the tank as <strong>Planned</strong>. You can adjust everything later.
           </p>
 
           {saveError && <Banner severity="fixNow">{saveError}</Banner>}

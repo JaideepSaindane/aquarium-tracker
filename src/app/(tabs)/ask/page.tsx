@@ -12,20 +12,13 @@ import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { listAiInteractions, rateAiInteraction } from "@/db/queries/ai-interactions";
-import { createTask } from "@/db/queries/tasks";
 import { askQuestion, peekQuotaStatus, type QuotaStatus } from "@/lib/ai-client";
-import { syncReminder } from "@/lib/push-client";
-import { presetRrule } from "@/lib/reminder-presets";
 import { buildTankContext } from "@/lib/tank-context";
 import { useLocale } from "@/i18n/use-locale";
 import { AskZod, type AskAnswer } from "@/server/ai/schemas/ask";
 import styles from "./ask.module.css";
 
 const STARTER_QUESTIONS = ["Is my tank set up correctly?", "What should I be doing this week?", "Can I add more fish?"];
-
-function daysFromNow(days: number): string {
-  return new Date(Date.now() + days * 86400000).toISOString();
-}
 
 type Stage = "idle" | "loading";
 type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInteractions>>>[number];
@@ -105,16 +98,8 @@ export default function AskPage() {
   }
 
   async function runAction(action: AskAnswer["actions"][number], forTankId: string, key: string) {
-    if (action.type === "create_task" && forTankId) {
-      const payload = action.payload as { preset_type?: string; title?: string; interval_days?: number };
-      const intervalDays = payload.interval_days ?? 7;
-      const title = payload.title ?? action.label;
-      const nextDueAt = daysFromNow(intervalDays);
-      const rrule = presetRrule(intervalDays);
-      const tank = tanks?.find((t) => t.id === forTankId);
-      const taskId = await createTask({ tankId: forTankId, title, presetType: payload.preset_type, rrule, nextDueAt });
-      await syncReminder({ taskId, title, tankId: forTankId, tankName: tank?.name ?? "Tank", dueAt: nextDueAt, rrule });
-      setActionMessage((m) => ({ ...m, [key]: `Reminder created: ${title}` }));
+    if (action.type === "create_task") {
+      setActionMessage((m) => ({ ...m, [key]: "Reminders aren't available in this version." }));
     } else if (action.type === "open_species") {
       const payload = action.payload as { species_id?: string };
       if (payload.species_id) router.push(`/dex/${payload.species_id}`);

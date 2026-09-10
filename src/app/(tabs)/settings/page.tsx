@@ -22,17 +22,6 @@ import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
 import { useTheme, type ThemeChoice } from "@/theme/ThemeProvider";
 import type { Locale } from "@/i18n/types";
-import {
-  detectPlatform,
-  isStandalone,
-  iosNeedsInstallFirst,
-  pushIsSupported,
-  getPermissionState,
-  requestPermissionAndSubscribe,
-  unsubscribe,
-  checkBrowserSubscription,
-  sendTestReminder,
-} from "@/lib/push-client";
 
 function timestamp() {
   return new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
@@ -58,24 +47,11 @@ export default function SettingsPage() {
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
 
-  const [permission, setPermission] = useState<NotificationPermission | "unsupported">("unsupported");
-  const [subscribed, setSubscribed] = useState(false);
-  const [pushBusy, setPushBusy] = useState<string | null>(null);
-  const [pushMessage, setPushMessage] = useState<string | null>(null);
-
   const [survivalPromptOff, setSurvivalPromptOff] = useState(false);
-
-  function refreshPushState() {
-    Promise.resolve()
-      .then(() => setPermission(getPermissionState()))
-      .then(checkBrowserSubscription)
-      .then(setSubscribed);
-  }
 
   useEffect(() => {
     ensureDb();
     canShareFiles().then(setShareSupported);
-    refreshPushState();
     getProfile().then((p) => {
       if (p) {
         setProfileName(p.name ?? "");
@@ -133,39 +109,6 @@ export default function SettingsPage() {
     } catch {
       setShareMessage(url);
     }
-  }
-
-  const platform = typeof window !== "undefined" ? detectPlatform() : "desktop";
-  const needsIosInstall = typeof window !== "undefined" && iosNeedsInstallFirst();
-  const supported = typeof window !== "undefined" && pushIsSupported();
-
-  async function handleEnableReminders() {
-    setPushBusy("enable");
-    setPushMessage(null);
-    const result = await requestPermissionAndSubscribe();
-    setPushBusy(null);
-    if (result.ok) {
-      setPushMessage("Reminders are on for this device.");
-    } else {
-      setPushMessage(result.reason);
-    }
-    await refreshPushState();
-  }
-
-  async function handleDisableReminders() {
-    setPushBusy("disable");
-    await unsubscribe();
-    setPushBusy(null);
-    setPushMessage("Reminders turned off for this device.");
-    await refreshPushState();
-  }
-
-  async function handleTestReminder() {
-    setPushBusy("test");
-    setPushMessage(null);
-    const result = await sendTestReminder();
-    setPushBusy(null);
-    setPushMessage(result.ok ? "Test reminder sent — it should arrive any moment." : result.error);
   }
 
   async function withBusy(label: string, fn: () => Promise<void>) {
@@ -344,7 +287,7 @@ export default function SettingsPage() {
           <div style={{ marginTop: 8, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", lineHeight: 1.6 }}>
             <p style={{ marginBottom: 8 }}>
               Species care data, disease reference, emergency triage, all 8 standard water parameters, compatibility checks,
-              reminders, journal, export and the Species Dex stay free forever for everyone — always have, always will.
+              journal, export and the Species Dex stay free forever for everyone — always have, always will.
             </p>
             <p style={{ marginBottom: 8 }}>
               <strong>
@@ -384,7 +327,7 @@ export default function SettingsPage() {
           not something a returning user should have to guess is hidden behind a triangle. */}
       <details>
         <summary style={{ cursor: "pointer", color: "var(--color-ink)", fontWeight: 700, fontSize: "var(--font-body-size)", padding: "10px 0" }}>
-          More: export &amp; import your data, notification diagnostics, restart the tour
+          More: export &amp; import your data, restart the tour
         </summary>
 
         <div style={{ height: 8 }} />
@@ -428,59 +371,6 @@ export default function SettingsPage() {
             <Banner severity="neutral">{message}</Banner>
           </div>
         )}
-
-        <Card style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Reminders</h2>
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-            A reminder that silently never arrives is worse than no reminders at all — this is why this section exists.
-          </p>
-
-          <div style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 12, lineHeight: 1.6 }}>
-            <div>Platform: {platform}</div>
-            <div>Push supported in this browser: {supported ? "yes" : "no"}</div>
-            <div>Notification permission: {permission}</div>
-            <div>App installed (standalone): {typeof window !== "undefined" && isStandalone() ? "yes" : "no"}</div>
-            <div>Subscription registered on this device: {subscribed ? "yes" : "no"}</div>
-          </div>
-
-          {needsIosInstall && (
-            <div style={{ marginBottom: 12 }}>
-              <Banner severity="watch">
-                iOS only allows push notifications for an installed app. Tap the Share icon in Safari, then &quot;Add to Home
-                Screen&quot;, then open {APP_NAME} from there and come back to this screen.
-              </Banner>
-            </div>
-          )}
-
-          {!supported && !needsIosInstall && (
-            <div style={{ marginBottom: 12 }}>
-              <Banner severity="watch">This browser doesn&apos;t support push notifications. The in-app schedule still works fully.</Banner>
-            </div>
-          )}
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {!subscribed ? (
-              <PrimaryButton onClick={handleEnableReminders} disabled={pushBusy !== null || !supported || needsIosInstall}>
-                {pushBusy === "enable" ? "Enabling..." : "Enable reminders on this device"}
-              </PrimaryButton>
-            ) : (
-              <>
-                <SecondaryButton onClick={handleTestReminder} disabled={pushBusy !== null}>
-                  {pushBusy === "test" ? "Sending..." : "Send a test reminder"}
-                </SecondaryButton>
-                <SecondaryButton onClick={handleDisableReminders} disabled={pushBusy !== null}>
-                  {pushBusy === "disable" ? "Turning off..." : "Turn off reminders on this device"}
-                </SecondaryButton>
-              </>
-            )}
-          </div>
-
-          {pushMessage && (
-            <div style={{ marginTop: 12 }}>
-              <Banner severity="neutral">{pushMessage}</Banner>
-            </div>
-          )}
-        </Card>
 
         <Card style={{ marginBottom: 16 }}>
           <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Onboarding</h2>

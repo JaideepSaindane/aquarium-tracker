@@ -54,7 +54,7 @@ Pivoted from native (Expo/React Native) to web on 2026-08-31. Verified current a
 | UI state | Zustand |
 | Network state | TanStack Query — **for AI/network calls only** |
 | Camera | Native `<input type="file" accept="image/*" capture="environment">` |
-| Notifications | Web Push (`web-push` + a service worker), requires a small backend |
+| Notifications | None — Web Push/reminders was built (T-018) then removed 2026-09-10, see "Reminders" below |
 | Payments | Stripe Checkout + Customer Portal |
 | Build/release | Vercel (or equivalent) — deploy on push, no store review |
 | AI | Provider-agnostic adapter, default Gemini 3.5 Flash-Lite, called from Next.js API routes |
@@ -64,7 +64,6 @@ Pivoted from native (Expo/React Native) to web on 2026-08-31. Verified current a
 - **SQLite (via WASM) is still the source of truth**, now persisted to OPFS (Origin Private File System) instead of the phone's filesystem. Zustand is UI state. TanStack Query wraps network calls only. Do not cache local SQLite data in TanStack Query — Drizzle live queries already give reactive re-rendering, and layering a cache creates two sources of truth that drift.
 - **OPFS requires a secure context (HTTPS) and is not available in every browser** (notably not in regular Safari tabs outside a worker in some versions) — verify current support before building on it, and design a graceful "your browser can't store data locally" fallback message rather than a silent failure.
 - **Never put an AI API key in client-side code or a bundle.** All model calls go through Next.js API routes (server-side) acting as the proxy. The only exception is the user's own key in bring-your-own-key mode, which lives in the browser's `IndexedDB`/`localStorage` is NOT acceptable for a secret — use it only in-memory per session, or accept the tradeoff explicitly with the user.
-- **Web Push needs a backend component and VAPID keys.** It does not work at all when the site is not installed/permitted, and iOS Safari only supports it for installed (Add to Home Screen) PWAs, and only from a fairly recent iOS version — verify against current iOS support before promising reminders will work on iPhone.
 - Test on real phone browsers (Chrome on Android, Safari on iOS), not just desktop dev tools' device emulation — camera capture, OPFS, and Push behave differently on-device.
 
 ---
@@ -97,15 +96,17 @@ Written up as `corpus:ph-ammonia-trap`. See `docs/05-content-guide.md`.
 
 ---
 
-## Reminders — treat as a genuine risk, just a different one
+## Reminders — removed 2026-09-10
 
-Web Push replaces local OS notifications. It needs a small backend (VAPID keys, subscription storage, a send endpoint) and the app must be installed (Add to Home Screen) for reliable delivery on iOS.
+The Reminders feature (T-018: per-tank task scheduling, quick-task presets, Web Push notifications, the cross-tank Home calendar) was built, then removed entirely at Jaideep's explicit direction ("remove the reminders functionality from everywhere. Its useless"). This section is kept as a historical record — **do not rebuild this without Jaideep asking again.** If reminders come back, treat it as a fresh feature decision, not a restoration of the below.
 
-- **Reminders require the user to install the PWA and grant notification permission.** Build a clear, honest in-app prompt explaining why ("so we can remind you when the water change is due"), and keep the in-app task list fully useful for anyone who declines or hasn't installed.
-- **iOS Safari only supports Web Push for installed PWAs**, and only from iOS 16.4+. Verify current support before launch and be explicit in-app about which platforms support push today.
-- Store push subscriptions per device in the backend; a user with the app installed on two phones has two subscriptions.
-- **Build an in-app "Are my reminders working?" diagnostics screen** — permission state, subscription registered, a "send a test reminder in 60 seconds" button. Same reasoning as the native plan: a reminder that silently never arrives is worse than no reminders feature.
-- Test on a **real installed PWA on both an Android phone and an iPhone**, not just desktop Chrome — push behaviour differs meaningfully by platform.
+The tables (`tasks`, `push_subscriptions`, `push_sends`), API routes (`/api/push/*`), server push helpers, `RemindersPanel`, `FloatingAskButton`'s sibling reminder UI, the `/home` cross-tank calendar route, the Vercel cron job, and the service worker's `push`/`notificationclick` handlers are all gone. `src/lib/schedule.ts` still exists but only for its date-formatting helpers (`localDateInputToIso`/`isoToLocalDateInput`), reused by unrelated date fields (tank setup date, gallery grouping) — not for anything reminders-related.
+
+The original design notes, preserved for context only:
+
+- Reminders required installing the PWA and granting notification permission; iOS Safari only supported Web Push for installed PWAs, from iOS 16.4+.
+- Push subscriptions were stored per device in the backend (VAPID keys, a send endpoint, a daily Vercel Cron sweep).
+- A "send a test reminder" diagnostics flow existed in Settings.
 
 ---
 

@@ -9,7 +9,6 @@ import { listTanks } from "@/db/queries/tanks";
 import { listAllLivestock } from "@/db/queries/livestock";
 import { listAllLogEntries } from "@/db/queries/log-entries";
 import { listAllMeasurements } from "@/db/queries/measurements";
-import { listAllTasks } from "@/db/queries/tasks";
 import { listAiInteractions } from "@/db/queries/ai-interactions";
 import { listAllScans } from "@/db/queries/scans";
 import { getInstalledAt } from "@/db/queries/settings";
@@ -38,7 +37,6 @@ export default function MetricsDevPage() {
   const { data: livestockRows } = useLiveQuery(listAllLivestock, []);
   const { data: logEntryRows } = useLiveQuery(listAllLogEntries, []);
   const { data: measurementRows } = useLiveQuery(listAllMeasurements, []);
-  const { data: taskRows } = useLiveQuery(listAllTasks, []);
   const { data: interactionRows } = useLiveQuery(listAiInteractions, []);
   const { data: scanRows } = useLiveQuery(listAllScans, []);
   const [installedAt, setInstalledAt] = useState<string | null>(null);
@@ -51,7 +49,7 @@ export default function MetricsDevPage() {
     });
   }, []);
 
-  const loaded = tanks && livestockRows && logEntryRows && measurementRows && taskRows && interactionRows && scanRows;
+  const loaded = tanks && livestockRows && logEntryRows && measurementRows && interactionRows && scanRows;
 
   if (!loaded) {
     return (
@@ -61,9 +59,9 @@ export default function MetricsDevPage() {
     );
   }
 
-  const active = computeActiveTanks(tanks, logEntryRows, measurementRows, taskRows);
+  const active = computeActiveTanks(tanks, logEntryRows, measurementRows);
   const activation = computeActivation(tanks, scanRows, logEntryRows, installedAt);
-  const retentionDays = computeLoggingRetentionDays(logEntryRows, measurementRows, taskRows, installedAt);
+  const retentionDays = computeLoggingRetentionDays(logEntryRows, measurementRows, installedAt);
   const trust = computeAiTrust(interactionRows);
   const survival = compute90DaySurvival(livestockRows);
 

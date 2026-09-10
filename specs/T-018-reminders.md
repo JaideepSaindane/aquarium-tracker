@@ -1,5 +1,7 @@
 # T-018 — Reminders, calendar, Web Push reliability
 
+**REMOVED 2026-09-10** — this feature was fully built, then torn out app-wide at Jaideep's explicit direction ("remove the reminders functionality from everywhere. Its useless"). See `specs/PROGRESS.md`'s 2026-09-10 entry for exactly what was removed and where. Kept below for historical context only — do not rebuild from this spec without Jaideep asking again.
+
 **Phase 1 · Depends on: T-011 · Size: 3–4 days**
 
 *Rewritten 2026-08-31 for the web pivot. Local OS notifications (`expo-notifications`) are replaced by Web Push, which needs a small backend component. The risk profile changes — no more OEM battery-killer battle — but a new hard constraint appears: iOS requires the PWA to be installed before push works at all.*

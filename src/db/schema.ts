@@ -176,38 +176,6 @@ export const measurements = sqliteTable("measurements", {
   deletedAt: text("deleted_at"),
 });
 
-export const tasks = sqliteTable("tasks", {
-  id: text("id").primaryKey(),
-  tankId: text("tank_id").notNull(),
-  livestockId: text("livestock_id"),
-  title: text("title").notNull(),
-  presetType: text("preset_type"), // water_change | filter_clean | dose | co2_refill | trim | test | custom
-  rrule: text("rrule"),
-  nextDueAt: text("next_due_at"),
-  lastDoneAt: text("last_done_at"),
-  isActive: integer("is_active", { mode: "boolean" }),
-  createdAt: text("created_at").notNull(),
-  updatedAt: text("updated_at").notNull(),
-  deletedAt: text("deleted_at"),
-});
-
-// Web Push (T-018) — renamed from scheduled_notifications on 2026-08-31 for the web pivot.
-export const pushSubscriptions = sqliteTable("push_subscriptions", {
-  id: text("id").primaryKey(),
-  deviceLabel: text("device_label"),
-  subscriptionJson: text("subscription_json").notNull(),
-  createdAt: text("created_at").notNull(),
-  lastSeenAt: text("last_seen_at"),
-});
-
-export const pushSends = sqliteTable("push_sends", {
-  id: text("id").primaryKey(),
-  taskId: text("task_id").notNull(),
-  subscriptionId: text("subscription_id").notNull(),
-  sentAt: text("sent_at").notNull(),
-  status: text("status").notNull(), // sent | failed | pruned
-});
-
 export const logEntries = sqliteTable("log_entries", {
   id: text("id").primaryKey(),
   tankId: text("tank_id").notNull(),

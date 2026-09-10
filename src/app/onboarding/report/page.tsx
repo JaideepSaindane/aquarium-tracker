@@ -15,12 +15,9 @@ import { useScanSession } from "@/store/use-scan-session";
 import { createTank } from "@/db/queries/tanks";
 import { addEquipment } from "@/db/queries/equipment";
 import { addPlant } from "@/db/queries/plants";
-import { createTask } from "@/db/queries/tasks";
 import { createScan } from "@/db/queries/scans";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { addPhoto } from "@/db/queries/photos";
-import { presetRrule, presetLabel } from "@/lib/reminder-presets";
-import { syncReminder } from "@/lib/push-client";
 import { FILTER_SUBTYPES } from "@/lib/common-options";
 import type { SeverityLevel } from "@/theme/tokens";
 
@@ -47,10 +44,6 @@ const EQUIPMENT_TYPES = [
 ];
 
 type ManualEquipment = { type: string; subtype?: string; wattage?: number; ratedLph?: number };
-
-function daysFromNow(days: number): string {
-  return new Date(Date.now() + days * 86400000).toISOString();
-}
 
 export default function ScanReportPage() {
   const router = useRouter();
@@ -160,14 +153,6 @@ export default function ScanReportPage() {
         if (plant.label.toLowerCase() === "none") continue;
         await addPlant({ tankId, commonName: plant.label });
       }
-      for (const rec of report.recommended_maintenance) {
-        const nextDueAt = daysFromNow(rec.interval_days);
-        const title = presetLabel(rec.preset_type);
-        const rrule = presetRrule(rec.interval_days);
-        const taskId = await createTask({ tankId, title, presetType: rec.preset_type, rrule, nextDueAt });
-        await syncReminder({ taskId, title, tankId, tankName: volumeName, dueAt: nextDueAt, rrule });
-      }
-
       if (session.originalPhotoPath) {
         await createScan({
           tankId,

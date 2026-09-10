@@ -2,12 +2,12 @@
 
 // Populates a realistic test database — three tanks, livestock (including
 // one added over 90 days ago), a few hundred measurements across several
-// parameters, ~50 photo rows, a handful of tasks and journal entries. T-012,
+// parameters, ~50 photo rows, and a handful of journal entries. T-012,
 // T-017, T-022 and T-026 all depend on this existing. See T-011 spec
 // "Migration discipline". Safe to run more than once — each run adds a
 // fresh batch rather than upserting, since this is throwaway dev data.
 import { db } from "./client";
-import { tanks, livestock, measurements, parameterDefs, tasks, logEntries, photos } from "./schema";
+import { tanks, livestock, measurements, parameterDefs, logEntries, photos } from "./schema";
 import { newId, nowIso } from "./id";
 import { notifyChanged } from "./live";
 
@@ -104,18 +104,8 @@ export async function seedTestData() {
     });
   }
 
-  // A handful of tasks and journal entries.
+  // A handful of journal entries.
   for (const tankId of tankIds) {
-    await db.insert(tasks).values({
-      id: newId(),
-      tankId,
-      title: "Water change",
-      presetType: "water_change",
-      nextDueAt: daysAgoIso(-7),
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-    });
     await db.insert(logEntries).values({
       id: newId(),
       tankId,
@@ -128,5 +118,5 @@ export async function seedTestData() {
   }
 
   notifyChanged();
-  return { tanks: tankIds.length, livestock: livestockSpecs.length, measurements: measurementCount, photos: 50, tasks: tankIds.length, logEntries: tankIds.length };
+  return { tanks: tankIds.length, livestock: livestockSpecs.length, measurements: measurementCount, photos: 50, logEntries: tankIds.length };
 }

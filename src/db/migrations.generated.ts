@@ -71,5 +71,14 @@ export const migrations: Migration[] = [
     "statements": [
       "ALTER TABLE `profile` ADD `username` text;"
     ]
+  },
+  {
+    "tag": "0007_cynical_enchantress",
+    "when": 1789018237741,
+    "statements": [
+      "DROP TABLE `push_sends`;",
+      "DROP TABLE `push_subscriptions`;",
+      "DROP TABLE `tasks`;"
+    ]
   }
 ];
