@@ -11,7 +11,7 @@ import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
-import { SetupDateField } from "@/components/SetupDateField";
+import { AgeBandField, startedOnFromAgeBand, ageBandFromStartedOn, type AgeBand } from "@/components/AgeBandField";
 import { useLiveQuery } from "@/db/live";
 import { getTank, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listPlantsForTank, addPlant, removePlant } from "@/db/queries/plants";
@@ -20,7 +20,6 @@ import { writePhotoFile } from "@/lib/opfs-files";
 import { addPhoto } from "@/db/queries/photos";
 import { newId } from "@/db/id";
 import { FILTER_SUBTYPES, COMMON_PLANTS, COMMON_CITIES } from "@/lib/common-options";
-import { isoToLocalDateInput, localDateInputToIso } from "@/lib/schedule";
 
 export default function EditTankPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -32,7 +31,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [waterType, setWaterType] = useState<"fresh" | "brackish">("fresh");
-  const [setupDate, setSetupDate] = useState("");
+  const [ageBand, setAgeBand] = useState<AgeBand>("not_sure");
   const [isPlanted, setIsPlanted] = useState(false);
   const [hasCo2, setHasCo2] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -58,7 +57,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
     setName(tank.name);
     setCity(tank.city ?? "");
     setWaterType(tank.waterType === "brackish" ? "brackish" : "fresh");
-    setSetupDate(isoToLocalDateInput(tank.startedOn ?? tank.createdAt));
+    setAgeBand(ageBandFromStartedOn(tank.startedOn));
     setIsPlanted(!!tank.isPlanted);
     setHasCo2(!!tank.hasCo2);
   }
@@ -87,7 +86,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
         name: name.trim(),
         city: city.trim() || undefined,
         waterType,
-        startedOn: localDateInputToIso(setupDate),
+        startedOn: startedOnFromAgeBand(ageBand),
         isPlanted,
         hasCo2,
       });
@@ -202,7 +201,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
           </div>
         </div>
 
-        {setupDate && <SetupDateField value={setupDate} onChange={setSetupDate} />}
+        <AgeBandField value={ageBand} onChange={setAgeBand} />
 
         <Link href={`/tank/${id}/size`}>
           <div

@@ -8,13 +8,12 @@ import { BackHeader } from "@/components/BackHeader";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
-import { SetupDateField, isoToday } from "@/components/SetupDateField";
+import { AgeBandField, startedOnFromAgeBand, type AgeBand } from "@/components/AgeBandField";
 import { createTank, updateTank } from "@/db/queries/tanks";
 import { writePhotoFile } from "@/lib/opfs-files";
 import { addPhoto } from "@/db/queries/photos";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
-import { localDateInputToIso } from "@/lib/schedule";
 
 export default function NewTankPage() {
   const router = useRouter();
@@ -22,7 +21,7 @@ export default function NewTankPage() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [waterType, setWaterType] = useState<"fresh" | "brackish">("fresh");
-  const [setupDate, setSetupDate] = useState(isoToday());
+  const [ageBand, setAgeBand] = useState<AgeBand>("just_set_up");
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
   const [length, setLength] = useState("");
   const [width, setWidth] = useState("");
@@ -62,7 +61,7 @@ export default function NewTankPage() {
         heightCm,
         city: city.trim() || undefined,
         waterType,
-        startedOn: localDateInputToIso(setupDate),
+        startedOn: startedOnFromAgeBand(ageBand),
       });
 
       if (photo) {
@@ -72,7 +71,9 @@ export default function NewTankPage() {
         // Also the tank's first Gallery entry, not just its avatar — a
         // photo taken during setup shouldn't disappear the moment a nicer
         // one replaces the avatar later (Jaideep, 2026-09-02).
-        await addPhoto({ tankId: id, localUri: path, caption: "Setup photo", takenAt: localDateInputToIso(setupDate) });
+        // The photo is being taken right now, regardless of how old the
+        // tank itself is — not the (possibly much earlier) age-band date.
+        await addPhoto({ tankId: id, localUri: path, caption: "Setup photo", takenAt: new Date().toISOString() });
       }
 
       setSaved(true);
@@ -217,7 +218,7 @@ export default function NewTankPage() {
           </p>
         </div>
 
-        <SetupDateField value={setupDate} onChange={setSetupDate} />
+        <AgeBandField value={ageBand} onChange={setAgeBand} />
 
         {error && <p style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}>{error}</p>}
         {saved && <Banner severity="improve">Tank saved — opening it now...</Banner>}

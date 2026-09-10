@@ -39,13 +39,12 @@ export async function buildTankContext(tankId: string): Promise<string> {
   lines.push(`Planted: ${tank.isPlanted ? "yes" : "no"}, CO2: ${tank.hasCo2 ? "yes" : "no"}`);
   if (tank.city) lines.push(`City: ${tank.city}`);
   // Deliberately labelled as unverified, not "Tank age" — `startedOn` is
-  // whatever date the user typed into the setup form (usually just
-  // "today," the day they added the tank to the app), not a confirmed
-  // physical setup date. The gap between "when I assembled this tank" and
-  // "when I got around to logging it" can be weeks. Never let this number
-  // read as proof of cycling stage — see prompts/tank-scan.v2.md and
+  // derived from a rough age band the user tapped (2026-09-10: "Just set
+  // up" / "A few weeks" / etc., src/components/AgeBandField.tsx), stored as
+  // that band's midpoint date, not a confirmed physical setup date. Never
+  // let this number read as proof of cycling stage — see prompts/tank-scan.v2.md and
   // prompts/ask.v1.md, which are both told explicitly not to treat it as one.
-  if (ageDays != null) lines.push(`Days since added to the app: ${ageDays} (self-reported setup date, not verified — may not reflect actual physical tank age)`);
+  if (ageDays != null) lines.push(`Tank age: about ${ageDays} days (from a rough self-reported age band, not verified — may not reflect actual physical tank age)`);
 
   const aliveLivestock = livestock.filter((l) => l.status === "alive");
   if (aliveLivestock.length === 0) {

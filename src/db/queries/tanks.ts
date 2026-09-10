@@ -17,7 +17,7 @@ export type NewTank = {
   city?: string;
   isPlanted?: boolean;
   hasCo2?: boolean;
-  startedOn?: string;
+  startedOn?: string | null;
   substrate?: string;
   status?: string;
   setupType?: string;
