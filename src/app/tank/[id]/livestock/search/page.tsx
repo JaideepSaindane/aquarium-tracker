@@ -16,6 +16,7 @@ import { listLivestockForTank, addLivestock } from "@/db/queries/livestock";
 import { listSpecies, searchSpecies, insertGeneratedSpecies } from "@/db/queries/species";
 import { unlockDexCard } from "@/db/queries/dex";
 import { checkCompat, generateSpecies } from "@/lib/ai-client";
+import { dismissWarning, isWarningDismissed, compatWarningKey } from "@/db/queries/dismissed-warnings";
 import { isAiGenerated } from "@/lib/species-origin";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
@@ -52,15 +53,21 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
   const [count, setCount] = useState("1");
   const [busy, setBusy] = useState<string | null>(null);
   const [genError, setGenError] = useState<string | null>(null);
-  const [compatResult, setCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
   const [justAdded, setJustAdded] = useState<{ speciesId: string; count: number }[]>([]);
   const [saving, setSaving] = useState(false);
 
+  // Compatibility runs once, in a single batch, when leaving via "Done" —
+  // not per fish while adding (2026-09-10, same pattern as the by-name add
+  // form and photo-ID screen: a one-at-a-time check while adding could
+  // never catch a conflict between two fish added in the same visit).
+  const [doneChecking, setDoneChecking] = useState(false);
+  const [doneCompatResult, setDoneCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
+  const [doneDismissedKeys, setDoneDismissedKeys] = useState<Set<string>>(new Set());
+
   async function handleSearch(value: string) {
     setQuery(value);
     setSelectedSpeciesId(null);
-    setCompatResult(null);
     if (value.trim().length < 2) {
       setSearchResults([]);
       return;
@@ -71,7 +78,6 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
   function selectSpecies(speciesId: string) {
     setSelectedSpeciesId(speciesId);
     setSearchResults([]);
-    setCompatResult(null);
   }
 
   async function handleAddItAnyway() {
@@ -93,24 +99,46 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
     selectSpecies(newId);
   }
 
-  async function handleCheckCompat() {
-    if (!tank || !selectedSpeciesId) return;
-    setBusy("compat");
+  async function handleDone() {
+    if (doneCompatResult) {
+      router.replace(`/tank/${id}`);
+      return;
+    }
+    if (!tank || justAdded.length === 0) {
+      router.replace(`/tank/${id}`);
+      return;
+    }
+    setDoneChecking(true);
+    const existingSpeciesIds = Array.from(new Set(aliveLivestock.map((l) => l.speciesId)));
+    const newSpeciesIds = Array.from(new Set(justAdded.map((j) => j.speciesId)));
     const result = await checkCompat({
       lengthCm: tank.lengthCm,
       widthCm: tank.widthCm,
       heightCm: tank.heightCm,
-      existingSpeciesIds: aliveLivestock.map((l) => l.speciesId),
-      newSpeciesIds: [selectedSpeciesId],
+      existingSpeciesIds,
+      newSpeciesIds,
       tankId: id,
     });
-    setBusy(null);
+    setDoneChecking(false);
     if (!result.ok) {
-      setCompatResult({ verdict: "unknown", conflicts: [], footprintNote: "" });
+      router.replace(`/tank/${id}`);
       return;
     }
     const data = result.data.compat as unknown as { verdict: string; conflicts: CompatConflict[]; footprint_note: string };
-    setCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
+    const dismissed = new Set<string>();
+    for (const c of data.conflicts) {
+      const key = compatWarningKey(newSpeciesIds, c.type, c.with);
+      if (await isWarningDismissed(key)) dismissed.add(key);
+    }
+    setDoneDismissedKeys(dismissed);
+    setDoneCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
+  }
+
+  async function handleDismissDoneConflict(conflict: CompatConflict) {
+    const newSpeciesIds = Array.from(new Set(justAdded.map((j) => j.speciesId)));
+    const key = compatWarningKey(newSpeciesIds, conflict.type, conflict.with);
+    await dismissWarning({ tankId: id, warningKey: key });
+    setDoneDismissedKeys((prev) => new Set(prev).add(key));
   }
 
   async function handleConfirmAdd() {
@@ -131,7 +159,6 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
     setCount("1");
     setQuery("");
     setSearchResults([]);
-    setCompatResult(null);
     setSaving(false);
   }
 
@@ -148,12 +175,54 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
               ✓ {justAdded.length} fish added this session
             </p>
           )}
-          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
+          <PrimaryButton onClick={handleDone} disabled={doneChecking}>
+            {doneChecking ? "Checking compatibility..." : doneCompatResult ? "Continue to my tank" : "Done — back to my tank"}
+          </PrimaryButton>
         </>
       }
     >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
       <BackHeader title="Add a fish" fallbackHref={`/tank/${id}`} />
+
+      {doneCompatResult && (
+        <div style={{ marginBottom: 16, padding: 12, border: "1px solid var(--color-line)", borderRadius: "var(--radius-md)", background: "var(--color-surface)" }}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Compatibility check</p>
+          {doneCompatResult.conflicts.filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(justAdded.map((j) => j.speciesId))), c.type, c.with))).length === 0 && (
+            <Banner severity="improve">No conflicts found between your fish.</Banner>
+          )}
+          {doneCompatResult.conflicts
+            .filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(justAdded.map((j) => j.speciesId))), c.type, c.with)))
+            .map((c, i) => (
+              <div key={i} style={{ marginBottom: 8 }}>
+                <Banner severity={c.severity === "critical" ? "fixNow" : "watch"} onDismiss={() => handleDismissDoneConflict(c)}>
+                  {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
+                </Banner>
+              </div>
+            ))}
+          {doneCompatResult.footprintNote && (
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{doneCompatResult.footprintNote}</p>
+          )}
+        </div>
+      )}
+
+      {aliveLivestock.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {aliveLivestock.map((l) => {
+              const s = speciesById.get(l.speciesId);
+              return (
+                <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", border: "1px solid var(--color-line)", borderRadius: "var(--radius-pill)", background: "var(--color-surface-alt)" }}>
+                  <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={22} />
+                  <span style={{ fontSize: "var(--font-caption-size)" }}>
+                    {firstName(s?.commonNames ?? null) ?? l.speciesId} × {l.count}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <Field label="Search species" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder="e.g. neon tetra" autoFocus />
 
@@ -226,18 +295,15 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
           </div>
           <div style={{ height: 12 }} />
 
-          {!compatResult && (
-            <SecondaryButton onClick={handleCheckCompat} disabled={busy === "compat"}>
-              {busy === "compat" ? "Checking..." : "Check compatibility"}
-            </SecondaryButton>
-          )}
-
-          {compatResult && tank && selectedSpecies && (
+          {/* Free, instant, no AI call — size/temp/pH/setup fit is computed
+              straight from species/tank data. Real AI compatibility (how
+              this species behaves around tankmates) now runs once, in a
+              batch, on "Done" — see handleDone above. */}
+          {tank && selectedSpecies && (
             <CompatibilitySummary
               tank={tank}
               species={selectedSpecies}
               existingSpecies={aliveLivestock.map((l) => speciesById.get(l.speciesId)).filter((s): s is SpeciesRow => !!s)}
-              compatResult={compatResult}
             />
           )}
 
@@ -274,7 +340,6 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
 }
 
 type Verdict = "ok" | "watch" | "fixNow";
-const VERDICT_LABEL: Record<Verdict, string> = { ok: "Good fit", watch: "Worth checking", fixNow: "Not a fit" };
 
 /**
  * A crisp, always-the-same-shape compatibility readout — Size, Temp,
@@ -287,12 +352,10 @@ function CompatibilitySummary({
   tank,
   species,
   existingSpecies,
-  compatResult,
 }: {
   tank: { volumeL: number; lengthCm: number; widthCm: number };
   species: SpeciesRow;
   existingSpecies: SpeciesRow[];
-  compatResult: { verdict: string; conflicts: CompatConflict[]; footprintNote: string };
 }) {
   const rows: { label: string; verdict: Verdict; text: string }[] = [];
 
@@ -356,8 +419,6 @@ function CompatibilitySummary({
     rows.push({ label: "Setup", verdict: hasWarning ? "watch" : "ok", text: setupBits.join(" · ") });
   }
 
-  const aiVerdict: Verdict = compatResult.conflicts.some((c) => c.severity === "critical") ? "fixNow" : compatResult.conflicts.length > 0 ? "watch" : "ok";
-
   return (
     <div style={{ margin: "12px 0" }}>
       {rows.map((r) => (
@@ -377,35 +438,6 @@ function CompatibilitySummary({
           <span style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink)" }}>{r.text}</span>
         </div>
       ))}
-
-      <div style={{ padding: "8px 0", borderTop: "1px solid var(--color-line-soft)" }}>
-        <div style={{ display: "flex", gap: 10, marginBottom: compatResult.conflicts.length > 0 ? 8 : 0 }}>
-          <span
-            style={{
-              flexShrink: 0,
-              width: 92,
-              fontSize: "var(--font-caption-size)",
-              fontWeight: 700,
-              color: aiVerdict === "fixNow" ? "var(--color-fix-now)" : aiVerdict === "watch" ? "var(--color-watch)" : "var(--color-improve)",
-            }}
-          >
-            Fish compat.
-          </span>
-          <span style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink)" }}>
-            {compatResult.conflicts.length === 0 ? "No conflicts found with your current fish." : VERDICT_LABEL[aiVerdict]}
-          </span>
-        </div>
-        {compatResult.conflicts.map((c, i) => (
-          <div key={i} style={{ marginBottom: 8 }}>
-            <Banner severity={c.severity === "critical" ? "fixNow" : "watch"}>
-              {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
-            </Banner>
-          </div>
-        ))}
-        {compatResult.footprintNote && (
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{compatResult.footprintNote}</p>
-        )}
-      </div>
     </div>
   );
 }
