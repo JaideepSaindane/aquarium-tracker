@@ -34,7 +34,9 @@
 .secondary {
   background: var(--color-surface-alt);
   color: var(--color-deep);
-  border-color: transparent;
+  /* A real border, not transparent — fill-colour contrast alone let this
+     merge into the surface/background behind it, especially in dark mode. */
+  border-color: var(--color-line);
 }
 
 .danger {

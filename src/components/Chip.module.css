@@ -15,6 +15,7 @@
 .neutral {
   background: var(--color-surface-alt);
   color: var(--color-ink-muted);
+  border-color: var(--color-line);
 }
 
 .fixNow {

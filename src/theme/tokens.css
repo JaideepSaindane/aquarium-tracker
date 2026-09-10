@@ -117,13 +117,20 @@
     /* Dark mode flips the roles: near-black warm charcoal background, pale
        ink, a brighter teal (bright enough to read against near-black, where
        the light-mode darker teal would just disappear). */
-    --color-ground: #12181a;
-    --color-surface: #1b2224;
-    --color-surface-alt: #212a2c;
+    /* Rebalanced 2026-09-10 (Jaideep: cards/pills were merging into the
+       background, search fields weren't clear) — ground/surface/surface-alt
+       were all within a few % lightness of each other, so a Card or a
+       pill-shaped SecondaryButton barely separated from the page behind it.
+       Surface is now a real step lighter than ground; surface-alt (inputs,
+       chips, pill buttons) is a further step lighter still, and line is
+       bright enough to read as a real border instead of near-invisible. */
+    --color-ground: #10151a;
+    --color-surface: #1e262a;
+    --color-surface-alt: #2a3438;
     --color-ink: #e7ecea;
     --color-ink-muted: #8fa0a0;
-    --color-line: #2a3335;
-    --color-line-soft: #232b2d;
+    --color-line: #3d4a4e;
+    --color-line-soft: #333f43;
 
     --color-accent: #4fcfc6;
     --color-accent-soft: #163332;
@@ -159,13 +166,13 @@
 }
 
 :root[data-theme="dark"] {
-  --color-ground: #12181a;
-  --color-surface: #1b2224;
-  --color-surface-alt: #212a2c;
+  --color-ground: #10151a;
+  --color-surface: #1e262a;
+  --color-surface-alt: #2a3438;
   --color-ink: #e7ecea;
   --color-ink-muted: #8fa0a0;
-  --color-line: #2a3335;
-  --color-line-soft: #232b2d;
+  --color-line: #3d4a4e;
+  --color-line-soft: #333f43;
 
   --color-accent: #4fcfc6;
   --color-accent-soft: #163332;

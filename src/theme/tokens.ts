@@ -26,13 +26,15 @@ export const light = {
 } as const;
 
 export const dark = {
-  ground: "#12181A",
-  surface: "#1B2224",
-  surfaceAlt: "#212A2C",
+  // Rebalanced 2026-09-10 — see the matching comment in tokens.css for why
+  // (cards/pills merging into the background, unclear search fields).
+  ground: "#10151A",
+  surface: "#1E262A",
+  surfaceAlt: "#2A3438",
   ink: "#E7ECEA",
   inkMuted: "#8FA0A0",
-  line: "#2A3335",
-  lineSoft: "#232B2D",
+  line: "#3D4A4E",
+  lineSoft: "#333F43",
 
   accent: "#4FCFC6",
   accentSoft: "#163332",
