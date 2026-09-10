@@ -105,6 +105,12 @@ export const profile = pgTable("profile", {
   email: text("email"),
   contact: text("contact"),
   photoUri: text("photo_uri"),
+  // Set the moment this account finishes the onboarding screen (specs/T-023).
+  // Replaces the old local-SQLite-only "onboarding_complete" flag, which was
+  // scoped to a browser/device, not an account — a new account signing in on
+  // a browser that had already onboarded a different account used to skip
+  // onboarding incorrectly. Null means "never onboarded."
+  onboardingCompletedAt: text("onboarding_completed_at"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });

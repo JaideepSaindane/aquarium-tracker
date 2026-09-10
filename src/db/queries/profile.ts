@@ -13,6 +13,7 @@ export type ProfileRow = {
   email: string | null;
   contact: string | null;
   photoUri: string | null;
+  onboardingCompletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -23,7 +24,7 @@ export async function getProfile(): Promise<ProfileRow | null> {
   return res.json();
 }
 
-export async function saveProfile(input: { name?: string; username?: string; city?: string; email?: string; contact?: string; photoUri?: string }): Promise<void> {
+export async function saveProfile(input: { name?: string; username?: string; city?: string; email?: string; contact?: string; photoUri?: string; onboardingCompletedAt?: string | null }): Promise<void> {
   await fetch("/api/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
   notifyChanged();
 }

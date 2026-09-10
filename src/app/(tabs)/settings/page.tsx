@@ -16,7 +16,7 @@ import { ensureDb } from "@/db/client";
 import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob, canShareFiles, shareFile } from "@/lib/export";
 import { importJsonExport } from "@/lib/import";
 import { getProfile, saveProfile } from "@/db/queries/profile";
-import { resetOnboarding, isSurvivalPromptDisabled, disableSurvivalPromptForever } from "@/db/queries/settings";
+import { isSurvivalPromptDisabled, disableSurvivalPromptForever } from "@/db/queries/settings";
 import { writePhotoFile } from "@/lib/opfs-files";
 import { newId } from "@/db/id";
 import { useTranslation } from "@/i18n/use-translation";
@@ -386,7 +386,7 @@ export default function SettingsPage() {
           </p>
           <SecondaryButton
             onClick={async () => {
-              await resetOnboarding();
+              await saveProfile({ onboardingCompletedAt: null });
               router.push("/onboarding");
             }}
           >

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IntroAnimation } from "@/components/IntroAnimation";
-import { markOnboardingComplete } from "@/db/queries/settings";
 import { saveProfile } from "@/db/queries/profile";
 import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
@@ -39,10 +38,11 @@ export default function OnboardingPage() {
 
   async function handleContinue() {
     setSaving(true);
-    if (name.trim() || city.trim()) {
-      await saveProfile({ name: name.trim() || undefined, city: city.trim() || undefined });
-    }
-    await markOnboardingComplete();
+    await saveProfile({
+      name: name.trim() || undefined,
+      city: city.trim() || undefined,
+      onboardingCompletedAt: new Date().toISOString(),
+    });
     router.push("/");
   }
 

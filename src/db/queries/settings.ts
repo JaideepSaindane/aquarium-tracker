@@ -41,20 +41,11 @@ export async function setSpeciesSeedVersion(version: string): Promise<void> {
   await setSetting(SPECIES_SEED_VERSION_KEY, version);
 }
 
-const ONBOARDING_KEY = "onboarding_complete";
-
-export async function isOnboardingComplete(): Promise<boolean> {
-  return (await getSetting(ONBOARDING_KEY)) === "true";
-}
-
-export async function markOnboardingComplete(): Promise<void> {
-  await setSetting(ONBOARDING_KEY, "true");
-}
-
-/** "Start over" in Settings — specs/T-023. Just clears the flag; never touches tank/livestock data. */
-export async function resetOnboarding(): Promise<void> {
-  await setSetting(ONBOARDING_KEY, "false");
-}
+// Onboarding-complete is no longer tracked here — it moved to the signed-in
+// account's server-side profile (`onboardingCompletedAt`, src/server/db/schema.ts)
+// on 2026-09-10, since a local/device flag doesn't know which account is
+// signed in. See OnboardingGate.tsx and src/app/(tabs)/settings/page.tsx's
+// "Start over" handler.
 
 const TOUR_KEY = "first_tank_tour_shown";
 

@@ -12,26 +12,30 @@ export async function GET() {
   return NextResponse.json(rows[0] ?? null);
 }
 
+const PROFILE_FIELDS = ["name", "username", "city", "email", "contact", "photoUri", "onboardingCompletedAt"] as const;
+
 export async function PUT(req: Request) {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const input = await req.json();
   const now = nowIso();
+  // Only touch fields the caller actually sent — a caller that only ever
+  // knows about a subset of fields (e.g. onboarding only sends
+  // name/city/onboardingCompletedAt) must not silently wipe the others.
+  const provided: Record<string, unknown> = {};
+  for (const field of PROFILE_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(input, field)) provided[field] = input[field];
+  }
   const existing = (await serverDb.select().from(profile).where(eq(profile.userId, userId)))[0];
   if (existing) {
     await serverDb
       .update(profile)
-      .set({ name: input.name, username: input.username, city: input.city, email: input.email, contact: input.contact, photoUri: input.photoUri, updatedAt: now })
+      .set({ ...provided, updatedAt: now })
       .where(eq(profile.userId, userId));
   } else {
     await serverDb.insert(profile).values({
       userId,
-      name: input.name,
-      username: input.username,
-      city: input.city,
-      email: input.email,
-      contact: input.contact,
-      photoUri: input.photoUri,
+      ...provided,
       createdAt: now,
       updatedAt: now,
     });
