@@ -224,25 +224,6 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
         </Card>
       )}
 
-      {aliveExisting.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {aliveExisting.map((l) => {
-              const s = speciesById.get(l.speciesId);
-              return (
-                <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", border: "1px solid var(--color-line)", borderRadius: "var(--radius-pill)", background: "var(--color-surface-alt)" }}>
-                  <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={22} />
-                  <span style={{ fontSize: "var(--font-caption-size)" }}>
-                    {firstName(s?.commonNames ?? null) ?? l.speciesId} × {l.count}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       <PhotoPickerButton label={busy === "identify" ? "Identifying..." : "📷 Take a photo or upload one"} onPick={handlePhoto} />
 
       {error && (
@@ -323,6 +304,25 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
               </div>
             );
           })}
+        </div>
+      )}
+
+      {aliveExisting.length > 0 && (
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {aliveExisting.map((l) => {
+              const s = speciesById.get(l.speciesId);
+              return (
+                <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", border: "1px solid var(--color-line)", borderRadius: "var(--radius-pill)", background: "var(--color-surface-alt)" }}>
+                  <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={22} />
+                  <span style={{ fontSize: "var(--font-caption-size)" }}>
+                    {firstName(s?.commonNames ?? null) ?? l.speciesId} × {l.count}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </Screen>

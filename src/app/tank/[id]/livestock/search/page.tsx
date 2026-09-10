@@ -205,25 +205,12 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
         </div>
       )}
 
-      {aliveLivestock.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {aliveLivestock.map((l) => {
-              const s = speciesById.get(l.speciesId);
-              return (
-                <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", border: "1px solid var(--color-line)", borderRadius: "var(--radius-pill)", background: "var(--color-surface-alt)" }}>
-                  <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={22} />
-                  <span style={{ fontSize: "var(--font-caption-size)" }}>
-                    {firstName(s?.commonNames ?? null) ?? l.speciesId} × {l.count}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
+      {/* Search goes first, right under the header — the "already in this
+          tank" list used to sit above it, which could push search results
+          far enough down the page to end up under the on-screen keyboard
+          (Jaideep hit this on a tank with several species already added).
+          Existing fish now show near the bottom instead, below what you're
+          actively doing here. */}
       <Field label="Search species" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder="e.g. neon tetra" autoFocus />
 
       {searchResults.length > 0 && (
@@ -333,6 +320,25 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
               </div>
             );
           })}
+        </div>
+      )}
+
+      {aliveLivestock.length > 0 && (
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {aliveLivestock.map((l) => {
+              const s = speciesById.get(l.speciesId);
+              return (
+                <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", border: "1px solid var(--color-line)", borderRadius: "var(--radius-pill)", background: "var(--color-surface-alt)" }}>
+                  <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={22} />
+                  <span style={{ fontSize: "var(--font-caption-size)" }}>
+                    {firstName(s?.commonNames ?? null) ?? l.speciesId} × {l.count}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </Screen>
