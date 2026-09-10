@@ -14,6 +14,7 @@ import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { useLiveQuery } from "@/db/live";
+import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { getTank } from "@/db/queries/tanks";
 import { listSpecies, insertGeneratedSpecies } from "@/db/queries/species";
 import { addLivestock } from "@/db/queries/livestock";
@@ -69,7 +70,12 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
     setError(null);
     setCandidates(null);
     setSelectedSpeciesId(null);
-    const result = await identifySpecies(file);
+    // ~1024px longest edge, same as every other AI photo path in the app
+    // (CLAUDE.md's AI rules) — a full-resolution phone photo (often 3000x4000)
+    // was being uploaded and analysed as-is here, the real cause of this
+    // flow feeling slow with zero accuracy benefit from the extra pixels.
+    const upload = await downscaleForUpload(file);
+    const result = await identifySpecies(upload);
     setBusy(null);
     if (!result.ok) {
       setError(result.error);

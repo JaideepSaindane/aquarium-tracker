@@ -10,6 +10,7 @@ import { Chip } from "@/components/Chip";
 import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { useLiveQuery } from "@/db/live";
+import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { getTank } from "@/db/queries/tanks";
 import { listLivestockForTank, listPlannedLivestockForTank, addLivestock, removeLivestock, recordDeath, updateLivestockCount, markLivestockArrived, listLivestockEvents } from "@/db/queries/livestock";
 import { listSpecies, searchSpecies, insertGeneratedSpecies } from "@/db/queries/species";
@@ -76,7 +77,8 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   async function handleIdentifyPhoto(file: File) {
     setBusy("identify");
     setCandidates(null);
-    const result = await identifySpecies(file);
+    const upload = await downscaleForUpload(file);
+    const result = await identifySpecies(upload);
     setBusy(null);
     if (!result.ok) {
       setGenError(result.error);

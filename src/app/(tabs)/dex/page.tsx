@@ -11,6 +11,7 @@ import { listSpecies } from "@/db/queries/species";
 import { listDexCards } from "@/db/queries/dex";
 import { isAiGenerated } from "@/lib/species-origin";
 import { identifySpecies } from "@/lib/ai-client";
+import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { addSpeciesSuggestion, type PhotoCandidate } from "@/db/queries/species-suggestions";
 import { writePhotoFile } from "@/lib/opfs-files";
 import { newId } from "@/db/id";
@@ -110,7 +111,8 @@ export default function DexPage() {
     setSuggestSubmitted(false);
     setSuggestName("");
     setSuggestNote("");
-    const result = await identifySpecies(file);
+    const upload = await downscaleForUpload(file);
+    const result = await identifySpecies(upload);
     setScanning(false);
     if (!result.ok) {
       setScanError(result.error);

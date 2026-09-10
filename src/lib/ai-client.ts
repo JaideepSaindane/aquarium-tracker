@@ -186,9 +186,9 @@ export async function generateSpecies(query: string) {
   return result;
 }
 
-export async function identifySpecies(photo: File) {
+export async function identifySpecies(photo: File | Blob) {
   const form = new FormData();
-  form.set("photo", photo);
+  form.set("photo", photo, "photo.jpg");
   const res = await fetch("/api/species-id", { method: "POST", headers: headers(), body: form });
   const result = await handleJsonResponse<{ speciesId: Record<string, unknown>; meta: ScanMeta; invalidCandidates: string[] }>(res);
 
