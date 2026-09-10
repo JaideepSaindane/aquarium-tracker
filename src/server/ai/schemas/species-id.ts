@@ -7,7 +7,7 @@ const unit = z.number().min(0).max(1);
 
 // The model identifies freely from its own knowledge — it no longer sees or
 // is constrained to our catalog (Jaideep's call, 2026-09-03: restricting to
-// our 445 species meant a real fish outside that list could never be
+// our 1,484 species meant a real fish outside that list could never be
 // identified at all). `species_id` is added server-side after the model
 // responds, by matching `scientific_name`/`common_name` against our catalog
 // — see matchSpeciesId() in server/ai/retrieval.ts — so it's absent from

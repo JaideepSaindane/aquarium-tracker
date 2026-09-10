@@ -593,7 +593,7 @@ export default function OnboardingPlannerPage() {
                 Our advisor is checking your fish list…
               </p>
               <p style={{ margin: 0, fontSize: "var(--font-caption-size)", opacity: 0.8, textAlign: "center" }}>
-                Matching against 445 species — usually 5–15 seconds.
+                Matching against 1,484 species — usually 5–15 seconds.
               </p>
             </div>
           )}

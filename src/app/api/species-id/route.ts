@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   const imageBuffer = Buffer.from(await photo.arrayBuffer());
   // No catalog handed to the model any more (2026-09-03) — it identifies
-  // freely from its own knowledge, so a real fish outside our 445 species
+  // freely from its own knowledge, so a real fish outside our 1,484 species
   // can still be recognised instead of being forced toward the nearest
   // catalog match. See matchSpeciesId() below for how we still link back
   // to a real Dex page when the identified species happens to be one we carry.

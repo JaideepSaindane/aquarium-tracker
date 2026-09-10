@@ -63,7 +63,7 @@ function normalizeName(s: string): string {
 /**
  * Post-hoc catalog match for species-id (2026-09-03 change): the model now
  * identifies fish freely from its own knowledge rather than being handed
- * our catalog and told to pick from it — so a real fish outside our 445
+ * our catalog and told to pick from it — so a real fish outside our 1,484
  * species can still be recognised. This is how we still link a candidate
  * back to a real Dex page when it happens to be one we carry. Scientific
  * name is checked first (least ambiguous); common name is a fallback since

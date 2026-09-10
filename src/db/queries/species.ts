@@ -186,8 +186,43 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
           // Only overwrite fields the seed file owns — never touch rows a
           // user edited or that came from species-gen/v1 (origin != 'seed'
           // rows are never touched at all, see the WHERE guard below).
+          // Full column list since the 445→1,484 corpus rebuild
+          // (2026-09-10): a reseed must deliver the rebuilt care data
+          // (temp/pH/size/volume etc.) to species that already exist, not
+          // just append new ones — the old minimal set (scientificName/
+          // careNotes/imageUri) predates any seed that changed those fields.
+          // `verified` is deliberately NOT here: it is the human-review
+          // flag and the seed always writes false, so updating it would
+          // un-review a species on every unrelated reseed.
           scientificName: s.scientific_name,
+          commonNames: JSON.stringify(s.common_names ?? []),
+          commonNamesIn: JSON.stringify(s.common_names_in ?? []),
+          category: s.category,
+          sourceRefs: JSON.stringify(s.source_refs ?? []),
+          tempCMin: s.temp_c?.min,
+          tempCMax: s.temp_c?.max,
+          phMin: s.ph?.min,
+          phMax: s.ph?.max,
+          hardnessDghMin: s.hardness_dgh?.min,
+          hardnessDghMax: s.hardness_dgh?.max,
+          adultSizeCm: s.adult_size_cm,
+          minVolumeL: s.min_volume_l,
+          minFootprintLengthCm: s.min_footprint_cm?.length,
+          minFootprintWidthCm: s.min_footprint_cm?.width,
+          socialMinGroup: s.social_min_group,
+          temperament: s.temperament,
+          swimLevel: s.swim_level,
+          diet: s.diet,
+          difficulty: s.difficulty,
+          lifespanMinYears: s.lifespan_years?.min,
+          lifespanMaxYears: s.lifespan_years?.max,
+          breeding: s.breeding,
           careNotes: s.care_notes,
+          commonMistakes: JSON.stringify(s.common_mistakes ?? []),
+          incompatibleWith: JSON.stringify(s.incompatible_with ?? []),
+          disputed: s.disputed,
+          dexRarity: s.dex?.rarity,
+          dexTier: s.dex?.tier,
           imageUri: s.image,
           updatedAt: now,
         },

@@ -20,9 +20,18 @@ export async function setSetting(key: string, value: string): Promise<void> {
 // data/species.seed.json changes meaningfully (e.g. the 30→445 species
 // catalog expansion, or the species-photo pass that added `imageUri`),
 // not just on a brand-new install. Bumping SPECIES_SEED_VERSION in
-// src/db/DbBootProvider.tsx is what actually triggers a reseed — this is
+// src/db/DbBootProvider.tsx is what normally triggers a reseed — this is
 // just the stored marker of which version a given browser last applied.
-const SPECIES_SEED_VERSION_KEY = "species_seed_version";
+//
+// Key renamed 2026-09-10 ("species_seed_version" → "..._v2") for the
+// 445→1,484 corpus rebuild: every existing install stored its version
+// under the old key, so it now reads as never-seeded and reseeds exactly
+// once, then stores under this key and goes quiet again. This achieves
+// the same one-shot invalidation as bumping the constant, without
+// touching DbBootProvider.tsx (mid-edit by a parallel session at the
+// time). Bumping the constant there remains the normal mechanism for
+// future seed changes.
+const SPECIES_SEED_VERSION_KEY = "species_seed_version_v2";
 
 export async function getSpeciesSeedVersion(): Promise<string | null> {
   return getSetting(SPECIES_SEED_VERSION_KEY);

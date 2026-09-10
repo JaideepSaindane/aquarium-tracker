@@ -1,6 +1,8 @@
 # AquaAI species database
 
-`species.seed.json` — 30 seed species (26 fish, 2 shrimp, 2 snails) grounding AI care advice.
+`species.seed.json` — 1,484 species (1,331 fish, 134 plants, 11 snails, 8 shrimp) grounding AI care advice.
+Rebuilt 2026-09-10 from the `aquarium-species-db` pipeline: names resolved against GBIF + iNaturalist, per-field provenance, taxon-anchored photos.
+All 445 previous ids are unchanged — livestock references and Dex unlocks survive.
 Wrong numbers here kill fish. Treat every value as provisional until a human verifies it.
 
 ## Schema
@@ -11,7 +13,7 @@ Wrong numbers here kill fish. Treat every value as provisional until a human ver
 | `scientific_name` | `Genus species`. Use `Genus cf. species` when the trade name covers an unresolved complex (e.g. `Ancistrus cf. cirrhosus`). |
 | `common_names` | Primary name first — that is what the UI shows. |
 | `common_names_in` | Names used in Indian shops. Empty array if identical to `common_names`. Feeds search, not display. |
-| `category` | `fish` / `shrimp` / `snail` / `crayfish` / `plant`. Matches the `species.category` enum in `docs/02-data-model.md` and the plant entries required by `specs/T-003`. The 30 current seeds are fish, shrimp and snails only; `plant` is valid and unused until the plant block lands. |
+| `category` | `fish` / `shrimp` / `snail` / `crayfish` / `plant`. Matches the `species.category` enum in `docs/02-data-model.md` and the plant entries required by `specs/T-003`. All categories except `crayfish` are populated in the current seed. |
 | `verified` | **Always `false` on write.** Only a human reviewer may flip it. |
 | `source_refs` | ≥2 URLs that were actually fetched and read. Not "a Google result". |
 | `temp_c` | Long-term healthy range, not survival tolerance. Where sources differ, span both and explain in `disputed`. |
@@ -29,7 +31,7 @@ Wrong numbers here kill fish. Treat every value as provisional until a human ver
 | `care_notes` | 2–4 sentences, plain language, the facts that change a decision. No filler. |
 | `common_mistakes` | Specific and falsifiable. "Sharp gravel erodes barbels", not "poor care". |
 | `incompatible_with` | Species `id`s, or keywords from the closed list below. Keep the list closed; add a keyword only together with a matching resolver in the compatibility engine. See "The `incompatible_with` vocabulary" below for the full list and the rule for unrecognised values. |
-| `disputed` | Optional, but present on all 30 seeds. Name the sources and both numbers. This is the honesty surface of the product. |
+| `disputed` | Optional; present on 32 of the 1,484 entries. Name the sources and both numbers. This is the honesty surface of the product. |
 | `dex` | `rarity` (`common`/`uncommon`/`rare`) and `tier` (1 easy, 2 needs planning, 3 large/demanding). Gamification only — never used for care advice. |
 
 ## Species id convention
@@ -51,15 +53,15 @@ Every value in `incompatible_with` is either a **species `id` that exists in thi
 
 `long-finned`, `fin-nipper`, `slow-swimmer`, `boisterous`, `bottom-dweller`, `slow-flat-bodied`, `large-cichlid`, `shrimp`, `sharp-substrate`, `copper-medication`, `soft-water-species`, `tropical-species`
 
-**Group keywords** — the conflict is with a group of species, most of which are not in the 30-seed yet. Each resolves to a set, and each needs its resolver written before the compatibility engine can use it:
+**Group keywords** — the conflict is with a group of species. Each resolves to a set, and each needs its resolver written before the compatibility engine can use it:
 
 | Keyword | Resolver rule |
 |---|---|
-| `discus` | Resolves to *Symphysodon* spp. Not in the seed. Until it is, the resolver matches any species whose `id` or `scientific_name` is a *Symphysodon*; the conflict is the 28–30 °C requirement plus low tolerance for boisterous tankmates. |
-| `loach` | Resolves to the loach families — Botiidae, Cobitidae, Nemacheilidae (`kuhli-loach` in the seed today; yoyo, zebra and clown loaches in the 31–85 blocks). Matches any species whose `category` is `fish` and whose family is one of those three. The conflict is scaleless-fish medication sensitivity and sharp-substrate barbel damage. |
-| `puffer` | Resolves to Tetraodontidae. Not in the seed. Matches on family. The conflict is fin-nipping and predation on shrimp and snails — treat as incompatible with everything soft-finned or invertebrate until a specific pairing is verified. |
-| `assassin-snail` | Resolves to *Clea helena*. A single species, listed in the 116–150 block but not seeded yet. The conflict is predation on other snails, so it resolves as incompatible with `category: snail`. |
-| `red-tail-shark` | Resolves to *Epalzeorhynchos bicolor*. A single species, listed in the 31–55 block but not seeded yet. Distinct from the seeded `rainbow-shark` (*E. frenatum*) — do not merge them. The conflict is territorial aggression toward similar-shaped bottom-dwellers. |
+| `discus` | Resolves to *Symphysodon* spp. The resolver matches any species whose `id` or `scientific_name` is a *Symphysodon*; the conflict is the 28–30 °C requirement plus low tolerance for boisterous tankmates. |
+| `loach` | Resolves to the loach families — Botiidae, Cobitidae, Nemacheilidae (kuhli, yoyo, zebra and clown loaches are all in the seed). Matches any species whose `category` is `fish` and whose family is one of those three. The conflict is scaleless-fish medication sensitivity and sharp-substrate barbel damage. |
+| `puffer` | Resolves to Tetraodontidae. Matches on family. The conflict is fin-nipping and predation on shrimp and snails — treat as incompatible with everything soft-finned or invertebrate until a specific pairing is verified. |
+| `assassin-snail` | Resolves to *Clea helena*. A single species, in the seed. The conflict is predation on other snails, so it resolves as incompatible with `category: snail`. |
+| `red-tail-shark` | Resolves to *Epalzeorhynchos bicolor*. A single species, not in the seed yet. Distinct from the seeded `rainbow-shark` (*E. frenatum*) — do not merge them. The conflict is territorial aggression toward similar-shaped bottom-dwellers. |
 
 Where a group keyword names a species that later gets its own seed entry, the keyword stays valid — it keeps resolving to the whole group, and the new `id` becomes one member of that group. Do not rewrite existing `incompatible_with` values when a species is seeded.
 

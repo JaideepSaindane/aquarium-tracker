@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   const winterLowC = climate?.winterLowC ?? 18;
 
   // The catalog is the only vocabulary the model may name. Compact
-  // one-line-per-species keeps the prompt small (445 species ≈ 25k chars)
+  // one-line-per-species keeps the prompt small (1,484 species ≈ 80k chars)
   // while giving the model real temp/pH/volume/temperament data to reason
   // with — retrieval first, generation second.
   const all = await loadAllSpecies();

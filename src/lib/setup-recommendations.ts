@@ -364,7 +364,7 @@ export type HardscapeRecommendation = {
 /**
  * A small, honest rule table keyed on what the chosen species' catalog
  * rows actually say (temperament, swim level, category, pH range) — NOT a
- * per-species lookup the 445-entry catalog can't support yet. Starts
+ * per-species lookup the 1,484-entry catalog can't support yet. Starts
  * short by design (spec: "starts short, grows over time, never blocks
  * save if empty"); deduped so the same advice never repeats.
  */
