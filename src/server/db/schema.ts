@@ -10,8 +10,11 @@ import { pgTable, text, real, integer, boolean, timestamp, uniqueIndex } from "d
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
-  // Exactly one of (email/googleId) or (phone/pinHash) is set, depending on
-  // how the person signed up. Never both null.
+  // At least one of (email/googleId) or (phone/pinHash) is set, depending on
+  // how the person first signed up — but not necessarily exactly one: a
+  // Google account can later link a phone+PIN too (src/app/api/account/
+  // link-phone/route.ts, added 2026-09-10 so the two sign-in paths don't
+  // silently create two separate accounts for the same person).
   email: text("email"),
   googleId: text("google_id"),
   phone: text("phone"),

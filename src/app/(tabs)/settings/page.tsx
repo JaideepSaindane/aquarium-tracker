@@ -50,6 +50,13 @@ export default function SettingsPage() {
 
   const [survivalPromptOff, setSurvivalPromptOff] = useState(false);
 
+  const [hasPhoneLinked, setHasPhoneLinked] = useState<boolean | null>(null); // null = still checking
+  const [linkPhone, setLinkPhone] = useState("");
+  const [linkPin, setLinkPin] = useState("");
+  const [linkPinConfirm, setLinkPinConfirm] = useState("");
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [linkMessage, setLinkMessage] = useState<string | null>(null);
+
   useEffect(() => {
     ensureDb();
     canShareFiles().then(setShareSupported);
@@ -64,7 +71,41 @@ export default function SettingsPage() {
       }
     });
     isSurvivalPromptDisabled().then(setSurvivalPromptOff);
+    fetch("/api/account")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((info) => setHasPhoneLinked(info ? info.hasPhone : true)) // fail closed: don't show the card if we couldn't check
+      .catch(() => setHasPhoneLinked(true));
   }, []);
+
+  async function handleLinkPhone() {
+    setLinkMessage(null);
+    if (linkPin !== linkPinConfirm) {
+      setLinkMessage("PINs don't match.");
+      return;
+    }
+    setLinkBusy(true);
+    try {
+      const res = await fetch("/api/account/link-phone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: linkPhone.trim(), pin: linkPin.trim() }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setLinkMessage(body.error ?? "Couldn't add that phone number.");
+        return;
+      }
+      setHasPhoneLinked(true);
+      setLinkPhone("");
+      setLinkPin("");
+      setLinkPinConfirm("");
+      setLinkMessage(null);
+    } catch (err) {
+      setLinkMessage(`Couldn't save: ${String(err)}`);
+    } finally {
+      setLinkBusy(false);
+    }
+  }
 
   async function handleProfilePhoto(file: File) {
     const path = `profile/${newId()}.jpg`;
@@ -207,6 +248,40 @@ export default function SettingsPage() {
         )}
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>{t.settings.profileSubtitle}</p>
       </Card>
+
+      {/* Add phone sign-in — only shown to an account (in practice, a Google
+          signup) that has no phone number linked yet. Without this, using
+          Google once and phone+PIN another time silently creates two
+          separate accounts with no shared data — see specs/PROGRESS.md's
+          2026-09-10 entry. */}
+      {hasPhoneLinked === false && (
+        <Card style={{ marginBottom: 16 }}>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Add phone sign-in</h2>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
+            Optional — link a phone number and PIN so you can also sign in this way on a new device, without creating a
+            second, separate account.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <Field label="Phone number" type="tel" value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)} placeholder="9876543210" />
+            <Field label="4-digit PIN" type="password" value={linkPin} onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="••••" />
+            <Field
+              label="Confirm PIN"
+              type="password"
+              value={linkPinConfirm}
+              onChange={(e) => setLinkPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder="••••"
+            />
+            <PrimaryButton onClick={handleLinkPhone} disabled={linkBusy || linkPhone.trim().length < 10 || linkPin.length !== 4}>
+              {linkBusy ? "Adding..." : "Add phone sign-in"}
+            </PrimaryButton>
+          </div>
+          {linkMessage && (
+            <div style={{ marginTop: 12 }}>
+              <Banner severity="neutral">{linkMessage}</Banner>
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* App settings */}
       <Card style={{ marginBottom: 16 }}>
