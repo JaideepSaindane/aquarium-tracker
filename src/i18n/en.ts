@@ -4,7 +4,7 @@
 // against English.
 const en = {
   tabs: {
-    tanks: "Tanks",
+    tanks: "My Tanks",
     dex: "Dex",
     home: "Home",
     ask: "Ask Aqua",
@@ -32,7 +32,7 @@ const en = {
       "Coming soon — a guided setup planner that recommends equipment based on your tank size and fish. For now, explore the app or add a tank you already have.",
   },
   home: {
-    title: "Tanks",
+    title: "My Tanks",
     newTank: "+ New tank",
     noTanksYet: "No tanks yet. Scan a tank to set one up in a couple of minutes.",
     emptyHeading: "Let's get your first tank set up",

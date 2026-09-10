@@ -8,7 +8,7 @@ import type { Dictionary } from "./types";
 
 const hiLatn: Dictionary = {
   tabs: {
-    tanks: "Tanks",
+    tanks: "Mere Tanks",
     dex: "Dex",
     home: "Home",
     ask: "Ask Aqua",
@@ -36,7 +36,7 @@ const hiLatn: Dictionary = {
       "Jald hi aayega — ek guided setup planner jo aapke tank ke size aur fish ke hisaab se equipment suggest karega. Abhi ke liye, app explore karein ya apna existing tank add karein.",
   },
   home: {
-    title: "Tanks",
+    title: "Mere Tanks",
     newTank: "+ Naya tank",
     noTanksYet: "Abhi koi tank nahi hai. Ek tank scan karke chand minute mein set up karein.",
     emptyHeading: "Chaliye aapka pehla tank set up karte hain",
