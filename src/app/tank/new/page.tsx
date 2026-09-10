@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
+import { AquaIcon } from "@/components/icons/AquaIcon";
 import { BackHeader } from "@/components/BackHeader";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
@@ -175,6 +176,10 @@ export default function NewTankPage() {
               onClick={() => setWaterType("fresh")}
               style={{
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
                 padding: "8px 12px",
                 borderRadius: 8,
                 border: "1px solid var(--color-line)",
@@ -183,6 +188,7 @@ export default function NewTankPage() {
                 fontWeight: 600,
               }}
             >
+              <AquaIcon name="freshwater" size={16} />
               Fresh water
             </button>
             <button
@@ -190,6 +196,10 @@ export default function NewTankPage() {
               onClick={() => setWaterType("brackish")}
               style={{
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
                 padding: "8px 12px",
                 borderRadius: 8,
                 border: "1px solid var(--color-line)",
@@ -198,6 +208,7 @@ export default function NewTankPage() {
                 fontWeight: 600,
               }}
             >
+              <AquaIcon name="brackish" size={16} />
               Brackish water
             </button>
           </div>

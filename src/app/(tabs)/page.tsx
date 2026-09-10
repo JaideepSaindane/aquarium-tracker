@@ -7,6 +7,7 @@ import { Screen } from "@/components/Screen";
 import { TankThumbnail } from "@/components/TankThumbnail";
 import { TankHeroPhoto } from "@/components/TankHeroPhoto";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
+import { AquaIcon } from "@/components/icons/AquaIcon";
 import { SecondaryButton, DangerButton } from "@/components/Button";
 import { FirstTankTour } from "@/components/FirstTankTour";
 import { useLiveQuery } from "@/db/live";
@@ -284,8 +285,11 @@ export default function TanksPage() {
                       </span>
                     </div>
 
-                    <p
+                    <div
                       style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
                         color: "var(--soft-ink-muted)",
                         fontSize: "var(--font-caption-size)",
                         margin: "4px 0 0",
@@ -294,12 +298,19 @@ export default function TanksPage() {
                         whiteSpace: "nowrap",
                       }}
                     >
+                      <AquaIcon name={isBrackish ? "brackish" : "freshwater"} size={13} />
                       {isBrackish ? "Brackish" : "Freshwater"}
-                      {tank.isPlanted ? " · Planted" : ""}
+                      {tank.isPlanted && (
+                        <>
+                          <span aria-hidden>·</span>
+                          <AquaIcon name="planted" size={13} />
+                          Planted
+                        </>
+                      )}
                       {tank.hasCo2 ? " · CO₂" : ""}
                       {" · "}
                       {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
-                    </p>
+                    </div>
 
                     <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                       {visibleThumbs.map((l, i) => (

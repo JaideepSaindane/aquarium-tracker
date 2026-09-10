@@ -4,6 +4,7 @@ import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Screen } from "@/components/Screen";
+import { AquaIcon } from "@/components/icons/AquaIcon";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
@@ -163,6 +164,10 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               onClick={() => setWaterType("fresh")}
               style={{
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
                 padding: "8px 12px",
                 borderRadius: 8,
                 border: "1px solid var(--color-line)",
@@ -171,6 +176,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
                 fontWeight: 600,
               }}
             >
+              <AquaIcon name="freshwater" size={16} />
               Fresh water
             </button>
             <button
@@ -178,6 +184,10 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               onClick={() => setWaterType("brackish")}
               style={{
                 flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
                 padding: "8px 12px",
                 borderRadius: 8,
                 border: "1px solid var(--color-line)",
@@ -186,6 +196,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
                 fontWeight: 600,
               }}
             >
+              <AquaIcon name="brackish" size={16} />
               Brackish water
             </button>
           </div>
@@ -213,6 +224,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
 
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
+          <AquaIcon name="planted" size={16} />
           Planted tank
         </label>
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>

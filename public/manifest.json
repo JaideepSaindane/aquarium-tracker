@@ -4,11 +4,11 @@
   "description": "From \"I think I want fish\" to a thriving planted tank.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#EEF2F1",
-  "theme_color": "#0D3B40",
+  "background_color": "#F6F7F5",
+  "theme_color": "#168A8A",
   "orientation": "portrait",
   "icons": [
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "/icon-alternate.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }

@@ -4,14 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/i18n/use-translation";
+import { AquaIcon, type AquaIconName } from "@/components/icons/AquaIcon";
 import styles from "./TabBar.module.css";
 
-const TABS = [
-  { href: "/dex", icon: "📇", key: "dex" as const },
-  { href: "/", icon: "🐟", key: "tanks" as const },
-  { href: "/ask", icon: "💬", key: "ask" as const, center: true },
-  { href: "/community", icon: "🌊", key: "community" as const },
-  { href: "/settings", icon: "👤", key: "profile" as const },
+const TABS: { href: string; icon: AquaIconName; key: "dex" | "tanks" | "ask" | "community" | "profile"; center?: boolean }[] = [
+  { href: "/dex", icon: "dex", key: "dex" },
+  { href: "/", icon: "tanks", key: "tanks" },
+  { href: "/ask", icon: "ask-aqua", key: "ask", center: true },
+  { href: "/community", icon: "community", key: "community" },
+  { href: "/settings", icon: "profile", key: "profile" },
 ];
 
 const HIDE_THRESHOLD_PX = 8; // ignore tiny/bounce scrolls so the dock doesn't jitter
@@ -75,8 +76,8 @@ export function TabBar() {
             className={`${styles.tab} ${active ? styles.tabActive : ""}`}
             aria-current={active ? "page" : undefined}
           >
-            <span className={`${styles.icon} ${tab.center ? styles.iconCenter : ""}`} aria-hidden>
-              {tab.icon}
+            <span className={`${styles.icon} ${tab.center ? styles.iconCenter : ""}`}>
+              <AquaIcon name={tab.icon} size={tab.center ? 18 : 22} />
             </span>
             <span>{t.tabs[tab.key]}</span>
           </Link>
