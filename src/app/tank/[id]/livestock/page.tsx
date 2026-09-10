@@ -31,6 +31,15 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const searchParams = useSearchParams();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
+
+  // Captured once, the first time livestock loads, so the "already in this
+  // tank" vs "added just now" split (below) stays stable across this visit
+  // even as new rows get added. Not a state update — a lazy-init ref
+  // written during render is the normal React pattern for this.
+  const initialAliveRef = useRef<{ id: string; speciesId: string }[] | null>(null);
+  if (livestock && initialAliveRef.current === null) {
+    initialAliveRef.current = livestock.filter((l) => l.status === "alive").map((l) => ({ id: l.id, speciesId: l.speciesId }));
+  }
   const { data: plannedLivestock } = useLiveQuery(() => listPlannedLivestockForTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(listSpecies, []);
 
@@ -52,14 +61,19 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  const [compatResult, setCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
-  const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
+  // Compatibility now runs once, in a single batch, when leaving via "Done"
+  // — not per fish while adding (Jaideep, 2026-09-10: it interrupted the add
+  // flow, and a one-at-a-time check can never catch a conflict between two
+  // fish added in the same visit, only new-vs-already-saved).
+  const [sessionAddedSpeciesIds, setSessionAddedSpeciesIds] = useState<string[]>([]);
+  const [doneChecking, setDoneChecking] = useState(false);
+  const [doneCompatResult, setDoneCompatResult] = useState<{ verdict: string; conflicts: CompatConflict[]; footprintNote: string } | null>(null);
+  const [doneDismissedKeys, setDoneDismissedKeys] = useState<Set<string>>(new Set());
 
   async function handleSearch(value: string) {
     setQuery(value);
     setSelectedSpeciesId(null);
     setCandidates(null);
-    setCompatResult(null);
     if (value.trim().length < 2) {
       setSearchResults([]);
       return;
@@ -71,7 +85,6 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     setSelectedSpeciesId(speciesId);
     setSearchResults([]);
     setCandidates(null);
-    setCompatResult(null);
   }
 
   async function handleIdentifyPhoto(file: File) {
@@ -114,46 +127,58 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     selectSpecies(id);
   }
 
-  async function handleCheckCompat() {
-    if (!tank || !selectedSpeciesId) return;
-    setBusy("compat");
-    const existingSpeciesIds = (livestock ?? []).filter((l) => l.status === "alive").map((l) => l.speciesId);
+  /** "Done — go to my tank": if anything was added this visit, run one batch
+   *  compatibility check (existing-before-this-visit fish vs everything just
+   *  added) and show it before navigating; otherwise there's nothing new to
+   *  check, so just go. Never blocks leaving either way — Principle 01. */
+  async function handleDone() {
+    if (doneCompatResult) {
+      router.push(`/tank/${id}`);
+      return;
+    }
+    if (!tank || sessionAddedSpeciesIds.length === 0) {
+      router.push(`/tank/${id}`);
+      return;
+    }
+    setDoneChecking(true);
+    const existingSpeciesIds = Array.from(new Set((initialAliveRef.current ?? []).map((r) => r.speciesId)));
+    const newSpeciesIds = Array.from(new Set(sessionAddedSpeciesIds));
     const result = await checkCompat({
       lengthCm: tank.lengthCm,
       widthCm: tank.widthCm,
       heightCm: tank.heightCm,
       existingSpeciesIds,
-      newSpeciesIds: [selectedSpeciesId],
+      newSpeciesIds,
       tankId: id,
     });
-    setBusy(null);
+    setDoneChecking(false);
     if (!result.ok) {
-      // Never block the save — Principle 01. Proceed to confirm without a compat result rather than dead-ending.
-      setCompatResult({ verdict: "unknown", conflicts: [], footprintNote: "" });
+      // Never block the save — Principle 01. Just go rather than dead-ending on a failed check.
+      router.push(`/tank/${id}`);
       return;
     }
     const data = result.data.compat as unknown as { verdict: string; conflicts: CompatConflict[]; footprint_note: string };
-    setCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
-
     const dismissed = new Set<string>();
     for (const c of data.conflicts) {
-      const key = compatWarningKey(selectedSpeciesId, c.type, c.with);
+      const key = compatWarningKey(newSpeciesIds, c.type, c.with);
       if (await isWarningDismissed(key)) dismissed.add(key);
     }
-    setDismissedKeys(dismissed);
+    setDoneDismissedKeys(dismissed);
+    setDoneCompatResult({ verdict: data.verdict, conflicts: data.conflicts, footprintNote: data.footprint_note });
   }
 
-  async function handleDismiss(conflict: CompatConflict) {
-    if (!selectedSpeciesId) return;
-    const key = compatWarningKey(selectedSpeciesId, conflict.type, conflict.with);
+  async function handleDismissDoneConflict(conflict: CompatConflict) {
+    const newSpeciesIds = Array.from(new Set(sessionAddedSpeciesIds));
+    const key = compatWarningKey(newSpeciesIds, conflict.type, conflict.with);
     await dismissWarning({ tankId: id, warningKey: key });
-    setDismissedKeys((prev) => new Set(prev).add(key));
+    setDoneDismissedKeys((prev) => new Set(prev).add(key));
   }
 
   async function handleConfirmAdd() {
     if (!selectedSpeciesId || !count) return;
     const species = speciesById.get(selectedSpeciesId);
     await addLivestock({ tankId: id, speciesId: selectedSpeciesId, count: Number(count), nickname: nickname.trim() || undefined });
+    setSessionAddedSpeciesIds((prev) => [...prev, selectedSpeciesId]);
     const { isNewUnlock } = await unlockDexCard({ speciesId: selectedSpeciesId, unlockSource: "added_to_tank" });
     if (isNewUnlock) {
       setUnlockToast(firstName(species?.commonNames) ?? selectedSpeciesId);
@@ -164,7 +189,6 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     setCount("1");
     setNickname("");
     setShowNickname(false);
-    setCompatResult(null);
     setCandidates(null);
   }
 
@@ -174,11 +198,17 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const schoolingWarnings = checkSchoolingMinimums(aliveLivestock, speciesById);
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
 
+  const initialAliveIds = new Set((initialAliveRef.current ?? []).map((r) => r.id));
+  const existingRows = aliveLivestock.filter((l) => initialAliveIds.has(l.id));
+  const newRows = aliveLivestock.filter((l) => !initialAliveIds.has(l.id));
+
   return (
     <Screen
       footer={
         <>
-          <PrimaryButton onClick={() => router.push(`/tank/${id}`)}>Done — go to my tank</PrimaryButton>
+          <PrimaryButton onClick={handleDone} disabled={doneChecking}>
+            {doneChecking ? "Checking compatibility..." : doneCompatResult ? "Continue to my tank" : "Done — go to my tank"}
+          </PrimaryButton>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
             You can always add more fish later from here.
           </p>
@@ -194,6 +224,27 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
           <Banner severity={w.severity}>{w.message}</Banner>
         </div>
       ))}
+
+      {doneCompatResult && (
+        <Card style={{ marginBottom: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Compatibility check</p>
+          {doneCompatResult.conflicts.filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(sessionAddedSpeciesIds)), c.type, c.with))).length === 0 && (
+            <Banner severity="improve">No conflicts found between your fish.</Banner>
+          )}
+          {doneCompatResult.conflicts
+            .filter((c) => !doneDismissedKeys.has(compatWarningKey(Array.from(new Set(sessionAddedSpeciesIds)), c.type, c.with)))
+            .map((c, i) => (
+              <div key={i} style={{ marginBottom: 8 }}>
+                <Banner severity={c.severity === "critical" ? "fixNow" : "watch"} onDismiss={() => handleDismissDoneConflict(c)}>
+                  {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
+                </Banner>
+              </div>
+            ))}
+          {doneCompatResult.footprintNote && (
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{doneCompatResult.footprintNote}</p>
+          )}
+        </Card>
+      )}
 
       {!showAdd && <PrimaryButton onClick={() => setShowAdd(true)}>+ Add Fish</PrimaryButton>}
 
@@ -327,29 +378,6 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
               )}
               <div style={{ height: 12 }} />
 
-              {!compatResult && (
-                <SecondaryButton onClick={handleCheckCompat} disabled={busy === "compat"}>
-                  {busy === "compat" ? "Checking..." : "Check compatibility"}
-                </SecondaryButton>
-              )}
-
-              {compatResult && (
-                <div style={{ marginBottom: 12 }}>
-                  {compatResult.conflicts
-                    .filter((c) => !dismissedKeys.has(compatWarningKey(selectedSpeciesId, c.type, c.with)))
-                    .map((c, i) => (
-                      <div key={i} style={{ marginBottom: 8 }}>
-                        <Banner severity={c.severity === "critical" ? "fixNow" : "watch"} onDismiss={() => handleDismiss(c)}>
-                          {c.explanation} {c.mitigation ? `— ${c.mitigation}` : ""}
-                        </Banner>
-                      </div>
-                    ))}
-                  {compatResult.footprintNote && (
-                    <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{compatResult.footprintNote}</p>
-                  )}
-                </div>
-              )}
-
               <PrimaryButton onClick={handleConfirmAdd}>Add to tank</PrimaryButton>
             </div>
           )}
@@ -360,9 +388,24 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
       <div style={{ height: 16 }} />
 
       {aliveLivestock.length === 0 && <p style={{ color: "var(--color-ink-muted)" }}>No fish added yet.</p>}
-      {aliveLivestock.map((l) => (
-        <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
-      ))}
+
+      {newRows.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-deep)" }}>Added just now</p>
+          {newRows.map((l) => (
+            <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
+          ))}
+        </div>
+      )}
+
+      {existingRows.length > 0 && (
+        <div>
+          {newRows.length > 0 && <p style={{ fontWeight: 600, marginBottom: 8 }}>Already in this tank</p>}
+          {existingRows.map((l) => (
+            <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
+          ))}
+        </div>
+      )}
 
       {(plannedLivestock ?? []).length > 0 && (
         <div style={{ marginTop: 16 }}>

@@ -24,7 +24,16 @@ export async function dismissWarning(params: { tankId?: string; livestockId?: st
   notifyChanged();
 }
 
-/** Deterministic key for a compat conflict — same conflict type/pair always produces the same key. */
-export function compatWarningKey(newSpeciesId: string, conflictType: string, withSpeciesIds: string[]): string {
-  return `compat:${newSpeciesId}:${conflictType}:${[...withSpeciesIds].sort().join(",")}`;
+/**
+ * Deterministic key for a compat conflict — same conflict type/pair always
+ * produces the same key. `newSpeciesIds` is an array (2026-09-10: the
+ * compat check moved from per-fish to one batch check covering every
+ * species added in a session, since a real conflict can involve more than
+ * one newly-added fish at once) — order doesn't matter, so it's sorted
+ * before joining. Note: this changes the key format from the old
+ * single-species version, so any warning dismissed before this change will
+ * show again once, then dismiss normally.
+ */
+export function compatWarningKey(newSpeciesIds: string[], conflictType: string, withSpeciesIds: string[]): string {
+  return `compat:${[...newSpeciesIds].sort().join(",")}:${conflictType}:${[...withSpeciesIds].sort().join(",")}`;
 }
