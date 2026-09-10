@@ -17,7 +17,7 @@ const TABS = [
 const HIDE_THRESHOLD_PX = 8; // ignore tiny/bounce scrolls so the dock doesn't jitter
 const NEAR_TOP_PX = 40; // always show it near the top of a page regardless of direction
 
-/** Persistent bottom tab bar: Dex, Tanks, Ask Aqua, Community, My Profile. Home was removed as a tab — Jaideep's call, 2026-09-04 (the cross-tank calendar it pointed to wasn't earning its slot). Ask AquaAI moved from a floating button (see git history — FloatingAskButton was removed 2026-09-10) into a centered, visually raised tab per Jaideep's "AI-first" ask, so it's a permanent destination rather than something to discover. "My Profile" links to the existing Settings screen — no separate profile screen, just a relabeled/repositioned entry point. Floats like a dock and hides itself while scrolling down a long list, reappearing on scroll-up — Jaideep's feedback: "should not hide them (hide them smartly when required)." */
+/** Persistent bottom tab bar: Dex, Tanks, Ask Aqua, Community, My Profile. Home was removed as a tab — Jaideep's call, 2026-09-04 (the cross-tank calendar it pointed to wasn't earning its slot). Ask AquaAI moved from a floating button (see git history — FloatingAskButton was removed 2026-09-10) into a centered tab per Jaideep's "AI-first" ask, so it's a permanent destination rather than something to discover — initially a raised gradient circle, restyled the same day to a small flat teal icon as part of a wider "quieter, neutral nav" pass (see TabBar.module.css). "My Profile" links to the existing Settings screen — no separate profile screen, just a relabeled/repositioned entry point. Floats like a dock and hides itself while scrolling down a long list, reappearing on scroll-up — Jaideep's feedback: "should not hide them (hide them smartly when required)." */
 export function TabBar() {
   const pathname = usePathname();
   const t = useTranslation();
@@ -72,7 +72,7 @@ export function TabBar() {
           <Link
             key={tab.href}
             href={tab.href}
-            className={`${styles.tab} ${tab.center ? styles.tabCenter : ""} ${active ? styles.tabActive : ""}`}
+            className={`${styles.tab} ${active ? styles.tabActive : ""}`}
             aria-current={active ? "page" : undefined}
           >
             <span className={`${styles.icon} ${tab.center ? styles.iconCenter : ""}`} aria-hidden>

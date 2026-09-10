@@ -3,40 +3,41 @@
 // `tokens.css` mirrors the same values as CSS custom properties for use in
 // component stylesheets. If a value changes, change it in both places.
 //
-// Palette rebased 2026-09-02 onto a tonal navy→sky blue system per a design
-// brief Jaideep shared — see the comment at the top of tokens.css for the
-// source hexes and reasoning. This is now the app's one real palette; the
-// old `soft` export below is kept only as an alias so the three screens
-// built against it don't need editing (see tokens.css).
+// Palette rebased 2026-09-10 onto a neutral off-white/charcoal system with a
+// single muted-teal accent — see the comment at the top of tokens.css for
+// the source hexes and reasoning ("neutral UI chrome + colourful aquarium
+// content"). Replaces the previous navy→sky-blue identity (2026-09-02); the
+// `soft` export below is kept only as an alias so older screens don't need
+// editing (see tokens.css).
 
 export const light = {
-  ground: "#FFFFFF",
+  ground: "#F6F7F5",
   surface: "#FFFFFF",
-  surfaceAlt: "#D6E8F7",
-  ink: "#021024",
-  inkMuted: "#3C6A93",
-  line: "#C7DCED",
-  lineSoft: "#DCEBF7",
+  surfaceAlt: "#ECECEA",
+  ink: "#18242B",
+  inkMuted: "#65747A",
+  line: "#E3E8E7",
+  lineSoft: "#EDF1F0",
 
-  accent: "#5483B3",
-  accentSoft: "#D0E4F5",
-  deep: "#052659",
-  deepSoft: "#A8DDFA",
+  accent: "#168A8A",
+  accentSoft: "#DDF1EE",
+  deep: "#12706F",
+  deepSoft: "#CFEEE9",
 } as const;
 
 export const dark = {
-  ground: "#021024",
-  surface: "#0A1D3A",
-  surfaceAlt: "#0E2749",
-  ink: "#E7F3FF",
-  inkMuted: "#8FB4D6",
-  line: "#173A63",
-  lineSoft: "#102C50",
+  ground: "#12181A",
+  surface: "#1B2224",
+  surfaceAlt: "#212A2C",
+  ink: "#E7ECEA",
+  inkMuted: "#8FA0A0",
+  line: "#2A3335",
+  lineSoft: "#232B2D",
 
-  accent: "#7DA0CA",
-  accentSoft: "#0E2749",
-  deep: "#5483B3",
-  deepSoft: "#123458",
+  accent: "#4FCFC6",
+  accentSoft: "#163332",
+  deep: "#2FBDB5",
+  deepSoft: "#163332",
 } as const;
 
 // Severity — the only colours allowed to signal state. Deliberately separate
@@ -50,19 +51,19 @@ export const severity = {
 
 export type SeverityLevel = keyof typeof severity;
 
-// Matte elevation + selective glass — mirrors tokens.css. Shadows are
-// deliberately colored navy in light mode, not neutral grey, per the brief.
-// Glass is only for surfaces that genuinely float over content (bottom nav,
-// floating buttons, toasts/prompts); everything else stays flat matte.
+// Matte elevation + selective glass — mirrors tokens.css. Shadows are a
+// neutral charcoal tint now, not a colored wash, per the "neutral UI" rule.
+// Glass is only for surfaces that genuinely float over content (toasts,
+// prompts); everything else, including the bottom nav, is flat/solid now.
 export const shadow = {
-  sm: { light: "0 1px 3px rgba(5, 38, 89, 0.08), 0 1px 2px rgba(5, 38, 89, 0.1)", dark: "0 1px 3px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4)" },
-  md: { light: "0 8px 24px rgba(5, 38, 89, 0.12), 0 2px 6px rgba(5, 38, 89, 0.08)", dark: "0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3)" },
-  lift: { light: "0 12px 32px rgba(5, 38, 89, 0.18), 0 4px 10px rgba(5, 38, 89, 0.1)", dark: "0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.36)" },
+  sm: { light: "0 1px 3px rgba(24, 36, 43, 0.07), 0 1px 2px rgba(24, 36, 43, 0.08)", dark: "0 1px 3px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4)" },
+  md: { light: "0 8px 24px rgba(24, 36, 43, 0.1), 0 2px 6px rgba(24, 36, 43, 0.06)", dark: "0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3)" },
+  lift: { light: "0 12px 32px rgba(24, 36, 43, 0.14), 0 4px 10px rgba(24, 36, 43, 0.08)", dark: "0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.36)" },
 } as const;
 
 export const glass = {
-  light: { bg: "rgba(240, 247, 255, 0.68)", border: "rgba(255, 255, 255, 0.6)" },
-  dark: { bg: "rgba(5, 38, 89, 0.55)", border: "rgba(196, 224, 255, 0.12)" },
+  light: { bg: "rgba(255, 255, 255, 0.78)", border: "rgba(24, 36, 43, 0.08)" },
+  dark: { bg: "rgba(27, 34, 36, 0.78)", border: "rgba(255, 255, 255, 0.08)" },
   blur: "20px",
 } as const;
 

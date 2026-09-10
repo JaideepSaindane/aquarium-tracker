@@ -14,45 +14,45 @@ Two things it must not look like: a children's game (undermines the care advice)
 
 Colour carries meaning, not decoration. The severity scale is the most important colour in the app and nothing else is allowed to compete with it.
 
-**Surface treatment (2026-09-02): sleek, bold, matte, with glass used sparingly.** Static content — cards, banners, list rows, the species grid — stays flat and matte: a soft, low-opacity shadow for lift (`--shadow-sm`/`--shadow-md`, never a glossy highlight or gradient), a slightly bolder corner radius than before (`--radius-lg` = 20px on cards, up from 14px), and bolder type weight on buttons and headings. **Glass — a translucent, blurred background via `--glass-bg`/`--glass-border`/`--glass-blur` — is reserved for surfaces that genuinely float over content**: the bottom tab bar, the floating Ask AquaAI button, the Dex-unlock toast, and the survival-prompt card. Nothing that sits flat in the normal document flow gets glass; that keeps it a deliberate accent instead of a gimmick applied everywhere. See the new tokens in `src/theme/tokens.css`/`tokens.ts` (`shadow`, `glass`, and the bumped `radius` scale) — component CSS reads from these, never a hard-coded blur/shadow value.
+**Surface treatment (2026-09-10): neutral UI, colourful content.** Static content — cards, banners, list rows, the species grid, the bottom nav — is flat, solid, and neutral: plain white/charcoal cards on an off-white/near-black ground, a soft low-opacity neutral-tinted shadow for lift (`--shadow-sm`/`--shadow-md`, never a glossy highlight or gradient), `--radius-lg` (20px) on cards, bolder type weight on buttons and headings. **Glass — a translucent, blurred background via `--glass-bg`/`--glass-border`/`--glass-blur` — is now reserved for toasts/prompts only** (the Dex-unlock toast, the survival-prompt card); the bottom tab bar and ordinary cards are deliberately *not* glass any more (see 2026-09-10 rebase below) — a floating dock made of blue-tinted glass read as "visually enormous," so it's now a plain, mostly-opaque, quiet white/charcoal bar instead. The guiding rule: the *interface* stays neutral; colour comes from aquarium content — tank photos, fish/plant imagery, species colours — not from painting UI chrome in the brand hue. See the tokens in `src/theme/tokens.css`/`tokens.ts` (`shadow`, `glass`, and the `radius` scale) — component CSS reads from these, never a hard-coded blur/shadow/colour value.
 
 ---
 
 ## Colour tokens
 
-**Rebased 2026-09-02** onto a tonal navy→sky blue system, per a design brief Jaideep shared (`aquarium-tracker-design-brief.md`) — replaces the app's earlier teal/burnt-orange identity everywhere. One hue family varying only in depth/lightness (navy → steel → sky), not a flat two-stop gradient. Severity keeps its own separate semantic scale, untouched by this change — those colours are safety-critical and never doubled as brand colour.
+**Rebased 2026-09-10** onto a neutral off-white/charcoal system with a single muted-teal accent, per a design direction Jaideep shared — replaces the previous navy→sky-blue identity (2026-09-02 rebase, itself replacing an earlier teal/burnt-orange one). The idea: *neutral UI chrome + colourful aquarium content* — chrome (backgrounds, cards, nav, borders, shadows) stays a calm off-white/charcoal/grey; the one accent colour (a muted teal) marks actions and active states; real colour comes from tank photos, fish and plant imagery, not from tinting the interface itself blue. Severity keeps its own separate semantic scale, untouched by this change — those colours are safety-critical and never doubled as brand colour.
 
 ```ts
 // src/theme/tokens.ts
 
 export const light = {
-  ground:      '#F3F8FD',  // app background — near-white with a whisper of blue
+  ground:      '#F6F7F5',  // app background — warm, neutral off-white
   surface:     '#FFFFFF',  // cards
-  surfaceAlt:  '#EAF2FB',  // table headers, inset areas
-  ink:         '#021024',  // primary text — near-black navy, never pure black
-  inkMuted:    '#3C6A93',  // secondary text — darker than the brief's steel blue for AA contrast on white
-  line:        '#C7DCED',  // borders
-  lineSoft:    '#DCEBF7',  // internal dividers
+  surfaceAlt:  '#ECECEA',  // inputs, chips, inset areas — plain neutral grey, not accent-tinted
+  ink:         '#18242B',  // primary text — near-black charcoal, never pure black
+  inkMuted:    '#65747A',  // secondary text
+  line:        '#E3E8E7',  // borders
+  lineSoft:    '#EDF1F0',  // internal dividers
 
-  accent:      '#5483B3',  // steel blue — secondary actions, active states
-  accentSoft:  '#E4EDF6',
-  deep:        '#052659',  // deep navy — primary buttons, headlines, key UI
-  deepSoft:    '#C1E8FF',  // pale sky — highlight fills, positive-state chips
+  accent:      '#168A8A',  // muted teal — the app's one brand colour, secondary actions/active states
+  accentSoft:  '#DDF1EE',
+  deep:        '#12706F',  // slightly darker teal — primary buttons, headlines, key UI
+  deepSoft:    '#CFEEE9',  // highlight fills, positive-state chips
 }
 
 export const dark = {
-  ground:      '#021024',  // near-black navy
-  surface:     '#0A1D3A',
-  surfaceAlt:  '#0E2749',
-  ink:         '#E7F3FF',  // pale sky as text, per the brief's dark-mode direction
-  inkMuted:    '#8FB4D6',
-  line:        '#173A63',
-  lineSoft:    '#102C50',
+  ground:      '#12181A',  // near-black warm charcoal
+  surface:     '#1B2224',
+  surfaceAlt:  '#212A2C',
+  ink:         '#E7ECEA',  // pale neutral as text
+  inkMuted:    '#8FA0A0',
+  line:        '#2A3335',
+  lineSoft:    '#232B2D',
 
-  accent:      '#7DA0CA',  // light blue-grey — brighter than deep so it still pops on near-black
-  accentSoft:  '#0E2749',
-  deep:        '#5483B3',  // steel blue does primary-button duty in dark mode
-  deepSoft:    '#123458',
+  accent:      '#4FCFC6',  // brighter teal — pops on near-black
+  accentSoft:  '#163332',
+  deep:        '#2FBDB5',  // primary-button teal in dark mode
+  deepSoft:    '#163332',
 }
 
 // Severity — the only colours allowed to signal state.
@@ -65,7 +65,7 @@ export const severity = {
 }
 ```
 
-Shadows are deliberately *colored* navy (`rgba(5, 38, 89, …)`) rather than neutral grey — soft and low-opacity, never a flat drop shadow. Glass surfaces (`--glass-bg`/`--glass-border`, used only where something genuinely floats over content — see "Surface treatment" above) carry a faint navy tint too, so they read as "blue glass" rather than generic frosted white.
+Shadows are a neutral charcoal tint (`rgba(24, 36, 43, …)`) rather than a colored brand wash — a shadow should read as "shadow," not as brand colour. Glass surfaces (`--glass-bg`/`--glass-border`, now used only for toasts/prompts — see "Surface treatment" above) are a neutral near-white/near-black tint, not a blue- or teal-tinted glass.
 
 **Dark mode is not optional.** People check tanks at night with the room light off. Build both from day one; retrofitting is far more expensive.
 

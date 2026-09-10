@@ -93,7 +93,7 @@ export default function TanksPage() {
           <div>
             <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>{greeting()},</p>
             <h1 style={{ fontSize: "var(--font-title-size)", color: "#fff" }}>
-              {data?.profileName ? data.profileName : "Aquarist"} 🐟
+              {data?.profileName ? data.profileName : "Aquarist"} 👋
             </h1>
           </div>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
@@ -122,28 +122,32 @@ export default function TanksPage() {
         </div>
 
         <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 12 }}>
-          {tanks && tanks.length > 0 ? "Here's how your tanks are doing." : "Let's get your first tank set up."}
+          {tanks && tanks.length > 0 ? "Your aquariums are looking good." : "Let's get your first tank set up."}
         </p>
       </TankHeroPhoto>
 
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search tanks..."
-        style={{
-          width: "100%",
-          padding: "12px 16px",
-          borderRadius: "var(--radius-pill)",
-          border: "1px solid var(--soft-card-border)",
-          background: "var(--soft-card-bg)",
-          backdropFilter: "blur(var(--glass-blur))",
-          WebkitBackdropFilter: "blur(var(--glass-blur))",
-          color: "var(--soft-ink)",
-          fontSize: "var(--font-body-size)",
-          marginBottom: 20,
-          boxSizing: "border-box",
-        }}
-      />
+      {/* A search box is dead weight when every tank already fits on screen
+          at a glance — only earns its place once there's enough to actually
+          search through. Jaideep's ask, 2026-09-10. */}
+      {tanks && tanks.length >= 4 && (
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="⌕  Search your tanks"
+          style={{
+            width: "100%",
+            height: 48,
+            padding: "0 16px",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid var(--color-line)",
+            background: "var(--color-surface)",
+            color: "var(--soft-ink)",
+            fontSize: "var(--font-body-size)",
+            marginBottom: 20,
+            boxSizing: "border-box",
+          }}
+        />
+      )}
 
       {!loading && tanks && tanks.length === 0 && (
         <>
@@ -191,7 +195,9 @@ export default function TanksPage() {
       {tanks && tanks.length > 0 && (
         <>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, position: "relative" }}>
-            <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>My tanks</p>
+            <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>
+              My tanks <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
+            </p>
             <Link
               href="/tank/new"
               style={{
@@ -224,23 +230,41 @@ export default function TanksPage() {
                   key={tank.id}
                   style={{
                     position: "relative",
-                    display: "flex",
-                    gap: 12,
-                    padding: 12,
                     borderRadius: "var(--radius-lg)",
-                    background: "var(--soft-card-bg)",
-                    border: "1px solid var(--soft-card-border)",
-                    backdropFilter: "blur(var(--glass-blur))",
-                    WebkitBackdropFilter: "blur(var(--glass-blur))",
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-line)",
                     boxShadow: "var(--shadow-sm)",
+                    overflow: "hidden",
                   }}
                 >
-                  <Link href={`/tank/${tank.id}`} style={{ flexShrink: 0 }}>
-                    <TankThumbnail photoUri={tank.photoUri} size={84} />
+                  <Link href={`/tank/${tank.id}`} style={{ display: "block" }}>
+                    <TankThumbnail photoUri={tank.photoUri} width="100%" height={140} radius="0" />
                   </Link>
 
-                  <Link href={`/tank/${tank.id}`} style={{ flex: 1, minWidth: 0, color: "inherit", display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, paddingRight: 24 }}>
+                  <button
+                    onClick={() => setOpenMenuTankId((cur) => (cur === tank.id ? null : tank.id))}
+                    aria-label={`More actions for ${tank.name}`}
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      width: 28,
+                      height: 28,
+                      borderRadius: "50%",
+                      border: "none",
+                      background: "rgba(255,255,255,0.85)",
+                      color: "var(--color-ink)",
+                      fontSize: 16,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    ⋮
+                  </button>
+
+                  <Link href={`/tank/${tank.id}`} style={{ display: "block", padding: 12, color: "inherit" }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
                       <strong style={{ color: "var(--soft-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tank.name}</strong>
                       <span
                         style={{
@@ -277,8 +301,6 @@ export default function TanksPage() {
                       {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
                     </p>
 
-                    <div style={{ flex: 1 }} />
-
                     <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                       {visibleThumbs.map((l, i) => (
                         <SpeciesThumb key={`${l.speciesId}-${i}`} imageUri={l.imageUri} category={l.category} size={24} />
@@ -308,28 +330,6 @@ export default function TanksPage() {
                     </div>
                   </Link>
 
-                  <button
-                    onClick={() => setOpenMenuTankId((cur) => (cur === tank.id ? null : tank.id))}
-                    aria-label={`More actions for ${tank.name}`}
-                    style={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      width: 28,
-                      height: 28,
-                      borderRadius: "50%",
-                      border: "none",
-                      background: "transparent",
-                      color: "var(--soft-ink-muted)",
-                      fontSize: 16,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    ⋮
-                  </button>
-
                   {openMenuTankId === tank.id && (
                     <>
                       <div
@@ -343,8 +343,8 @@ export default function TanksPage() {
                           top: 38,
                           right: 8,
                           zIndex: 30,
-                          background: "var(--soft-card-bg)",
-                          border: "1px solid var(--soft-card-border)",
+                          background: "var(--color-surface)",
+                          border: "1px solid var(--color-line)",
                           borderRadius: "var(--radius-md)",
                           boxShadow: "var(--shadow-md, 0 8px 24px rgba(0,0,0,0.15))",
                           overflow: "hidden",

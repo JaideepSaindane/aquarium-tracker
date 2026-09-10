@@ -484,7 +484,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
             display: "flex",
             alignItems: "flex-end",
             justifyContent: "center",
-            background: "rgba(2, 16, 36, 0.55)",
+            background: "rgba(0, 0, 0, 0.5)",
           }}
           onClick={() => setShowTankPicker(false)}
         >

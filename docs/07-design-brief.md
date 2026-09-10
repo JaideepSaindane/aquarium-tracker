@@ -1,3 +1,5 @@
+**Superseded 2026-09-10** — the navy→sky-blue palette this brief describes was replaced by a neutral off-white/charcoal system with a single muted-teal accent ("neutral UI + colourful content"), per a new design direction Jaideep shared. See `docs/04-design-system.md` for the current tokens. Kept below for historical context — the glassmorphism/layout reasoning still mostly applies, just not the specific navy hex values.
+
 # Aquarium Tracker App — Design Brief
 _Built from your 3 UI-style references + your blue palette reference. Hand this whole file to Claude Code as context before it writes any UI code._
 

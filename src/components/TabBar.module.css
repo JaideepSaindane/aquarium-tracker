@@ -1,16 +1,23 @@
+/* Quiet, neutral bottom nav — Jaideep's ask, 2026-09-10: "the current
+   bottom nav is visually enormous," make it a plain, mostly-opaque white
+   bar instead of a blue-tinted glass dock. Kept as a floating, auto-hiding
+   bar (see .barHidden) since that behavior was validated earlier
+   ("hide them smartly when required") — only its colour/weight changed. */
 .bar {
   position: fixed;
   left: 50%;
   bottom: calc(12px + env(safe-area-inset-bottom));
   transform: translate(-50%, 0);
   display: flex;
+  align-items: center;
   width: calc(100% - 24px);
   max-width: 480px;
-  border-radius: var(--radius-xl);
+  height: 76px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--dock-border);
   background: var(--dock-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: var(--dock-shadow);
   z-index: 20;
   transition: transform 220ms ease;
@@ -26,12 +33,12 @@
 
 .tab {
   flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: var(--space-sm) 0 6px;
-  min-height: 44px;
+  justify-content: center;
+  gap: 3px;
   color: var(--color-ink-muted);
   text-decoration: none;
   font-size: var(--font-caption-size);
@@ -55,22 +62,22 @@
   background: var(--color-deep-soft);
 }
 
-/* Ask Aqua sits in the center and is deliberately raised/filled so it reads
-   as the app's primary action, not just another tab — Jaideep's "AI-first"
-   ask to make Ask AquaAI a permanent, prominent destination. */
-.tabCenter {
-  transform: translateY(-14px);
-}
-
+/* Ask Aqua's icon gets a small filled teal circle so it's still findable at
+   a glance, without the nav item being visually enormous — Jaideep's ask,
+   2026-09-10, over the earlier raised/gradient treatment: "small teal
+   circular icon while keeping the same nav height." */
 .iconCenter {
-  width: 52px;
-  height: 52px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  background: linear-gradient(135deg, #2f7dfa, #1a5fe0);
+  font-size: 16px;
+  background: var(--color-deep);
   color: #fff;
-  box-shadow: 0 8px 20px rgba(47, 125, 250, 0.45), var(--shadow-lift);
+}
+
+.tabActive .iconCenter {
+  background: var(--color-deep);
 }

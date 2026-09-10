@@ -52,7 +52,7 @@ export default function OnboardingPage() {
         minHeight: "100dvh",
         display: "flex",
         flexDirection: "column",
-        background: "#021024 url(/onboarding/welcome-bg.jpg) center / cover no-repeat",
+        background: "#18242b url(/onboarding/welcome-bg.jpg) center / cover no-repeat",
       }}
     >
       <IntroAnimation />
@@ -65,8 +65,8 @@ export default function OnboardingPage() {
           position: "fixed",
           inset: 0,
           background:
-            "linear-gradient(to bottom, rgba(2,16,36,0.55) 0%, rgba(2,16,36,0.1) 22%, rgba(2,16,36,0) 40%), " +
-            "linear-gradient(to top, rgba(2,16,36,0.85) 0%, rgba(2,16,36,0.35) 42%, rgba(2,16,36,0) 68%)",
+            "linear-gradient(to bottom, rgba(24,36,43,0.55) 0%, rgba(24,36,43,0.1) 22%, rgba(24,36,43,0) 40%), " +
+            "linear-gradient(to top, rgba(24,36,43,0.85) 0%, rgba(24,36,43,0.35) 42%, rgba(24,36,43,0) 68%)",
           pointerEvents: "none",
         }}
       />
@@ -137,11 +137,11 @@ export default function OnboardingPage() {
               padding: "12px 40px",
               borderRadius: "var(--radius-pill)",
               border: "none",
-              background: "#2f7dfa",
+              background: "var(--color-deep)",
               color: "#fff",
               fontWeight: 700,
               fontSize: "var(--font-body-size)",
-              boxShadow: "0 8px 20px rgba(47,125,250,0.45)",
+              boxShadow: "var(--shadow-lift)",
               opacity: saving ? 0.7 : 1,
             }}
           >
