@@ -1,8 +1,7 @@
-import { eq, and, isNull, desc } from "drizzle-orm";
-import { db } from "../client";
-import { measurements } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
+
+// Rewritten 2026-09-10 to call the new user-scoped server API
+// (src/app/api/measurements) — see tanks.ts's header comment for why.
 
 export type NewMeasurement = {
   tankId: string;
@@ -13,53 +12,50 @@ export type NewMeasurement = {
   note?: string;
 };
 
-export async function listMeasurementsForTank(tankId: string) {
-  return db
-    .select()
-    .from(measurements)
-    .where(and(eq(measurements.tankId, tankId), isNull(measurements.deletedAt)));
+export type MeasurementRow = {
+  id: string;
+  tankId: string;
+  parameterId: string;
+  value: number;
+  measuredAt: string;
+  method: string | null;
+  note: string | null;
+  photoUri: string | null;
+  createdAt: string;
+  deletedAt: string | null;
+};
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
 }
 
-/** Every measurement across every tank — used by the T-026 metrics screen. */
-export async function listAllMeasurements() {
-  return db.select().from(measurements).where(isNull(measurements.deletedAt));
+export async function listMeasurementsForTank(tankId: string): Promise<MeasurementRow[]> {
+  return json(await fetch(`/api/measurements?tankId=${encodeURIComponent(tankId)}`));
 }
 
-export async function listMeasurementsForParam(tankId: string, parameterId: string) {
-  return db
-    .select()
-    .from(measurements)
-    .where(and(eq(measurements.tankId, tankId), eq(measurements.parameterId, parameterId), isNull(measurements.deletedAt)))
-    .orderBy(desc(measurements.measuredAt));
+export async function listAllMeasurements(): Promise<MeasurementRow[]> {
+  return json(await fetch(`/api/measurements?all=1`));
 }
 
-/** Most recent reading for this parameter — shown as a hint while entering the next one. */
-export async function getLastMeasurement(tankId: string, parameterId: string) {
+export async function listMeasurementsForParam(tankId: string, parameterId: string): Promise<MeasurementRow[]> {
+  return json(await fetch(`/api/measurements?tankId=${encodeURIComponent(tankId)}&parameterId=${encodeURIComponent(parameterId)}`));
+}
+
+export async function getLastMeasurement(tankId: string, parameterId: string): Promise<MeasurementRow | undefined> {
   const rows = await listMeasurementsForParam(tankId, parameterId);
   return rows[0];
 }
 
-export async function addMeasurement(input: NewMeasurement) {
-  const now = nowIso();
-  const id = newId();
-  await db.insert(measurements).values({
-    id,
-    tankId: input.tankId,
-    parameterId: input.parameterId,
-    value: input.value,
-    measuredAt: input.measuredAt ?? now,
-    method: input.method ?? "liquid_kit",
-    note: input.note,
-    createdAt: now,
-  });
+export async function addMeasurement(input: NewMeasurement): Promise<string> {
+  const { id } = await json<{ id: string }>(
+    await fetch("/api/measurements", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
+  );
   notifyChanged();
   return id;
 }
 
-export async function countMeasurementsForTank(tankId: string, parameterId: string) {
-  const rows = await db
-    .select()
-    .from(measurements)
-    .where(and(eq(measurements.tankId, tankId), eq(measurements.parameterId, parameterId)));
+export async function countMeasurementsForTank(tankId: string, parameterId: string): Promise<number> {
+  const rows = await listMeasurementsForParam(tankId, parameterId);
   return rows.length;
 }

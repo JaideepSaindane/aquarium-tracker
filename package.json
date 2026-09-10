@@ -8,19 +8,24 @@
     "corpus:validate": "node scripts/validate-corpus.mjs",
     "start": "next start",
     "lint": "eslint",
-    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.mjs"
+    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.mjs",
+    "db:server:generate": "node --env-file=.env.local node_modules/.bin/drizzle-kit generate --config drizzle.config.server.ts",
+    "db:server:migrate": "node --env-file=.env.local node_modules/.bin/drizzle-kit migrate --config drizzle.config.server.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.122.0",
     "@google/generative-ai": "^0.24.1",
+    "@neondatabase/serverless": "^1.1.0",
     "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
     "@upstash/redis": "^1.38.3",
+    "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "fflate": "^0.8.3",
     "html2canvas": "^1.4.1",
     "js-yaml": "^5.4.1",
     "lottie-web": "^5.13.0",
     "next": "16.3.3",
+    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "web-push": "^3.6.7",
@@ -28,6 +33,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^19",

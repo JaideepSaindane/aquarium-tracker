@@ -45,9 +45,9 @@ const en = {
   settings: {
     title: "My Profile & Settings",
     profileTitle: "My Info",
-    profileSubtitle: "Optional, and never leaves this device — no account, no sign-in.",
+    profileSubtitle: "Optional — shown only to you, tied to your account.",
     exportTitle: "Export your data",
-    exportSubtitle: "Everything, free forever, no account needed. Works offline.",
+    exportSubtitle: "Everything, free forever. Your data belongs to you, not us.",
     languageTitle: "Language",
     languageSubtitle: "Switches the whole interface immediately, no restart needed.",
     startOver: "Start over",

@@ -50,8 +50,8 @@ export default function AboutPage() {
         <ul style={{ margin: 0, paddingLeft: 18, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", lineHeight: 1.8 }}>
           <li>We advise, never block — your tank is always recorded honestly, warnings never stop you from saving.</li>
           <li>Species care, disease reference, and emergency triage are free forever — we sell compute and continuity, not facts.</li>
-          <li>Your data is yours — full export, no account required.</li>
-          <li>The app works at the tank, offline — the network is an enhancement, never a dependency.</li>
+          <li>Your data is yours — full export, any time, from a signed-in account you control.</li>
+          <li>An account is required as of 2026-09-10 so your tanks follow you across devices — a deliberate change from the app&apos;s earlier fully-offline, no-account design.</li>
         </ul>
       </Card>
 

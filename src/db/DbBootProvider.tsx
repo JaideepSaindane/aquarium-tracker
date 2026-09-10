@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { ensureDb } from "./client";
 import { runMigrations } from "./migrate";
 import { seedSpecies, countSpecies } from "./queries/species";
@@ -75,9 +76,20 @@ function markEverPersisted() {
  * OPFS is unsupported.
  */
 export function DbBootProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<BootState>({ status: "booting" });
+  const pathname = usePathname();
+  // /login (added 2026-09-10 for real accounts) needs to render before
+  // anyone is signed in and shouldn't wait on the local device DB at all —
+  // it doesn't touch it. Once the user navigates away from /login (e.g.
+  // after signing in), the boot below runs for real, exactly once — a ref
+  // rather than deriving from `state` so a fast double-render can't kick
+  // off two boots.
+  const skipBoot = pathname === "/login";
+  const [state, setState] = useState<BootState>(skipBoot ? { status: "ready", persistent: true } : { status: "booting" });
+  const bootStarted = useRef(false);
 
   useEffect(() => {
+    if (skipBoot || bootStarted.current) return;
+    bootStarted.current = true;
     (async () => {
       try {
         const dbStatus = await ensureDb();
@@ -93,7 +105,7 @@ export function DbBootProvider({ children }: { children: ReactNode }) {
         setState({ status: "error", message: String(err) });
       }
     })();
-  }, []);
+  }, [skipBoot]);
 
   if (state.status === "booting") {
     return (

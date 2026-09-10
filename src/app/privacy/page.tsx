@@ -43,11 +43,18 @@ export default function PrivacyPage() {
       </div>
 
       <Card style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 8 }}>Your tank data stays on your device</h2>
+        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 8 }}>You need an account, and your core data is stored on our server</h2>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
-          Tanks, fish, plants, equipment, measurements, journal entries, and photos are stored locally in your browser
-          (SQLite, in a private per-origin file area). Nothing is uploaded to a server just by using the app. There is no
-          account and no sign-in.
+          As of 2026-09-10, {APP_NAME} requires signing in — either with Google, or a phone number and a 4-digit PIN you
+          choose yourself. Your tanks, fish, and water-parameter logs are stored on our server (Postgres via Neon),
+          scoped to your account, so they follow you across devices. Some data (plants, equipment, journal entries,
+          photos, species catalog progress) still lives only in this browser&apos;s local storage for now, mid-migration to
+          the server — it won&apos;t yet follow you to a new device.
+        </p>
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginTop: 8 }}>
+          Signing up with a phone number does not verify that the number is actually yours — there is no SMS code. Your
+          PIN is the only thing protecting that account; choose one that isn&apos;t easily guessed, and note that there
+          is currently no self-serve way to recover a forgotten PIN.
         </p>
       </Card>
 
@@ -63,7 +70,9 @@ export default function PrivacyPage() {
         <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 8 }}>Your data is yours</h2>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
           You can export everything — full JSON, CSV spreadsheets, and your photos — at any time from Settings, at no
-          cost, with no account required. Deleting the app or clearing site data removes everything stored locally.
+          cost. This includes both your server-stored data and whatever&apos;s still local to this device. Deleting the
+          app or clearing site data removes only the local portion; your server-stored data stays tied to your
+          account until you delete it.
         </p>
       </Card>
 

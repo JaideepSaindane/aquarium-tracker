@@ -1,8 +1,11 @@
-import { eq, isNull, and } from "drizzle-orm";
-import { db } from "../client";
-import { tanks } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
+
+// Rewritten 2026-09-10 to call the new user-scoped server API
+// (src/app/api/tanks/*) instead of the local SQLite-WASM client, now that
+// real accounts exist — see CLAUDE.md's updated Principle 5 and
+// specs/PROGRESS.md's "accounts + backend" entry. Function names/shapes
+// kept identical on purpose so every page that already imports these
+// didn't need to change.
 
 export type NewTank = {
   name: string;
@@ -23,57 +26,59 @@ export type NewTank = {
 
 export type TankUpdate = Partial<NewTank> & { notes?: string };
 
-export async function listTanks() {
-  return db.select().from(tanks).where(isNull(tanks.deletedAt));
+export type Tank = {
+  id: string;
+  name: string;
+  photoUri: string | null;
+  lengthCm: number;
+  widthCm: number;
+  heightCm: number;
+  volumeL: number;
+  shape: string | null;
+  status: string | null;
+  waterType: string | null;
+  isPlanted: boolean | null;
+  hasCo2: boolean | null;
+  setupType: string | null;
+  city: string | null;
+  startedOn: string | null;
+  substrate: string | null;
+  notes: string | null;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
 }
 
-export async function getTank(id: string) {
-  const rows = await db
-    .select()
-    .from(tanks)
-    .where(and(eq(tanks.id, id), isNull(tanks.deletedAt)));
-  return rows[0];
+export async function listTanks(): Promise<Tank[]> {
+  return json(await fetch("/api/tanks"));
 }
 
-export async function createTank(input: NewTank) {
-  const now = nowIso();
-  const volumeL = Math.round(((input.lengthCm * input.widthCm * input.heightCm) / 1000) * 10) / 10;
-  const id = newId();
-  await db.insert(tanks).values({
-    id,
-    name: input.name,
-    lengthCm: input.lengthCm,
-    widthCm: input.widthCm,
-    heightCm: input.heightCm,
-    volumeL,
-    shape: input.shape,
-    waterType: input.waterType ?? "fresh",
-    city: input.city,
-    isPlanted: input.isPlanted ?? false,
-    hasCo2: input.hasCo2 ?? false,
-    startedOn: input.startedOn,
-    substrate: input.substrate,
-    status: input.status ?? "active",
-    setupType: input.setupType,
-    photoUri: input.photoUri,
-    createdAt: now,
-    updatedAt: now,
-  });
+export async function getTank(id: string): Promise<Tank | undefined> {
+  const res = await fetch(`/api/tanks/${id}`);
+  if (res.status === 404) return undefined;
+  return json(res);
+}
+
+export async function createTank(input: NewTank): Promise<string> {
+  const { id } = await json<{ id: string }>(
+    await fetch("/api/tanks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
+  );
   notifyChanged();
   return id;
 }
 
-export async function updateTank(id: string, patch: TankUpdate) {
-  const now = nowIso();
-  const values: Record<string, unknown> = { ...patch, updatedAt: now };
-  if (patch.lengthCm && patch.widthCm && patch.heightCm) {
-    values.volumeL = Math.round(((patch.lengthCm * patch.widthCm * patch.heightCm) / 1000) * 10) / 10;
-  }
-  await db.update(tanks).set(values).where(eq(tanks.id, id));
+export async function updateTank(id: string, patch: TankUpdate): Promise<void> {
+  await fetch(`/api/tanks/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
   notifyChanged();
 }
 
-export async function deleteTank(id: string) {
-  await db.update(tanks).set({ deletedAt: nowIso() }).where(eq(tanks.id, id));
+export async function deleteTank(id: string): Promise<void> {
+  await fetch(`/api/tanks/${id}`, { method: "DELETE" });
   notifyChanged();
 }

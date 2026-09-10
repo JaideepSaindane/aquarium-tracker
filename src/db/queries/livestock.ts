@@ -1,8 +1,7 @@
-import { eq, isNull, and } from "drizzle-orm";
-import { db } from "../client";
-import { livestock, livestockEvents } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
+
+// Rewritten 2026-09-10 to call the new user-scoped server API
+// (src/app/api/livestock/*) — see tanks.ts's header comment for why.
 
 export type NewLivestock = {
   tankId: string;
@@ -10,114 +9,86 @@ export type NewLivestock = {
   count: number;
   nickname?: string;
   addedOn?: string;
-  /** Defaults to 'alive'. 'planned' marks a fish the user WANTS (T-027 guided planner) — it must never count as living in the tank. */
   status?: string;
 };
 
-export async function listLivestockForTank(tankId: string) {
-  return db
-    .select()
-    .from(livestock)
-    .where(and(eq(livestock.tankId, tankId), isNull(livestock.deletedAt)));
+export type LivestockRow = {
+  id: string;
+  tankId: string;
+  speciesId: string;
+  nickname: string | null;
+  count: number;
+  addedOn: string;
+  removedOn: string | null;
+  status: string | null;
+  deathCause: string | null;
+  source: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type LivestockEvent = {
+  id: string;
+  livestockId: string;
+  type: string;
+  occurredAt: string;
+  note: string | null;
+  photoUri: string | null;
+  createdAt: string;
+};
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
 }
 
-/** Livestock the user WANTS but doesn't have yet (T-027 guided planner) — shown separately in the Fish tab, never counted as living in the tank. */
-export async function listPlannedLivestockForTank(tankId: string) {
-  return db
-    .select()
-    .from(livestock)
-    .where(and(eq(livestock.tankId, tankId), eq(livestock.status, "planned"), isNull(livestock.deletedAt)));
+export async function listLivestockForTank(tankId: string): Promise<LivestockRow[]> {
+  return json(await fetch(`/api/livestock?tankId=${encodeURIComponent(tankId)}`));
 }
 
-/** All alive livestock rows across every tank — used by the My Tanks list to show a "N× Species" badge row per tank without a per-tank query loop. */
-export async function listAllAliveLivestock() {
-  return db
-    .select()
-    .from(livestock)
-    .where(and(eq(livestock.status, "alive"), isNull(livestock.deletedAt)));
+export async function listPlannedLivestockForTank(tankId: string): Promise<LivestockRow[]> {
+  return json(await fetch(`/api/livestock?tankId=${encodeURIComponent(tankId)}&planned=1`));
 }
 
-/** Every livestock row regardless of status — used by the T-026 90-day survival metric, which needs the died/rehomed rows too. */
-export async function listAllLivestock() {
-  return db.select().from(livestock).where(isNull(livestock.deletedAt));
+export async function listAllAliveLivestock(): Promise<LivestockRow[]> {
+  return json(await fetch(`/api/livestock?alive=1`));
 }
 
-export async function addLivestock(input: NewLivestock) {
-  const now = nowIso();
-  const id = newId();
-  await db.insert(livestock).values({
-    id,
-    tankId: input.tankId,
-    speciesId: input.speciesId,
-    count: input.count,
-    nickname: input.nickname,
-    addedOn: input.addedOn ?? now,
-    status: input.status ?? "alive",
-    createdAt: now,
-    updatedAt: now,
-  });
-  // Starting point for the per-livestock timeline (specs/T-022). A
-  // 'planned' row gets a 'planned' event instead — it hasn't been added
-  // to any real tank yet, and the timeline should say so.
-  await db.insert(livestockEvents).values({
-    id: newId(),
-    livestockId: id,
-    type: input.status === "planned" ? "planned" : "added",
-    occurredAt: input.addedOn ?? now,
-    createdAt: now,
-  });
+export async function listAllLivestock(): Promise<LivestockRow[]> {
+  return json(await fetch(`/api/livestock?all=1`));
+}
+
+export async function addLivestock(input: NewLivestock): Promise<string> {
+  const { id } = await json<{ id: string }>(
+    await fetch("/api/livestock", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
+  );
   notifyChanged();
   return id;
 }
 
-export async function listLivestockEvents(livestockId: string) {
-  return db.select().from(livestockEvents).where(eq(livestockEvents.livestockId, livestockId)).orderBy(livestockEvents.occurredAt);
+export async function listLivestockEvents(livestockId: string): Promise<LivestockEvent[]> {
+  return json(await fetch(`/api/livestock/${livestockId}/events`));
 }
 
-/**
- * Marks a planned fish (T-027) as actually living in the tank — the day
- * the real fish comes home. Writes a real "added" event so the timeline
- * records the true arrival, not the planning date.
- */
-export async function markLivestockArrived(id: string) {
-  const now = nowIso();
-  await db.update(livestock).set({ status: "alive", addedOn: now, updatedAt: now }).where(eq(livestock.id, id));
-  await db.insert(livestockEvents).values({
-    id: newId(),
-    livestockId: id,
-    type: "added",
-    occurredAt: now,
-    createdAt: now,
-  });
+async function patchLivestock(id: string, body: Record<string, unknown>): Promise<void> {
+  await fetch(`/api/livestock/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   notifyChanged();
 }
 
-export async function updateLivestockCount(id: string, count: number) {
-  await db.update(livestock).set({ count, updatedAt: nowIso() }).where(eq(livestock.id, id));
-  notifyChanged();
+export async function markLivestockArrived(id: string): Promise<void> {
+  await patchLivestock(id, { action: "arrive" });
 }
 
-/** Free and always available, with no payment prompt — Aquareka lost a star for gating this. */
-export async function removeLivestock(id: string) {
-  await db.update(livestock).set({ deletedAt: nowIso() }).where(eq(livestock.id, id));
-  notifyChanged();
+export async function updateLivestockCount(id: string, count: number): Promise<void> {
+  await patchLivestock(id, { action: "updateCount", count });
 }
 
-/**
- * Records a death kindly — optional cause, never a scorecard (Principle 06).
- * Feeds the 90-day survival metric (T-026), which is why status/deathCause
- * live on the row rather than being inferred from deletedAt.
- */
-export async function recordDeath(id: string, cause?: string) {
-  const now = nowIso();
-  await db.update(livestock).set({ status: "died", deathCause: cause, removedOn: now, updatedAt: now }).where(eq(livestock.id, id));
-  await db.insert(livestockEvents).values({
-    id: newId(),
-    livestockId: id,
-    type: "died",
-    occurredAt: now,
-    note: cause,
-    createdAt: now,
-  });
-  notifyChanged();
+export async function removeLivestock(id: string): Promise<void> {
+  await patchLivestock(id, { action: "remove" });
+}
+
+export async function recordDeath(id: string, cause?: string): Promise<void> {
+  await patchLivestock(id, { action: "death", cause });
 }

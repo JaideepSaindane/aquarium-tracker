@@ -49,9 +49,9 @@ const hiLatn: Dictionary = {
   settings: {
     title: "My Profile & Settings",
     profileTitle: "My Info",
-    profileSubtitle: "Optional hai, aur ye device se kabhi bahar nahi jaata — koi account nahi, koi sign-in nahi.",
+    profileSubtitle: "Optional hai — sirf aapko dikhega, aapke account se linked.",
     exportTitle: "Apna data export karein",
-    exportSubtitle: "Sab kuch, hamesha free, koi account nahi chahiye. Offline bhi kaam karta hai.",
+    exportSubtitle: "Sab kuch, hamesha free. Aapka data aapka hai, hamara nahi.",
     languageTitle: "Language",
     languageSubtitle: "Poora interface turant badal jaata hai, restart ki zaroorat nahi.",
     startOver: "Phir se shuru karein",

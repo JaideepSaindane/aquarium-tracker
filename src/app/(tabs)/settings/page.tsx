@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
@@ -302,6 +303,12 @@ export default function SettingsPage() {
             </p>
           </div>
         </details>
+      </Card>
+
+      {/* Real accounts, added 2026-09-10 — sign-out lives here since it's
+          the natural "account" section of Settings. */}
+      <Card style={{ marginBottom: 16 }}>
+        <DangerButton onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</DangerButton>
       </Card>
 
       {/* Share / Privacy / About */}

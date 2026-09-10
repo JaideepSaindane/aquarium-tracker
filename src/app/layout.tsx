@@ -4,6 +4,7 @@ import { APP_NAME } from "@/constants/app";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { ThemeProvider } from "@/theme/ThemeProvider";
 import { DbBootProvider } from "@/db/DbBootProvider";
+import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 
 export const metadata: Metadata = {
@@ -28,11 +29,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
-          <LocaleProvider>
-            <DbBootProvider>{children}</DbBootProvider>
-          </LocaleProvider>
-        </ThemeProvider>
+        <AuthSessionProvider>
+          <ThemeProvider>
+            <LocaleProvider>
+              <DbBootProvider>{children}</DbBootProvider>
+            </LocaleProvider>
+          </ThemeProvider>
+        </AuthSessionProvider>
         <ServiceWorkerRegister />
       </body>
     </html>
