@@ -43,6 +43,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<string | null>(null);
   const [count, setCount] = useState("1");
   const [nickname, setNickname] = useState("");
+  const [showNickname, setShowNickname] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [genError, setGenError] = useState<string | null>(null);
 
@@ -160,6 +161,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     setSelectedSpeciesId(null);
     setCount("1");
     setNickname("");
+    setShowNickname(false);
     setCompatResult(null);
     setCandidates(null);
   }
@@ -195,7 +197,19 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
 
       {showAdd && (
         <Card>
-          <Field label="Search species" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder="e.g. neon tetra" />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+            <div style={{ flex: 1 }}>
+              <Field label="Search species" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder="e.g. neon tetra" />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowAdd(false)}
+              aria-label="Cancel"
+              style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontSize: 20, lineHeight: 1, padding: "4px 4px 0", marginTop: 22 }}
+            >
+              ✕
+            </button>
+          </div>
 
           {searchResults.length > 0 && (
             <div style={{ marginTop: 8 }}>
@@ -225,7 +239,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
             </div>
           )}
 
-          <div style={{ margin: "12px 0" }}>
+          <div style={{ margin: "10px 0" }}>
             <input
               ref={photoInputRef}
               type="file"
@@ -233,9 +247,14 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
               style={{ display: "none" }}
               onChange={(e) => e.target.files?.[0] && handleIdentifyPhoto(e.target.files[0])}
             />
-            <SecondaryButton onClick={() => photoInputRef.current?.click()} disabled={busy === "identify"}>
-              {busy === "identify" ? "Identifying..." : "I don't know this fish — help me identify it"}
-            </SecondaryButton>
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={busy === "identify"}
+              style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0 }}
+            >
+              {busy === "identify" ? "Identifying..." : "📷 Not sure? Identify it from a photo"}
+            </button>
           </div>
 
           {candidates && candidates.length > 0 && (
@@ -293,7 +312,17 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
               </p>
               <Field label="Count" type="number" value={count} onChange={(e) => setCount(e.target.value)} />
               <div style={{ height: 8 }} />
-              <Field label="Nickname (optional)" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+              {showNickname || nickname ? (
+                <Field label="Nickname (optional)" value={nickname} onChange={(e) => setNickname(e.target.value)} autoFocus={showNickname} />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowNickname(true)}
+                  style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0 }}
+                >
+                  + Give it a nickname
+                </button>
+              )}
               <div style={{ height: 12 }} />
 
               {!compatResult && (
@@ -323,8 +352,6 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
             </div>
           )}
 
-          <div style={{ height: 8 }} />
-          <SecondaryButton onClick={() => setShowAdd(false)}>Cancel</SecondaryButton>
         </Card>
       )}
 
@@ -405,6 +432,7 @@ function LivestockRow({
   const [showDeathForm, setShowDeathForm] = useState(false);
   const [deathCause, setDeathCause] = useState("");
   const [showTimeline, setShowTimeline] = useState(false);
+  const [showActions, setShowActions] = useState(false);
   const { data: events } = useLiveQuery(() => listLivestockEvents(livestock.id), [livestock.id]);
 
   async function saveCount() {
@@ -451,17 +479,27 @@ function LivestockRow({
         )}
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-        <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowDeathForm((v) => !v)}>
-          Record death
-        </SecondaryButton>
-        <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removeLivestock(livestock.id)}>
-          Remove
-        </DangerButton>
-        <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowTimeline((v) => !v)}>
-          {showTimeline ? "Hide timeline" : "View timeline"}
-        </SecondaryButton>
-      </div>
+      {!showActions ? (
+        <button
+          type="button"
+          onClick={() => setShowActions(true)}
+          style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0, marginTop: 8 }}
+        >
+          •••  Manage
+        </button>
+      ) : (
+        <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+          <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowDeathForm((v) => !v)}>
+            Record death
+          </SecondaryButton>
+          <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removeLivestock(livestock.id)}>
+            Remove
+          </DangerButton>
+          <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowTimeline((v) => !v)}>
+            {showTimeline ? "Hide timeline" : "View timeline"}
+          </SecondaryButton>
+        </div>
+      )}
 
       {showTimeline && (
         <div style={{ marginTop: 8, borderTop: "1px solid var(--color-line)", paddingTop: 8 }}>

@@ -155,7 +155,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         </div>
         <Banner severity="improve">Saved to your Journal.</Banner>
         <div style={{ height: 12 }} />
-        <PrimaryButton onClick={() => router.push(`/tank/${id}`)}>Back to my tank</PrimaryButton>
+        {/* replace, not push — this is a finished/terminal screen, so the
+            browser back button shouldn't be able to return into it (Jaideep
+            hit this: "back" from the tank page landed back on this saved
+            Check screen instead of skipping past it). */}
+        <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Back to my tank</PrimaryButton>
       </Screen>
     );
   }
@@ -282,7 +286,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <PrimaryButton onClick={() => cameraInputRef.current?.click()}>📷 Take a photo</PrimaryButton>
           <SecondaryButton onClick={() => libraryInputRef.current?.click()}>Choose from library</SecondaryButton>
-          {fromCreate && <SecondaryButton onClick={() => router.push(`/tank/${id}`)}>Skip for now</SecondaryButton>}
+          {fromCreate && <SecondaryButton onClick={() => router.replace(`/tank/${id}`)}>Skip for now</SecondaryButton>}
         </div>
       )}
 
