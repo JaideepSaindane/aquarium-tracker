@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
-import { ImageCropModal } from "@/components/ImageCropModal";
 import { Banner } from "@/components/Banner";
 import { SeverityCard } from "@/components/SeverityCard";
 import { Confidence } from "@/components/Confidence";
@@ -69,7 +68,6 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const [scanError, setScanError] = useState<string | null>(null);
   const [report, setReport] = useState<TankScanReport | null>(null);
   const [reusedExistingPhoto, setReusedExistingPhoto] = useState(false);
-  const [cropFile, setCropFile] = useState<File | null>(null);
   const [existingPhotoIssue, setExistingPhotoIssue] = useState<string | null>(null);
   const [existingPhotoRuledOut, setExistingPhotoRuledOut] = useState(false);
 
@@ -318,38 +316,20 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
 
   return (
     <Screen>
-      {cropFile && (
-        <ImageCropModal
-          file={cropFile}
-          onCancel={() => setCropFile(null)}
-          onCropped={(cropped) => {
-            setCropFile(null);
-            handleFile(cropped);
-          }}
-        />
-      )}
       <input
         ref={cameraInputRef}
         type="file"
         accept="image/*"
         capture="environment"
         style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          e.target.value = "";
-          if (file) setCropFile(file);
-        }}
+        onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
       />
       <input
         ref={libraryInputRef}
         type="file"
         accept="image/*"
         style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          e.target.value = "";
-          if (file) setCropFile(file);
-        }}
+        onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
       />
 
       <BackHeader title={screenTitle} fallbackHref={backTarget} />
