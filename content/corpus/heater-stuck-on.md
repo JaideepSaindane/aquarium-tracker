@@ -1,7 +1,7 @@
 ---
 id: heater-stuck-on
 title: Heater Stuck On (Overheating)
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - heater wont turn off
@@ -38,7 +38,7 @@ treatments: []
 sources:
   - https://www.merckvetmanual.com/exotic-and-laboratory-animals/aquatic-systems/environmental-diseases-of-aquatic-animals-in-aquatic-systems
 confidence: high
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

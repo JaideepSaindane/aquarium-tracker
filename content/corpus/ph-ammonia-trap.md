@@ -1,7 +1,7 @@
 ---
 id: ph-ammonia-trap
 title: pH–Ammonia Trap (Low pH + Accumulated Ammonia)
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - ph ammonia trap
@@ -59,7 +59,7 @@ sources:
   - https://www.merckvetmanual.com/exotic-and-laboratory-animals/aquatic-systems/environmental-diseases-of-aquatic-animals-in-aquatic-systems
   - https://extension.rwfm.tamu.edu/wp-content/uploads/sites/8/2013/09/Ammonia-in-Aquatic-Systems1.pdf
 confidence: high
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-08-30
 review_due: 2027-02-28
 ---

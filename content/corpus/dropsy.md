@@ -1,7 +1,7 @@
 ---
 id: dropsy
 title: Dropsy
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - dropsy
@@ -52,7 +52,7 @@ treatments:
 sources:
   - https://www.merckvetmanual.com/exotic-and-laboratory-animals/aquatic-systems/bacterial-diseases-of-fish
 confidence: medium
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

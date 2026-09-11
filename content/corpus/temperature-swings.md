@@ -1,7 +1,7 @@
 ---
 id: temperature-swings
 title: Temperature Swings
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - temperature swing
@@ -45,7 +45,7 @@ sources:
   - https://www.merckvetmanual.com/exotic-and-laboratory-animals/aquatic-systems/environmental-diseases-of-aquatic-animals-in-aquatic-systems
   - https://extension.rwfm.tamu.edu/wp-content/uploads/sites/8/2013/09/Ichthyophthirius-multifiliis-White-Spot-Infections-in-Fish.pdf
 confidence: high
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-08-30
 review_due: 2027-02-28
 ---

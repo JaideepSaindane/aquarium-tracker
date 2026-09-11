@@ -1,7 +1,7 @@
 ---
 id: tds-gh-kh-mismatch
 title: TDS / GH / KH Mismatch and Osmotic Shock
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - tds mismatch
@@ -56,7 +56,7 @@ sources:
   - https://www.shrimpsandsnails.com/water-parameters-for-shrimp/
   - https://www.fishkeepingworld.com/general-hardness-gh-fish-tank/
 confidence: medium
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

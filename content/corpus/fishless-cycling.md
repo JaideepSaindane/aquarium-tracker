@@ -1,7 +1,7 @@
 ---
 id: fishless-cycling
 title: Fishless Cycling
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - fishless cycle
@@ -47,7 +47,7 @@ sources:
   - https://www.aquariumcoop.com/blogs/aquarium/how-to-cycle-a-fish-tank
   - https://extension.rwfm.tamu.edu/wp-content/uploads/sites/8/2013/09/Ammonia-in-Aquatic-Systems1.pdf
 confidence: high
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

@@ -1,7 +1,7 @@
 ---
 id: bottled-bacteria-claims
 title: Bottled Bacteria and "Instant Cycle" Claims
-status: sourced
+status: live
 review_tier: 3
 aliases:
   - instant cycle product
@@ -29,7 +29,7 @@ treatments: []
 sources:
   - https://www.aquariumcoop.com/blogs/aquarium/how-to-cycle-a-fish-tank
 confidence: contested
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

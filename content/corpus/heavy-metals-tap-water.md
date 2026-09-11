@@ -1,7 +1,7 @@
 ---
 id: heavy-metals-tap-water
 title: Heavy Metals and Contaminated Tap Water
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - copper poisoning fish
@@ -56,7 +56,7 @@ sources:
   - https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-copper-drinking-water
   - https://www.shrimpsandsnails.com/water-parameters-for-shrimp/
 confidence: medium
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

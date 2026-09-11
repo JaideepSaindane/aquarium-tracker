@@ -1,7 +1,7 @@
 ---
 id: swim-bladder-and-bloat
 title: Swim Bladder Disorder and Bloat
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - swim bladder disease
@@ -46,7 +46,7 @@ treatments:
 sources:
   - https://www.fishkeepingworld.com/swim-bladder-disease/
 confidence: medium
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---

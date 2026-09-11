@@ -1,7 +1,7 @@
 ---
 id: nitrogen-cycle
 title: The Nitrogen Cycle (How It Works)
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - nitrogen cycle
@@ -44,7 +44,7 @@ sources:
   - https://extension.rwfm.tamu.edu/wp-content/uploads/sites/8/2013/09/Ammonia-in-Aquatic-Systems1.pdf
   - https://www.aquariumcoop.com/blogs/aquarium/nitrogen-cycle
 confidence: high
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-08-30
 review_due: 2027-02-28
 ---

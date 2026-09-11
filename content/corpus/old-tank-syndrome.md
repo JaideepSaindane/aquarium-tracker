@@ -1,7 +1,7 @@
 ---
 id: old-tank-syndrome
 title: Old Tank Syndrome
-status: sourced
+status: live
 review_tier: 2
 aliases:
   - old tank syndrome
@@ -55,7 +55,7 @@ sources:
   - https://www.fishkeepingworld.com/old-tank-syndrome/
   - https://www.merckvetmanual.com/exotic-and-laboratory-animals/aquatic-systems/environmental-diseases-of-aquatic-animals-in-aquatic-systems
 confidence: medium
-last_reviewed_by: ""
+last_reviewed_by: "Jaideep"
 last_reviewed_on: 2026-09-11
 review_due: 2027-03-11
 ---
