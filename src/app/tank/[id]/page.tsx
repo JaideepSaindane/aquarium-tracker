@@ -278,7 +278,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
             📷
           </span>
           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)" }}>
-            {addingPhoto ? "Adding photo..." : "No photo yet — add one so you can spot it at a glance."}
+            {addingPhoto ? "Adding photo..." : "Add a photo of your tank"}
           </p>
           <PhotoPickerButton label={addingPhoto ? "Adding..." : "Add a photo"} onPick={handleAddPhoto} />
         </div>
