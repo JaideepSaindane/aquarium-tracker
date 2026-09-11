@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { readPhotoFile } from "@/lib/opfs-files";
 import { isRemotePhotoUrl } from "@/lib/use-photo-src";
-import { ImageCropModal } from "@/components/ImageCropModal";
 
 /**
  * Circular tank avatar: shows the tank's photo if it has one, otherwise a
@@ -29,7 +28,6 @@ export function TankAvatar({
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [cropFile, setCropFile] = useState<File | null>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,17 +100,6 @@ export function TankAvatar({
           </span>
         )}
       </div>
-      {onPhotoChange && cropFile && (
-        <ImageCropModal
-          file={cropFile}
-          aspect={1}
-          onCancel={() => setCropFile(null)}
-          onCropped={(cropped) => {
-            setCropFile(null);
-            onPhotoChange(cropped);
-          }}
-        />
-      )}
       {onPhotoChange && (
         <>
           <input
@@ -123,7 +110,7 @@ export function TankAvatar({
             style={{ display: "none" }}
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) setCropFile(file);
+              if (file) onPhotoChange(file);
               e.target.value = "";
             }}
           />
@@ -134,7 +121,7 @@ export function TankAvatar({
             style={{ display: "none" }}
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) setCropFile(file);
+              if (file) onPhotoChange(file);
               e.target.value = "";
             }}
           />
