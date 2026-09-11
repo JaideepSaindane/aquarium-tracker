@@ -24,7 +24,12 @@ function sleep(ms) {
 // before falling back to an in-memory database — found live: a real user's
 // tanks appeared to have vanished when this was a one-shot attempt, when
 // the data was actually sitting safely in OPFS the whole time.
-const OPFS_RETRY_DELAYS_MS = [300, 700, 1500];
+// Widened 2026-09-11 (more attempts, longer max wait) — Jaideep was hitting
+// this often enough to call it out as "everywhere." A second tab/window
+// releasing its own lock can genuinely take longer than the old ~2.5s total
+// budget under real conditions (a backgrounded tab throttled by the OS,
+// slow disk I/O, etc.).
+const OPFS_RETRY_DELAYS_MS = [300, 600, 1000, 1500, 2500, 4000];
 
 async function tryOpenOpfs(sqlite3) {
   let lastErr = null;

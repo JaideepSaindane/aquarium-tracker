@@ -128,12 +128,35 @@ export function DbBootProvider({ children }: { children: ReactNode }) {
 
   return (
     <>
+      {/* Rewritten 2026-09-11 — Jaideep was hitting this constantly enough
+          to call it out as "everywhere," and the old red/urgent styling
+          overstated what's actually at stake now. As of this session's
+          account migration, the local database holds nothing but the
+          species reference catalog (every tank/fish/photo/journal/chat is
+          server-side, tied to the account, not this browser) — a failed
+          OPFS lock just means species reload from the server this visit
+          instead of the local cache, not that anything of the user's is
+          at risk. Downgraded from a red banner to a quiet neutral note,
+          and only shown at all if this browser has genuinely persisted
+          before (the "browser doesn't support this" case below is a real,
+          rarer issue worth a slightly more visible neutral note too, but
+          still not alarming red — nothing the user owns is stored only
+          here either way). */}
       {!state.persistent && (
-        <div style={{ background: "var(--color-fix-now)", color: "white", padding: 8, textAlign: "center", fontSize: "var(--font-caption-size)" }}>
+        <div
+          style={{
+            background: "var(--color-surface-alt)",
+            color: "var(--color-ink-muted)",
+            borderBottom: "1px solid var(--color-line)",
+            padding: 8,
+            textAlign: "center",
+            fontSize: "var(--font-caption-size)",
+          }}
+        >
           {hasEverPersisted() ? (
-            <>Couldn&apos;t open your saved data — this usually means AquaAI is already open in another tab or window. Close it there, then reload this page. Your data is safe.</>
+            <>Catching up on the species list — this can happen if AquaAI is open in another tab. Everything of yours is safely stored on your account either way.</>
           ) : (
-            <>Your browser doesn&apos;t support local storage the app needs — data won&apos;t be saved when you close this tab.</>
+            <>This browser doesn&apos;t support the local species cache — nothing of yours is affected, it just loads fresh from the server each visit.</>
           )}
         </div>
       )}
