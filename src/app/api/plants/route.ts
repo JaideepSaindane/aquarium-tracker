@@ -10,12 +10,12 @@ export async function GET(req: Request) {
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const tankId = searchParams.get("tankId");
-  if (!tankId) return NextResponse.json({ error: "tankId is required" }, { status: 400 });
+  const all = searchParams.get("all") === "1";
+  if (!tankId && !all) return NextResponse.json({ error: "tankId is required" }, { status: 400 });
 
-  const rows = await serverDb
-    .select()
-    .from(plants)
-    .where(and(eq(plants.userId, userId), eq(plants.tankId, tankId), isNull(plants.deletedAt)));
+  const conditions = [eq(plants.userId, userId), isNull(plants.deletedAt)];
+  if (tankId) conditions.push(eq(plants.tankId, tankId));
+  const rows = await serverDb.select().from(plants).where(and(...conditions));
   return NextResponse.json(rows);
 }
 

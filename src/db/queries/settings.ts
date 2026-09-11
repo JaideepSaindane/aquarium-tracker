@@ -3,16 +3,39 @@ import { db } from "../client";
 import { settings } from "../schema";
 import { notifyChanged } from "../live";
 
-// Generic local key-value store — used for small flags like "has onboarding
-// finished" that don't deserve their own table. Never anything that needs
-// querying/joining; that belongs in a real table.
-export async function getSetting(key: string): Promise<string | null> {
+// Split 2026-09-11 into two stores that look almost identical but mean
+// different things:
+//   - getLocalSetting/setLocalSetting: genuinely per-device local SQLite
+//     state — used only for the species-catalog reseed marker below, which
+//     tracks whether THIS device's local database has run the reseed, not
+//     anything about the signed-in account. Moving this to the server would
+//     be a real bug: a second device signing into the same account would
+//     read "already reseeded" from the server and skip seeding its own,
+//     never-yet-populated local species table.
+//   - getSetting/setSetting: everything else (the tour flag, install
+//     timestamp, survival-prompt state) is a genuine account preference
+//     that should follow the user across devices, so those now call the
+//     server API (src/app/api/user-settings/*).
+
+async function getLocalSetting(key: string): Promise<string | null> {
   const rows = await db.select().from(settings).where(eq(settings.key, key));
   return rows[0]?.value ?? null;
 }
 
-export async function setSetting(key: string, value: string): Promise<void> {
+async function setLocalSetting(key: string, value: string): Promise<void> {
   await db.insert(settings).values({ key, value }).onConflictDoUpdate({ target: settings.key, set: { value } });
+  notifyChanged();
+}
+
+export async function getSetting(key: string): Promise<string | null> {
+  const res = await fetch(`/api/user-settings?key=${encodeURIComponent(key)}`);
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  const { value } = (await res.json()) as { value: string | null };
+  return value;
+}
+
+export async function setSetting(key: string, value: string): Promise<void> {
+  await fetch("/api/user-settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, value }) });
   notifyChanged();
 }
 
@@ -22,6 +45,8 @@ export async function setSetting(key: string, value: string): Promise<void> {
 // not just on a brand-new install. Bumping SPECIES_SEED_VERSION in
 // src/db/DbBootProvider.tsx is what normally triggers a reseed — this is
 // just the stored marker of which version a given browser last applied.
+// Deliberately local (getLocalSetting), not the account-scoped store — see
+// the note at the top of this file.
 //
 // Key renamed 2026-09-10 ("species_seed_version" → "..._v2") for the
 // 445→1,484 corpus rebuild: every existing install stored its version
@@ -34,11 +59,11 @@ export async function setSetting(key: string, value: string): Promise<void> {
 const SPECIES_SEED_VERSION_KEY = "species_seed_version_v2";
 
 export async function getSpeciesSeedVersion(): Promise<string | null> {
-  return getSetting(SPECIES_SEED_VERSION_KEY);
+  return getLocalSetting(SPECIES_SEED_VERSION_KEY);
 }
 
 export async function setSpeciesSeedVersion(version: string): Promise<void> {
-  await setSetting(SPECIES_SEED_VERSION_KEY, version);
+  await setLocalSetting(SPECIES_SEED_VERSION_KEY, version);
 }
 
 // Onboarding-complete is no longer tracked here — it moved to the signed-in
@@ -57,9 +82,11 @@ export async function markFirstTankTourShown(): Promise<void> {
   await setSetting(TOUR_KEY, "true");
 }
 
-// T-026: when this device's copy of the app first ran. Stamped once from
+// T-026: when this account first used the app. Stamped once from
 // OnboardingGate on first boot, never touched again — the anchor for the
-// activation and logging-retention metrics.
+// activation and logging-retention metrics. Account-scoped (not per
+// device) since 2026-09-11 — the metric is about the person's journey, not
+// which browser they happened to open first.
 const INSTALLED_AT_KEY = "installed_at";
 
 export async function getInstalledAt(): Promise<string | null> {

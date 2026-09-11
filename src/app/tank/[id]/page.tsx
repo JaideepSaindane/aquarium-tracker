@@ -64,6 +64,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const [journalExpanded, setJournalExpanded] = useState(false);
   const [journalAutoOpenNew, setJournalAutoOpenNew] = useState(false);
   const [addingPhoto, setAddingPhoto] = useState(false);
+  const [addPhotoError, setAddPhotoError] = useState<string | null>(null);
 
   if (!tank) return <Screen>Loading...</Screen>;
 
@@ -83,10 +84,13 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   // so the photo itself needs to be reachable from any device too.
   async function handleAddPhoto(file: File) {
     setAddingPhoto(true);
+    setAddPhotoError(null);
     try {
       const url = await uploadPhoto(file);
       await updateTank(id, { photoUri: url });
       await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
+    } catch {
+      setAddPhotoError("Couldn't upload that photo — check your connection and try again.");
     } finally {
       setAddingPhoto(false);
     }
@@ -282,6 +286,9 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
             {addingPhoto ? "Adding photo..." : "Add a photo of your tank"}
           </p>
           <PhotoPickerButton label={addingPhoto ? "Adding..." : "Add a photo"} onPick={handleAddPhoto} />
+          {addPhotoError && (
+            <p style={{ margin: 0, fontSize: "var(--font-caption-size)", color: "var(--color-fix-now)" }}>{addPhotoError}</p>
+          )}
         </div>
       )}
 

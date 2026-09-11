@@ -110,8 +110,13 @@ export default function SettingsPage() {
     // Uploads to Vercel Blob (2026-09-11), not OPFS — the profile itself
     // is already server-backed (per-account, not per-device), so the photo
     // needs to be reachable from any device too, not just this one.
-    const url = await uploadPhoto(file);
-    setProfilePhotoUri(url);
+    setProfileMessage(null);
+    try {
+      const url = await uploadPhoto(file);
+      setProfilePhotoUri(url);
+    } catch {
+      setProfileMessage("Couldn't upload that photo — check your connection and try again.");
+    }
   }
 
   async function handleSaveProfile() {

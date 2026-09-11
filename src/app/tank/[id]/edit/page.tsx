@@ -62,16 +62,21 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   }
 
   async function handlePhotoChange(file: File) {
-    // Uploads to Vercel Blob (2026-09-11), not OPFS — see
-    // src/lib/photo-upload.ts.
-    const url = await uploadPhoto(file);
-    await updateTank(id, { photoUri: url });
-    // Same gap already fixed once for the creation wizard (see the
-    // "Tank photo now previews instantly and lands in the Gallery too"
-    // entry in specs/PROGRESS.md) — changing the photo here never wrote a
-    // `photos` row, so it updated the avatar but never showed up in the
-    // Gallery tab.
-    await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
+    setError(null);
+    try {
+      // Uploads to Vercel Blob (2026-09-11), not OPFS — see
+      // src/lib/photo-upload.ts.
+      const url = await uploadPhoto(file);
+      await updateTank(id, { photoUri: url });
+      // Same gap already fixed once for the creation wizard (see the
+      // "Tank photo now previews instantly and lands in the Gallery too"
+      // entry in specs/PROGRESS.md) — changing the photo here never wrote a
+      // `photos` row, so it updated the avatar but never showed up in the
+      // Gallery tab.
+      await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
+    } catch {
+      setError("Couldn't upload that photo — check your connection and try again.");
+    }
   }
 
   async function handleSave() {

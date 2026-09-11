@@ -13,8 +13,7 @@ import { isAiGenerated } from "@/lib/species-origin";
 import { identifySpecies } from "@/lib/ai-client";
 import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { addSpeciesSuggestion, type PhotoCandidate } from "@/db/queries/species-suggestions";
-import { writePhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { uploadPhoto } from "@/lib/photo-upload";
 
 const CATEGORY_ICON: Record<string, string> = {
   fish: "🐟",
@@ -139,11 +138,11 @@ export default function DexPage() {
     let photoUri: string | undefined;
     if (scanPhotoFile) {
       try {
-        const path = `species-suggestions/${newId()}.jpg`;
-        await writePhotoFile(path, scanPhotoFile);
-        photoUri = path;
+        // Uploads to Vercel Blob (2026-09-11), not OPFS — species
+        // suggestions are server-backed now, so the photo needs to be too.
+        photoUri = await uploadPhoto(scanPhotoFile);
       } catch {
-        // OPFS unavailable or write failed — the suggestion itself still matters more than the photo.
+        // Upload failed (e.g. offline) — the suggestion itself still matters more than the photo.
       }
     }
     await addSpeciesSuggestion({

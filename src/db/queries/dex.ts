@@ -1,15 +1,30 @@
-import { eq } from "drizzle-orm";
-import { db } from "../client";
-import { dexCards } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
 
-export async function listDexCards() {
-  return db.select().from(dexCards);
+// Rewritten 2026-09-11 to call the new user-scoped server API
+// (src/app/api/dex-cards/*) — see tanks.ts's header comment for the
+// original pattern this follows.
+
+export type DexCardRow = {
+  id: string;
+  speciesId: string;
+  unlockedAt: string | null;
+  unlockSource: string | null;
+  timesKept: number | null;
+  firstPhotoUri: string | null;
+  createdAt: string;
+};
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
 }
 
-export async function getDexCard(speciesId: string) {
-  const rows = await db.select().from(dexCards).where(eq(dexCards.speciesId, speciesId));
+export async function listDexCards(): Promise<DexCardRow[]> {
+  return json(await fetch("/api/dex-cards"));
+}
+
+export async function getDexCard(speciesId: string): Promise<DexCardRow | undefined> {
+  const rows = await json<DexCardRow[]>(await fetch(`/api/dex-cards?speciesId=${encodeURIComponent(speciesId)}`));
   return rows[0];
 }
 
@@ -26,27 +41,9 @@ export async function unlockDexCard(input: {
   unlockSource: "added_to_tank" | "scan_detected" | "community";
   firstPhotoUri?: string;
 }): Promise<{ isNewUnlock: boolean }> {
-  const existing = await getDexCard(input.speciesId);
-  const now = nowIso();
-
-  if (existing) {
-    await db
-      .update(dexCards)
-      .set({ timesKept: (existing.timesKept ?? 1) + 1 })
-      .where(eq(dexCards.speciesId, input.speciesId));
-    notifyChanged();
-    return { isNewUnlock: false };
-  }
-
-  await db.insert(dexCards).values({
-    id: newId(),
-    speciesId: input.speciesId,
-    unlockedAt: now,
-    unlockSource: input.unlockSource,
-    timesKept: 1,
-    firstPhotoUri: input.firstPhotoUri,
-    createdAt: now,
-  });
+  const result = await json<{ isNewUnlock: boolean }>(
+    await fetch("/api/dex-cards", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
+  );
   notifyChanged();
-  return { isNewUnlock: true };
+  return result;
 }

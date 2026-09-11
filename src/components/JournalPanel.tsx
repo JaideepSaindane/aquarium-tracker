@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card } from "@/components/Card";
+import { Banner } from "@/components/Banner";
 import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { PhotoViewer } from "@/components/PhotoViewer";
@@ -49,6 +50,7 @@ export function JournalPanel({ tankId, autoOpenNew }: { tankId: string; autoOpen
   const [body, setBody] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
 
   if (!data) return null;
@@ -61,17 +63,26 @@ export function JournalPanel({ tankId, autoOpenNew }: { tankId: string; autoOpen
   async function handleAddEntry() {
     if (!body.trim()) return;
     setSaving(true);
-    const entryId = await addLogEntry({ tankId, type: "journal", body: body.trim() });
-    if (photoFile) {
-      // Uploads to Vercel Blob (2026-09-11), not OPFS — see
-      // src/lib/photo-upload.ts.
-      const url = await uploadPhoto(photoFile);
-      await addPhoto({ tankId, logEntryId: entryId, localUri: url });
+    setError(null);
+    try {
+      const entryId = await addLogEntry({ tankId, type: "journal", body: body.trim() });
+      if (photoFile) {
+        // Uploads to Vercel Blob (2026-09-11), not OPFS — see
+        // src/lib/photo-upload.ts.
+        const url = await uploadPhoto(photoFile);
+        await addPhoto({ tankId, logEntryId: entryId, localUri: url });
+      }
+      setBody("");
+      setPhotoFile(null);
+      setShowNew(false);
+    } catch {
+      // The entry itself may have saved even if the photo upload failed
+      // (e.g. offline right after typing) — say so plainly rather than
+      // leaving the form sitting there with no feedback at all.
+      setError("Couldn't save the photo — check your connection and try again. Your entry text is still here.");
+    } finally {
+      setSaving(false);
     }
-    setBody("");
-    setPhotoFile(null);
-    setShowNew(false);
-    setSaving(false);
   }
 
   return (
@@ -89,6 +100,12 @@ export function JournalPanel({ tankId, autoOpenNew }: { tankId: string; autoOpen
           <div style={{ height: 8 }} />
           <PhotoPickerButton label={photoFile ? "Photo attached ✓" : "Add a photo"} onPick={setPhotoFile} />
           <div style={{ height: 8 }} />
+          {error && (
+            <>
+              <Banner severity="watch">{error}</Banner>
+              <div style={{ height: 8 }} />
+            </>
+          )}
           <div style={{ display: "flex", gap: 8 }}>
             <PrimaryButton onClick={handleAddEntry} disabled={saving || !body.trim()}>
               {saving ? "Saving..." : "Save entry"}

@@ -175,6 +175,107 @@ export const photos = pgTable("photos", {
   deletedAt: text("deleted_at"),
 });
 
+// 2026-09-11, third migration pass: the rest of the previously-local
+// tables, same userId-scoped pattern. `species`/the seed catalog is
+// deliberately NOT migrated here — it's shared reference data (the same
+// 1,484 species for every user), not per-user data, so it stays in local
+// SQLite and is re-seeded from data/species.seed.json as before; moving it
+// per-user would be the wrong data model, not just unfinished work.
+// `parameterDefs`' global 8 standard-parameter defaults are dropped as a
+// table entirely — they were a hardcoded constant seeded into rows for no
+// real reason; only genuine per-tank overrides/custom parameters are real
+// user data and need to follow an account, so only those are migrated.
+
+export const scans = pgTable("scans", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id").notNull(),
+  imageUri: text("image_uri").notNull(),
+  modelName: text("model_name").notNull(),
+  modelVersion: text("model_version"),
+  promptVersion: text("prompt_version").notNull(),
+  rawResponse: text("raw_response").notNull(),
+  findings: text("findings"),
+  scores: text("scores"),
+  userCorrections: text("user_corrections"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const aiInteractions = pgTable("ai_interactions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id"),
+  kind: text("kind"),
+  promptVersion: text("prompt_version").notNull(),
+  userInput: text("user_input"),
+  groundingRefs: text("grounding_refs"),
+  response: text("response"),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  costUsd: real("cost_usd"),
+  latencyMs: integer("latency_ms"),
+  rating: integer("rating"),
+  correctionText: text("correction_text"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const dexCards = pgTable("dex_cards", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  speciesId: text("species_id").notNull(),
+  unlockedAt: text("unlocked_at"),
+  unlockSource: text("unlock_source"),
+  timesKept: integer("times_kept"),
+  firstPhotoUri: text("first_photo_uri"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const dismissedWarnings = pgTable("dismissed_warnings", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id"),
+  livestockId: text("livestock_id"),
+  warningKey: text("warning_key").notNull(),
+  dismissedAt: text("dismissed_at").notNull(),
+});
+
+export const settingsTable = pgTable("user_settings", {
+  userId: text("user_id").notNull(),
+  key: text("key").notNull(),
+  value: text("value"),
+}, (table) => [
+  uniqueIndex("user_settings_user_key_idx").on(table.userId, table.key),
+]);
+
+export const speciesSuggestions = pgTable("species_suggestions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  suggestedName: text("suggested_name").notNull(),
+  note: text("note"),
+  photoUri: text("photo_uri"),
+  aiCandidates: text("ai_candidates"),
+  status: text("status").notNull(),
+  createdAt: text("created_at").notNull(),
+  reviewedAt: text("reviewed_at"),
+});
+
+// Only real per-tank overrides/custom parameters — global defaults are a
+// client-side constant now (see the note above), not rows in this table.
+export const parameterDefs = pgTable("parameter_defs", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id").notNull(),
+  name: text("name").notNull(),
+  unit: text("unit").notNull(),
+  targetMin: real("target_min"),
+  targetMax: real("target_max"),
+  decimals: integer("decimals"),
+  sortOrder: integer("sort_order"),
+  isActive: boolean("is_active"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
 // Single row per user (replaces the old id="local" single-device row).
 export const profile = pgTable("profile", {
   userId: text("user_id").primaryKey(),

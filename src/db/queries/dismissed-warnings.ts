@@ -1,25 +1,26 @@
-import { eq } from "drizzle-orm";
-import { db } from "../client";
-import { dismissedWarnings } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
 
-// Principle 01: warnings are dismissible AND remembered — without this table
-// a compatibility warning re-fires every time the tank is opened, which is
-// the nagging that makes people uninstall. warningKey must be deterministic
-// so the same warning is recognised across sessions (docs/02-data-model.md).
+// Rewritten 2026-09-11 to call the new user-scoped server API
+// (src/app/api/dismissed-warnings/*) — see tanks.ts's header comment for
+// the original pattern this follows.
+
+// Principle 01: warnings are dismissible AND remembered — without this
+// table a compatibility warning re-fires every time the tank is opened,
+// which is the nagging that makes people uninstall. warningKey must be
+// deterministic so the same warning is recognised across sessions
+// (docs/02-data-model.md).
 export async function isWarningDismissed(warningKey: string): Promise<boolean> {
-  const rows = await db.select().from(dismissedWarnings).where(eq(dismissedWarnings.warningKey, warningKey));
-  return rows.length > 0;
+  const res = await fetch(`/api/dismissed-warnings?warningKey=${encodeURIComponent(warningKey)}`);
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  const { dismissed } = (await res.json()) as { dismissed: boolean };
+  return dismissed;
 }
 
-export async function dismissWarning(params: { tankId?: string; livestockId?: string; warningKey: string }) {
-  await db.insert(dismissedWarnings).values({
-    id: newId(),
-    tankId: params.tankId,
-    livestockId: params.livestockId,
-    warningKey: params.warningKey,
-    dismissedAt: nowIso(),
+export async function dismissWarning(params: { tankId?: string; livestockId?: string; warningKey: string }): Promise<void> {
+  await fetch("/api/dismissed-warnings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
   });
   notifyChanged();
 }
