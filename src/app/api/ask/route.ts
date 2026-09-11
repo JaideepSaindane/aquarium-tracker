@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveRequestContext, isContextError } from "@/server/ai/request-context";
+import { requireUserId } from "@/server/auth/require-user";
 import { peekQuota, incrementQuota } from "@/server/ai/quota";
 import { loadPrompt } from "@/server/ai/prompt-loader";
 import { retrieveCorpus, retrieveRelevantSpecies, getSpeciesContextTextFor } from "@/server/ai/retrieval";
@@ -15,8 +16,15 @@ export async function POST(req: NextRequest) {
   const ctx = resolveRequestContext(req);
   if (isContextError(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
 
+  // Quota is keyed by the real signed-in account, not the client-reported
+  // x-device-id header (2026-09-11 fix — the old device-id quota was
+  // trivially bypassable by clearing browser storage, since it had no
+  // link to the account a user was actually signed into).
+  const userId = await requireUserId();
+  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
   if (!ctx.isByok) {
-    const quota = await peekQuota(ctx.deviceId, "ask");
+    const quota = await peekQuota(userId, "ask");
     if (!quota.allowed) {
       return NextResponse.json(
         { error: `You've used your ${quota.limit} free questions this month. Resets ${quota.resetsAt}.`, resetsAt: quota.resetsAt },
@@ -62,7 +70,7 @@ export async function POST(req: NextRequest) {
 
   if (!result.ok) return NextResponse.json({ error: result.error, detail: result.detail }, { status: 422 });
 
-  if (!ctx.isByok) await incrementQuota(ctx.deviceId, "ask");
+  if (!ctx.isByok) await incrementQuota(userId, "ask");
   if (result.unresolvableRefs.length) console.error(`[${PROMPT_VERSION}] unresolvable grounding_refs:`, result.unresolvableRefs);
 
   return NextResponse.json({ answer: result.data, meta: result.meta, unresolvableRefs: result.unresolvableRefs });

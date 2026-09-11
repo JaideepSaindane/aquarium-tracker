@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveRequestContext, isContextError } from "@/server/ai/request-context";
+import { requireUserId } from "@/server/auth/require-user";
 import { peekQuota, EARLY_BIRD_MODE } from "@/server/ai/quota";
 
 // Read-only quota check — never increments. Lets the client show the
@@ -14,6 +15,9 @@ export async function GET(req: NextRequest) {
 
   if (ctx.isByok) return NextResponse.json({ isByok: true });
 
-  const quota = await peekQuota(ctx.deviceId, kind);
+  const userId = await requireUserId();
+  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const quota = await peekQuota(userId, kind);
   return NextResponse.json({ isByok: false, earlyBird: EARLY_BIRD_MODE, ...quota });
 }
