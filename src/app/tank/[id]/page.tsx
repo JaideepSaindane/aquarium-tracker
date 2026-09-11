@@ -16,11 +16,12 @@ import { useLiveQuery } from "@/db/live";
 import { getTank, deleteTank, updateTank } from "@/db/queries/tanks";
 import { listEquipmentForTank } from "@/db/queries/equipment";
 import { listLivestockForTank, removeLivestock, updateLivestockCount } from "@/db/queries/livestock";
-import { listPhotosForTank } from "@/db/queries/photos";
+import { listPhotosForTank, addPhoto } from "@/db/queries/photos";
 import { listSpecies } from "@/db/queries/species";
 import { listLogEntriesForTank } from "@/db/queries/log-entries";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
-import { readPhotoFile } from "@/lib/opfs-files";
+import { readPhotoFile, writePhotoFile } from "@/lib/opfs-files";
+import { newId } from "@/db/id";
 import { checkFilterFlow, checkHeaterWattage } from "@/lib/derived-checks";
 import { isAiGenerated } from "@/lib/species-origin";
 
@@ -62,6 +63,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const [galleryExpanded, setGalleryExpanded] = useState(false);
   const [journalExpanded, setJournalExpanded] = useState(false);
   const [journalAutoOpenNew, setJournalAutoOpenNew] = useState(false);
+  const [addingPhoto, setAddingPhoto] = useState(false);
 
   if (!tank) return <Screen>Loading...</Screen>;
 
@@ -69,6 +71,24 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
     setDeleting(true);
     await deleteTank(id);
     router.replace("/");
+  }
+
+  // A tank saved with no photo (the picture step in the creation wizard is
+  // optional) had no way to add one afterward except burrowing into Edit
+  // Tank — Jaideep's ask: put an inviting placeholder right here instead.
+  // Same write pattern as Edit Tank's own handlePhotoChange (avatar +
+  // Gallery entry together, so it doesn't silently miss the Gallery like
+  // an earlier bug here once did).
+  async function handleAddPhoto(file: File) {
+    setAddingPhoto(true);
+    try {
+      const path = `tanks/${id}-avatar-${newId()}.jpg`;
+      await writePhotoFile(path, file);
+      await updateTank(id, { photoUri: path });
+      await addPhoto({ tankId: id, localUri: path, caption: "Tank photo" });
+    } finally {
+      setAddingPhoto(false);
+    }
   }
 
   async function handleHide() {
@@ -235,9 +255,32 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
         </p>
       </div>
 
-      {tank.photoUri && (
+      {tank.photoUri ? (
         <div style={{ marginBottom: 8 }}>
           <TankBigPhoto photoUri={tank.photoUri} />
+        </div>
+      ) : (
+        <div
+          style={{
+            marginBottom: 8,
+            padding: "20px 16px",
+            borderRadius: "var(--radius-lg)",
+            border: "1px dashed var(--color-line)",
+            background: "var(--color-surface-alt)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            textAlign: "center",
+          }}
+        >
+          <span aria-hidden style={{ fontSize: 28 }}>
+            📷
+          </span>
+          <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)" }}>
+            {addingPhoto ? "Adding photo..." : "No photo yet — add one so you can spot it at a glance."}
+          </p>
+          <PhotoPickerButton label={addingPhoto ? "Adding..." : "Add a photo"} onPick={handleAddPhoto} />
         </div>
       )}
 
