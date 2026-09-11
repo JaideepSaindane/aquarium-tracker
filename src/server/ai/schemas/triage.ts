@@ -1,7 +1,13 @@
 import { z } from "zod";
 import { str, strArr, num } from "./json-schema-helpers";
 
-export const PROMPT_VERSION = "triage/v1";
+// v2, 2026-09-11: added medical_disclaimer, matching ask/v4 — Jaideep
+// asked for ungrounded medication/dosing/treatment guidance to be allowed
+// (previously implicitly possible here too, since triage never had an
+// explicit refusal like ask.v3 did) as long as it's flagged with a loud
+// "not vet-reviewed" warning whenever no live corpus entry backs a
+// medication/dosing/treatment claim. See specs/PROGRESS.md 2026-09-11.
+export const PROMPT_VERSION = "triage/v2";
 
 const grounding = z.array(z.string()).default([]);
 
@@ -34,6 +40,7 @@ export const TriageZod = z.object({
   could_not_determine: z.array(z.string()).default([]),
   clarifying_questions: z.array(z.object({ question: z.string(), why: z.string() })).default([]),
   grounding_refs: grounding,
+  medical_disclaimer: z.boolean().default(false),
 });
 
 export type TriageReport = z.infer<typeof TriageZod>;
@@ -80,6 +87,16 @@ export const TriageJsonSchema = {
       items: { type: "object", properties: { question: str, why: str }, required: ["question", "why"] },
     },
     grounding_refs: strArr,
+    medical_disclaimer: { type: "boolean" },
   },
-  required: ["prompt_version", "first_action", "do_not", "escalate", "confidence", "could_not_determine", "grounding_refs"],
+  required: [
+    "prompt_version",
+    "first_action",
+    "do_not",
+    "escalate",
+    "confidence",
+    "could_not_determine",
+    "grounding_refs",
+    "medical_disclaimer",
+  ],
 };

@@ -323,7 +323,15 @@ function Turn({
                 </div>
               ))}
 
-              {answer.uncovered && (
+              {answer.medical_disclaimer && (
+                <div style={{ marginBottom: 8 }}>
+                  <Banner severity="fixNow">
+                    This is an AI-generated answer about medication or treatment — it has not been reviewed by a vet or aquaculture professional. Please confirm with a vet before trying it.
+                  </Banner>
+                </div>
+              )}
+
+              {answer.uncovered && !answer.medical_disclaimer && (
                 <div style={{ marginBottom: 8 }}>
                   <Banner severity="neutral">This is an LLM-generated response, not our own verified data.</Banner>
                 </div>

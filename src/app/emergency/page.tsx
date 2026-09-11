@@ -125,6 +125,14 @@ export default function EmergencyPage() {
           </div>
         )}
 
+        {report.medical_disclaimer && (
+          <div style={{ marginBottom: 16 }}>
+            <Banner severity="fixNow">
+              This is an AI-generated answer about medication or treatment — it has not been reviewed by a vet or aquaculture professional. Please confirm with a vet before trying it.
+            </Banner>
+          </div>
+        )}
+
         {report.do_not.length > 0 && (
           <Card style={{ marginBottom: 16, borderLeft: "4px solid var(--color-fix-now)" }}>
             <p style={{ fontWeight: 700, marginBottom: 8, color: "var(--color-fix-now)" }}>Do NOT</p>

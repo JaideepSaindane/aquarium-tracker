@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   const [corpus, relevantSpecies] = await Promise.all([retrieveCorpus(question), retrieveRelevantSpecies(question, speciesIds)]);
   const speciesContext = await getSpeciesContextTextFor(relevantSpecies);
 
-  const promptText = await loadPrompt("ask.v3.md", {
+  const promptText = await loadPrompt("ask.v4.md", {
     QUESTION: question,
     TANK_CONTEXT: tankContext,
     SPECIES_CONTEXT: speciesContext,
