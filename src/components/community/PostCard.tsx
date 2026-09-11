@@ -6,7 +6,7 @@ import { Card } from "@/components/Card";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { PostPhotoStrip } from "@/components/community/PostPhotoStrip";
 import { relativeTime } from "@/lib/relative-time";
-import { deleteCommunityPost, reportCommunityItem, type PostRow } from "@/db/queries/community";
+import { deleteCommunityPost, reportCommunityItem, toggleCommunityLike, type PostRow } from "@/db/queries/community";
 
 function authorLabel(author: PostRow["author"]): string {
   return author.name?.trim() || author.username?.trim() || "A fellow hobbyist";
@@ -22,7 +22,29 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
   const [reporting, setReporting] = useState(false);
   const [reportNote, setReportNote] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [liked, setLiked] = useState(post.likedByMe);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [likeBusy, setLikeBusy] = useState(false);
   const isOwn = currentUserId === post.userId;
+
+  async function handleLike() {
+    if (likeBusy) return;
+    setLikeBusy(true);
+    // Optimistic — the server call confirms/corrects a moment later.
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    setLikeCount((c) => c + (nextLiked ? 1 : -1));
+    try {
+      const result = await toggleCommunityLike(post.id);
+      setLiked(result.liked);
+      setLikeCount(result.likeCount);
+    } catch {
+      setLiked(!nextLiked);
+      setLikeCount((c) => c + (nextLiked ? -1 : 1));
+    } finally {
+      setLikeBusy(false);
+    }
+  }
 
   async function handleReport() {
     await reportCommunityItem({ targetType: "post", targetId: post.id, reason: reportNote.trim() || undefined });
@@ -102,14 +124,34 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
 
       <PostPhotoStrip photoUris={post.photoUris} />
 
-      {linkToDetail && (
-        <Link
-          href={`/community/${post.id}`}
-          style={{ display: "block", marginTop: 8, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 8 }}>
+        <button
+          type="button"
+          onClick={handleLike}
+          aria-pressed={liked}
+          aria-label={liked ? "Unlike" : "Like"}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            background: "none",
+            border: "none",
+            padding: 0,
+            color: liked ? "var(--color-fix-now)" : "var(--color-ink-muted)",
+            fontSize: "var(--font-caption-size)",
+            fontWeight: liked ? 700 : 400,
+          }}
         >
-          💬 {post.commentCount} {post.commentCount === 1 ? "comment" : "comments"}
-        </Link>
-      )}
+          <span aria-hidden>{liked ? "❤️" : "🤍"}</span>
+          {likeCount > 0 ? likeCount : "Like"}
+        </button>
+
+        {linkToDetail && (
+          <Link href={`/community/${post.id}`} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+            💬 {post.commentCount} {post.commentCount === 1 ? "comment" : "comments"}
+          </Link>
+        )}
+      </div>
 
       {reporting && (
         <div style={{ marginTop: 8, padding: 10, borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)" }}>

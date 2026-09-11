@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
-import { communityPosts, communityComments, profile } from "@/server/db/schema";
+import { communityPosts, communityComments, communityLikes, profile } from "@/server/db/schema";
 import { requireUserId } from "@/server/auth/require-user";
 import { nowIso } from "@/db/id";
 
@@ -35,7 +35,17 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     .from(communityComments)
     .where(and(eq(communityComments.postId, id), isNull(communityComments.deletedAt)));
 
-  return NextResponse.json({ ...post, photoUris: parsePhotoUris(post.photoUris), author, commentCount: countRows[0]?.count ?? 0 });
+  const likeCountRows = await serverDb.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(communityLikes).where(eq(communityLikes.postId, id));
+  const myLike = await serverDb.select().from(communityLikes).where(and(eq(communityLikes.userId, userId), eq(communityLikes.postId, id)));
+
+  return NextResponse.json({
+    ...post,
+    photoUris: parsePhotoUris(post.photoUris),
+    author,
+    commentCount: countRows[0]?.count ?? 0,
+    likeCount: likeCountRows[0]?.count ?? 0,
+    likedByMe: myLike.length > 0,
+  });
 }
 
 /** Soft-delete your own post — refuses (404, so as not to confirm another user's post exists) if you're not the author. */

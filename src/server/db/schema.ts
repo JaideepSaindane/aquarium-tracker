@@ -332,3 +332,15 @@ export const communityReports = pgTable("community_reports", {
   reason: text("reason"),
   createdAt: text("created_at").notNull(),
 });
+
+// Like button (2026-09-11, Jaideep's ask). One row per (user, post) —
+// liking again is a no-op, unliking deletes the row; see
+// /api/community/posts/[id]/like's toggle logic.
+export const communityLikes = pgTable("community_likes", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  postId: text("post_id").notNull(),
+  createdAt: text("created_at").notNull(),
+}, (table) => [
+  uniqueIndex("community_likes_user_post_idx").on(table.userId, table.postId),
+]);

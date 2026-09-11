@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { desc, inArray, isNull, sql } from "drizzle-orm";
+import { desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
-import { communityPosts, communityComments, profile } from "@/server/db/schema";
+import { communityPosts, communityComments, communityLikes, profile } from "@/server/db/schema";
 import { requireUserId } from "@/server/auth/require-user";
 import { newId, nowIso } from "@/db/id";
 
@@ -49,11 +49,22 @@ export async function GET() {
     .groupBy(communityComments.postId);
   const countByPostId = new Map(counts.map((c) => [c.postId, c.count]));
 
+  const likeCounts = await serverDb
+    .select({ postId: communityLikes.postId, count: sql<number>`count(*)`.mapWith(Number) })
+    .from(communityLikes)
+    .groupBy(communityLikes.postId);
+  const likeCountByPostId = new Map(likeCounts.map((c) => [c.postId, c.count]));
+
+  const myLikes = await serverDb.select({ postId: communityLikes.postId }).from(communityLikes).where(eq(communityLikes.userId, userId));
+  const likedPostIds = new Set(myLikes.map((l) => l.postId));
+
   const withAuthors = await attachAuthors(rows);
   const withCounts = withAuthors.map((r) => ({
     ...r,
     photoUris: parsePhotoUris(r.photoUris),
     commentCount: countByPostId.get(r.id) ?? 0,
+    likeCount: likeCountByPostId.get(r.id) ?? 0,
+    likedByMe: likedPostIds.has(r.id),
   }));
   return NextResponse.json(withCounts);
 }

@@ -16,6 +16,8 @@ export type PostRow = {
   deletedAt: string | null;
   author: Author;
   commentCount: number;
+  likeCount: number;
+  likedByMe: boolean;
 };
 
 export type CommentRow = {
@@ -58,6 +60,13 @@ export async function createCommunityPost(input: { body: string; photoUris?: str
   );
   notifyChanged();
   return id;
+}
+
+/** Toggles the current user's like on a post — returns the new state so the caller doesn't need a second fetch. */
+export async function toggleCommunityLike(postId: string): Promise<{ liked: boolean; likeCount: number }> {
+  const result = await json<{ liked: boolean; likeCount: number }>(await fetch(`/api/community/posts/${postId}/like`, { method: "POST" }));
+  notifyChanged();
+  return result;
 }
 
 /** Refuses silently (server 404s) if you're not the author — the button that calls this should only ever show for your own posts. */
