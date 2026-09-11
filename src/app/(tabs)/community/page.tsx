@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Screen } from "@/components/Screen";
-import { Banner } from "@/components/Banner";
 import { PrimaryButton } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { PostCard } from "@/components/community/PostCard";
@@ -30,16 +29,6 @@ export default function CommunityPage() {
         <Link href="/community/new">
           <PrimaryButton>+ New Post</PrimaryButton>
         </Link>
-      </div>
-
-      <div style={{ marginBottom: 12 }}>
-        <Banner severity="neutral">
-          Community advice isn&apos;t verified — for anything urgent,{" "}
-          <Link href="/emergency" style={{ color: "inherit", textDecoration: "underline" }}>
-            use Emergency Triage
-          </Link>
-          .
-        </Banner>
       </div>
 
       {!posts && <p style={{ color: "var(--color-ink-muted)" }}>Loading...</p>}
