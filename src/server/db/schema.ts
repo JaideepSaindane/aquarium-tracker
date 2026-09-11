@@ -304,7 +304,11 @@ export const communityPosts = pgTable("community_posts", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull(),
   body: text("body").notNull(),
-  photoUri: text("photo_uri"),
+  // JSON array of Blob URLs, 0+ photos — replaced the original single
+  // `photoUri` column (2026-09-11, Jaideep: "add more photos so we can put
+  // multiple photos"). The feature was brand new with no real posts yet,
+  // so this was a clean swap, not a migration path for old data.
+  photoUris: text("photo_uris"),
   createdAt: text("created_at").notNull(),
   deletedAt: text("deleted_at"),
 });

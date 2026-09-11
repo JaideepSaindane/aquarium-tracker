@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/Card";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
-import { usePhotoSrc } from "@/lib/use-photo-src";
+import { PostPhotoStrip } from "@/components/community/PostPhotoStrip";
 import { relativeTime } from "@/lib/relative-time";
 import { deleteCommunityPost, reportCommunityItem, type PostRow } from "@/db/queries/community";
 
@@ -18,7 +18,6 @@ function authorLabel(author: PostRow["author"]): string {
  * since the comments are right there already).
  */
 export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { post: PostRow; currentUserId: string | null; linkToDetail?: boolean; onDeleted?: () => void }) {
-  const photoSrc = usePhotoSrc(post.photoUri);
   const [showMenu, setShowMenu] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [reportNote, setReportNote] = useState("");
@@ -101,10 +100,7 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
 
       <p style={{ margin: 0, whiteSpace: "pre-wrap", fontSize: "var(--font-body-size)" }}>{post.body}</p>
 
-      {photoSrc && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={photoSrc} alt="" style={{ width: "100%", borderRadius: "var(--radius-md)", marginTop: 8, display: "block" }} />
-      )}
+      <PostPhotoStrip photoUris={post.photoUris} />
 
       {linkToDetail && (
         <Link

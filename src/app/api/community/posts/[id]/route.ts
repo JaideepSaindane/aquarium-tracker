@@ -5,6 +5,16 @@ import { communityPosts, communityComments, profile } from "@/server/db/schema";
 import { requireUserId } from "@/server/auth/require-user";
 import { nowIso } from "@/db/id";
 
+function parsePhotoUris(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 /** One post, with joined author + comment count — used by the /community/[id] detail page. */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await requireUserId();
@@ -25,7 +35,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     .from(communityComments)
     .where(and(eq(communityComments.postId, id), isNull(communityComments.deletedAt)));
 
-  return NextResponse.json({ ...post, author, commentCount: countRows[0]?.count ?? 0 });
+  return NextResponse.json({ ...post, photoUris: parsePhotoUris(post.photoUris), author, commentCount: countRows[0]?.count ?? 0 });
 }
 
 /** Soft-delete your own post — refuses (404, so as not to confirm another user's post exists) if you're not the author. */

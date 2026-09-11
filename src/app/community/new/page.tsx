@@ -10,21 +10,35 @@ import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { createCommunityPost } from "@/db/queries/community";
 import { uploadPhoto } from "@/lib/photo-upload";
 
+const MAX_PHOTOS = 10;
+
+type PendingPhoto = { file: File; preview: string };
+
 export default function NewCommunityPostPage() {
   const router = useRouter();
   const [body, setBody] = useState("");
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function handleAddPhoto(file: File) {
+    setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file, preview: URL.createObjectURL(file) }]));
+  }
+
+  function handleRemovePhoto(index: number) {
+    setPhotos((prev) => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  }
 
   async function handlePost() {
     if (!body.trim()) return;
     setPosting(true);
     setError(null);
     try {
-      let photoUri: string | undefined;
-      if (photoFile) photoUri = await uploadPhoto(photoFile);
-      await createCommunityPost({ body: body.trim(), photoUri });
+      const photoUris = await Promise.all(photos.map((p) => uploadPhoto(p.file)));
+      await createCommunityPost({ body: body.trim(), photoUris });
       router.replace("/community");
     } catch {
       setError("Couldn't post — check your connection and try again.");
@@ -41,6 +55,36 @@ export default function NewCommunityPostPage() {
       }
     >
       <BackHeader title="New Post" fallbackHref="/community" />
+
+      {photos.length > 0 && (
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", marginBottom: 12, WebkitOverflowScrolling: "touch" }}>
+          {photos.map((p, i) => (
+            <div key={p.preview} style={{ position: "relative", flexShrink: 0 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.preview} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "var(--radius-md)", display: "block" }} />
+              <button
+                type="button"
+                onClick={() => handleRemovePhoto(i)}
+                aria-label="Remove photo"
+                style={{
+                  position: "absolute",
+                  top: 4,
+                  right: 4,
+                  width: 22,
+                  height: 22,
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(0,0,0,0.6)",
+                  color: "#fff",
+                  fontSize: 12,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <textarea
         value={body}
@@ -62,7 +106,12 @@ export default function NewCommunityPostPage() {
       />
 
       <div style={{ height: 12 }} />
-      <PhotoPickerButton label={photoFile ? "Photo attached ✓" : "Add a photo (optional)"} onPick={setPhotoFile} />
+      {photos.length < MAX_PHOTOS && (
+        <PhotoPickerButton
+          label={photos.length === 0 ? "Add a photo (optional)" : `Add another photo (${photos.length}/${MAX_PHOTOS})`}
+          onPick={handleAddPhoto}
+        />
+      )}
 
       {error && (
         <div style={{ marginTop: 12 }}>

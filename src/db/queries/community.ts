@@ -11,7 +11,7 @@ export type PostRow = {
   id: string;
   userId: string;
   body: string;
-  photoUri: string | null;
+  photoUris: string[];
   createdAt: string;
   deletedAt: string | null;
   author: Author;
@@ -52,7 +52,7 @@ export async function getCommunityPost(id: string): Promise<PostRow | null> {
   return json(res);
 }
 
-export async function createCommunityPost(input: { body: string; photoUri?: string }): Promise<string> {
+export async function createCommunityPost(input: { body: string; photoUris?: string[] }): Promise<string> {
   const { id } = await json<{ id: string }>(
     await fetch("/api/community/posts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
   );

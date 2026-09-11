@@ -7,6 +7,16 @@ import { newId, nowIso } from "@/db/id";
 
 const PAGE_SIZE = 50;
 
+function parsePhotoUris(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 async function attachAuthors<T extends { userId: string }>(rows: T[]) {
   if (rows.length === 0) return rows.map((r) => ({ ...r, author: null as null | { name: string | null; username: string | null; photoUri: string | null } }));
   const userIds = [...new Set(rows.map((r) => r.userId))];
@@ -40,7 +50,11 @@ export async function GET() {
   const countByPostId = new Map(counts.map((c) => [c.postId, c.count]));
 
   const withAuthors = await attachAuthors(rows);
-  const withCounts = withAuthors.map((r) => ({ ...r, commentCount: countByPostId.get(r.id) ?? 0 }));
+  const withCounts = withAuthors.map((r) => ({
+    ...r,
+    photoUris: parsePhotoUris(r.photoUris),
+    commentCount: countByPostId.get(r.id) ?? 0,
+  }));
   return NextResponse.json(withCounts);
 }
 
@@ -51,13 +65,15 @@ export async function POST(req: Request) {
   const body = String(input.body ?? "").trim();
   if (!body) return NextResponse.json({ error: "body is required" }, { status: 400 });
 
+  const photoUris: string[] = Array.isArray(input.photoUris) ? input.photoUris.map(String).slice(0, 10) : [];
+
   const now = nowIso();
   const id = newId();
   await serverDb.insert(communityPosts).values({
     id,
     userId,
     body,
-    photoUri: input.photoUri ?? null,
+    photoUris: photoUris.length > 0 ? JSON.stringify(photoUris) : null,
     createdAt: now,
   });
   return NextResponse.json({ id });
