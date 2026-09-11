@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { SecondaryButton } from "@/components/Button";
+import { ImageCropModal } from "@/components/ImageCropModal";
 
 /**
  * A button that offers "Take photo" (camera) vs "Choose from gallery" as
@@ -11,14 +12,31 @@ import { SecondaryButton } from "@/components/Button";
  * specs/PROGRESS.md's "Tank photo picker only ever opened the gallery"
  * entry). Reused here so every "add a photo" spot in the app gets a real
  * camera option, not just the one screen that happened to get fixed first.
+ *
+ * Every pick now goes through a crop step (2026-09-11, Jaideep's ask —
+ * "allow people to crop their selected or captured images everywhere")
+ * before `onPick` fires — see ImageCropModal's own header comment for
+ * which flows deliberately don't use this component and so skip cropping.
  */
-export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (file: File) => void }) {
+export function PhotoPickerButton({ label, onPick, aspect = 4 / 3 }: { label: string; onPick: (file: File) => void; aspect?: number }) {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div style={{ position: "relative" }}>
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspect={aspect}
+          onCancel={() => setCropFile(null)}
+          onCropped={(cropped) => {
+            setCropFile(null);
+            onPick(cropped);
+          }}
+        />
+      )}
       <input
         ref={cameraInputRef}
         type="file"
@@ -27,7 +45,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
         style={{ display: "none" }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) onPick(file);
+          if (file) setCropFile(file);
           e.target.value = "";
         }}
       />
@@ -38,7 +56,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
         style={{ display: "none" }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) onPick(file);
+          if (file) setCropFile(file);
           e.target.value = "";
         }}
       />

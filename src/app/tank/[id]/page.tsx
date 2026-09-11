@@ -285,7 +285,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)" }}>
             {addingPhoto ? "Adding photo..." : "Add a photo of your tank"}
           </p>
-          <PhotoPickerButton label={addingPhoto ? "Adding..." : "Add a photo"} onPick={handleAddPhoto} />
+          <PhotoPickerButton label={addingPhoto ? "Adding..." : "Add a photo"} onPick={handleAddPhoto} aspect={1} />
           {addPhotoError && (
             <p style={{ margin: 0, fontSize: "var(--font-caption-size)", color: "var(--color-fix-now)" }}>{addPhotoError}</p>
           )}
