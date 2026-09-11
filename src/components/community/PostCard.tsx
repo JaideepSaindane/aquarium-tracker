@@ -6,6 +6,9 @@ import { Card } from "@/components/Card";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { PostPhotoStrip } from "@/components/community/PostPhotoStrip";
 import { relativeTime } from "@/lib/relative-time";
+import { looksNonEnglish } from "@/lib/looks-non-english";
+import { translateText } from "@/lib/ai-client";
+import { useLocale } from "@/i18n/use-locale";
 import { deleteCommunityPost, reportCommunityItem, toggleCommunityLike, type PostRow } from "@/db/queries/community";
 
 function authorLabel(author: PostRow["author"]): string {
@@ -25,7 +28,29 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
   const [liked, setLiked] = useState(post.likedByMe);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [likeBusy, setLikeBusy] = useState(false);
+  const [translated, setTranslated] = useState<string | null>(null);
+  const [translating, setTranslating] = useState(false);
+  const [translateError, setTranslateError] = useState<string | null>(null);
   const isOwn = currentUserId === post.userId;
+  const { locale } = useLocale();
+  const showTranslate = looksNonEnglish(post.body);
+
+  async function handleTranslate() {
+    if (translated) {
+      // Already translated once — toggle back to the original instead of re-calling the API.
+      setTranslated(null);
+      return;
+    }
+    setTranslating(true);
+    setTranslateError(null);
+    const result = await translateText(post.body, locale);
+    setTranslating(false);
+    if (result.ok) {
+      setTranslated(result.data.translated);
+    } else {
+      setTranslateError("Couldn't translate — try again.");
+    }
+  }
 
   async function handleLike() {
     if (likeBusy) return;
@@ -120,7 +145,19 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
         </div>
       </div>
 
-      <p style={{ margin: 0, whiteSpace: "pre-wrap", fontSize: "var(--font-body-size)" }}>{post.body}</p>
+      <p style={{ margin: 0, whiteSpace: "pre-wrap", fontSize: "var(--font-body-size)" }}>{translated ?? post.body}</p>
+
+      {showTranslate && (
+        <button
+          type="button"
+          onClick={handleTranslate}
+          disabled={translating}
+          style={{ background: "none", border: "none", padding: 0, marginTop: 4, color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)" }}
+        >
+          {translating ? "Translating..." : translated ? "Show original" : "Translate"}
+        </button>
+      )}
+      {translateError && <p style={{ margin: "4px 0 0", color: "var(--color-fix-now)", fontSize: "var(--font-caption-size)" }}>{translateError}</p>}
 
       <PostPhotoStrip photoUris={post.photoUris} />
 

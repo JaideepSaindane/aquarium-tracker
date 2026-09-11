@@ -247,3 +247,13 @@ function extractRefs(data: Record<string, unknown>): string[] {
   const refs = data.grounding_refs;
   return Array.isArray(refs) ? (refs as string[]) : [];
 }
+
+/** Un-metered, no interaction logging — a low-frequency convenience call, same tier as /api/compat. Used by Community's "Translate" link. */
+export async function translateText(text: string, targetLocale: "en" | "hi-latn"): Promise<AiCallResult<{ translated: string }>> {
+  const res = await fetch("/api/community/translate", {
+    method: "POST",
+    headers: headers({ "Content-Type": "application/json" }),
+    body: JSON.stringify({ text, targetLocale }),
+  });
+  return handleJsonResponse<{ translated: string }>(res);
+}
