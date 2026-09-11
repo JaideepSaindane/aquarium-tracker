@@ -58,6 +58,13 @@ export function ServiceWorkerRegister() {
 
         registration.addEventListener("updatefound", () => watchInstalling(registration.installing));
 
+        // Check right away too, not just on the interval/visibility
+        // triggers below — otherwise a tab left open across a deploy
+        // could sit stale for up to CHECK_INTERVAL_MS before the first
+        // check ever ran (2026-09-11: Jaideep tested immediately after a
+        // deploy and saw no banner yet, because nothing had checked).
+        void registration.update().catch(() => {});
+
         interval = setInterval(() => registration.update().catch(() => {}), CHECK_INTERVAL_MS);
         document.addEventListener("visibilitychange", onVisible);
       })
