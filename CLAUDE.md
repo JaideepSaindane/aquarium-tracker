@@ -134,6 +134,6 @@ The original design notes, preserved for context only:
 
 ## Do not build these yet
 
-Community, marketplace or trading, native app store submission (Android/iOS), reef/marine support, breeding logs, shop directory. Each is a real support or compliance burden and every one of them is Phase 2 or later. If a task seems to need one of these, stop and ask.
+Marketplace or trading, native app store submission (Android/iOS), reef/marine support, breeding logs, shop directory. Each is a real support or compliance burden and every one of them is Phase 2 or later. If a task seems to need one of these, stop and ask.
 
-("Accounts and cloud sync" was on this list until 2026-09-10, when Jaideep asked for exactly that to launch to real users — see Principle 5's note above. Do not re-add it here without him asking again.)
+("Accounts and cloud sync" was on this list until 2026-09-10, when Jaideep asked for exactly that to launch to real users — see Principle 5's note above. "Community" was on this list until 2026-09-11, when Jaideep asked for it explicitly, same pattern — see specs/PROGRESS.md's community MVP entry. Do not re-add either without him asking again. Community's own moderation burden was only partly addressed: report + self-delete only, no admin approve/hide workflow yet, and reports are visible only via the hidden `/dev/community-reports` viewer — a real gap if the community grows before that gets built.)

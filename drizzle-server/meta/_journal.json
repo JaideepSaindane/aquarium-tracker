@@ -36,6 +36,13 @@
       "when": 1789139577460,
       "tag": "0004_even_legion",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789142210892,
+      "tag": "0005_adorable_moonstone",
+      "breakpoints": true
     }
   ]
 }

@@ -294,3 +294,37 @@ export const profile = pgTable("profile", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
+
+// Community (2026-09-11, MVP pass) — a deliberate, confirmed exception to
+// CLAUDE.md's "do not build yet" list, same as accounts were on 2026-09-10.
+// Author name/photo are NOT denormalized here — every read joins against
+// `profile` by userId at query time, so a later profile change is reflected
+// everywhere immediately instead of going stale on old posts.
+export const communityPosts = pgTable("community_posts", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  body: text("body").notNull(),
+  photoUri: text("photo_uri"),
+  createdAt: text("created_at").notNull(),
+  deletedAt: text("deleted_at"),
+});
+
+export const communityComments = pgTable("community_comments", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  postId: text("post_id").notNull(),
+  body: text("body").notNull(),
+  createdAt: text("created_at").notNull(),
+  deletedAt: text("deleted_at"),
+});
+
+// No admin action queue yet (Jaideep's explicit MVP scope) — this exists so
+// reports are visible at all, via the hidden /dev/community-reports viewer.
+export const communityReports = pgTable("community_reports", {
+  id: text("id").primaryKey(),
+  reporterUserId: text("reporter_user_id").notNull(),
+  targetType: text("target_type").notNull(), // "post" | "comment"
+  targetId: text("target_id").notNull(),
+  reason: text("reason"),
+  createdAt: text("created_at").notNull(),
+});
