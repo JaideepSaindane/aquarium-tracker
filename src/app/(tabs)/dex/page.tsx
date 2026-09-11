@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { Chip } from "@/components/Chip";
 import { Banner } from "@/components/Banner";
+import { ImageCropModal } from "@/components/ImageCropModal";
 import { useLiveQuery } from "@/db/live";
 import { listSpecies } from "@/db/queries/species";
 import { listDexCards } from "@/db/queries/dex";
@@ -78,6 +79,7 @@ export default function DexPage() {
   const scanCameraInputRef = useRef<HTMLInputElement>(null);
   const scanGalleryInputRef = useRef<HTMLInputElement>(null);
   const [scanPickerOpen, setScanPickerOpen] = useState(false);
+  const [scanCropFile, setScanCropFile] = useState<File | null>(null);
 
   const species = data?.species ?? [];
   const cardsBySpecies = new Map((data?.cards ?? []).map((c) => [c.speciesId, c]));
@@ -226,6 +228,16 @@ export default function DexPage() {
               }}
             />
             <div style={{ position: "relative" }}>
+              {scanCropFile && (
+                <ImageCropModal
+                  file={scanCropFile}
+                  onCancel={() => setScanCropFile(null)}
+                  onCropped={(cropped) => {
+                    setScanCropFile(null);
+                    handleScanPhoto(cropped);
+                  }}
+                />
+              )}
               <input
                 ref={scanCameraInputRef}
                 type="file"
@@ -235,7 +247,7 @@ export default function DexPage() {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   e.target.value = "";
-                  if (file) handleScanPhoto(file);
+                  if (file) setScanCropFile(file);
                 }}
               />
               <input
@@ -246,7 +258,7 @@ export default function DexPage() {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   e.target.value = "";
-                  if (file) handleScanPhoto(file);
+                  if (file) setScanCropFile(file);
                 }}
               />
               <button

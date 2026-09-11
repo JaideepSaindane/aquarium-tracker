@@ -21,6 +21,7 @@ import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { isAiGenerated } from "@/lib/species-origin";
 import { CompatibilitySummary } from "@/components/CompatibilitySummary";
+import { ImageCropModal } from "@/components/ImageCropModal";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
 
@@ -61,6 +62,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const [candidates, setCandidates] = useState<{ species_id: string | null; common_name: string; scientific_name: string; confidence: number; why: string }[] | null>(null);
   const [unlockToast, setUnlockToast] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const [identifyCropFile, setIdentifyCropFile] = useState<File | null>(null);
 
   // No AI compatibility check anywhere in this flow (Jaideep, 2026-09-10 —
   // dropped a brief batch-on-"Done" version entirely: confusing in
@@ -220,12 +222,26 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
           )}
 
           <div style={{ margin: "10px 0" }}>
+            {identifyCropFile && (
+              <ImageCropModal
+                file={identifyCropFile}
+                onCancel={() => setIdentifyCropFile(null)}
+                onCropped={(cropped) => {
+                  setIdentifyCropFile(null);
+                  handleIdentifyPhoto(cropped);
+                }}
+              />
+            )}
             <input
               ref={photoInputRef}
               type="file"
               accept="image/*"
               style={{ display: "none" }}
-              onChange={(e) => e.target.files?.[0] && handleIdentifyPhoto(e.target.files[0])}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (file) setIdentifyCropFile(file);
+              }}
             />
             <button
               type="button"

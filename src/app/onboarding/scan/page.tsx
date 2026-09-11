@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
+import { ImageCropModal } from "@/components/ImageCropModal";
 import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { Banner } from "@/components/Banner";
@@ -30,6 +31,7 @@ export default function ScanCapturePage() {
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
   const [length, setLength] = useState("");
@@ -177,13 +179,27 @@ export default function ScanCapturePage() {
         Stand square to the front glass, room light off, no flash.
       </p>
 
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          onCancel={() => setCropFile(null)}
+          onCropped={(cropped) => {
+            setCropFile(null);
+            handleFile(cropped);
+          }}
+        />
+      )}
       {stage === "idle" && (
         <input
           ref={cameraInputRef}
           type="file"
           accept="image/*"
           capture="environment"
-          onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) setCropFile(file);
+          }}
           style={{ display: "none" }}
         />
       )}
@@ -192,7 +208,11 @@ export default function ScanCapturePage() {
           ref={libraryInputRef}
           type="file"
           accept="image/*"
-          onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) setCropFile(file);
+          }}
           style={{ display: "none" }}
         />
       )}
