@@ -16,8 +16,10 @@ export const light = {
   surfaceAlt: "#ECECEA",
   ink: "#18242B",
   inkMuted: "#65747A",
-  line: "#E3E8E7",
-  lineSoft: "#EDF1F0",
+  // Darkened 2026-09-11 — see the matching comment in tokens.css (cards/
+  // pills/inputs weren't separating from the white surface behind them).
+  line: "#C7D1CF",
+  lineSoft: "#D9E1DF",
 
   accent: "#168A8A",
   accentSoft: "#DDF1EE",
@@ -57,14 +59,16 @@ export type SeverityLevel = keyof typeof severity;
 // neutral charcoal tint now, not a colored wash, per the "neutral UI" rule.
 // Glass is only for surfaces that genuinely float over content (toasts,
 // prompts); everything else, including the bottom nav, is flat/solid now.
+// Light-mode shadows strengthened 2026-09-11 alongside `line`/`lineSoft`
+// above — same "cards aren't popping off white" fix.
 export const shadow = {
-  sm: { light: "0 1px 3px rgba(24, 36, 43, 0.07), 0 1px 2px rgba(24, 36, 43, 0.08)", dark: "0 1px 3px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4)" },
-  md: { light: "0 8px 24px rgba(24, 36, 43, 0.1), 0 2px 6px rgba(24, 36, 43, 0.06)", dark: "0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3)" },
-  lift: { light: "0 12px 32px rgba(24, 36, 43, 0.14), 0 4px 10px rgba(24, 36, 43, 0.08)", dark: "0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.36)" },
+  sm: { light: "0 1px 3px rgba(24, 36, 43, 0.1), 0 1px 2px rgba(24, 36, 43, 0.1)", dark: "0 1px 3px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4)" },
+  md: { light: "0 8px 24px rgba(24, 36, 43, 0.14), 0 2px 6px rgba(24, 36, 43, 0.08)", dark: "0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3)" },
+  lift: { light: "0 12px 32px rgba(24, 36, 43, 0.18), 0 4px 10px rgba(24, 36, 43, 0.1)", dark: "0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.36)" },
 } as const;
 
 export const glass = {
-  light: { bg: "rgba(255, 255, 255, 0.78)", border: "rgba(24, 36, 43, 0.08)" },
+  light: { bg: "rgba(255, 255, 255, 0.78)", border: "rgba(24, 36, 43, 0.14)" },
   dark: { bg: "rgba(27, 34, 36, 0.78)", border: "rgba(255, 255, 255, 0.08)" },
   blur: "20px",
 } as const;

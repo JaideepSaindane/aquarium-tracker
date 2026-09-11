@@ -24,8 +24,14 @@
   --color-surface-alt: #ececea;
   --color-ink: #18242b;
   --color-ink-muted: #65747a;
-  --color-line: #e3e8e7;
-  --color-line-soft: #edf1f0;
+  /* Darkened 2026-09-11 (Jaideep: "cards, pills, everything... the white
+     background is merging with borders") — #e3e8e7/#edf1f0 were only a
+     couple of percent off white, so a Card's border (which uses line-soft)
+     and a pill/input's border (line) barely read against the white surface
+     or off-white ground behind them. Same fix class already applied to
+     dark mode on 2026-09-10 for the identical complaint. */
+  --color-line: #c7d1cf;
+  --color-line-soft: #d9e1df;
 
   --color-accent: #168a8a;
   --color-accent-soft: #ddf1ee;
@@ -40,10 +46,12 @@
   --color-neutral: #57696b;
 
   /* Matte elevation — neutral charcoal tint now, not a colored navy/teal
-     wash, so shadows read as "shadow" rather than as brand colour. */
-  --shadow-sm: 0 1px 3px rgba(24, 36, 43, 0.07), 0 1px 2px rgba(24, 36, 43, 0.08);
-  --shadow-md: 0 8px 24px rgba(24, 36, 43, 0.1), 0 2px 6px rgba(24, 36, 43, 0.06);
-  --shadow-lift: 0 12px 32px rgba(24, 36, 43, 0.14), 0 4px 10px rgba(24, 36, 43, 0.08);
+     wash, so shadows read as "shadow" rather than as brand colour.
+     Strengthened alongside the border darkening above (2026-09-11) for
+     the same "cards aren't popping off white" complaint. */
+  --shadow-sm: 0 1px 3px rgba(24, 36, 43, 0.1), 0 1px 2px rgba(24, 36, 43, 0.1);
+  --shadow-md: 0 8px 24px rgba(24, 36, 43, 0.14), 0 2px 6px rgba(24, 36, 43, 0.08);
+  --shadow-lift: 0 12px 32px rgba(24, 36, 43, 0.18), 0 4px 10px rgba(24, 36, 43, 0.1);
 
   /* Glass — used sparingly, only for surfaces that genuinely float over
      content (floating toasts/prompts). Neutral near-white now instead of a
@@ -51,15 +59,15 @@
      (Tanks list, etc.) are plain solid --color-surface, not glass at all —
      see the 2026-09-10 Tanks-screen redesign. */
   --glass-bg: rgba(255, 255, 255, 0.78);
-  --glass-border: rgba(24, 36, 43, 0.08);
+  --glass-border: rgba(24, 36, 43, 0.14);
   --glass-blur: 20px;
 
   /* The bottom nav is a plain, quiet, mostly-opaque white bar now (not a
      blue-glass floating dock) — Jaideep's explicit ask to make the nav
      visually smaller/quieter, 2026-09-10. */
   --dock-bg: rgba(255, 255, 255, 0.97);
-  --dock-border: rgba(24, 36, 43, 0.08);
-  --dock-shadow: 0 4px 16px rgba(24, 36, 43, 0.08), 0 1px 4px rgba(24, 36, 43, 0.05);
+  --dock-border: rgba(24, 36, 43, 0.14);
+  --dock-shadow: 0 4px 16px rgba(24, 36, 43, 0.12), 0 1px 4px rgba(24, 36, 43, 0.08);
 
   /* The floating bottom dock's own height (56px) plus its bottom margin
      (12px) plus a little breathing room — anything positioned above it
