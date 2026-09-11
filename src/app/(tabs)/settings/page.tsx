@@ -13,7 +13,7 @@ import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
 import { APP_NAME } from "@/constants/app";
 import { ensureDb } from "@/db/client";
-import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob, canShareFiles, shareFile } from "@/lib/export";
+import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob } from "@/lib/export";
 import { importJsonExport } from "@/lib/import";
 import { getProfile, saveProfile } from "@/db/queries/profile";
 import { isSurvivalPromptDisabled, disableSurvivalPromptForever } from "@/db/queries/settings";
@@ -34,7 +34,6 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [shareSupported, setShareSupported] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileName, setProfileName] = useState("");
@@ -58,7 +57,6 @@ export default function SettingsPage() {
 
   useEffect(() => {
     ensureDb();
-    canShareFiles().then(setShareSupported);
     getProfile().then((p) => {
       if (p) {
         setProfileName(p.name ?? "");
@@ -171,17 +169,23 @@ export default function SettingsPage() {
     }
   }
 
+  // Exports always download directly now (2026-09-11) rather than
+  // offering to go through the Web Share API first — Jaideep hit a real
+  // case on Android where sharing a JSON export handed it off to a save
+  // target that renamed it with a wrong extension (".app" instead of
+  // ".json"). The file itself was always named correctly; it's the
+  // receiving app in the share sheet that can't be trusted to keep it. A
+  // plain browser download is the one path that reliably preserves the
+  // exact filename, which matters far more here than the share
+  // convenience — this is a data backup, not something worth risking a
+  // silently-mislabelled file for.
   async function handleExportJson() {
     await withBusy("json", async () => {
       const data = await buildJsonExport();
       const bytes = JSON.stringify(data, null, 2);
       const filename = `${APP_NAME.toLowerCase()}-export-${timestamp()}.json`;
-      if (shareSupported && (await shareFile(bytes, filename, "application/json"))) {
-        setMessage("Shared the JSON export.");
-      } else {
-        downloadBlob(bytes, filename, "application/json");
-        setMessage("Downloaded the JSON export.");
-      }
+      downloadBlob(bytes, filename, "application/json");
+      setMessage("Downloaded the JSON export.");
     });
   }
 
@@ -189,12 +193,8 @@ export default function SettingsPage() {
     await withBusy("csv", async () => {
       const zip = await buildCsvZip();
       const filename = `${APP_NAME.toLowerCase()}-tables-${timestamp()}.zip`;
-      if (shareSupported && (await shareFile(zip, filename, "application/zip"))) {
-        setMessage("Shared the CSV export.");
-      } else {
-        downloadBlob(zip, filename, "application/zip");
-        setMessage("Downloaded the CSV export.");
-      }
+      downloadBlob(zip, filename, "application/zip");
+      setMessage("Downloaded the CSV export.");
     });
   }
 
@@ -202,12 +202,8 @@ export default function SettingsPage() {
     await withBusy("photos", async () => {
       const zip = await buildPhotosZip();
       const filename = `${APP_NAME.toLowerCase()}-photos-${timestamp()}.zip`;
-      if (shareSupported && (await shareFile(zip, filename, "application/zip"))) {
-        setMessage("Shared the photo export.");
-      } else {
-        downloadBlob(zip, filename, "application/zip");
-        setMessage("Downloaded the photo export.");
-      }
+      downloadBlob(zip, filename, "application/zip");
+      setMessage("Downloaded the photo export.");
     });
   }
 
