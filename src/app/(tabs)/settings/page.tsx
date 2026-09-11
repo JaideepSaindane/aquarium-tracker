@@ -49,6 +49,8 @@ export default function SettingsPage() {
   const [survivalPromptOff, setSurvivalPromptOff] = useState(false);
 
   const [hasPhoneLinked, setHasPhoneLinked] = useState<boolean | null>(null); // null = still checking
+  const [hasGoogleLinked, setHasGoogleLinked] = useState<boolean | null>(null);
+  const [googleLinkError, setGoogleLinkError] = useState<string | null>(null);
   const [linkPhone, setLinkPhone] = useState("");
   const [linkPin, setLinkPin] = useState("");
   const [linkPinConfirm, setLinkPinConfirm] = useState("");
@@ -70,8 +72,30 @@ export default function SettingsPage() {
     isSurvivalPromptDisabled().then(setSurvivalPromptOff);
     fetch("/api/account")
       .then((res) => (res.ok ? res.json() : null))
-      .then((info) => setHasPhoneLinked(info ? info.hasPhone : true)) // fail closed: don't show the card if we couldn't check
-      .catch(() => setHasPhoneLinked(true));
+      .then((info) => {
+        // fail closed: don't show either card if we couldn't check
+        setHasPhoneLinked(info ? info.hasPhone : true);
+        setHasGoogleLinked(info ? info.hasGoogle : true);
+      })
+      .catch(() => {
+        setHasPhoneLinked(true);
+        setHasGoogleLinked(true);
+      });
+
+    // Landed back here from the Google linking redirect (src/auth.ts's
+    // signIn callback) — the only failure mode it returns is a conflict:
+    // this Google account already belongs to a different existing account.
+    // Reading the URL the browser actually landed on after a full-page
+    // OAuth redirect (src/auth.ts's signIn callback) — a genuine one-time
+    // external-state sync on mount, not derivable during render.
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("linkError") === "conflict") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setGoogleLinkError("That Google account is already linked to a different AquaAI account — sign in with that account directly instead, or use a different Google account.");
+      window.history.replaceState(null, "", "/settings");
+    } else if (params.get("linked") === "google") {
+      window.history.replaceState(null, "", "/settings");
+    }
   }, []);
 
   async function handleLinkPhone() {
@@ -280,6 +304,33 @@ export default function SettingsPage() {
           {linkMessage && (
             <div style={{ marginTop: 12 }}>
               <Banner severity="neutral">{linkMessage}</Banner>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* Link Google account — the reverse of the card above: for someone
+          who signed up with phone+PIN first. Same reasoning (specs/
+          PROGRESS.md's 2026-09-11 entry) — without this, signing in with
+          Google for the first time on a new device silently creates a
+          second, separate account instead of reaching the same data. This
+          is a full-page redirect (Google's OAuth flow), not a fetch call —
+          see /api/account/link-google. */}
+      {hasGoogleLinked === false && (
+        <Card style={{ marginBottom: 16 }}>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Link Google account</h2>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
+            Optional — connect a Gmail account so you can also sign in this way on a new device, without creating a
+            second, separate account.
+          </p>
+          {/* A full browser navigation, not router.push — this hits a route
+              handler that sets a cookie and 307s on to Google's real OAuth
+              consent screen, which client-side routing can't do. */}
+          {/* eslint-disable-next-line @next/next/no-location-assign-relative-destination */}
+          <SecondaryButton onClick={() => (window.location.href = "/api/account/link-google")}>Link Google account</SecondaryButton>
+          {googleLinkError && (
+            <div style={{ marginTop: 12 }}>
+              <Banner severity="watch">{googleLinkError}</Banner>
             </div>
           )}
         </Card>

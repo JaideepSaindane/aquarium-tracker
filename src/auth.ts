@@ -7,6 +7,7 @@ import { serverDb } from "@/server/db/client";
 import { users } from "@/server/db/schema";
 import { newId } from "@/db/id";
 import { isLockedOut, recordFailedAttempt, clearAttempts } from "@/server/auth/login-rate-limit";
+import { consumeLinkIntent } from "@/server/auth/link-intent";
 
 /**
  * Real user accounts, added 2026-09-10 — see CLAUDE.md's updated Principle 5
@@ -68,19 +69,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // every other server table's userId column points at).
       if (account?.provider === "google" && user.email) {
         const existing = (await serverDb.select().from(users).where(eq(users.googleId, account.providerAccountId)))[0];
-        if (!existing) {
-          const id = newId();
-          await serverDb.insert(users).values({
-            id,
-            email: user.email,
-            googleId: account.providerAccountId,
-            name: user.name ?? null,
-            createdAt: new Date(),
-          });
-          user.id = id;
-        } else {
-          user.id = existing.id;
+
+        // Deliberate "link Google to my already-signed-in account" flow
+        // (src/app/api/account/link-google/route.ts, 2026-09-11) — check
+        // this BEFORE the normal find-or-create path, and regardless of
+        // whether `existing` was found, so a conflict (this Google account
+        // already belongs to a different, unrelated account) is caught and
+        // blocked rather than silently signing the user into that other
+        // account instead of the one they meant to link. The cookie is
+        // single-use and 5 minutes, set only by an authenticated request,
+        // so it just answers "who asked for this" — it can't be forged to
+        // link someone else's account.
+        const linkTargetUserId = await consumeLinkIntent();
+        if (linkTargetUserId) {
+          if (existing && existing.id !== linkTargetUserId) {
+            return "/settings?linkError=conflict";
+          }
+          await serverDb
+            .update(users)
+            .set({ email: user.email, googleId: account.providerAccountId })
+            .where(eq(users.id, linkTargetUserId));
+          user.id = linkTargetUserId;
+          return true;
         }
+
+        if (existing) {
+          user.id = existing.id;
+          return true;
+        }
+
+        const id = newId();
+        await serverDb.insert(users).values({
+          id,
+          email: user.email,
+          googleId: account.providerAccountId,
+          name: user.name ?? null,
+          createdAt: new Date(),
+        });
+        user.id = id;
       }
       return true;
     },
