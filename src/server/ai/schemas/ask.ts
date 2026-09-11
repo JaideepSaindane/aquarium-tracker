@@ -3,8 +3,13 @@ import { str, strArr } from "./json-schema-helpers";
 
 // v2, 2026-09-04: added a rule against treating the tank context's "days
 // since added to the app" as real tank age for cycling-stage answers —
-// same bug/fix as tank-scan/v2, see prompts/ask.v2.md.
-export const PROMPT_VERSION = "ask/v2";
+// same bug/fix as tank-scan/v2, see prompts/ask.v2.md. Bumped to v3
+// 2026-09-11: "a specific care parameter" (e.g. temperature range) was
+// being refused outright, same as medication/dosing/disease, whenever our
+// own species catalog had no number for it - narrowed to only refuse
+// medication/dosing/disease; care facts now fall back to general
+// knowledge, clearly flagged as not our own verified data.
+export const PROMPT_VERSION = "ask/v3";
 
 const grounding = z.array(z.string()).default([]);
 
