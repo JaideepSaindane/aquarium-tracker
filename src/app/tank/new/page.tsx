@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { AquaIcon } from "@/components/icons/AquaIcon";
 import { BackHeader } from "@/components/BackHeader";
+import { PrimaryButton } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
@@ -93,7 +94,17 @@ export default function NewTankPage() {
   }
 
   return (
-    <Screen>
+    <Screen
+      footer={
+        // A header-only Save was easy to miss after scrolling down a
+        // longer form (Jaideep's ask) — a second, always-visible Save at
+        // the bottom fixes that without removing the header one, which
+        // some people already reach for out of habit.
+        <PrimaryButton onClick={handleConfirm} disabled={saving}>
+          {saving ? "Saving..." : "Save"}
+        </PrimaryButton>
+      }
+    >
       <BackHeader
         title="Add New Tank"
         fallbackHref="/"
