@@ -1,0 +1,68 @@
+.banner {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-deep);
+  color: #ffffff;
+  font-size: var(--font-body-size);
+  font-weight: 700;
+  box-shadow: var(--shadow-lift);
+  cursor: pointer;
+  max-width: calc(100vw - 32px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: slideDown 0.25s ease-out;
+}
+
+.banner:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  flex-shrink: 0;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none;
+  }
+  .dot {
+    animation: none;
+  }
+}

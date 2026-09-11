@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/theme/ThemeProvider";
 import { DbBootProvider } from "@/db/DbBootProvider";
 import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
+import { UpdateBanner } from "@/components/UpdateBanner";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </ThemeProvider>
         </AuthSessionProvider>
         <ServiceWorkerRegister />
+        <UpdateBanner />
       </body>
     </html>
   );
