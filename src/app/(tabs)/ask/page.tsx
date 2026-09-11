@@ -325,7 +325,7 @@ function Turn({
 
               {answer.uncovered && (
                 <div style={{ marginBottom: 8 }}>
-                  <Banner severity="neutral">We don&apos;t have grounded guidance on this specific question yet — flagged for review.</Banner>
+                  <Banner severity="neutral">This is an LLM-generated response, not our own verified data.</Banner>
                 </div>
               )}
 
