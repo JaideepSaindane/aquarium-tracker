@@ -256,10 +256,10 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           }}
         >
           <span aria-hidden style={{ fontSize: 18, flexShrink: 0 }}>
-            🔍
+            🩺
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <strong style={{ fontSize: "var(--font-body-sm-size)" }}>Tank Check</strong>
+            <strong style={{ fontSize: "var(--font-body-sm-size)" }}>Health Check</strong>
             <p
               style={{
                 fontSize: "var(--font-caption-size)",

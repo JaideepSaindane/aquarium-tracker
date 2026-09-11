@@ -20,7 +20,7 @@ import { buildTankContext } from "@/lib/tank-context";
 import { scanTank } from "@/lib/ai-client";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
-import { writePhotoFile } from "@/lib/opfs-files";
+import { writePhotoFile, readPhotoFile } from "@/lib/opfs-files";
 import { newId } from "@/db/id";
 import { TankScanZod, type TankScanReport } from "@/server/ai/schemas/tank-scan";
 import type { SeverityLevel } from "@/theme/tokens";
@@ -33,12 +33,24 @@ const NEVER_PHOTO_ANSWERABLE = /\bph\b|ammonia|nitrite|nitrate|water parameter|t
 type Stage = "idle" | "checking" | "rejected" | "scanning" | "scan-error" | "report" | "saving" | "saved";
 
 /**
- * "Tank Check" — a re-runnable, data-aware version of the onboarding Tank
- * Scan (Jaideep's ask, 2026-09-04: make tank analysis ongoing and smarter,
- * not a one-time onboarding thing). Sends the tank's own current record
- * (equipment/livestock/parameters/log entries, via buildTankContext) along
- * with the photo, so findings can reference what's actually logged instead
- * of only ever reasoning from the bare image — see tank-scan/v2.
+ * "Health Check" (re-runs from the tank page) / "Scan your tank" (the
+ * first one, offered right after creating a tank) — a re-runnable,
+ * data-aware version of the onboarding Tank Scan (Jaideep's ask,
+ * 2026-09-04: make tank analysis ongoing and smarter, not a one-time
+ * onboarding thing; renamed/reframed 2026-09-11 — the first one is a
+ * distinct invite, everything after it is a "health check"). Sends the
+ * tank's own current record (equipment/livestock/parameters/log entries,
+ * via buildTankContext) along with the photo, so findings can reference
+ * what's actually logged instead of only ever reasoning from the bare
+ * image — see tank-scan/v2.
+ *
+ * When arriving straight from tank creation (`fromCreate=1`) and a tank
+ * photo was already uploaded during that flow, this reuses that exact
+ * photo instead of asking for a second one (2026-09-11, Jaideep: "I have
+ * already added that picture in my tank's profile so use that") — falls
+ * back to asking for a fresh photo only if the stored one turns out to
+ * fail the same quality gate every photo goes through, or if there was no
+ * tank photo to begin with.
  */
 export default function TankCheckPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -54,11 +66,31 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const [report, setReport] = useState<TankScanReport | null>(null);
+  const [reusedExistingPhoto, setReusedExistingPhoto] = useState(false);
+  const [existingPhotoIssue, setExistingPhotoIssue] = useState<string | null>(null);
+  const [existingPhotoRuledOut, setExistingPhotoRuledOut] = useState(false);
 
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const libraryInputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFile(file: File) {
+  const hasExistingPhoto = fromCreate && !!tank?.photoUri && !existingPhotoRuledOut;
+
+  async function scanExistingPhoto(photoUri: string) {
+    setReusedExistingPhoto(true);
+    setStage("checking");
+    const blob = await readPhotoFile(photoUri);
+    if (!blob) {
+      // Shouldn't normally happen, but don't strand the user — fall back
+      // to the ordinary ask-for-a-photo path.
+      setReusedExistingPhoto(false);
+      setStage("idle");
+      return;
+    }
+    const file = new File([blob], "tank-photo.jpg", { type: blob.type || "image/jpeg" });
+    await handleFile(file, photoUri);
+  }
+
+  async function handleFile(file: File, reusePath?: string) {
     setStage("checking");
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(file));
@@ -66,13 +98,27 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     const quality = await assessPhotoQuality(file);
     setQualityReport(quality);
     if (!quality.usable) {
+      // The tank's already-uploaded photo turned out not to pass the same
+      // quality bar a fresh capture would — don't get stuck reusing a
+      // photo that can't be scanned; fall back to asking for a new one,
+      // with an honest reason instead of silently switching modes.
+      if (reusePath) {
+        setReusedExistingPhoto(false);
+        setExistingPhotoRuledOut(true);
+        setExistingPhotoIssue(quality.issues[0] ? ISSUE_MESSAGES[quality.issues[0]] : "That photo wasn't clear enough for a scan.");
+        setStage("idle");
+        return;
+      }
       setStage("rejected");
       return;
     }
 
     const blob = await downscaleForUpload(file);
-    const path = `captures/${newId()}-check.jpg`;
-    await writePhotoFile(path, file);
+    // Reusing the tank's own setup photo — it's already written to OPFS
+    // and already has a Gallery entry from tank creation, so there's no
+    // new file to write and handleSave skips adding a duplicate one.
+    const path = reusePath ?? `captures/${newId()}-check.jpg`;
+    if (!reusePath) await writePhotoFile(path, file);
     setUploadBlob(blob);
     setOriginalPath(path);
     await runScan(blob);
@@ -86,6 +132,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     setUploadBlob(null);
     setOriginalPath(null);
     setReport(null);
+    setReusedExistingPhoto(false);
   }
 
   async function runScan(blob: Blob) {
@@ -137,19 +184,23 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     });
     const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
     const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : "No issues flagged.";
-    const entryId = await addLogEntry({ tankId: id, type: "journal", body: `Tank Check: ${findingSummary}` });
-    await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+    const label = fromCreate ? "Tank Scan" : "Health Check";
+    const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${label}: ${findingSummary}` });
+    // Reusing the tank's own setup photo already has a Gallery entry from
+    // tank creation — don't add the same file to the Gallery twice.
+    if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
     setStage("saved");
   }
 
   if (!tank) return <Screen>Loading...</Screen>;
 
   const backTarget = `/tank/${id}`;
+  const screenTitle = fromCreate ? "Scan your tank" : "Health Check";
 
   if (stage === "saved") {
     return (
       <Screen>
-        <BackHeader title="Tank Check" fallbackHref={backTarget} />
+        <BackHeader title={screenTitle} fallbackHref={backTarget} />
         <div style={{ display: "flex", justifyContent: "center" }}>
           <LottiePlayer name="success" loop={false} size={100} respectReducedMotion />
         </div>
@@ -183,7 +234,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
           </>
         }
       >
-        <BackHeader title="Tank Check results" fallbackHref={backTarget} />
+        <BackHeader title={fromCreate ? "Your tank scan" : "Health Check results"} fallbackHref={backTarget} />
 
         {findings.length === 0 && findingsBySeverity.length === 0 && (
           <div style={{ marginBottom: 16 }}>
@@ -275,17 +326,28 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
       />
 
-      <BackHeader title="Tank Check" fallbackHref={backTarget} />
+      <BackHeader title={screenTitle} fallbackHref={backTarget} />
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
         {fromCreate
-          ? "Optional — take a photo of your new tank for a quick AI check. You can always do this later."
-          : `A fresh look at ${tank.name}, using what's already logged plus a new photo.`}
+          ? hasExistingPhoto
+            ? "Let us scan your tank and give you some advice — we'll use the photo you already added. Optional, you can always do this later."
+            : "Let us scan your tank and give you some advice. Optional — you can always do this later."
+          : `A health check for ${tank.name}, using what's already logged plus a new photo.`}
       </p>
 
       {stage === "idle" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <PrimaryButton onClick={() => cameraInputRef.current?.click()}>📷 Take a photo</PrimaryButton>
-          <SecondaryButton onClick={() => libraryInputRef.current?.click()}>Choose from library</SecondaryButton>
+          {existingPhotoIssue && (
+            <Banner severity="watch">{existingPhotoIssue} Take a new one instead.</Banner>
+          )}
+          {hasExistingPhoto ? (
+            <PrimaryButton onClick={() => void scanExistingPhoto(tank.photoUri!)}>🔍 Scan my tank</PrimaryButton>
+          ) : (
+            <>
+              <PrimaryButton onClick={() => cameraInputRef.current?.click()}>📷 Take a photo</PrimaryButton>
+              <SecondaryButton onClick={() => libraryInputRef.current?.click()}>Choose from library</SecondaryButton>
+            </>
+          )}
           {fromCreate && <SecondaryButton onClick={() => router.replace(`/tank/${id}`)}>Skip for now</SecondaryButton>}
         </div>
       )}
