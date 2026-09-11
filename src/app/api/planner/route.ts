@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveRequestContext, isContextError } from "@/server/ai/request-context";
 import { loadPrompt } from "@/server/ai/prompt-loader";
-import { loadAllSpecies } from "@/server/ai/retrieval";
+import { retrieveSpeciesForPlanner } from "@/server/ai/retrieval";
 import { callContract } from "@/server/ai/call-contract";
 import { PlannerZod, PlannerJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/planner";
 import { matchCityClimate } from "@/lib/setup-recommendations";
@@ -31,10 +31,11 @@ export async function POST(req: NextRequest) {
   const winterLowC = climate?.winterLowC ?? 18;
 
   // The catalog is the only vocabulary the model may name. Compact
-  // one-line-per-species keeps the prompt small (1,484 species ≈ 80k chars)
-  // while giving the model real temp/pH/volume/temperament data to reason
-  // with — retrieval first, generation second.
-  const all = await loadAllSpecies();
+  // one-line-per-species, and bounded to species relevant to this wish
+  // list/tank type rather than the full 1,484-entry catalog on every call
+  // (2026-09-11 cost fix — see retrieveSpeciesForPlanner) — retrieval
+  // first, generation second.
+  const all = await retrieveSpeciesForPlanner(wishList, tankType === "planted");
   const catalog = all
     .map((s) => {
       const t = s.temp_c ? `${s.temp_c.min}-${s.temp_c.max}C` : "?";

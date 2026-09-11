@@ -12,6 +12,7 @@ import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { listAiInteractions, rateAiInteraction } from "@/db/queries/ai-interactions";
+import { listLivestockForTank } from "@/db/queries/livestock";
 import { askQuestion, peekQuotaStatus, type QuotaStatus } from "@/lib/ai-client";
 import { buildTankContext } from "@/lib/tank-context";
 import { useLocale } from "@/i18n/use-locale";
@@ -79,7 +80,10 @@ export default function AskPage() {
     setQuestion("");
     try {
       const tankContext = tankId ? await buildTankContext(tankId) : "(no tank selected)";
-      const result = await askQuestion({ question: finalQuestion, tankContext, tankId: tankId || undefined, locale });
+      const speciesIds = tankId
+        ? (await listLivestockForTank(tankId)).filter((l) => l.status === "alive").map((l) => l.speciesId)
+        : [];
+      const result = await askQuestion({ question: finalQuestion, tankContext, tankId: tankId || undefined, locale, speciesIds });
       if (!result.ok) {
         setError(result.error);
         setQuestion(finalQuestion);

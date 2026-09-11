@@ -38,16 +38,113 @@ export async function loadAllSpecies(): Promise<SeedSpecies[]> {
   return cachedSpecies!;
 }
 
+function formatSpeciesLine(s: SeedSpecies): string {
+  const t = s.temp_c ? `${s.temp_c.min}-${s.temp_c.max}C` : "?";
+  const ph = s.ph ? `pH ${s.ph.min}-${s.ph.max}` : "";
+  const fp = s.min_footprint_cm ? `${s.min_footprint_cm.length}x${s.min_footprint_cm.width}cm min` : "";
+  return `- ${s.id} | ${s.common_names?.[0] ?? s.id} | ${t} | ${ph} | ${s.min_volume_l ?? "?"}L min | ${fp} | ${s.temperament ?? ""} | incompatible: ${(s.incompatible_with ?? []).join(", ") || "none listed"}`;
+}
+
+/** Every species, one line each — ~38k tokens across the full 1,484-species catalog. Only use this when a call genuinely needs the whole catalog (e.g. /api/planner's "suggest me a community" case has its own bounded version below); prefer retrieveRelevantSpecies for anything scoped to a tank or a question. */
 export async function getSpeciesContextText(): Promise<string> {
   const species = await loadAllSpecies();
-  return species
+  return species.map(formatSpeciesLine).join("\n");
+}
+
+/**
+ * Bounded species context (2026-09-11 cost fix): instead of handing every
+ * AI call the full 1,484-species catalog regardless of relevance (~38k
+ * tokens on every /api/ask and /api/planner call — see the 2026-09-10 AI
+ * cost audit in specs/PROGRESS.md), only pull in species that are actually
+ * relevant: whatever's already in the tank (by id) plus whatever the
+ * query text names or implies, using the same keyword-match technique
+ * retrieveCorpus() already uses for the safety corpus. Falls back to a
+ * bounded set of easy/beginner species (never the full catalog) so
+ * open-ended questions like "what should I add?" still get real material
+ * to reason with, just not all 1,484 entries.
+ */
+export async function retrieveRelevantSpecies(query: string, tankSpeciesIds: string[] = [], limit = 60): Promise<SeedSpecies[]> {
+  const species = await loadAllSpecies();
+
+  const queryWords = query
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length > 2);
+
+  const scored = species
     .map((s) => {
-      const t = s.temp_c ? `${s.temp_c.min}-${s.temp_c.max}C` : "?";
-      const ph = s.ph ? `pH ${s.ph.min}-${s.ph.max}` : "";
-      const fp = s.min_footprint_cm ? `${s.min_footprint_cm.length}x${s.min_footprint_cm.width}cm min` : "";
-      return `- ${s.id} | ${s.common_names?.[0] ?? s.id} | ${t} | ${ph} | ${s.min_volume_l ?? "?"}L min | ${fp} | ${s.temperament ?? ""} | incompatible: ${(s.incompatible_with ?? []).join(", ") || "none listed"}`;
+      if (queryWords.length === 0) return { s, score: 0 };
+      const haystack = [s.id, s.scientific_name ?? "", ...(s.common_names ?? []), ...(s.common_names_in ?? [])].join(" ").toLowerCase();
+      const score = queryWords.reduce((n, w) => n + (haystack.includes(w) ? 1 : 0), 0);
+      return { s, score };
     })
-    .join("\n");
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((x) => x.s);
+
+  const tankSet = new Set(tankSpeciesIds);
+  const inTank = species.filter((s) => tankSet.has(s.id));
+
+  const seen = new Set<string>();
+  const combined: SeedSpecies[] = [];
+  for (const s of [...inTank, ...scored]) {
+    if (seen.has(s.id)) continue;
+    seen.add(s.id);
+    combined.push(s);
+    if (combined.length >= limit) break;
+  }
+
+  if (combined.length > 0) return combined;
+
+  // No tank livestock and no keyword hits at all (a genuinely open-ended
+  // question, e.g. "what should I add?") — a bounded beginner-friendly set
+  // beats either an empty context or the full 1,484-entry dump.
+  return species.filter((s) => s.difficulty === "easy").slice(0, limit);
+}
+
+export async function getSpeciesContextTextFor(list: SeedSpecies[]): Promise<string> {
+  return list.map(formatSpeciesLine).join("\n");
+}
+
+/**
+ * Bounded catalog for /api/planner (2026-09-11 cost fix, same audit as
+ * retrieveRelevantSpecies above). The planner needs more breadth than a
+ * single Ask AquaAI question — it's recommending a whole stocking plan,
+ * not answering about specific fish already in a tank — so this can't
+ * just be a keyword match on the wish list; it also pulls in other
+ * species from the same categories (so the model still has real
+ * tankmate/companion options to suggest, not just the exact fish named)
+ * plus a spread of easy/beginner species as filler. Still a fraction of
+ * the full 1,484-entry catalog rather than all of it on every call.
+ */
+export async function retrieveSpeciesForPlanner(wishList: string[], includePlants: boolean, limit = 250): Promise<SeedSpecies[]> {
+  const species = await loadAllSpecies();
+  const query = wishList.join(" ");
+
+  const matched = await retrieveRelevantSpecies(query, [], species.length);
+  const matchedIds = new Set(wishList.length > 0 ? matched.map((s) => s.id) : []);
+  const matchedCategories = new Set(species.filter((s) => matchedIds.has(s.id)).map((s) => s.category).filter(Boolean));
+  if (includePlants) matchedCategories.add("plant");
+  if (matchedCategories.size === 0) {
+    // No wish-list matches at all — default to the usual beginner
+    // categories (fish + invertebrates, plants only for a planted tank)
+    // instead of every category in the catalog.
+    ["fish", "shrimp", "snail"].forEach((c) => matchedCategories.add(c));
+    if (includePlants) matchedCategories.add("plant");
+  }
+
+  const relevantCategory = species.filter((s) => s.category && matchedCategories.has(s.category));
+  const easyFirst = [...relevantCategory].sort((a, b) => (a.difficulty === "easy" ? -1 : 0) - (b.difficulty === "easy" ? -1 : 0));
+
+  const seen = new Set<string>();
+  const combined: SeedSpecies[] = [];
+  for (const s of [...matched.filter((s) => matchedIds.has(s.id)), ...easyFirst]) {
+    if (seen.has(s.id)) continue;
+    seen.add(s.id);
+    combined.push(s);
+    if (combined.length >= limit) break;
+  }
+  return combined;
 }
 
 export async function getSpeciesByIds(ids: string[]): Promise<SeedSpecies[]> {

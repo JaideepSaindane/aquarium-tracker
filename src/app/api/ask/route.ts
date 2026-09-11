@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveRequestContext, isContextError } from "@/server/ai/request-context";
 import { peekQuota, incrementQuota } from "@/server/ai/quota";
 import { loadPrompt } from "@/server/ai/prompt-loader";
-import { retrieveCorpus, getSpeciesContextText } from "@/server/ai/retrieval";
+import { retrieveCorpus, retrieveRelevantSpecies, getSpeciesContextTextFor } from "@/server/ai/retrieval";
 import { callContract } from "@/server/ai/call-contract";
 import { AskZod, AskJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/ask";
 
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const question = String(body.question ?? "").trim();
   const tankContext = String(body.tankContext ?? "(no tank context provided)");
+  const speciesIds: string[] = Array.isArray(body.speciesIds) ? body.speciesIds.map(String) : [];
   if (!question) return NextResponse.json({ error: "No question provided." }, { status: 400 });
 
   // The app's own language switch (Settings) is authoritative — do not let
@@ -39,7 +40,8 @@ export async function POST(req: NextRequest) {
   const locale = body.locale === "hi-latn" ? "hi-latn" : "en";
   const replyLanguage = locale === "hi-latn" ? "Hinglish (Latin script)" : "English";
 
-  const [corpus, speciesContext] = await Promise.all([retrieveCorpus(question), getSpeciesContextText()]);
+  const [corpus, relevantSpecies] = await Promise.all([retrieveCorpus(question), retrieveRelevantSpecies(question, speciesIds)]);
+  const speciesContext = await getSpeciesContextTextFor(relevantSpecies);
 
   const promptText = await loadPrompt("ask.v2.md", {
     QUESTION: question,

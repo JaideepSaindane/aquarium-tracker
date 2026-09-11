@@ -69,11 +69,11 @@ export async function scanTank(params: {
   return result;
 }
 
-export async function askQuestion(params: { question: string; tankContext: string; tankId?: string; locale?: string }) {
+export async function askQuestion(params: { question: string; tankContext: string; tankId?: string; locale?: string; speciesIds?: string[] }) {
   const res = await fetch("/api/ask", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
-    body: JSON.stringify({ question: params.question, tankContext: params.tankContext, locale: params.locale }),
+    body: JSON.stringify({ question: params.question, tankContext: params.tankContext, locale: params.locale, speciesIds: params.speciesIds ?? [] }),
   });
   const result = await handleJsonResponse<{ answer: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[]; interactionId?: string }>(res);
 
