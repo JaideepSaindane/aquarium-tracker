@@ -1,6 +1,64 @@
 {
-  "generatedAt": "2026-09-11T17:41:31.242Z",
+  "generatedAt": "2026-09-11T18:13:29.366Z",
   "entries": [
+    {
+      "id": "acclimating-new-fish",
+      "title": "Acclimating New Fish",
+      "aliases": [
+        "how to acclimate new fish",
+        "drip acclimation",
+        "floating bag acclimation",
+        "adding new fish to tank",
+        "new fish shock died",
+        "fish bag temperature acclimation"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 215
+    },
+    {
+      "id": "aggression-incompatible-stocking",
+      "title": "Aggression, Bullying and Incompatible Stocking",
+      "aliases": [
+        "fish fighting tank",
+        "fin nipping",
+        "fish bullying another fish",
+        "fish keeps chasing",
+        "torn fins from other fish",
+        "incompatible tankmates"
+      ],
+      "severity": "medium",
+      "time_to_act": "72h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 203
+    },
     {
       "id": "ammonia-spike",
       "title": "Ammonia Spike / New Tank Syndrome",
@@ -32,6 +90,736 @@
         ]
       },
       "body_word_count": 369
+    },
+    {
+      "id": "antibiotics",
+      "title": "Antibiotics (Kanamycin, Erythromycin, Nitrofurans, Oxytetracycline)",
+      "aliases": [
+        "fish antibiotics",
+        "kanamycin fish",
+        "erythromycin fish",
+        "nitrofurazone fish",
+        "oxytetracycline fish",
+        "antibiotic without prescription india fish",
+        "fish medicine without diagnosis"
+      ],
+      "severity": "high",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 226
+    },
+    {
+      "id": "aquarium-salt",
+      "title": "Aquarium Salt (NaCl)",
+      "aliases": [
+        "aquarium salt",
+        "is salt safe for fish",
+        "namak fish tank",
+        "salt dose fish tank",
+        "table salt aquarium",
+        "salt for sick fish"
+      ],
+      "severity": "high",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "scaleless",
+          "invert",
+          "plant",
+          "electroreceptive"
+        ]
+      },
+      "body_word_count": 189
+    },
+    {
+      "id": "backsiphon-leaks-overflow",
+      "title": "Back-Siphons, Leaks and Overflows",
+      "aliases": [
+        "tank leaking water",
+        "siphon draining tank overnight",
+        "water on floor near aquarium",
+        "canister filter leak",
+        "back siphon after power cut",
+        "overflow flooding aquarium"
+      ],
+      "severity": "high",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 185
+    },
+    {
+      "id": "bacterial-ulcers-septicaemia",
+      "title": "Bacterial Ulcers / Haemorrhagic Septicaemia",
+      "aliases": [
+        "red streaks on fish",
+        "open sore fish",
+        "ulcer fish body",
+        "fish bleeding under skin",
+        "hemorrhagic septicemia",
+        "red patches fish body",
+        "fish looks bruised"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 200
+    },
+    {
+      "id": "bottled-bacteria-claims",
+      "title": "Bottled Bacteria and \"Instant Cycle\" Claims",
+      "aliases": [
+        "instant cycle product",
+        "bottled bacteria",
+        "cycle in a bottle",
+        "starter bacteria fish tank",
+        "do i still need to test water",
+        "bacteria in a bottle works"
+      ],
+      "severity": "low",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "contested",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 204
+    },
+    {
+      "id": "chlorine-chloramine-poisoning",
+      "title": "Chlorine and Chloramine Poisoning",
+      "aliases": [
+        "chlorine poisoning fish",
+        "chloramine fish",
+        "tap water fish died",
+        "fish gasping after water change",
+        "forgot dechlorinator",
+        "municipal water fish tank",
+        "fish died right after water change"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all",
+          "invert"
+        ]
+      },
+      "body_word_count": 217
+    },
+    {
+      "id": "co2-overdose",
+      "title": "CO2 Overdose (Planted Tank)",
+      "aliases": [
+        "fish gasping planted tank co2",
+        "co2 too high aquarium",
+        "drop checker yellow",
+        "co2 killing fish",
+        "pressurised co2 fish dying",
+        "too much co2 injection"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert"
+        ]
+      },
+      "body_word_count": 189
+    },
+    {
+      "id": "columnaris",
+      "title": "Columnaris",
+      "aliases": [
+        "columnaris",
+        "cotton wool disease",
+        "mouth fungus",
+        "saddleback disease",
+        "white patch on mouth fish",
+        "fish dying fast white fuzz",
+        "flavobacterium"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 233
+    },
+    {
+      "id": "copper",
+      "title": "Copper",
+      "aliases": [
+        "copper treatment fish",
+        "copper safe for shrimp",
+        "copper medication dose",
+        "copper sulfate aquarium",
+        "ich treatment copper"
+      ],
+      "severity": "critical",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert"
+        ]
+      },
+      "body_word_count": 219
+    },
+    {
+      "id": "cycle-crash",
+      "title": "Cycle Crash",
+      "aliases": [
+        "cycle crashed",
+        "established tank ammonia suddenly",
+        "cleaned filter fish dying",
+        "power cut fish tank ammonia",
+        "biofilter died",
+        "mini cycle"
+      ],
+      "severity": "high",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 204
+    },
+    {
+      "id": "disease-vectors-equipment",
+      "title": "Disease Vectors via Shared Equipment",
+      "aliases": [
+        "can nets spread disease between tanks",
+        "disinfecting fish tank equipment",
+        "shared net disease fish",
+        "cross contamination fish tanks",
+        "cleaning aquarium equipment between tanks",
+        "how disease spreads between tanks"
+      ],
+      "severity": "low",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 215
+    },
+    {
+      "id": "dose-calculation",
+      "title": "Dose Calculation from Actual Water Volume",
+      "aliases": [
+        "how much medicine for my tank",
+        "tank volume for dosing",
+        "real water volume aquarium",
+        "medication dose calculation",
+        "tank size vs water volume"
+      ],
+      "severity": "high",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 217
+    },
+    {
+      "id": "dropsy",
+      "title": "Dropsy",
+      "aliases": [
+        "dropsy",
+        "pinecone fish",
+        "fish bloated scales sticking out",
+        "swollen fish",
+        "pineconing",
+        "fish belly swollen scales raised"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 221
+    },
+    {
+      "id": "filter-failure",
+      "title": "Filter Failure",
+      "aliases": [
+        "filter stopped working",
+        "filter not pumping water",
+        "filter making noise not working",
+        "aquarium filter broken",
+        "filter died fish tank",
+        "no flow from filter"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 177
+    },
+    {
+      "id": "fin-rot",
+      "title": "Fin Rot",
+      "aliases": [
+        "fin rot",
+        "fins disintegrating",
+        "torn ragged fins",
+        "fin rot betta",
+        "white edge on fins",
+        "fins shrinking"
+      ],
+      "severity": "medium",
+      "time_to_act": "72h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 211
+    },
+    {
+      "id": "fish-in-cycling",
+      "title": "Fish-in Cycling (Rescue Protocol)",
+      "aliases": [
+        "fish in cycling",
+        "already have fish tank not cycled",
+        "fish in new tank no cycle",
+        "bought fish before cycling",
+        "emergency cycle with fish",
+        "machhli pehle daal di"
+      ],
+      "severity": "high",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 207
+    },
+    {
+      "id": "fishless-cycling",
+      "title": "Fishless Cycling",
+      "aliases": [
+        "fishless cycle",
+        "how to cycle a new tank",
+        "cycling before adding fish",
+        "ammonia dosing new tank",
+        "new tank setup before fish",
+        "naya tank kaise cycle kare"
+      ],
+      "severity": "low",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 220
+    },
+    {
+      "id": "formalin",
+      "title": "Formalin",
+      "aliases": [
+        "formalin fish treatment",
+        "formaldehyde aquarium",
+        "formalin dip",
+        "formalin dangerous",
+        "formalin gasping fish"
+      ],
+      "severity": "high",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 200
+    },
+    {
+      "id": "gill-flukes",
+      "title": "Gill Flukes (Dactylogyrus)",
+      "aliases": [
+        "gill flukes",
+        "dactylogyrus",
+        "fish gasping no visible cause",
+        "flared gills",
+        "fish breathing fast clear water",
+        "gill parasite"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 191
+    },
+    {
+      "id": "heat-treatment",
+      "title": "Heat Treatment as Therapy",
+      "aliases": [
+        "raise temperature treat ich",
+        "heat treatment fish disease",
+        "warm water cure fish",
+        "increase heater fish sick",
+        "does heat kill ich"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "contested",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "cool_water"
+        ]
+      },
+      "body_word_count": 214
+    },
+    {
+      "id": "heater-failed-off",
+      "title": "Heater Failed Off (Water Too Cold)",
+      "aliases": [
+        "heater not heating",
+        "water too cold fish tank",
+        "heater broken no heat",
+        "tank temperature dropped",
+        "fish tank feels cold",
+        "aquarium heater died"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 182
+    },
+    {
+      "id": "heater-stuck-on",
+      "title": "Heater Stuck On (Overheating)",
+      "aliases": [
+        "heater wont turn off",
+        "tank too hot fish gasping",
+        "aquarium heater stuck on",
+        "water suddenly very warm",
+        "heater malfunction overheating",
+        "fish tank overheated"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 193
+    },
+    {
+      "id": "heatwave-overheating",
+      "title": "Heatwave / Summer Overheating",
+      "aliases": [
+        "fish tank too hot summer",
+        "aquarium overheating india",
+        "water temperature 34 degrees fish",
+        "fish gasping heatwave",
+        "cooling fish tank summer",
+        "tank water hot to touch"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "cool_water"
+        ]
+      },
+      "body_word_count": 232
+    },
+    {
+      "id": "heavy-metals-tap-water",
+      "title": "Heavy Metals and Contaminated Tap Water",
+      "aliases": [
+        "copper poisoning fish",
+        "brass tap fish tank",
+        "first draw water fish died",
+        "purifier reject water fish",
+        "metal poisoning aquarium",
+        "shrimp dying new plumbing"
+      ],
+      "severity": "high",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert",
+          "all"
+        ]
+      },
+      "body_word_count": 229
+    },
+    {
+      "id": "hexamita-hole-in-the-head",
+      "title": "Hexamita / Hole-in-the-Head",
+      "aliases": [
+        "hole in the head disease",
+        "hexamita",
+        "pits on fish head",
+        "lateral line erosion",
+        "cichlid head sores",
+        "hith disease"
+      ],
+      "severity": "medium",
+      "time_to_act": "1w",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "contested",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 211
     },
     {
       "id": "ich-white-spot",
@@ -67,6 +855,359 @@
       "body_word_count": 263
     },
     {
+      "id": "internal-worms",
+      "title": "Internal Worms (Camallanus, Capillaria)",
+      "aliases": [
+        "camallanus worms",
+        "red worms fish anus",
+        "capillaria",
+        "internal parasites fish",
+        "worm hanging out of fish",
+        "fish thin despite eating",
+        "stringy poop fish"
+      ],
+      "severity": "high",
+      "time_to_act": "72h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert",
+          "fry"
+        ]
+      },
+      "body_word_count": 202
+    },
+    {
+      "id": "invisible-protozoa",
+      "title": "Invisible Protozoa (Costia, Chilodonella, Trichodina)",
+      "aliases": [
+        "fish flashing no spots",
+        "costia",
+        "chilodonella",
+        "trichodina",
+        "excess slime coat fish",
+        "fish rubbing nothing visible",
+        "cloudy skin fish"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 166
+    },
+    {
+      "id": "jumping-carpet-surfing",
+      "title": "Jumping / Carpet Surfing",
+      "aliases": [
+        "fish jumped out of tank",
+        "fish found on floor",
+        "do i need a lid fish tank",
+        "fish jumping species",
+        "open top aquarium safe",
+        "carpet surfing fish"
+      ],
+      "severity": "high",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 222
+    },
+    {
+      "id": "levamisole-fenbendazole",
+      "title": "Levamisole and Fenbendazole",
+      "aliases": [
+        "levamisole fish",
+        "fenbendazole fish",
+        "panacur fish",
+        "dewormer fish tank",
+        "livestock dewormer fish dose",
+        "camallanus treatment"
+      ],
+      "severity": "high",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert",
+          "plant"
+        ]
+      },
+      "body_word_count": 181
+    },
+    {
+      "id": "malachite-green",
+      "title": "Malachite Green",
+      "aliases": [
+        "malachite green",
+        "ich treatment green dye",
+        "green medicine fish",
+        "malachite green safe scaleless",
+        "green dye ich medicine"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "contested",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert"
+        ]
+      },
+      "body_word_count": 160
+    },
+    {
+      "id": "medication-stacking",
+      "title": "Stacking Multiple Medications",
+      "aliases": [
+        "can i use two medicines together fish",
+        "multiple treatments fish tank",
+        "combine medications aquarium",
+        "fish tank all fish died medication",
+        "stacking fish medicine"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 215
+    },
+    {
+      "id": "methylene-blue",
+      "title": "Methylene Blue",
+      "aliases": [
+        "methylene blue",
+        "blue medicine fish",
+        "methylene blue dip",
+        "fungus treatment blue dye",
+        "blue water fish tank"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "plant"
+        ]
+      },
+      "body_word_count": 157
+    },
+    {
+      "id": "metronidazole",
+      "title": "Metronidazole",
+      "aliases": [
+        "metronidazole fish",
+        "flagyl fish",
+        "internal parasite medication",
+        "metronidazole medicated food",
+        "hexamita treatment"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 184
+    },
+    {
+      "id": "moving-a-tank",
+      "title": "Moving a Tank",
+      "aliases": [
+        "how to move fish tank",
+        "relocating aquarium",
+        "moving house with fish tank",
+        "transport fish tank safely",
+        "moving aquarium to new house",
+        "how to move fish safely"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 200
+    },
+    {
+      "id": "mycobacteriosis",
+      "title": "Mycobacteriosis (Fish TB)",
+      "aliases": [
+        "fish tb",
+        "fish tuberculosis",
+        "mycobacteriosis",
+        "wasting disease fish",
+        "fish losing weight despite eating",
+        "chronic fish wasting",
+        "fish handler's disease"
+      ],
+      "severity": "critical",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 251
+    },
+    {
+      "id": "nitrate-creep",
+      "title": "Nitrate Creep",
+      "aliases": [
+        "nitrate high",
+        "nitrate creep",
+        "nitrate 80 ppm",
+        "fish stunted growth",
+        "algae won't go away",
+        "chronic fish illness no cause",
+        "nitrate poisoning"
+      ],
+      "severity": "medium",
+      "time_to_act": "1w",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all",
+          "invert"
+        ]
+      },
+      "body_word_count": 227
+    },
+    {
+      "id": "nitrite-spike",
+      "title": "Nitrite Spike",
+      "aliases": [
+        "nitrite spike",
+        "nitrite high",
+        "brown blood disease",
+        "methemoglobinemia",
+        "fish gasping normal oxygen",
+        "nitrite 1 ppm",
+        "second stage cycle ammonia gone",
+        "gills brown"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 229
+    },
+    {
       "id": "nitrogen-cycle",
       "title": "The Nitrogen Cycle (How It Works)",
       "aliases": [
@@ -96,6 +1237,122 @@
         ]
       },
       "body_word_count": 355
+    },
+    {
+      "id": "old-tank-syndrome",
+      "title": "Old Tank Syndrome",
+      "aliases": [
+        "old tank syndrome",
+        "neglected tank fish died after water change",
+        "fish died after cleaning",
+        "big water change killed fish",
+        "tank never maintained fish fine then died",
+        "osmotic shock"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 194
+    },
+    {
+      "id": "overfeeding",
+      "title": "Overfeeding",
+      "aliases": [
+        "how much to feed fish",
+        "overfeeding fish tank",
+        "too much food fish",
+        "fish food floating uneaten",
+        "cloudy water after feeding",
+        "fish always hungry"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 218
+    },
+    {
+      "id": "overstocking",
+      "title": "Overstocking",
+      "aliases": [
+        "how many fish can i keep",
+        "overstocked tank",
+        "goldfish in a bowl",
+        "too many fish in tank",
+        "fish tank stocking calculator",
+        "can i add more fish"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 214
+    },
+    {
+      "id": "oxygen-depletion",
+      "title": "Oxygen Depletion",
+      "aliases": [
+        "fish gasping at surface",
+        "low oxygen fish tank",
+        "all fish at top gasping",
+        "fish tank oxygen crash",
+        "fish dying overnight no reason",
+        "suffocating fish"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 215
     },
     {
       "id": "ph-ammonia-trap",
@@ -128,6 +1385,359 @@
       "body_word_count": 340
     },
     {
+      "id": "ph-crash-kh-exhaustion",
+      "title": "pH Crash / KH Exhaustion",
+      "aliases": [
+        "ph crash",
+        "kh exhaustion",
+        "ph dropped overnight",
+        "ph 5 fish tank",
+        "all fish dead overnight ph",
+        "acidic tank sudden",
+        "kh zero",
+        "buffer ran out"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "soft_water",
+          "invert"
+        ]
+      },
+      "body_word_count": 232
+    },
+    {
+      "id": "popeye",
+      "title": "Popeye",
+      "aliases": [
+        "popeye",
+        "bulging eye fish",
+        "swollen eye fish",
+        "eye sticking out",
+        "exophthalmia",
+        "fish eye cloudy bulging"
+      ],
+      "severity": "medium",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 189
+    },
+    {
+      "id": "potassium-permanganate",
+      "title": "Potassium Permanganate",
+      "aliases": [
+        "potassium permanganate fish",
+        "kmno4 aquarium",
+        "pinkish purple medicine fish",
+        "permanganate dip fish",
+        "purple crystals fish tank"
+      ],
+      "severity": "critical",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 207
+    },
+    {
+      "id": "power-cuts",
+      "title": "Power Cuts",
+      "aliases": [
+        "power cut fish tank",
+        "filter stopped no power",
+        "load shedding aquarium",
+        "electricity gone fish tank",
+        "generator fish tank",
+        "fish tank power outage"
+      ],
+      "severity": "high",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 212
+    },
+    {
+      "id": "praziquantel",
+      "title": "Praziquantel",
+      "aliases": [
+        "praziquantel",
+        "prazipro",
+        "fluke treatment",
+        "praziquantel dose fish",
+        "tapeworm fish medication"
+      ],
+      "severity": "low",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert"
+        ]
+      },
+      "body_word_count": 177
+    },
+    {
+      "id": "prophylactic-quarantine-treatment",
+      "title": "Prophylactic Quarantine Treatment",
+      "aliases": [
+        "should i medicate new fish quarantine",
+        "prophylactic treatment new fish",
+        "preventive deworming new fish",
+        "treat quarantine tank before adding fish",
+        "quarantine medication protocol",
+        "preventive praziquantel quarantine"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "contested",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert"
+        ]
+      },
+      "body_word_count": 218
+    },
+    {
+      "id": "quarantine-setup",
+      "title": "Quarantine Tank Setup",
+      "aliases": [
+        "how to set up quarantine tank",
+        "qt tank for new fish",
+        "do i need a quarantine tank",
+        "hospital tank setup",
+        "quarantine tank size",
+        "new fish quarantine period"
+      ],
+      "severity": "medium",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 207
+    },
+    {
+      "id": "saprolegnia-true-fungus",
+      "title": "True Fungus (Saprolegnia) vs Pseudo-Fungus",
+      "aliases": [
+        "fungus on fish",
+        "cotton growth fish",
+        "saprolegnia",
+        "white fuzzy growth fish",
+        "fish eggs fungus",
+        "cotton wool fish not mouth"
+      ],
+      "severity": "medium",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 206
+    },
+    {
+      "id": "skin-flukes-and-crustacean-parasites",
+      "title": "Skin Flukes and Crustacean Parasites (Gyrodactylus, Anchor Worm, Fish Lice)",
+      "aliases": [
+        "anchor worm",
+        "fish lice",
+        "gyrodactylus",
+        "skin flukes",
+        "worm sticking out of fish",
+        "flat bug on fish",
+        "fish scratching body"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 199
+    },
+    {
+      "id": "stalled-cycle",
+      "title": "Stalled Cycle",
+      "aliases": [
+        "cycle stalled",
+        "ammonia not going down",
+        "nitrite stuck",
+        "cycle not progressing",
+        "bacteria not growing",
+        "cycle taking too long"
+      ],
+      "severity": "medium",
+      "time_to_act": "72h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 166
+    },
+    {
+      "id": "swim-bladder-and-bloat",
+      "title": "Swim Bladder Disorder and Bloat",
+      "aliases": [
+        "swim bladder disease",
+        "fish floating sideways",
+        "fish can't swim down",
+        "fish bloated",
+        "fish upside down",
+        "feed a pea fish",
+        "fish stuck at surface"
+      ],
+      "severity": "medium",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 206
+    },
+    {
+      "id": "tds-gh-kh-mismatch",
+      "title": "TDS / GH / KH Mismatch and Osmotic Shock",
+      "aliases": [
+        "tds mismatch",
+        "shrimp dying after water change",
+        "hardness swing",
+        "borewell water fish tank",
+        "tanker water shrimp died",
+        "ro water fish died",
+        "gh kh swing"
+      ],
+      "severity": "high",
+      "time_to_act": "24h",
+      "status": "sourced",
+      "review_tier": 2,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "invert",
+          "soft_water"
+        ]
+      },
+      "body_word_count": 215
+    },
+    {
       "id": "temperature-swings",
       "title": "Temperature Swings",
       "aliases": [
@@ -157,6 +1767,65 @@
         ]
       },
       "body_word_count": 285
+    },
+    {
+      "id": "velvet-piscinoodinium",
+      "title": "Velvet (Piscinoodinium)",
+      "aliases": [
+        "velvet disease",
+        "gold dust disease",
+        "rust disease",
+        "fish looks dusty",
+        "fish gold sheen",
+        "piscinoodinium",
+        "fish gasping gold coating"
+      ],
+      "severity": "critical",
+      "time_to_act": "now",
+      "status": "sourced",
+      "review_tier": 1,
+      "confidence": "medium",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 214
+    },
+    {
+      "id": "water-change-basics",
+      "title": "Water Change Basics",
+      "aliases": [
+        "how often water change",
+        "how much water change",
+        "water change percentage",
+        "dechlorinator fish tank",
+        "tap water safe for fish",
+        "weekly water change aquarium"
+      ],
+      "severity": "low",
+      "time_to_act": "routine",
+      "status": "sourced",
+      "review_tier": 3,
+      "confidence": "high",
+      "last_reviewed_by": "",
+      "last_reviewed_on": "2026-09-11",
+      "review_due": "2027-03-11",
+      "applies_to": {
+        "water_type": [
+          "freshwater"
+        ],
+        "species_traits": [
+          "all"
+        ]
+      },
+      "body_word_count": 204
     }
   ]
 }
