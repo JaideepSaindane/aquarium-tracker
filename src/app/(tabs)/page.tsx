@@ -7,7 +7,6 @@ import { Screen } from "@/components/Screen";
 import { TankThumbnail } from "@/components/TankThumbnail";
 import { TankHeroPhoto } from "@/components/TankHeroPhoto";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
-import { AquaIcon } from "@/components/icons/AquaIcon";
 import { SecondaryButton, DangerButton } from "@/components/Button";
 import { FirstTankTour } from "@/components/FirstTankTour";
 import { useLiveQuery } from "@/db/live";
@@ -298,12 +297,10 @@ export default function TanksPage() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      <AquaIcon name={isBrackish ? "brackish" : "freshwater"} size={13} />
                       {isBrackish ? "Brackish" : "Freshwater"}
                       {tank.isPlanted && (
                         <>
                           <span aria-hidden>·</span>
-                          <AquaIcon name="planted" size={13} />
                           Planted
                         </>
                       )}

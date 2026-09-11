@@ -4,7 +4,6 @@ import { use, useEffect, useState, type ReactNode, type CSSProperties } from "re
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
-import { AquaIcon } from "@/components/icons/AquaIcon";
 import { Banner } from "@/components/Banner";
 import { Chip } from "@/components/Chip";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
@@ -218,7 +217,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
               fontWeight: 600,
             }}
           >
-            <AquaIcon name={tank.waterType === "brackish" ? "brackish" : "freshwater"} size={13} />
             {waterBadge.label}
           </span>
         </div>
@@ -227,7 +225,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           {tank.isPlanted && (
             <>
               <span aria-hidden>·</span>
-              <AquaIcon name="planted" size={13} />
               Planted
             </>
           )}
