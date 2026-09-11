@@ -17,8 +17,7 @@ import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob, canShareFil
 import { importJsonExport } from "@/lib/import";
 import { getProfile, saveProfile } from "@/db/queries/profile";
 import { isSurvivalPromptDisabled, disableSurvivalPromptForever } from "@/db/queries/settings";
-import { writePhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { uploadPhoto } from "@/lib/photo-upload";
 import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
 import { useTheme, type ThemeChoice } from "@/theme/ThemeProvider";
@@ -108,9 +107,11 @@ export default function SettingsPage() {
   }
 
   async function handleProfilePhoto(file: File) {
-    const path = `profile/${newId()}.jpg`;
-    await writePhotoFile(path, file);
-    setProfilePhotoUri(path);
+    // Uploads to Vercel Blob (2026-09-11), not OPFS — the profile itself
+    // is already server-backed (per-account, not per-device), so the photo
+    // needs to be reachable from any device too, not just this one.
+    const url = await uploadPhoto(file);
+    setProfilePhotoUri(url);
   }
 
   async function handleSaveProfile() {

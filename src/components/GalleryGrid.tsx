@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PhotoViewer } from "@/components/PhotoViewer";
-import { readPhotoFile } from "@/lib/opfs-files";
+import { usePhotoSrc } from "@/lib/use-photo-src";
 import { isoToLocalDateInput } from "@/lib/schedule";
 
 export function GalleryGrid({ photos }: { photos: { id: string; localUri: string; takenAt: string | null }[] }) {
@@ -53,22 +53,7 @@ export function GalleryGrid({ photos }: { photos: { id: string; localUri: string
 }
 
 function GalleryThumb({ localUri, onOpen }: { localUri: string; onOpen: (src: string) => void }) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    let cancelled = false;
-    readPhotoFile(localUri).then((blob) => {
-      if (blob && !cancelled) {
-        objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      }
-    });
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [localUri]);
+  const url = usePhotoSrc(localUri);
 
   if (!url) return <div style={{ aspectRatio: "1", background: "var(--color-surface-muted, #eee)", borderRadius: 8 }} />;
 

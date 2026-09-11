@@ -1,8 +1,8 @@
-import { eq, isNull, and } from "drizzle-orm";
-import { db } from "../client";
-import { equipment } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
+
+// Rewritten 2026-09-11 to call the new user-scoped server API
+// (src/app/api/equipment/*) — see tanks.ts's header comment for the
+// original pattern this follows.
 
 export type NewEquipment = {
   tankId: string;
@@ -15,34 +15,42 @@ export type NewEquipment = {
   installedOn?: string;
 };
 
-export async function listEquipmentForTank(tankId: string) {
-  return db
-    .select()
-    .from(equipment)
-    .where(and(eq(equipment.tankId, tankId), isNull(equipment.deletedAt)));
+export type EquipmentRow = {
+  id: string;
+  tankId: string;
+  type: string;
+  subtype: string | null;
+  brand: string | null;
+  model: string | null;
+  wattage: number | null;
+  ratedLph: number | null;
+  installedOn: string | null;
+  serviceIntervalDays: number | null;
+  lastServicedOn: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
 }
 
-export async function addEquipment(input: NewEquipment) {
-  const now = nowIso();
-  const id = newId();
-  await db.insert(equipment).values({
-    id,
-    tankId: input.tankId,
-    type: input.type,
-    subtype: input.subtype,
-    brand: input.brand,
-    model: input.model,
-    wattage: input.wattage,
-    ratedLph: input.ratedLph,
-    installedOn: input.installedOn ?? now,
-    createdAt: now,
-    updatedAt: now,
-  });
+export async function listEquipmentForTank(tankId: string): Promise<EquipmentRow[]> {
+  return json(await fetch(`/api/equipment?tankId=${encodeURIComponent(tankId)}`));
+}
+
+export async function addEquipment(input: NewEquipment): Promise<string> {
+  const { id } = await json<{ id: string }>(
+    await fetch("/api/equipment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
+  );
   notifyChanged();
   return id;
 }
 
-export async function removeEquipment(id: string) {
-  await db.update(equipment).set({ deletedAt: nowIso() }).where(eq(equipment.id, id));
+export async function removeEquipment(id: string): Promise<void> {
+  await fetch(`/api/equipment/${id}`, { method: "DELETE" });
   notifyChanged();
 }

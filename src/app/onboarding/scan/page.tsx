@@ -11,8 +11,7 @@ import { Banner } from "@/components/Banner";
 import { LottiePlayer } from "@/components/LottiePlayer";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
-import { writePhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { uploadPhoto } from "@/lib/photo-upload";
 import { scanTank } from "@/lib/ai-client";
 import { useScanSession } from "@/store/use-scan-session";
 import { getProfile } from "@/db/queries/profile";
@@ -30,6 +29,7 @@ export default function ScanCapturePage() {
   const [uploadBlob, setUploadBlob] = useState<Blob | null>(null);
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
   const [length, setLength] = useState("");
@@ -83,11 +83,20 @@ export default function ScanCapturePage() {
 
     // Save the full-resolution original now, before anything else — so a
     // failed or interrupted scan call never costs the user their photo
-    // (specs/T-015 acceptance criterion 11).
+    // (specs/T-015 acceptance criterion 11). Uploads to Vercel Blob
+    // (2026-09-11), not OPFS, since the tank this becomes needs to be
+    // reachable from any device, not just this one — this does mean the
+    // upload itself needs a network connection now, same as the AI scan
+    // call right after it does anyway.
     const blob = await downscaleForUpload(file);
-    const id = newId();
-    const path = `captures/${id}-original.jpg`;
-    await writePhotoFile(path, file);
+    let path: string;
+    try {
+      path = await uploadPhoto(file);
+    } catch {
+      setUploadError("Couldn't upload your photo. Check your connection and try again.");
+      setStage("rejected");
+      return;
+    }
     setUploadBlob(blob);
     setOriginalPath(path);
     setStage("details");
@@ -96,6 +105,7 @@ export default function ScanCapturePage() {
   function retake() {
     setStage("idle");
     setReport(null);
+    setUploadError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
     setUploadBlob(null);
@@ -197,13 +207,18 @@ export default function ScanCapturePage() {
         </Card>
       )}
 
-      {stage === "rejected" && report && (
+      {stage === "rejected" && (
         <div>
           {previewUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
             <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 12 }} />
           )}
-          {report.issues.map((issue) => (
+          {uploadError && (
+            <div style={{ marginBottom: 8 }}>
+              <Banner severity="watch">{uploadError}</Banner>
+            </div>
+          )}
+          {report?.issues.map((issue) => (
             <div key={issue} style={{ marginBottom: 8 }}>
               <Banner severity="watch">{ISSUE_MESSAGES[issue]}</Banner>
             </div>

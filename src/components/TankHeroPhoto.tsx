@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { readPhotoFile } from "@/lib/opfs-files";
+import { usePhotoSrc } from "@/lib/use-photo-src";
 
 /**
  * Compact photographic backdrop for the Tanks home header. Uses the most
@@ -15,28 +14,7 @@ import { readPhotoFile } from "@/lib/opfs-files";
  * of the old navy tint.
  */
 export function TankHeroPhoto({ photoUri, children }: { photoUri?: string | null; children: React.ReactNode }) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    let cancelled = false;
-
-    async function load() {
-      if (!photoUri) return;
-      const blob = await readPhotoFile(photoUri);
-      if (blob && !cancelled) {
-        objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      }
-    }
-    load();
-
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [photoUri]);
-
+  const url = usePhotoSrc(photoUri);
   const imageSrc = url ?? "/species/betta.jpg";
 
   return (

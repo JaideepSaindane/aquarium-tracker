@@ -20,8 +20,9 @@ import { buildTankContext } from "@/lib/tank-context";
 import { scanTank } from "@/lib/ai-client";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
-import { writePhotoFile, readPhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { readPhotoFile } from "@/lib/opfs-files";
+import { uploadPhoto } from "@/lib/photo-upload";
+import { isRemotePhotoUrl } from "@/lib/use-photo-src";
 import { TankScanZod, type TankScanReport } from "@/server/ai/schemas/tank-scan";
 import type { SeverityLevel } from "@/theme/tokens";
 
@@ -78,7 +79,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   async function scanExistingPhoto(photoUri: string) {
     setReusedExistingPhoto(true);
     setStage("checking");
-    const blob = await readPhotoFile(photoUri);
+    // The tank's own photo is a real https Blob URL for anything created
+    // since the 2026-09-11 photo-storage migration — fetch its bytes
+    // directly; a legacy OPFS-relative path (older tanks) still reads from
+    // local browser storage the old way.
+    const blob = isRemotePhotoUrl(photoUri) ? await fetch(photoUri).then((r) => (r.ok ? r.blob() : null)) : await readPhotoFile(photoUri);
     if (!blob) {
       // Shouldn't normally happen, but don't strand the user — fall back
       // to the ordinary ask-for-a-photo path.
@@ -114,11 +119,12 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     }
 
     const blob = await downscaleForUpload(file);
-    // Reusing the tank's own setup photo — it's already written to OPFS
-    // and already has a Gallery entry from tank creation, so there's no
-    // new file to write and handleSave skips adding a duplicate one.
-    const path = reusePath ?? `captures/${newId()}-check.jpg`;
-    if (!reusePath) await writePhotoFile(path, file);
+    // Reusing the tank's own setup photo (it's already stored, and already
+    // has a Gallery entry from tank creation, so there's no new upload and
+    // handleSave skips adding a duplicate one) vs. a genuinely new capture,
+    // which uploads to Vercel Blob (2026-09-11) so the photo follows the
+    // account, not just this device.
+    const path = reusePath ?? (await uploadPhoto(file));
     setUploadBlob(blob);
     setOriginalPath(path);
     await runScan(blob);

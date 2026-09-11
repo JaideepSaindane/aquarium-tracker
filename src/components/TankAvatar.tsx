@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { readPhotoFile } from "@/lib/opfs-files";
+import { isRemotePhotoUrl } from "@/lib/use-photo-src";
 
 /**
  * Circular tank avatar: shows the tank's photo if it has one, otherwise a
@@ -53,6 +54,13 @@ export function TankAvatar({
     async function load() {
       if (!photoUri) {
         setUrl(null);
+        return;
+      }
+      // A real https Blob URL (see src/lib/photo-upload.ts) is used
+      // directly; a legacy OPFS-relative path still goes through the
+      // read-then-object-URL dance.
+      if (isRemotePhotoUrl(photoUri)) {
+        setUrl(photoUri);
         return;
       }
       const blob = await readPhotoFile(photoUri);

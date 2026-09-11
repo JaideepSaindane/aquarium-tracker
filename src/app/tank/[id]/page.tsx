@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState, type ReactNode, type CSSProperties } from "react";
+import { use, useState, type ReactNode, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
@@ -20,8 +20,8 @@ import { listPhotosForTank, addPhoto } from "@/db/queries/photos";
 import { listSpecies } from "@/db/queries/species";
 import { listLogEntriesForTank } from "@/db/queries/log-entries";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
-import { readPhotoFile, writePhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { usePhotoSrc } from "@/lib/use-photo-src";
+import { uploadPhoto } from "@/lib/photo-upload";
 import { checkFilterFlow, checkHeaterWattage } from "@/lib/derived-checks";
 import { isAiGenerated } from "@/lib/species-origin";
 
@@ -78,14 +78,15 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   // Tank — Jaideep's ask: put an inviting placeholder right here instead.
   // Same write pattern as Edit Tank's own handlePhotoChange (avatar +
   // Gallery entry together, so it doesn't silently miss the Gallery like
-  // an earlier bug here once did).
+  // an earlier bug here once did). Uploads to Vercel Blob (uploadPhoto),
+  // not OPFS, since 2026-09-11 — tanks/photos are both server-backed now,
+  // so the photo itself needs to be reachable from any device too.
   async function handleAddPhoto(file: File) {
     setAddingPhoto(true);
     try {
-      const path = `tanks/${id}-avatar-${newId()}.jpg`;
-      await writePhotoFile(path, file);
-      await updateTank(id, { photoUri: path });
-      await addPhoto({ tankId: id, localUri: path, caption: "Tank photo" });
+      const url = await uploadPhoto(file);
+      await updateTank(id, { photoUri: url });
+      await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
     } finally {
       setAddingPhoto(false);
     }
@@ -541,22 +542,7 @@ function AboutSection({
 
 /** Large hero photo below the tank header — the tank's own photo, full width, rounded corners. Only rendered when a photo exists (no fallback image, unlike the header avatar, since this is a bigger, more prominent slot). */
 function TankBigPhoto({ photoUri }: { photoUri: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    let cancelled = false;
-    readPhotoFile(photoUri).then((blob) => {
-      if (blob && !cancelled) {
-        objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      }
-    });
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [photoUri]);
+  const url = usePhotoSrc(photoUri);
 
   if (!url) return null;
 

@@ -11,7 +11,7 @@ import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
 import { AgeBandField, startedOnFromAgeBand, type AgeBand } from "@/components/AgeBandField";
 import { createTank, updateTank } from "@/db/queries/tanks";
-import { writePhotoFile } from "@/lib/opfs-files";
+import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
@@ -66,15 +66,17 @@ export default function NewTankPage() {
       });
 
       if (photo) {
-        const path = `tanks/${id}-avatar.jpg`;
-        await writePhotoFile(path, photo);
-        await updateTank(id, { photoUri: path });
+        // Uploads to Vercel Blob (2026-09-11), not OPFS — tanks are
+        // server-backed, so the photo itself needs to be too, or it
+        // wouldn't follow the tank to another device.
+        const url = await uploadPhoto(photo);
+        await updateTank(id, { photoUri: url });
         // Also the tank's first Gallery entry, not just its avatar — a
         // photo taken during setup shouldn't disappear the moment a nicer
         // one replaces the avatar later (Jaideep, 2026-09-02).
         // The photo is being taken right now, regardless of how old the
         // tank itself is — not the (possibly much earlier) age-band date.
-        await addPhoto({ tankId: id, localUri: path, caption: "Setup photo", takenAt: new Date().toISOString() });
+        await addPhoto({ tankId: id, localUri: url, caption: "Setup photo", takenAt: new Date().toISOString() });
       }
 
       setSaved(true);

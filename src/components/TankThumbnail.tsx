@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { readPhotoFile } from "@/lib/opfs-files";
+import { usePhotoSrc } from "@/lib/use-photo-src";
 
 /**
- * Photo thumbnail for a tank card, loaded from OPFS. Falls back to an emoji
- * placeholder when there's no photo yet. Square by default (`size`); pass
- * `width`/`height` for a wide, photo-led card layout instead (2026-09-10
- * Tanks-screen redesign) — `size` still wins for existing square callers.
+ * Photo thumbnail for a tank card — `photoUri` can be a real https Blob URL
+ * or a legacy OPFS-relative path, both handled by usePhotoSrc. Falls back
+ * to an emoji placeholder when there's no photo yet. Square by default
+ * (`size`); pass `width`/`height` for a wide, photo-led card layout instead
+ * (2026-09-10 Tanks-screen redesign) — `size` still wins for existing
+ * square callers.
  */
 export function TankThumbnail({
   photoUri,
@@ -22,27 +23,7 @@ export function TankThumbnail({
   height?: number | string;
   radius?: string;
 }) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    let cancelled = false;
-
-    async function load() {
-      if (!photoUri) return;
-      const blob = await readPhotoFile(photoUri);
-      if (blob && !cancelled) {
-        objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      }
-    }
-    load();
-
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [photoUri]);
+  const url = usePhotoSrc(photoUri);
 
   return (
     <div

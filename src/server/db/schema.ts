@@ -1,11 +1,18 @@
 // Server-side Postgres schema (Neon), introduced 2026-09-10 for real user
 // accounts — see specs/PROGRESS.md's 2026-09-10 "accounts + backend" entry
 // and CLAUDE.md's updated Principle 5 for why this now exists alongside the
-// local SQLite schema (src/db/schema.ts). Only the tables actually migrated
-// this pass are declared here: `users` plus the four highest-traffic
-// tables (tanks/livestock/measurements/profile). The remaining local tables
-// stay local-only until a follow-up pass migrates them with the same
-// userId-scoped pattern established here.
+// local SQLite schema (src/db/schema.ts). First pass migrated `users` plus
+// the four highest-traffic tables (tanks/livestock/measurements/profile).
+// 2026-09-11: a second pass (plants/equipment/logEntries/photos, the
+// most-used of the remaining 13 local tables — a deliberate few-at-a-time
+// rollout, not all 13 at once) adds four more, same userId-scoped pattern.
+// `photos.localUri` now holds a real https Vercel Blob URL for anything
+// written through these new tables (see src/lib/photo-upload.ts) rather
+// than an OPFS-relative path — the column name is kept for continuity with
+// the local schema's own field, even though it's no longer "local". The
+// remaining 9 tables (scans, aiInteractions, dexCards, dismissedWarnings,
+// settings, speciesSuggestions, species catalog, parameterDefs) stay
+// local-only until a further follow-up pass.
 import { pgTable, text, real, integer, boolean, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -97,6 +104,75 @@ export const livestockEvents = pgTable("livestock_events", {
   note: text("note"),
   photoUri: text("photo_uri"),
   createdAt: text("created_at").notNull(),
+});
+
+export const plants = pgTable("plants", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id").notNull(),
+  speciesId: text("species_id"),
+  commonName: text("common_name"),
+  plantedOn: text("planted_on"),
+  quantity: integer("quantity"),
+  lightNeed: text("light_need"),
+  co2Need: text("co2_need"),
+  trimIntervalDays: integer("trim_interval_days"),
+  lastTrimmedOn: text("last_trimmed_on"),
+  notes: text("notes"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  deletedAt: text("deleted_at"),
+});
+
+export const equipment = pgTable("equipment", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id").notNull(),
+  type: text("type").notNull(),
+  subtype: text("subtype"),
+  brand: text("brand"),
+  model: text("model"),
+  wattage: real("wattage"),
+  ratedLph: real("rated_lph"),
+  installedOn: text("installed_on"),
+  serviceIntervalDays: integer("service_interval_days"),
+  lastServicedOn: text("last_serviced_on"),
+  notes: text("notes"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  deletedAt: text("deleted_at"),
+});
+
+export const logEntries = pgTable("log_entries", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id").notNull(),
+  type: text("type"),
+  body: text("body"),
+  occurredAt: text("occurred_at").notNull(),
+  waterChangedPct: real("water_changed_pct"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  deletedAt: text("deleted_at"),
+});
+
+export const photos = pgTable("photos", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  tankId: text("tank_id"),
+  livestockId: text("livestock_id"),
+  logEntryId: text("log_entry_id"),
+  scanId: text("scan_id"),
+  // A real https Vercel Blob URL now, not an OPFS-relative path — see the
+  // note at the top of this file.
+  localUri: text("local_uri").notNull(),
+  caption: text("caption"),
+  takenAt: text("taken_at"),
+  width: integer("width"),
+  height: integer("height"),
+  bytes: integer("bytes"),
+  createdAt: text("created_at").notNull(),
+  deletedAt: text("deleted_at"),
 });
 
 // Single row per user (replaces the old id="local" single-device row).

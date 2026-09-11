@@ -16,9 +16,8 @@ import { useLiveQuery } from "@/db/live";
 import { getTank, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listPlantsForTank, addPlant, removePlant } from "@/db/queries/plants";
 import { listEquipmentForTank, addEquipment, removeEquipment } from "@/db/queries/equipment";
-import { writePhotoFile } from "@/lib/opfs-files";
+import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
-import { newId } from "@/db/id";
 import { FILTER_SUBTYPES, COMMON_PLANTS, COMMON_CITIES } from "@/lib/common-options";
 
 export default function EditTankPage({ params }: { params: Promise<{ id: string }> }) {
@@ -63,15 +62,16 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   }
 
   async function handlePhotoChange(file: File) {
-    const path = `tanks/${id}-avatar-${newId()}.jpg`;
-    await writePhotoFile(path, file);
-    await updateTank(id, { photoUri: path });
+    // Uploads to Vercel Blob (2026-09-11), not OPFS — see
+    // src/lib/photo-upload.ts.
+    const url = await uploadPhoto(file);
+    await updateTank(id, { photoUri: url });
     // Same gap already fixed once for the creation wizard (see the
     // "Tank photo now previews instantly and lands in the Gallery too"
     // entry in specs/PROGRESS.md) — changing the photo here never wrote a
     // `photos` row, so it updated the avatar but never showed up in the
     // Gallery tab.
-    await addPhoto({ tankId: id, localUri: path, caption: "Tank photo" });
+    await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
   }
 
   async function handleSave() {

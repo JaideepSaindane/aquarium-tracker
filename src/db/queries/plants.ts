@@ -1,8 +1,8 @@
-import { eq, isNull, and } from "drizzle-orm";
-import { db } from "../client";
-import { plants } from "../schema";
-import { newId, nowIso } from "../id";
 import { notifyChanged } from "../live";
+
+// Rewritten 2026-09-11 to call the new user-scoped server API
+// (src/app/api/plants/*) — see tanks.ts's header comment for the original
+// pattern this follows.
 
 export type NewPlant = {
   tankId: string;
@@ -14,33 +14,41 @@ export type NewPlant = {
   plantedOn?: string;
 };
 
-export async function listPlantsForTank(tankId: string) {
-  return db
-    .select()
-    .from(plants)
-    .where(and(eq(plants.tankId, tankId), isNull(plants.deletedAt)));
+export type PlantRow = {
+  id: string;
+  tankId: string;
+  speciesId: string | null;
+  commonName: string | null;
+  plantedOn: string | null;
+  quantity: number | null;
+  lightNeed: string | null;
+  co2Need: string | null;
+  trimIntervalDays: number | null;
+  lastTrimmedOn: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
 }
 
-export async function addPlant(input: NewPlant) {
-  const now = nowIso();
-  const id = newId();
-  await db.insert(plants).values({
-    id,
-    tankId: input.tankId,
-    speciesId: input.speciesId,
-    commonName: input.commonName,
-    quantity: input.quantity ?? 1,
-    lightNeed: input.lightNeed,
-    co2Need: input.co2Need,
-    plantedOn: input.plantedOn ?? now,
-    createdAt: now,
-    updatedAt: now,
-  });
+export async function listPlantsForTank(tankId: string): Promise<PlantRow[]> {
+  return json(await fetch(`/api/plants?tankId=${encodeURIComponent(tankId)}`));
+}
+
+export async function addPlant(input: NewPlant): Promise<string> {
+  const { id } = await json<{ id: string }>(
+    await fetch("/api/plants", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) })
+  );
   notifyChanged();
   return id;
 }
 
-export async function removePlant(id: string) {
-  await db.update(plants).set({ deletedAt: nowIso() }).where(eq(plants.id, id));
+export async function removePlant(id: string): Promise<void> {
+  await fetch(`/api/plants/${id}`, { method: "DELETE" });
   notifyChanged();
 }

@@ -5,8 +5,7 @@ import { GalleryGrid } from "@/components/GalleryGrid";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { useLiveQuery } from "@/db/live";
 import { addPhoto, listPhotosForTank } from "@/db/queries/photos";
-import { writePhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { uploadPhoto } from "@/lib/photo-upload";
 
 /** The tank's photo grid plus a real "add a photo" action — shared between the dedicated Gallery page and the tank overview's inline collapsed section. */
 export function GalleryPanel({ tankId }: { tankId: string }) {
@@ -16,9 +15,10 @@ export function GalleryPanel({ tankId }: { tankId: string }) {
   async function handleAddPhoto(file: File) {
     setUploading(true);
     try {
-      const path = `tanks/${tankId}-gallery-${newId()}.jpg`;
-      await writePhotoFile(path, file);
-      await addPhoto({ tankId, localUri: path, caption: "Gallery photo" });
+      // Uploads to Vercel Blob (2026-09-11), not OPFS — see
+      // src/lib/photo-upload.ts.
+      const url = await uploadPhoto(file);
+      await addPhoto({ tankId, localUri: url, caption: "Gallery photo" });
     } finally {
       setUploading(false);
     }

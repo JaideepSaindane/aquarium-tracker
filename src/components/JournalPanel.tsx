@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
@@ -9,8 +9,8 @@ import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { useLiveQuery } from "@/db/live";
 import { addLogEntry, listLogEntriesForTank } from "@/db/queries/log-entries";
 import { addPhoto, listPhotosForTank } from "@/db/queries/photos";
-import { writePhotoFile, readPhotoFile } from "@/lib/opfs-files";
-import { newId } from "@/db/id";
+import { uploadPhoto } from "@/lib/photo-upload";
+import { usePhotoSrc } from "@/lib/use-photo-src";
 
 const TYPE_LABELS: Record<string, string> = {
   journal: "Journal",
@@ -63,9 +63,10 @@ export function JournalPanel({ tankId, autoOpenNew }: { tankId: string; autoOpen
     setSaving(true);
     const entryId = await addLogEntry({ tankId, type: "journal", body: body.trim() });
     if (photoFile) {
-      const path = `journal/${entryId}-${newId()}.jpg`;
-      await writePhotoFile(path, photoFile);
-      await addPhoto({ tankId, logEntryId: entryId, localUri: path });
+      // Uploads to Vercel Blob (2026-09-11), not OPFS — see
+      // src/lib/photo-upload.ts.
+      const url = await uploadPhoto(photoFile);
+      await addPhoto({ tankId, logEntryId: entryId, localUri: url });
     }
     setBody("");
     setPhotoFile(null);
@@ -117,26 +118,7 @@ function JournalRow({
   photos: { localUri: string }[];
   onOpenPhoto: (src: string) => void;
 }) {
-  const [thumbUrl, setThumbUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    let cancelled = false;
-    async function load() {
-      if (photos.length === 0) return;
-      const blob = await readPhotoFile(photos[0].localUri);
-      if (blob && !cancelled) {
-        objectUrl = URL.createObjectURL(blob);
-        setThumbUrl(objectUrl);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [photos[0]?.localUri]);
+  const thumbUrl = usePhotoSrc(photos[0]?.localUri);
 
   const type = entry.type ?? "journal";
 
