@@ -6,7 +6,7 @@ import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { PrimaryButton, SecondaryButton, TextButton } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { LottiePlayer } from "@/components/LottiePlayer";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
@@ -18,6 +18,7 @@ import { getProfile } from "@/db/queries/profile";
 import { TankScanZod } from "@/server/ai/schemas/tank-scan";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
+import { formatVolumeDual } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
 
 type Stage = "idle" | "checking" | "rejected" | "details" | "scanning" | "scan-error";
@@ -161,6 +162,11 @@ export default function ScanCapturePage() {
       <>
         <PrimaryButton onClick={() => cameraInputRef.current?.click()}>{t.scanPage.takePhoto}</PrimaryButton>
         <SecondaryButton onClick={() => libraryInputRef.current?.click()}>{t.scanPage.chooseFromLibrary}</SecondaryButton>
+        {/* Advise, never block (Principle 1) — someone who doesn't want to
+            photograph a tank right now (or can't: no camera access, no
+            tank yet) can still reach a real tank via the plain manual
+            form instead of being stuck on this screen. */}
+        <TextButton onClick={() => router.push("/tank/new")}>{t.scanPage.setUpManuallyInstead}</TextButton>
       </>
     ) : stage === "rejected" ? (
       <PrimaryButton onClick={retake}>{t.scanPage.retake}</PrimaryButton>
@@ -281,7 +287,7 @@ export default function ScanCapturePage() {
                 </div>
                 {volumeL !== null && (
                   <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
-                    ≈ {volumeL} {t.scanPage.litres}
+                    ≈ {formatVolumeDual(volumeL)}
                   </p>
                 )}
               </div>

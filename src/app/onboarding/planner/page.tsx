@@ -8,6 +8,7 @@ import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { Chip } from "@/components/Chip";
+import { ChoiceCard } from "@/components/ChoiceCard";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { LottiePlayer } from "@/components/LottiePlayer";
@@ -335,10 +336,11 @@ export default function OnboardingPlannerPage() {
     return (
       <Screen
         footer={
-          <PrimaryButton onClick={() => setStep(2)}>{t.plannerPage.nextWhatFish}</PrimaryButton>
+          <PrimaryButton onClick={() => setStep(2)}>{t.common.continue}</PrimaryButton>
         }
       >
         <BackHeader title={t.plannerPage.title} fallbackHref="/" />
+        <StepIndicator step={1} />
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>{t.plannerPage.threeQuickQuestions}</p>
 
         <Card style={{ marginBottom: 16 }}>
@@ -346,27 +348,12 @@ export default function OnboardingPlannerPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {(
               [
-                ["planted", `🌿 ${t.plannerPage.plantedOption}`, t.plannerPage.plantedHint],
-                ["hardscape", `🪨 ${t.plannerPage.hardscapeOption}`, t.plannerPage.hardscapeHint],
-                ["bare_bottom", `🫙 ${t.plannerPage.bareBottomOption}`, t.plannerPage.bareBottomHint],
-              ] as [PlantedTier, string, string][]
-            ).map(([value, label, hint]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setTier(value)}
-                style={{
-                  padding: "14px 16px",
-                  borderRadius: 12,
-                  border: `1px solid ${tier === value ? "var(--color-deep)" : "var(--color-line)"}`,
-                  background: tier === value ? "var(--color-deep-soft, rgba(0,0,0,0.04))" : "transparent",
-                  color: "var(--color-ink)",
-                  textAlign: "left",
-                }}
-              >
-                <span style={{ display: "block", fontWeight: 700 }}>{label}</span>
-                <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>{hint}</span>
-              </button>
+                ["planted", "🌿", t.plannerPage.plantedOption, t.plannerPage.plantedHint],
+                ["hardscape", "🪨", t.plannerPage.hardscapeOption, t.plannerPage.hardscapeHint],
+                ["bare_bottom", "🫙", t.plannerPage.bareBottomOption, t.plannerPage.bareBottomHint],
+              ] as [PlantedTier, string, string, string][]
+            ).map(([value, icon, label, hint]) => (
+              <ChoiceCard key={value} selected={tier === value} onClick={() => setTier(value)} icon={icon} title={label} subtitle={hint} />
             ))}
           </div>
         </Card>
@@ -380,12 +367,13 @@ export default function OnboardingPlannerPage() {
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={() => setStep(3)}>{t.plannerPage.nextTankSize}</PrimaryButton>
+            <PrimaryButton onClick={() => setStep(3)}>{t.common.continue}</PrimaryButton>
             <SecondaryButton onClick={() => setStep(1)}>{t.plannerPage.backButton}</SecondaryButton>
           </>
         }
       >
         <BackHeader title={t.plannerPage.title} fallbackHref="/" />
+        <StepIndicator step={2} />
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
           {t.plannerPage.whatFishImagine}
         </p>
@@ -486,6 +474,7 @@ export default function OnboardingPlannerPage() {
         }
       >
         <BackHeader title={t.plannerPage.title} fallbackHref="/" />
+        <StepIndicator step={3} />
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
           {t.plannerPage.biggerTanksForgiving}
         </p>
@@ -522,27 +511,13 @@ export default function OnboardingPlannerPage() {
               <div style={{ display: "flex", gap: 8 }}>
                 {(
                   [
-                    ["long", `▭ ${t.plannerPage.longOption}`, t.plannerPage.longHint],
-                    ["cube", `⬜ ${t.plannerPage.cubeOption}`, t.plannerPage.cubeHint],
-                  ] as [TankShape, string, string][]
-                ).map(([value, label, hint]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setShape(value)}
-                    style={{
-                      flex: 1,
-                      padding: "10px 12px",
-                      borderRadius: 10,
-                      border: `1px solid ${shape === value ? "var(--color-deep)" : "var(--color-line)"}`,
-                      background: shape === value ? "var(--color-deep-soft, rgba(0,0,0,0.04))" : "transparent",
-                      color: "var(--color-ink)",
-                      textAlign: "left",
-                    }}
-                  >
-                    <span style={{ display: "block", fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>{label}</span>
-                    <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>{hint}</span>
-                  </button>
+                    ["long", "▭", t.plannerPage.longOption, t.plannerPage.longHint],
+                    ["cube", "⬜", t.plannerPage.cubeOption, t.plannerPage.cubeHint],
+                  ] as [TankShape, string, string, string][]
+                ).map(([value, icon, label, hint]) => (
+                  <div key={value} style={{ flex: 1 }}>
+                    <ChoiceCard selected={shape === value} onClick={() => setShape(value)} icon={icon} title={label} subtitle={hint} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -982,6 +957,16 @@ export default function OnboardingPlannerPage() {
         </>
       )}
     </Screen>
+  );
+}
+
+/** Brief Section 5's own ask for the pre-plan steps: "1 of 3"-style progress, so the wizard reads as a short, bounded flow rather than an open-ended form. */
+function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
+  const t = useTranslation();
+  return (
+    <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", fontWeight: 600, marginBottom: 4 }}>
+      {t.plannerPage.stepIndicator.replace("{step}", String(step))}
+    </p>
   );
 }
 

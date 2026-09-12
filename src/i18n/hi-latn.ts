@@ -25,6 +25,7 @@ const hiLatn: Dictionary = {
     edit: "Edit karein",
     back: "Back",
     loading: "Load ho raha hai...",
+    continue: "Continue karein",
   },
   emergency: {
     title: "Emergency",
@@ -294,6 +295,9 @@ const hiLatn: Dictionary = {
     themeSystem: "System",
     themeLight: "Light",
     themeDark: "Dark",
+    units: "Units",
+    unitsMetric: "Metric (cm, L, °C)",
+    unitsImperial: "Imperial (in, gal, °F)",
     yourPlan: "Aapka plan",
     earlyBird: "Early Bird",
     proNotBuilt:
@@ -540,6 +544,7 @@ const hiLatn: Dictionary = {
     brackishWater: "Brackish water",
     freshwaterPlantedFocused: "{name} freshwater aur planted par focused hai — koi reef/marine tanks nahi.",
     tankSavedOpening: "Tank save ho gaya — abhi khola ja raha hai...",
+    moreDetails: "Aur details",
   },
   tankSizePage: {
     allThreeRequired: "Teeno dimensions zaroori hain.",
@@ -552,6 +557,7 @@ const hiLatn: Dictionary = {
     title: "Journal",
   },
   plannerPage: {
+    stepIndicator: "Step {step} of 3",
     foreground: "Foreground",
     midground: "Midground",
     background: "Background",
@@ -682,8 +688,9 @@ const hiLatn: Dictionary = {
     analysingYourTank: "Aapka tank analyse ho raha hai...",
     tryAgain: "Phir try karein",
     scanMyTank: "Mera tank scan karein",
+    setUpManuallyInstead: "Iske bajaye khud se set up karein",
     retakePhoto: "Photo retake karein",
-    title: "Apna tank scan karein",
+    title: "Apna aquarium dikhayein",
     standSquare: "Front glass ke seedhe saamne khade hon, room light off, no flash.",
     checkingPhoto: "Photo check ho rahi hai...",
     twoQuickQuestions: "Do jaldi sawaal",
@@ -703,6 +710,7 @@ const hiLatn: Dictionary = {
     yourCity: "Aapka shehar",
     language: "Language",
     theme: "Theme",
+    skipForNow: "Abhi skip karein",
   },
   // Legal/privacy copy kept in English for accuracy — not machine-translated, per the same precision rule as technical terms (see file header).
   privacyPage: {

@@ -28,6 +28,8 @@ import { usePhotoSrc } from "@/lib/use-photo-src";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { checkFilterFlow, checkHeaterWattage } from "@/lib/derived-checks";
 import { isAiGenerated } from "@/lib/species-origin";
+import { useUnits } from "@/lib/UnitsProvider";
+import { formatLength, formatVolume, formatTempRange } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
@@ -896,17 +898,18 @@ function AboutSection({
   dateLabel: string;
 }) {
   const t = useTranslation();
+  const units = useUnits();
 
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ display: "flex", gap: 24 }}>
         <div>
-          <p style={{ fontSize: "var(--font-title-size)", fontWeight: 700, margin: 0, lineHeight: 1.1 }}>{tank.volumeL} L</p>
+          <p style={{ fontSize: "var(--font-title-size)", fontWeight: 700, margin: 0, lineHeight: 1.1 }}>{formatVolume(tank.volumeL, units)}</p>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 0" }}>{t.tankOverviewPage.volume}</p>
         </div>
         <div>
           <p style={{ fontSize: "var(--font-title-size)", fontWeight: 700, margin: 0, lineHeight: 1.1 }}>
-            {recommendedTempC ? `${recommendedTempC.min}–${recommendedTempC.max}°C` : "—"}
+            {recommendedTempC ? formatTempRange(recommendedTempC.min, recommendedTempC.max, units) : "—"}
           </p>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 0" }}>
             {recommendedTempC ? t.dexDetailPage.temp : t.tankOverviewPage.addFishForRange}
@@ -914,7 +917,7 @@ function AboutSection({
         </div>
       </div>
       <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "8px 0 0", display: "flex", alignItems: "center", gap: 4 }}>
-        {tank.lengthCm} × {tank.widthCm} × {tank.heightCm} cm
+        {formatLength(tank.lengthCm, units)} × {formatLength(tank.widthCm, units)} × {formatLength(tank.heightCm, units)}
         <span aria-hidden>·</span>
         {dateLabel}
         {tank.isPlanted && (

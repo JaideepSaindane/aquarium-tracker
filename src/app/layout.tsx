@@ -3,6 +3,7 @@ import "./globals.css";
 import { APP_NAME } from "@/constants/app";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { ThemeProvider } from "@/theme/ThemeProvider";
+import { UnitsProvider } from "@/lib/UnitsProvider";
 import { DbBootProvider } from "@/db/DbBootProvider";
 import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
@@ -32,9 +33,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <AuthSessionProvider>
           <ThemeProvider>
-            <LocaleProvider>
-              <DbBootProvider>{children}</DbBootProvider>
-            </LocaleProvider>
+            <UnitsProvider>
+              <LocaleProvider>
+                <DbBootProvider>{children}</DbBootProvider>
+              </LocaleProvider>
+            </UnitsProvider>
           </ThemeProvider>
         </AuthSessionProvider>
         <ServiceWorkerRegister />

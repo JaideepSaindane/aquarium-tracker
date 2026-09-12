@@ -9,12 +9,15 @@ import { PrimaryButton } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
+import { ChoiceCard } from "@/components/ChoiceCard";
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { AgeBandField, startedOnFromAgeBand, type AgeBand } from "@/components/AgeBandField";
 import { createTank, updateTank } from "@/db/queries/tanks";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
+import { formatVolumeDual } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
 import { APP_NAME } from "@/constants/app";
 
@@ -133,37 +136,17 @@ export default function NewTankPage() {
         <Field label={t.settingsPage.name} value={name} onChange={(e) => setName(e.target.value)} placeholder={t.newTankPage.namePlaceholder} />
 
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
             <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{t.scanPage.dimensions}</label>
-            <div style={{ display: "flex", gap: 4 }}>
-              <button
-                type="button"
-                onClick={() => toggleUnit("cm")}
-                style={{
-                  padding: "2px 10px",
-                  borderRadius: 6,
-                  border: "1px solid var(--color-line)",
-                  background: unit === "cm" ? "var(--color-deep)" : "transparent",
-                  color: unit === "cm" ? "#fff" : "var(--color-ink)",
-                  fontSize: "var(--font-caption-size)",
-                }}
-              >
-                cm
-              </button>
-              <button
-                type="button"
-                onClick={() => toggleUnit("ft")}
-                style={{
-                  padding: "2px 10px",
-                  borderRadius: 6,
-                  border: "1px solid var(--color-line)",
-                  background: unit === "ft" ? "var(--color-deep)" : "transparent",
-                  color: unit === "ft" ? "#fff" : "var(--color-ink)",
-                  fontSize: "var(--font-caption-size)",
-                }}
-              >
-                ft
-              </button>
+            <div style={{ width: 120 }}>
+              <SegmentedControl
+                value={unit}
+                onChange={(u) => toggleUnit(u as "cm" | "ft")}
+                options={[
+                  { value: "cm", label: "cm" },
+                  { value: "ft", label: "ft" },
+                ]}
+              />
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
@@ -171,70 +154,51 @@ export default function NewTankPage() {
             <Field label="" placeholder={t.scanPage.width} type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
             <Field label="" placeholder={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
           </div>
+          {/* Redesign brief §14's own example format — both units together,
+              so nobody has to do the conversion in their head. */}
           {volumeL !== null && (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>≈ {volumeL} {t.scanPage.litres}</p>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>≈ {formatVolumeDual(volumeL)}</p>
           )}
         </div>
 
         <div>
-          <Field label={t.scanPage.city} list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.scanPage.cityPlaceholder} />
-          <datalist id="city-options">
-            {COMMON_CITIES.map((c) => (
-              <option key={c} value={c} />
-            ))}
-          </datalist>
-        </div>
-
-        <div>
-          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 4 }}>{t.newTankPage.waterType}</label>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button
-              type="button"
+          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 8 }}>{t.newTankPage.waterType}</label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <ChoiceCard
+              selected={waterType === "fresh"}
               onClick={() => setWaterType("fresh")}
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 6,
-                padding: "8px 12px",
-                borderRadius: 8,
-                border: "1px solid var(--color-line)",
-                background: waterType === "fresh" ? "var(--color-improve)" : "transparent",
-                color: waterType === "fresh" ? "#fff" : "var(--color-ink)",
-                fontWeight: 600,
-              }}
-            >
-              <AquaIcon name="freshwater" size={16} />
-              {t.newTankPage.freshWater}
-            </button>
-            <button
-              type="button"
+              icon={<AquaIcon name="freshwater" size={20} />}
+              title={t.newTankPage.freshWater}
+              subtitle={t.newTankPage.freshwaterPlantedFocused.replace("{name}", APP_NAME)}
+            />
+            <ChoiceCard
+              selected={waterType === "brackish"}
               onClick={() => setWaterType("brackish")}
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 6,
-                padding: "8px 12px",
-                borderRadius: 8,
-                border: "1px solid var(--color-line)",
-                background: waterType === "brackish" ? "var(--color-deep)" : "transparent",
-                color: waterType === "brackish" ? "#fff" : "var(--color-ink)",
-                fontWeight: 600,
-              }}
-            >
-              <AquaIcon name="brackish" size={16} />
-              {t.newTankPage.brackishWater}
-            </button>
+              icon={<AquaIcon name="brackish" size={20} />}
+              title={t.newTankPage.brackishWater}
+            />
           </div>
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
-            {t.newTankPage.freshwaterPlantedFocused.replace("{name}", APP_NAME)}
-          </p>
         </div>
 
-        <AgeBandField value={ageBand} onChange={setAgeBand} />
+        {/* Brief Section 5: "city moved into More details" — name,
+            dimensions and water type are the only things that block
+            reaching a real tank; everything else can come later. */}
+        <details>
+          <summary style={{ cursor: "pointer", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--color-deep)" }}>
+            {t.newTankPage.moreDetails}
+          </summary>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
+            <div>
+              <Field label={t.scanPage.city} list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.scanPage.cityPlaceholder} />
+              <datalist id="city-options">
+                {COMMON_CITIES.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+            </div>
+            <AgeBandField value={ageBand} onChange={setAgeBand} />
+          </div>
+        </details>
 
         {error && <p style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}>{error}</p>}
         {saved && <Banner severity="improve">{t.newTankPage.tankSavedOpening}</Banner>}

@@ -10,6 +10,7 @@ import { Banner } from "@/components/Banner";
 import { useLiveQuery } from "@/db/live";
 import { getTank, updateTank } from "@/db/queries/tanks";
 import { convertDimension } from "@/lib/dimension-units";
+import { formatVolumeDual } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
 
 export default function TankSizePage({ params }: { params: Promise<{ id: string }> }) {
@@ -111,7 +112,7 @@ export default function TankSizePage({ params }: { params: Promise<{ id: string 
         <Field label={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
       </div>
       {volumeL !== null && (
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>≈ {volumeL} {t.scanPage.litres}</p>
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>≈ {formatVolumeDual(volumeL)}</p>
       )}
 
       {error && (

@@ -21,6 +21,7 @@ const en = {
     edit: "Edit",
     back: "Back",
     loading: "Loading...",
+    continue: "Continue",
   },
   emergency: {
     title: "Emergency",
@@ -290,6 +291,9 @@ const en = {
     themeSystem: "System",
     themeLight: "Light",
     themeDark: "Dark",
+    units: "Units",
+    unitsMetric: "Metric (cm, L, °C)",
+    unitsImperial: "Imperial (in, gal, °F)",
     yourPlan: "Your plan",
     earlyBird: "Early Bird",
     proNotBuilt:
@@ -536,6 +540,7 @@ const en = {
     brackishWater: "Brackish water",
     freshwaterPlantedFocused: "{name} is freshwater and planted focused — no reef/marine tanks.",
     tankSavedOpening: "Tank saved — opening it now...",
+    moreDetails: "More details",
   },
   tankSizePage: {
     allThreeRequired: "All three dimensions are required.",
@@ -548,6 +553,7 @@ const en = {
     title: "Journal",
   },
   plannerPage: {
+    stepIndicator: "Step {step} of 3",
     foreground: "Foreground",
     midground: "Midground",
     background: "Background",
@@ -678,8 +684,9 @@ const en = {
     analysingYourTank: "Analysing your tank...",
     tryAgain: "Try again",
     scanMyTank: "Scan my tank",
+    setUpManuallyInstead: "Set up manually instead",
     retakePhoto: "Retake photo",
-    title: "Scan your tank",
+    title: "Show us your aquarium",
     standSquare: "Stand square to the front glass, room light off, no flash.",
     checkingPhoto: "Checking photo...",
     twoQuickQuestions: "Two quick questions",
@@ -699,6 +706,7 @@ const en = {
     yourCity: "Your city",
     language: "Language",
     theme: "Theme",
+    skipForNow: "Skip for now",
   },
   privacyPage: {
     title: "Privacy Policy",

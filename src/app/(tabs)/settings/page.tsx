@@ -22,7 +22,9 @@ import { uploadPhoto } from "@/lib/photo-upload";
 import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
 import { useTheme, type ThemeChoice } from "@/theme/ThemeProvider";
+import { useUnitsContext } from "@/lib/UnitsProvider";
 import type { Locale } from "@/i18n/types";
+import type { UnitSystem } from "@/lib/units";
 
 function timestamp() {
   return new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
@@ -33,6 +35,7 @@ export default function SettingsPage() {
   const t = useTranslation();
   const { locale, setLocale } = useLocale();
   const { theme, setTheme } = useTheme();
+  const { units, setUnits } = useUnitsContext();
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -376,13 +379,25 @@ export default function SettingsPage() {
         </div>
 
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "0 0 6px" }}>{t.settingsPage.appearance}</p>
+        <div style={{ marginBottom: 16 }}>
+          <SegmentedControl
+            value={theme}
+            onChange={(th) => setTheme(th as ThemeChoice)}
+            options={[
+              { value: "system", label: t.settingsPage.themeSystem },
+              { value: "light", label: t.settingsPage.themeLight },
+              { value: "dark", label: t.settingsPage.themeDark },
+            ]}
+          />
+        </div>
+
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "0 0 6px" }}>{t.settingsPage.units}</p>
         <SegmentedControl
-          value={theme}
-          onChange={(th) => setTheme(th as ThemeChoice)}
+          value={units}
+          onChange={(u) => setUnits(u as UnitSystem)}
           options={[
-            { value: "system", label: t.settingsPage.themeSystem },
-            { value: "light", label: t.settingsPage.themeLight },
-            { value: "dark", label: t.settingsPage.themeDark },
+            { value: "metric", label: t.settingsPage.unitsMetric },
+            { value: "imperial", label: t.settingsPage.unitsImperial },
           ]}
         />
       </Card>

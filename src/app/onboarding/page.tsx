@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import { IntroAnimation } from "@/components/IntroAnimation";
 import { saveProfile } from "@/db/queries/profile";
 import { useTranslation } from "@/i18n/use-translation";
-import { useLocale } from "@/i18n/use-locale";
-import { useTheme, type ThemeChoice } from "@/theme/ThemeProvider";
-import type { Locale } from "@/i18n/types";
 import styles from "./onboarding.module.css";
 
 /**
@@ -26,21 +23,38 @@ import styles from "./onboarding.module.css";
  * that component's own background/padding assumes a flat surface, and this
  * page needs the photo to run edge-to-edge including behind the safe-area
  * insets.
+ *
+ * Redesign Section 5 (2026-09-13): city and the language/theme toggles are
+ * gone from this screen — the brief's own Screen 4 note ("the current
+ * onboarding puts too many unrelated controls in one place... move these
+ * into Settings"), and both already live in Settings, reachable any time.
+ * Get Started now goes straight into "Show us your aquarium" (the existing
+ * scan flow) instead of dropping the user on an empty My Tanks list — the
+ * brief's Welcome → name → photo → minimal tank setup order, with the scan
+ * flow's own dimensions step and its report screen standing in for "minimal
+ * tank setup" once the photo path is picked; "Skip for now" bails a user who
+ * doesn't want to photograph a tank straight to the same empty-state choices
+ * (scan / build / just look around) that were always the fallback, so
+ * nobody is blocked (Principle 1).
  */
 export default function OnboardingPage() {
   const router = useRouter();
   const t = useTranslation();
-  const { locale, setLocale } = useLocale();
-  const { theme, setTheme } = useTheme();
   const [name, setName] = useState("");
-  const [city, setCity] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleContinue() {
     setSaving(true);
     await saveProfile({
       name: name.trim() || undefined,
-      city: city.trim() || undefined,
+      onboardingCompletedAt: new Date().toISOString(),
+    });
+    router.push("/onboarding/scan");
+  }
+
+  async function handleSkip() {
+    await saveProfile({
+      name: name.trim() || undefined,
       onboardingCompletedAt: new Date().toISOString(),
     });
     router.push("/");
@@ -85,11 +99,11 @@ export default function OnboardingPage() {
         <p style={{ color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>{t.onboarding.welcomeSubtitle}</p>
       </div>
 
-      {/* Balances the space above and below the name/city + toggles block
-          so it sits around the vertical centre of the screen, rather than
-          pinned to the bottom. The bottom spacer is deliberately smaller
-          so Get Started ends up a little above dead-centre, not exactly
-          centred with equal space below it. */}
+      {/* Balances the space above and below the name field + button so it
+          sits around the vertical centre of the screen, rather than pinned
+          to the bottom. The bottom spacer is deliberately smaller so Get
+          Started ends up a little above dead-centre, not exactly centred
+          with equal space below it. */}
       <div style={{ flex: 1.15 }} />
 
       <div
@@ -101,34 +115,9 @@ export default function OnboardingPage() {
           gap: 12,
         }}
       >
-        <div style={{ display: "flex", gap: 10 }}>
-          <FloatingField label={t.onboardingPage.name} value={name} onChange={setName} placeholder={t.onboardingPage.yourName} />
-          <FloatingField label={t.onboardingPage.city} value={city} onChange={setCity} placeholder={t.onboardingPage.yourCity} />
-        </div>
+        <FloatingField label={t.onboardingPage.name} value={name} onChange={setName} placeholder={t.onboardingPage.yourName} />
 
-        <div>
-          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>{t.onboardingPage.language}</p>
-          <SegmentedToggle
-            options={([["en", t.settingsPage.english], ["hi-latn", t.settingsPage.hinglish]] as [Locale, string][]).map(([value, label]) => ({ value, label }))}
-            value={locale}
-            onChange={setLocale}
-          />
-        </div>
-
-        <div>
-          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>{t.onboardingPage.theme}</p>
-          <SegmentedToggle
-            options={[
-              { value: "system" as ThemeChoice, label: "⚙️" },
-              { value: "light" as ThemeChoice, label: "☀️" },
-              { value: "dark" as ThemeChoice, label: "🌙" },
-            ]}
-            value={theme}
-            onChange={setTheme}
-          />
-        </div>
-
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginTop: 4 }}>
           <button
             type="button"
             onClick={handleContinue}
@@ -147,6 +136,14 @@ export default function OnboardingPage() {
           >
             {saving ? "..." : t.onboarding.getStarted}
           </button>
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={saving}
+            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", fontWeight: 600, textDecoration: "underline" }}
+          >
+            {t.onboardingPage.skipForNow}
+          </button>
         </div>
       </div>
 
@@ -155,7 +152,7 @@ export default function OnboardingPage() {
   );
 }
 
-/** A name/city input styled as a floating glass card over the background photo, instead of `Field`'s flat-surface look. */
+/** A name input styled as a floating glass card over the background photo, instead of `Field`'s flat-surface look. */
 function FloatingField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) {
   return (
     <div
@@ -187,45 +184,6 @@ function FloatingField({ label, value, onChange, placeholder }: { label: string;
           fontSize: "var(--font-body-size)",
         }}
       />
-    </div>
-  );
-}
-
-/** Compact pill toggle used for both the language and theme choices — same glass treatment as `FloatingField` so the whole card cluster reads as one family. */
-function SegmentedToggle<T extends string>({ options, value, onChange }: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        gap: 2,
-        background: "rgba(255,255,255,0.16)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.3)",
-        borderRadius: "var(--radius-pill)",
-        padding: 3,
-      }}
-    >
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          onClick={() => onChange(opt.value)}
-          style={{
-            flex: 1,
-            padding: "8px 10px",
-            borderRadius: "var(--radius-pill)",
-            border: "none",
-            background: value === opt.value ? "#fff" : "transparent",
-            color: value === opt.value ? "var(--color-deep)" : "rgba(255,255,255,0.92)",
-            fontWeight: 600,
-            fontSize: "var(--font-caption-size)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {opt.label}
-        </button>
-      ))}
     </div>
   );
 }
