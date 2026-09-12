@@ -1,7 +1,7 @@
 # UI/UX Redesign — Execution Plan
 
 **Source brief:** `docs/08-ui-redesign-brief.md` (Jaideep's consolidated redesign strategy, shared 2026-09-12 — read it before starting any section).
-**Status:** Not started. Work the sections in order, one at a time — Jaideep says "do Section N".
+**Status:** Section 0 complete (2026-09-12) — findings below. Next: Section 1 (design tokens). Work the sections in order, one at a time — Jaideep says "do Section N".
 **Log every completed section in `specs/PROGRESS.md`**, same as any task.
 
 ---
@@ -30,12 +30,98 @@
 
 ---
 
-## Section 0 — Inventory + per-screen audit
+## Section 0 — Inventory + per-screen audit — COMPLETE (2026-09-12)
 
 **Goal:** Know exactly what each section will touch before starting it.
-**Do:** Full audit of every screen against the brief's Part 1 rules (cards-vs-dividers, input visibility, border count, aqua overuse, hard-coded values). Produce a per-screen findings list appended to this file. Confirm what `Button`/`Card`/`Field`/`Chip` already support so Section 2 converges them instead of rebuilding.
-**Do not:** Change any code.
-**Acceptance:** Every later section's "changes" list is grounded in this audit, not rediscovered mid-build.
+**Done:** All 31 user-facing screens audited — one focused pass per screen, from the TSX source (`dev/*` internal viewers excluded; per-screen CSS modules get checked when each section touches its screen). No code changed.
+**Acceptance:** Met — every later section's screen list below is grounded in this audit, not rediscovered mid-build.
+
+### Cross-cutting totals
+
+**44 high / 77 medium / 37 low** across 31 files. By rule: hard-coded values 40, i18n gaps 28, spacing/radius 24, touch targets 23, cards/nesting 15, input visibility 8, aqua overuse 7, states 4, borders 4, typography 3, status-without-explanation 2.
+
+Findings are directional (read from source, not a rendered screen) — each section verifies its screens on contact.
+
+### Recurring patterns (these shape Sections 1–2)
+
+1. **The segmented/unit toggle is re-implemented inline on at least five screens** (`tank/new`, `tank/[id]/size`, `tank/[id]/log`, `onboarding/scan`, `tank/[id]/edit` water-type) — each with its own `#fff` active text, ~2px vertical padding (sub-44px targets) and teal active fills. One shared SegmentedControl fixes all of them at once.
+2. **Sub-44px touch targets concentrate in small inline buttons**: livestock row delete 28px, Dex checkmark 26px, community photo-remove 22px, comment actions text-only, back buttons 36px, count buttons 36px.
+3. **i18n gaps**: `login/page.tsx` is entirely untranslated (7 high findings — every string on the screen); also JournalPanel, GalleryPanel, PostCard, admin, onboarding report's algae strings, and scattered `...` loading labels.
+4. **Card-as-default-container** — `Card.tsx`'s own doc comment says "the default container for everything": journal rows, livestock rows, Dex rows, emergency intake groups, privacy paragraphs, Ask bubbles (Card inside a bubble).
+5. **Raw native selects bypass `Field`** on edit, log, emergency, ask history, onboarding report — the input-visibility problem (R2).
+6. **Status without explanation**: the My Tanks "Healthy" badge — the brief's exact example.
+7. **Teal for non-primary things**: journal type labels, Edit Targets text action, Translate button, admin chart bars.
+
+### Per-screen findings (top items; H/M/L as reported)
+
+**My Tanks home**
+- `(tabs)/page.tsx` H1 M3 L1, 3 hard-coded — "Healthy" badge without explanation (R5); empty state is a plain `<p>`, not `EmptyState`; hard-coded rgba on hero overlay and settings link. Keep: hero photo hierarchy.
+
+**Tank Detail**
+- `tank/[id]/page.tsx` H1 M2 L2 — 28px delete button in livestock inline rows (R12); `#fff` confirm buttons; count input under 44px; `Tank photo` literal. Keep: SpeciesThumb consistency.
+
+**Gallery / Journal**
+- `tank/[id]/gallery/page.tsx`, `tank/[id]/journal/page.tsx` — thin wrappers around panels; clean.
+- `GalleryPanel.tsx` H2 M3 — `Adding...` / `+ Add photo` / error strings not through i18n; raw px margins.
+- `JournalPanel.tsx` H3 M2, 11 hard-coded — search/save/type-label strings not through i18n; every entry wrapped in a Card; teal for type labels.
+
+**Tank creation / editing**
+- `tank/new/page.tsx` H2 M2 L1 — unit toggle: `#fff` text, sub-44px targets, teal active fill; water-type buttons teal fill.
+- `tank/[id]/edit/page.tsx` H1 M3 L1 — remove buttons `4px 12px` padding; plants/equipment in Cards; raw selects.
+- `tank/[id]/size/page.tsx` H2 M2 L1 — same unit-toggle pattern.
+- `tank/[id]/log/page.tsx` H2 M4 L2 — TargetEditor raw inputs blend into the surface (R2); sub-44px inputs/button; per-parameter Cards; teal Edit Targets link. Keep: the liquid-test timer.
+
+**Fish**
+- `tank/[id]/livestock/page.tsx` H3 M2 L1 — LivestockRow raw px paddings/font sizes; Card per fish; small count button.
+- `tank/[id]/livestock/search/page.tsx` H1 M2 L3 — 36px count buttons; bordered already-in-tank items; two wrong i18n namespace keys. Keep: the additive add flow.
+- `tank/[id]/livestock/scan/page.tsx` M3 L2 — candidates in bordered boxes; raw px; `4px 12px` SecondaryButtons. Keep: CompatibilitySummary before adding.
+
+**Onboarding**
+- `onboarding/page.tsx` H1 M3 L1, 12 hard-coded — welcome hero hard-coded hex; FloatingField transparent input (R2); segmented toggle sub-44px. Keep: glassmorphism legibility over the photo.
+- `onboarding/scan/page.tsx` H2 M3 L1 — unit toggle again; details Card.
+- `onboarding/report/page.tsx` H2 M4 L1, 12 hard-coded — raw selects (R2); algae strings bypass i18n (R11); Cards around text lists; small remove-equipment button.
+- `onboarding/planner/page.tsx` H1 M2 L2 — `5px 12px` SecondaryButtons sub-44px; raw px in species rows. Keep: curated beginner plants alongside AI suggestions.
+
+**Species Dex**
+- `(tabs)/dex/page.tsx` H1 M5 L2 — 26px checkmark/lock indicator; bordered rows; soft-token selects may blend; plain `<p>` empty state; category/difficulty values not i18n'd. Keep: the segmented mine/all tabs.
+- `(tabs)/dex/[id]/page.tsx` H1 M1 L2 — 32px tank-picker buttons; `#fff` add buttons; pill radii on StatTiles. Keep: the StatTile care grid.
+
+**Ask Aqua**
+- `(tabs)/ask/page.tsx` H1 M4 L1, 11 hard-coded — Card-in-bubble nesting; raw px throughout bubbles; thumbs buttons emoji-only, likely sub-44px. Keep: the sticky composer via `footerAboveDock`.
+- `(tabs)/ask/history/page.tsx` M3 — raw select; plain-div empty state.
+
+**Emergency**
+- `emergency/page.tsx` H1 M3 L1 — every intake group in a Card (R1); raw selects; `#fff` active symptom buttons; pill radii. Keep: the stage-based state machine.
+
+**Community**
+- `(tabs)/community/page.tsx` M1 L1 — loading state is a plain `<p>`.
+- `community/[id]/page.tsx` H2 M2 L2 — comment actions text-only sub-44px; footer input bypasses Field.
+- `community/new/page.tsx` H1 M1 L3 — 22px photo-remove button.
+- `PostCard.tsx` H1 M2 L1 — Report/Delete/Translate/Like strings not through i18n; teal Translate button; 28px more-actions button. Keep: optimistic like updates.
+
+**Auth**
+- `login/page.tsx` H7 M4 — the entire screen is untranslated English (every string). Keep: the clean single-column layout.
+
+**Misc**
+- `about/page.tsx` H1 M2 — 36px back button; Cards around text blocks.
+- `privacy/page.tsx` H1 M3 L1 — Card per paragraph; 36px back button.
+- `admin/page.tsx` H1 M2 L2 — all labels untranslated (private dashboard — acceptable, noted); StatGrid nested in Card; teal chart bars.
+
+### Component capabilities (as found)
+
+- `Button` — primary/secondary/danger variants; **full-width by default**; min-height 44px; weight 700; radius-md. Primary fills with `--color-deep`, not aqua. Missing: text/tertiary tier, compact/non-full-width sizing.
+- `Card` — surface + radius + hairline border; doc comment: "the default container for everything" — the R1 root cause.
+- `Field` — label + input + error text; surface-alt fill + line border; focus swaps to deep border + surface bg; min-height 44px. Missing: select and textarea variants; fill-vs-surface contrast is the brief's R2 concern.
+- `Chip` — neutral/fixNow/watch/improve/unverified/pro variants; display-only, not selectable.
+- `Screen` — safe-area wrapper, background override, measured sticky footer, `footerAboveDock`.
+- `TabBar` — 5 tabs, AquaIcon, collapse-near-bottom, i18n labels — the Discover/Profile renames are i18n string changes.
+- `EmptyState` — icon + message + one primary action.
+- **Missing primitives the brief requires:** ListRow, Status (icon + label + explanation), SegmentedControl, choice-card pattern, the TextInput focus system.
+
+### What Sections 1–2 take from this
+
+- **Section 1** sweeps the 40 hard-coded-value findings onto tokens after the rebase; severity colors stay a separate safety-critical scale.
+- **Section 2** builds the missing primitives (SegmentedControl kills the five inline toggles; ListRow replaces the Card-per-row pattern; Status fixes the Healthy badge), converges Button (text tier, sizing) and Field (select/textarea, stronger fill), and enforces 44px targets.
 
 ## Section 1 — Design tokens (brief tasks 0.1–0.4)
 
