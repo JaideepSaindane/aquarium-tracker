@@ -557,6 +557,9 @@ export default function OnboardingPlannerPage() {
             <PrimaryButton onClick={handleSave} disabled={saving}>
               {saving ? "Saving..." : "Save to My Tanks"}
             </PrimaryButton>
+            <SecondaryButton onClick={() => setStep(3)} disabled={saving}>
+              Step 3 of 4 — change size or city
+            </SecondaryButton>
           </>
         )
       }

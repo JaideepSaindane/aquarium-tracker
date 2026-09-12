@@ -133,17 +133,46 @@ export async function retrieveSpeciesForPlanner(wishList: string[], includePlant
     if (includePlants) matchedCategories.add("plant");
   }
 
-  const relevantCategory = species.filter((s) => s.category && matchedCategories.has(s.category));
-  const easyFirst = [...relevantCategory].sort((a, b) => (a.difficulty === "easy" ? -1 : 0) - (b.difficulty === "easy" ? -1 : 0));
+  // 2026-09-12 bug fix: this used to sort by `difficulty === "easy"`, but the
+  // real catalog values are "beginner"/"intermediate"/"advanced"/"expert" —
+  // that check never matched anything, so the "easy first" sort was a
+  // no-op and the list stayed in raw catalog order. With 1,331 fish vs. 134
+  // plants in the catalog, the first `limit` (250) entries in that raw
+  // order turned out to be 100% fish — a planted tank's AI advisor had
+  // zero plant ids to ever suggest, no matter what the user picked.
+  const beginnerFirst = (a: SeedSpecies, b: SeedSpecies) =>
+    (a.difficulty === "beginner" ? -1 : 0) - (b.difficulty === "beginner" ? -1 : 0);
 
   const seen = new Set<string>();
   const combined: SeedSpecies[] = [];
-  for (const s of [...matched.filter((s) => matchedIds.has(s.id)), ...easyFirst]) {
-    if (seen.has(s.id)) continue;
-    seen.add(s.id);
-    combined.push(s);
-    if (combined.length >= limit) break;
+  function addUpTo(rows: SeedSpecies[], cap: number) {
+    let added = 0;
+    for (const s of rows) {
+      if (combined.length >= limit || added >= cap) break;
+      if (seen.has(s.id)) continue;
+      seen.add(s.id);
+      combined.push(s);
+      added++;
+    }
   }
+
+  // Wish-list matches always get in, regardless of category or budget.
+  addUpTo(matched.filter((s) => matchedIds.has(s.id)), matched.length);
+
+  // Reserve real per-category budget so the much larger fish catalog can't
+  // crowd out an entire required category before it ever appears — this is
+  // the actual fix, not just correcting the sort. Fish gets whatever's left
+  // of `limit` after plants/inverts take their reserved slice.
+  if (matchedCategories.has("plant")) {
+    addUpTo([...species.filter((s) => s.category === "plant")].sort(beginnerFirst), 60);
+  }
+  if (matchedCategories.has("shrimp") || matchedCategories.has("snail")) {
+    addUpTo([...species.filter((s) => s.category === "shrimp" || s.category === "snail")].sort(beginnerFirst), 20);
+  }
+  if (matchedCategories.has("fish")) {
+    addUpTo([...species.filter((s) => s.category === "fish")].sort(beginnerFirst), limit);
+  }
+
   return combined;
 }
 
