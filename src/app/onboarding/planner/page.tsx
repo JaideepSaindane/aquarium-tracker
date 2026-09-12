@@ -568,7 +568,7 @@ export default function OnboardingPlannerPage() {
               {saving ? "Saving..." : "Save to My Tanks"}
             </PrimaryButton>
             <SecondaryButton onClick={() => setStep(3)} disabled={saving || aiLoading}>
-              Step 3 of 4 — change size or city
+              Back — change size or city
             </SecondaryButton>
           </>
         )
