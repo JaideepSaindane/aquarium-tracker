@@ -23,14 +23,12 @@ export async function POST(req: NextRequest) {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  if (!ctx.isByok) {
-    const quota = await peekQuota(userId, "ask");
-    if (!quota.allowed) {
-      return NextResponse.json(
-        { error: `You've used your ${quota.limit} free questions this month. Resets ${quota.resetsAt}.`, resetsAt: quota.resetsAt },
-        { status: 429 }
-      );
-    }
+  const quota = await peekQuota(userId, "ask");
+  if (!quota.allowed) {
+    return NextResponse.json(
+      { error: `You've used your ${quota.limit} free questions this month. Resets ${quota.resetsAt}.`, resetsAt: quota.resetsAt },
+      { status: 429 }
+    );
   }
 
   const body = await req.json();
@@ -70,7 +68,7 @@ export async function POST(req: NextRequest) {
 
   if (!result.ok) return NextResponse.json({ error: result.error, detail: result.detail }, { status: 422 });
 
-  if (!ctx.isByok) await incrementQuota(userId, "ask");
+  await incrementQuota(userId, "ask");
   if (result.unresolvableRefs.length) console.error(`[${PROMPT_VERSION}] unresolvable grounding_refs:`, result.unresolvableRefs);
 
   return NextResponse.json({ answer: result.data, meta: result.meta, unresolvableRefs: result.unresolvableRefs });

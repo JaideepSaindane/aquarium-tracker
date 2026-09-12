@@ -183,7 +183,7 @@ Runs in the same Next.js deploy as the app (Vercel functions under the hood), wh
 
 Prompts live in versioned files (`prompts/tank-scan.v1.md`), not inline in code — unchanged.
 
-Bring-your-own-key mode: the key is held **client-side, in memory for the session** (not `localStorage`, which is readable by any script on the page and not meaningfully more secure than a cookie) and sent per-request over TLS. Never persisted server-side or logged. Because there is no OS-level secure enclave equivalent to `expo-secure-store` on the web, be explicit in-app that the key is not stored between sessions unless the user accepts a lower-security persisted option — this is a real, honest tradeoff versus the native plan and should be surfaced to Jaideep as a product decision, not silently resolved.
+Bring-your-own-key mode was planned here but never got a real UI (no screen ever let a user actually enter a key) — removed 2026-09-12 as dead code. See CLAUDE.md's AI rules for the current, simpler state: every call uses the server's own key.
 
 ---
 

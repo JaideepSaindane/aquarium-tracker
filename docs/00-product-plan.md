@@ -139,7 +139,7 @@ Assessed against the original brief:
 
 Freemium plus subscription — but the reviews are brutal about subscriptions, and the lesson is that the subscription is not the problem, *what sits behind it* is. Draw the line on **continuity, storage and depth**. Never on knowledge, safety, or a user's own data.
 
-**Free forever:** unlimited tanks, all species cards and care data, all disease reference, emergency triage unlimited, **all eight standard parameters** with graphs and per-tank thresholds, reminders, journal and photos, livestock timelines, the Species Dex, adding *and deleting* livestock, export (CSV/JSON/photos), offline, 2 Tank Scans and 15 AI questions per month, bring-your-own-API-key for unlimited AI. Compatibility checks and provisional species cards are unlimited and uncounted.
+**Free forever:** unlimited tanks, all species cards and care data, all disease reference, emergency triage unlimited, **all eight standard parameters** with graphs and per-tank thresholds, reminders, journal and photos, livestock timelines, the Species Dex, adding *and deleting* livestock, export (CSV/JSON/photos), offline, 2 Tank Scans and 15 AI questions per month. (Bring-your-own-API-key was in the original plan but never got a real UI and was removed 2026-09-12 — see CLAUDE.md.) Compatibility checks and provisional species cards are unlimited and uncounted.
 
 **Pro:** unlimited Tank Scans with history and comparison, fair-use unlimited AI, **custom parameters beyond the eight standard ones**, unlimited cloud photo storage and timelapse, multi-device sync, PDF tank reports.
 

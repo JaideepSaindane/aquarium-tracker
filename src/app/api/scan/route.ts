@@ -20,14 +20,12 @@ export async function POST(req: NextRequest) {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  if (!ctx.isByok) {
-    const quota = await peekQuota(userId, "scan");
-    if (!quota.allowed) {
-      return NextResponse.json(
-        { error: `You've used your ${quota.limit} free scans this month. Resets ${quota.resetsAt}.`, resetsAt: quota.resetsAt },
-        { status: 429 }
-      );
-    }
+  const quota = await peekQuota(userId, "scan");
+  if (!quota.allowed) {
+    return NextResponse.json(
+      { error: `You've used your ${quota.limit} free scans this month. Resets ${quota.resetsAt}.`, resetsAt: quota.resetsAt },
+      { status: 429 }
+    );
   }
 
   const form = await req.formData();
@@ -73,7 +71,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: result.error, detail: result.detail }, { status: 422 });
   }
 
-  if (!ctx.isByok) await incrementQuota(userId, "scan");
+  await incrementQuota(userId, "scan");
   if (result.unresolvableRefs.length) {
     console.error(`[${PROMPT_VERSION}] unresolvable grounding_refs:`, result.unresolvableRefs);
   }

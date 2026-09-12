@@ -128,12 +128,12 @@ export default function AskPage() {
     });
   }
 
-  const isEarlyBird = quota && !quota.isByok && quota.earlyBird;
+  const isEarlyBird = quota && quota.earlyBird;
   const quotaWarning =
-    quota && !quota.isByok && !quota.earlyBird && quota.allowed && quota.limit - quota.used <= 3
+    quota && !quota.earlyBird && quota.allowed && quota.limit - quota.used <= 3
       ? `${quota.limit - quota.used} free question${quota.limit - quota.used === 1 ? "" : "s"} left this month.`
       : null;
-  const quotaExhausted = quota && !quota.isByok && !quota.earlyBird && !quota.allowed;
+  const quotaExhausted = quota && !quota.earlyBird && !quota.allowed;
 
   return (
     <Screen

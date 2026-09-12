@@ -8,9 +8,8 @@ const MODEL_NAME = "gemini-3.5-flash-lite";
 
 /**
  * Fresh instance per call — never a module-level singleton holding a key.
- * That matters for bring-your-own-key mode: a serverless function instance
- * can be reused across requests from different users, and a cached client
- * bound to one user's key must never serve another user's request.
+ * A serverless function instance can be reused across requests, and a
+ * cached client shouldn't outlive the single call it was created for.
  */
 export function createGeminiProvider(apiKey: string): ModelProvider {
   const client = new GoogleGenerativeAI(apiKey);

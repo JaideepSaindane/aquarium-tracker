@@ -9,8 +9,8 @@ export const DEFAULT_PROVIDER: ProviderName = "gemini";
 
 /**
  * `apiKey` is required and explicit (never read from env inside this
- * function) so bring-your-own-key mode and the server's own key go through
- * exactly the same path — see routes' `resolveApiKey()`.
+ * function) — see `serverApiKeyFor()` below, the one place that reads it
+ * from env.
  */
 export function getProvider(name: ProviderName, apiKey: string): ModelProvider {
   switch (name) {

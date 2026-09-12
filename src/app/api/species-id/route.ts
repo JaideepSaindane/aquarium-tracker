@@ -15,10 +15,8 @@ export async function POST(req: NextRequest) {
   const ctx = resolveRequestContext(req);
   if (isContextError(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
 
-  if (!ctx.isByok) {
-    const rate = await checkIpRateLimit(req);
-    if (!rate.allowed) return NextResponse.json({ error: "Too many requests. Please try again shortly." }, { status: 429, headers: { "Retry-After": String(rate.retryAfterSeconds) } });
-  }
+  const rate = await checkIpRateLimit(req);
+  if (!rate.allowed) return NextResponse.json({ error: "Too many requests. Please try again shortly." }, { status: 429, headers: { "Retry-After": String(rate.retryAfterSeconds) } });
 
   const form = await req.formData();
   const photo = form.get("photo");

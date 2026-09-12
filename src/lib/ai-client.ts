@@ -1,25 +1,16 @@
 "use client";
 
 // Thin client for the AI proxy routes (T-013). Every call attaches the
-// device id (and the user's own key, if they've entered one in Settings —
-// bring-your-own-key mode, T-025) and logs the result into the local
-// ai_interactions table so cost/usage is visible per docs/02-data-model.md.
+// device id and logs the result into the local ai_interactions table so
+// cost/usage is visible per docs/02-data-model.md. Bring-your-own-key mode
+// was removed 2026-09-12 — it was fully wired end-to-end server-side but
+// never had a UI to actually enter a key, so it was dead code, not a real
+// feature anyone could reach.
 import { getDeviceId } from "./device-id";
 import { logAiInteraction } from "@/db/queries/ai-interactions";
 
-let byokKey: string | null = null;
-/** In-memory only, per session — never persisted, per specs/T-013. */
-export function setByokKey(key: string | null) {
-  byokKey = key;
-}
-export function hasByokKey(): boolean {
-  return byokKey !== null;
-}
-
 function headers(extra?: Record<string, string>): HeadersInit {
-  const h: Record<string, string> = { "x-device-id": getDeviceId(), ...extra };
-  if (byokKey) h["x-user-api-key"] = byokKey;
-  return h;
+  return { "x-device-id": getDeviceId(), ...extra };
 }
 
 export type AiCallResult<T> = { ok: true; data: T } | { ok: false; error: string; detail?: string; resetsAt?: string };
@@ -232,9 +223,8 @@ export async function getPlannerAdvice(params: { tankType: string; band: string;
 }
 
 export type QuotaStatus =
-  | { isByok: true }
-  | { isByok: false; earlyBird: boolean; allowed: true; used: number; limit: number }
-  | { isByok: false; earlyBird: boolean; allowed: false; used: number; limit: number; resetsAt: string };
+  | { earlyBird: boolean; allowed: true; used: number; limit: number }
+  | { earlyBird: boolean; allowed: false; used: number; limit: number; resetsAt: string };
 
 /** Read-only — never counts against the quota. Lets the UI warn before the last question, not after (specs/T-019). */
 export async function peekQuotaStatus(kind: "scan" | "ask"): Promise<QuotaStatus | null> {

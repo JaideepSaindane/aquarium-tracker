@@ -28,12 +28,10 @@ function clientIp(req: NextRequest): string {
 export type IpRateLimitResult = { allowed: true } | { allowed: false; retryAfterSeconds: number };
 
 /**
- * Call once per request on the six unmetered AI routes, BEFORE the AI call
- * — skip entirely when the caller is using bring-your-own-key mode (that
- * cost is theirs, not ours, same exception the account-keyed quota system
- * already makes). Fails open (allows the request) if Redis is unreachable
- * — a rate limiter that takes the whole app down when Redis hiccups would
- * be a worse outcome than occasionally missing a rate-limit window.
+ * Call once per request on the six unmetered AI routes, BEFORE the AI
+ * call. Fails open (allows the request) if Redis is unreachable — a rate
+ * limiter that takes the whole app down when Redis hiccups would be a
+ * worse outcome than occasionally missing a rate-limit window.
  */
 export async function checkIpRateLimit(req: NextRequest): Promise<IpRateLimitResult> {
   try {

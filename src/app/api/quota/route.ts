@@ -13,11 +13,9 @@ export async function GET(req: NextRequest) {
   const kind = req.nextUrl.searchParams.get("kind");
   if (kind !== "scan" && kind !== "ask") return NextResponse.json({ error: "kind must be scan or ask" }, { status: 400 });
 
-  if (ctx.isByok) return NextResponse.json({ isByok: true });
-
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const quota = await peekQuota(userId, kind);
-  return NextResponse.json({ isByok: false, earlyBird: EARLY_BIRD_MODE, ...quota });
+  return NextResponse.json({ earlyBird: EARLY_BIRD_MODE, ...quota });
 }
