@@ -257,7 +257,13 @@ export default function OnboardingPlannerPage() {
         const plantIds = new Set((aiPlan?.suggested_plants ?? []).map((p) => p.species_id));
         for (const pid of plantIds) {
           const sp = speciesById.get(pid);
-          if (sp) await addPlant({ tankId, speciesId: pid, commonName: firstName(sp.commonNames) ?? pid });
+          // The advisor occasionally names a non-plant id here (e.g. a snail) —
+          // 2026-09-12 bug report: "it says plants will thrive here and shows an
+          // Amazon snail." Only ever save something as a plant if our own
+          // catalog actually agrees it's a plant; never trust the AI's category
+          // implicitly. A misfiled snail is simply dropped here, not saved as
+          // anything wrong.
+          if (sp && sp.category === "plant") await addPlant({ tankId, speciesId: pid, commonName: firstName(sp.commonNames) ?? pid });
         }
       }
 
@@ -551,9 +557,6 @@ export default function OnboardingPlannerPage() {
             <PrimaryButton onClick={handleSave} disabled={saving}>
               {saving ? "Saving..." : "Save to My Tanks"}
             </PrimaryButton>
-            <SecondaryButton onClick={() => setStep(3)} disabled={saving}>
-              Back — change size or city
-            </SecondaryButton>
           </>
         )
       }
@@ -827,10 +830,15 @@ export default function OnboardingPlannerPage() {
                   })}
                 </div>
               )}
-              {aiPlan.suggested_plants.length > 0 && (
+              {aiPlan.suggested_plants.some((p) => speciesById.get(p.species_id)?.category === "plant") && (
                 <div style={{ marginTop: 8 }}>
                   <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>Plants that will thrive here:</p>
-                  {aiPlan.suggested_plants.map((p) => {
+                  {/* Only ever show something here if our own catalog agrees it's
+                      actually a plant — the advisor has named a non-plant (a
+                      snail, with a description) under this heading before, which
+                      makes no sense to a reader and was never actually saved as a
+                      plant either (see handleSave's matching guard above). */}
+                  {aiPlan.suggested_plants.filter((p) => speciesById.get(p.species_id)?.category === "plant").map((p) => {
                     const sp = speciesById.get(p.species_id);
                     return (
                       <div key={p.species_id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
