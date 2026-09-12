@@ -67,15 +67,23 @@ export function IntroAnimation() {
         inset: 0,
         zIndex: 9999,
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        background: "var(--color-ground)",
+        // Jaideep's reference image (a calm sailboat-on-water scene) as the
+        // backdrop instead of a flat colour, per his ask.
+        background: "var(--color-ground) url(/onboarding/intro-bg.jpg) center / cover no-repeat",
         opacity: fading ? 0 : 1,
         transition: "opacity 300ms ease",
         cursor: "pointer",
       }}
     >
+      {/* Jaideep: "move the fish jumping animation lower on the screen -
+          bottom 2/3rd" — a top spacer twice the height of the bottom one
+          pushes the animation's centre down to roughly the two-thirds
+          mark instead of dead-centre. */}
+      <div style={{ flex: 2 }} />
       <div ref={containerRef} style={{ width: "min(80vw, 400px)" }} />
+      <div style={{ flex: 1 }} />
     </div>
   );
 }

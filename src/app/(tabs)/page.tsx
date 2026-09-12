@@ -219,7 +219,7 @@ export default function TanksPage() {
                         dots render reliably as a "more actions" affordance
                         regardless of font. */}
                     {[0, 1, 2].map((i) => (
-                      <span key={i} aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: "var(--color-ink)" }} />
+                      <span key={i} aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: "#000" }} />
                     ))}
                   </button>
 
