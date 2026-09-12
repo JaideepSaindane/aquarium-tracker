@@ -5,12 +5,12 @@
 const en = {
   tabs: {
     tanks: "My Tanks",
-    dex: "Dex",
+    dex: "Discover",
     home: "Home",
     ask: "Ask Aqua",
     community: "Community",
     settings: "Settings",
-    profile: "My Profile",
+    profile: "Profile",
   },
   common: {
     comingSoon: "This screen isn't built yet.",
@@ -63,6 +63,15 @@ const en = {
     no: "No",
     deleting: "Deleting...",
     yesDelete: "Yes, delete",
+    needHelpTitle: "Need help?",
+    needHelpBody: "Something doesn't look right?",
+    getHelp: "Get help",
+    fishCount: "{n} fish",
+    statusNoFish: "No fish yet",
+    statusNoFishExplanation: "Add your first fish to get started",
+    statusOk: "Healthy",
+    statusOkExplanation: "{n} fish · nothing flagged",
+    askAquaAction: "Ask Aqua",
   },
   settings: {
     title: "My Profile & Settings",

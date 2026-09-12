@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { TankThumbnail } from "@/components/TankThumbnail";
-import { TankHeroPhoto } from "@/components/TankHeroPhoto";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
-import { SecondaryButton, DangerButton } from "@/components/Button";
+import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
+import { Status } from "@/components/Status";
+import { ListRow } from "@/components/ListRow";
 import { FirstTankTour } from "@/components/FirstTankTour";
 import { useLiveQuery } from "@/db/live";
 import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
@@ -68,9 +69,6 @@ export default function TanksPage() {
     .sort((a, b) => {
       return b.createdAt.localeCompare(a.createdAt);
     });
-  const mostRecentPhotoTank = (tanks ?? [])
-    .filter((t) => t.photoUri)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
   const deleteTarget = (tanks ?? []).find((t) => t.id === deleteTargetId);
 
   async function handleHide(tankId: string) {
@@ -88,43 +86,38 @@ export default function TanksPage() {
 
   return (
     <Screen background="var(--soft-bg)">
-      <TankHeroPhoto photoUri={mostRecentPhotoTank?.photoUri}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div>
-            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>{greeting(t)},</p>
-            <h1 style={{ fontSize: "var(--font-title-size)", color: "#fff" }}>
-              {data?.profileName ? data.profileName : t.home.aquarist} 👋
-            </h1>
-          </div>
-          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-            <Link
-              href="/settings"
-              aria-label={t.tabs.settings}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.14)",
-                border: "1px solid rgba(255,255,255,0.28)",
-                backdropFilter: "blur(var(--glass-blur))",
-                WebkitBackdropFilter: "blur(var(--glass-blur))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 18,
-                flexShrink: 0,
-                color: "#fff",
-              }}
-            >
-              ⚙️
-            </Link>
-          </div>
+      {/* Redesign Section 3 (brief Screen 1): the greeting used to sit
+          overlaid on a full-bleed blurred tank photo — the brief calls this
+          out directly ("the greeting and background image compete with one
+          another"). The greeting is now small, plain text; the tank itself
+          (its own real photo, in its own card below) is the hero, not a
+          backdrop for the header. */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <div>
+          <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 2 }}>{greeting(t)},</p>
+          <h1 style={{ fontSize: "var(--font-heading-size)", color: "var(--soft-ink)" }}>
+            {data?.profileName ? data.profileName : t.home.aquarist} 👋
+          </h1>
         </div>
-
-        <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 12 }}>
-          {tanks && tanks.length > 0 ? t.home.lookingGood : t.home.emptyHeading}
-        </p>
-      </TankHeroPhoto>
+        <Link
+          href="/settings"
+          aria-label={t.tabs.settings}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: "50%",
+            background: "var(--soft-card-bg)",
+            border: "1px solid var(--soft-card-border)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 18,
+            flexShrink: 0,
+          }}
+        >
+          ⚙️
+        </Link>
+      </div>
 
       {/* A search box is dead weight when every tank already fits on screen
           at a glance — only earns its place once there's enough to actually
@@ -155,67 +148,26 @@ export default function TanksPage() {
             {t.home.emptyHeading}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
-            <Link
-              href="/onboarding/scan"
-              style={{
-                display: "block",
-                textAlign: "center",
-                padding: "16px 20px",
-                borderRadius: "var(--radius-lg)",
-                background: "var(--soft-accent)",
-                color: "#fff",
-                fontWeight: 700,
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
-              🐟 {t.home.haveTankCta}
-            </Link>
-            <Link
-              href="/onboarding/planner"
-              style={{
-                display: "block",
-                textAlign: "center",
-                padding: "16px 20px",
-                borderRadius: "var(--radius-lg)",
-                background: "var(--soft-card-bg)",
-                border: "1px solid var(--soft-card-border)",
-                color: "var(--soft-ink)",
-                fontWeight: 700,
-              }}
-            >
-              🧭 {t.home.plannerCta}
-            </Link>
+            <PrimaryButton onClick={() => router.push("/onboarding/scan")}>🐟 {t.home.haveTankCta}</PrimaryButton>
+            <SecondaryButton onClick={() => router.push("/onboarding/planner")}>🧭 {t.home.plannerCta}</SecondaryButton>
           </div>
-          <Link href="/emergency" style={{ display: "block", textAlign: "center", color: "var(--color-fix-now)" }}>
-            {t.home.emergencyLink}
-          </Link>
+          <ListRow
+            icon="🩺"
+            label={t.home.needHelpTitle}
+            meta={t.home.needHelpBody}
+            trailing={t.home.getHelp}
+            showChevron
+            onClick={() => router.push("/emergency")}
+          />
         </>
       )}
 
       {tanks && tanks.length > 0 && (
         <>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, position: "relative" }}>
+          <div style={{ marginBottom: 10 }}>
             <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>
               {t.home.myTanks} <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
             </p>
-            <Link
-              href="/tank/new"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "8px 16px",
-                borderRadius: "var(--radius-pill)",
-                background: "var(--soft-accent)",
-                color: "#fff",
-                fontSize: "var(--font-caption-size)",
-                fontWeight: 700,
-                boxShadow: "var(--shadow-sm)",
-                flexShrink: 0,
-              }}
-            >
-              + {t.home.addTank}
-            </Link>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
@@ -224,6 +176,13 @@ export default function TanksPage() {
               const visibleThumbs = livestockThumbs.slice(0, 4);
               const overflowCount = livestockThumbs.length - visibleThumbs.length;
               const isBrackish = tank.waterType === "brackish";
+              // Real, honest count — not a deep health analysis (that's
+              // Section 4/Tank Detail's job, computed from actual logged
+              // parameters). Here it's just "does this tank have fish or
+              // not," which is the one fact this list screen actually has
+              // on hand — never assert "Healthy" with nothing behind it
+              // (brief Part 1 §11's own named example).
+              const fishTotal = livestockThumbs.reduce((sum, l) => sum + l.count, 0);
 
               return (
                 <div
@@ -238,7 +197,7 @@ export default function TanksPage() {
                   }}
                 >
                   <Link href={`/tank/${tank.id}`} style={{ display: "block" }}>
-                    <TankThumbnail photoUri={tank.photoUri} width="100%" height={140} radius="0" />
+                    <TankThumbnail photoUri={tank.photoUri} width="100%" height={180} radius="0" />
                   </Link>
 
                   <button
@@ -264,25 +223,9 @@ export default function TanksPage() {
                   </button>
 
                   <Link href={`/tank/${tank.id}`} style={{ display: "block", padding: 12, color: "inherit" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-                      <strong style={{ color: "var(--soft-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tank.name}</strong>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4,
-                          fontSize: "var(--font-caption-size)",
-                          fontWeight: 600,
-                          padding: "2px 10px",
-                          borderRadius: "var(--radius-pill)",
-                          color: "var(--color-improve)",
-                          background: "var(--color-deep-soft)",
-                          flexShrink: 0,
-                        }}
-                      >
-                        ● {t.home.healthy}
-                      </span>
-                    </div>
+                    <strong style={{ display: "block", color: "var(--soft-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {tank.name}
+                    </strong>
 
                     <div
                       style={{
@@ -309,6 +252,17 @@ export default function TanksPage() {
                       {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
                     </div>
 
+                    {/* Status now always carries a real explanation (the
+                        new Status primitive requires one) — never a bare
+                        "● Healthy" with nothing behind it. */}
+                    <div style={{ marginTop: 8 }}>
+                      <Status
+                        variant={fishTotal > 0 ? "improve" : "neutral"}
+                        label={fishTotal > 0 ? t.home.statusOk : t.home.statusNoFish}
+                        explanation={fishTotal > 0 ? t.home.statusOkExplanation.replace("{n}", String(fishTotal)) : t.home.statusNoFishExplanation}
+                      />
+                    </div>
+
                     <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                       {visibleThumbs.map((l, i) => (
                         <SpeciesThumb key={`${l.speciesId}-${i}`} imageUri={l.imageUri} category={l.category} size={24} />
@@ -331,9 +285,6 @@ export default function TanksPage() {
                         >
                           +{overflowCount}
                         </span>
-                      )}
-                      {visibleThumbs.length === 0 && (
-                        <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.home.noFishYet}</span>
                       )}
                     </div>
                   </Link>
@@ -395,12 +346,33 @@ export default function TanksPage() {
             )}
           </div>
 
-          <Link href="/onboarding/planner" style={{ display: "block", textAlign: "center", color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 8 }}>
-            🧭 {t.home.plannerCta}
-          </Link>
-          <Link href="/emergency" style={{ display: "block", textAlign: "center", color: "var(--color-fix-now)" }}>
-            {t.home.emergencyLink}
-          </Link>
+          {/* Brief Screen 1's "Actions" row — Add tank / Help me build a
+              tank / Ask Aqua, one simple row underneath the tank list
+              instead of a pill fighting for space next to the section
+              header above. */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/tank/new")}>
+              + {t.home.addTank}
+            </SecondaryButton>
+            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/onboarding/planner")}>
+              🧭 {t.home.plannerCta}
+            </SecondaryButton>
+            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/ask")}>
+              💬 {t.home.askAquaAction}
+            </SecondaryButton>
+          </div>
+
+          {/* Brief Screen 1: "Emergency" no longer dominates the ordinary
+              home experience — a quiet row, not a loud red full-width
+              link. The urgent treatment stays inside /emergency itself. */}
+          <ListRow
+            icon="🩺"
+            label={t.home.needHelpTitle}
+            meta={t.home.needHelpBody}
+            trailing={t.home.getHelp}
+            showChevron
+            onClick={() => router.push("/emergency")}
+          />
         </>
       )}
 

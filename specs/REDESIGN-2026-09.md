@@ -1,7 +1,7 @@
 # UI/UX Redesign — Execution Plan
 
 **Source brief:** `docs/08-ui-redesign-brief.md` (Jaideep's consolidated redesign strategy, shared 2026-09-12 — read it before starting any section).
-**Status:** Sections 0–2 complete (2026-09-12/13). Next: Section 3 (Navigation + My Tanks). Work the sections in order, one at a time — Jaideep says "do Section N".
+**Status:** Sections 0–3 complete (2026-09-12/13). Next: Section 4 (Tank Detail) — note Tank Detail already reads as broadly brief-compliant on inspection (large photo, Size/Volume/Temp metrics, Health Check as primary action, Fish/Gallery/Journal as list rows); confirm/tighten rather than assume a rebuild from scratch. Work the sections in order, one at a time — Jaideep says "do Section N".
 **Log every completed section in `specs/PROGRESS.md`**, same as any task.
 
 ---
@@ -139,11 +139,13 @@ Findings are directional (read from source, not a rendered screen) — each sect
 **Not done, correctly deferred to later sections:** screens are not migrated onto the new primitives yet beyond the Settings pilot — that's each later section's own job as it touches its screens (Section 2's acceptance bar is "primitives exist and are provably usable," not "the whole app uses them").
 **Acceptance:** Met.
 
-## Section 3 — Navigation + My Tanks (brief Phase 1)
+## Section 3 — Navigation + My Tanks (brief Phase 1) — COMPLETE (2026-09-13)
 
 **Goal:** Tanks is unmistakably home; the tank is the hero.
-**Do:** Tab bar becomes My Tanks | Discover | Ask Aqua | Community | Profile (labels via i18n; "My Tanks" per decision 2). My Tanks redesigned: small greeting, tank photo dominating each card, name + `54.9 L · Freshwater · Planted`, status with explanation, `4 fish · 27–28°C`, no controls inside the card. Emergency demoted to a quiet "Need help? → Get help" row — the urgent treatment stays inside the flow itself. Action row: Add tank / Help me build a tank / Ask Aqua. Zero-tanks state matches.
-**Acceptance:** A first-time user immediately understands My Tanks is the primary destination; the photo dominates; emergency no longer shouts.
+**Done:** Tab bar is now My Tanks | Discover | Ask Aqua | Community | Profile (i18n labels changed in both `en`/`hi-latn`; "My Tanks" kept per decision 2, Dex→Discover and My Profile→Profile per the brief). My Tanks (`src/app/(tabs)/page.tsx`) rebuilt per the brief's own mockup: the greeting is now small plain text (no photo background) instead of overlaid on a full-bleed blurred hero image — the brief's own named complaint ("the greeting and background image compete with one another") is gone since there's no longer a competing background at all. Each tank card's photo bumped to 180px and is now the dominant element, with name/water-type/planted/date below it, then a real `Status` (from Section 2 — never a bare "● Healthy," always paired with an honest explanation: `"{n} fish · nothing flagged"` when the tank has fish, `"No fish yet" / "Add your first fish to get started"` when it doesn't — this list screen only asserts what it actually knows, real health-from-parameters status is Section 4's job on Tank Detail). Actions consolidated into one row below the tank list — Add tank / Help me build a tank / Ask Aqua — replacing a pill competing for space next to the section header. Emergency demoted from a loud full-width red link to a quiet `ListRow` ("Need help? / Something doesn't look right? / Get help ›") — present in both the populated and zero-tanks states.
+**Verification:** `npx tsc --noEmit`/`npm run build` clean. Real-browser pass via a local dev server: signed up a throwaway phone+PIN account, created a real tank, confirmed the zero-fish card shows the honest "No fish yet" status, confirmed the tab bar labels, confirmed the Section 2 `SegmentedControl` pilot on Settings still works, checked both themes (light/dark toggle from Settings). **Cleaned up after verifying**: local dev shares the same production Postgres — deleted the throwaway test account via the real self-serve "Delete my account" flow (which this also incidentally re-verified) so no test data was left in production.
+**A pre-existing find, not something Section 3 introduced**: Tank Detail (Section 4's screen) already reads as substantially brief-compliant on inspection — large photo, Size/Volume/Temp as primary metrics, a real Health Check primary action, Fish/Gallery/Journal as list rows with counts. Not verified in depth (that's Section 4's own job) but flagging so Section 4 starts from "confirm and tighten" rather than assuming a from-scratch rebuild.
+**Acceptance:** Met.
 
 ## Section 4 — Tank Detail (brief Phase 2)
 

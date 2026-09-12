@@ -9,12 +9,12 @@ import type { Dictionary } from "./types";
 const hiLatn: Dictionary = {
   tabs: {
     tanks: "Mere Tanks",
-    dex: "Dex",
+    dex: "Discover",
     home: "Home",
     ask: "Ask Aqua",
     community: "Community",
     settings: "Settings",
-    profile: "Mera Profile",
+    profile: "Profile",
   },
   common: {
     comingSoon: "Ye screen abhi banaya nahi gaya hai.",
@@ -67,6 +67,15 @@ const hiLatn: Dictionary = {
     no: "Nahi",
     deleting: "Delete ho raha hai...",
     yesDelete: "Haan, delete karein",
+    needHelpTitle: "Madad chahiye?",
+    needHelpBody: "Kuch theek nahi lag raha?",
+    getHelp: "Madad lein",
+    fishCount: "{n} fish",
+    statusNoFish: "Abhi tak koi fish nahi",
+    statusNoFishExplanation: "Shuru karne ke liye apni pehli fish add karein",
+    statusOk: "Healthy",
+    statusOkExplanation: "{n} fish · kuch bhi flag nahi hua",
+    askAquaAction: "Ask Aqua",
   },
   settings: {
     title: "My Profile & Settings",
