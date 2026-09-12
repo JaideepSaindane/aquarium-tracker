@@ -21,29 +21,29 @@ import { AskZod, type AskAnswer } from "@/server/ai/schemas/ask";
 import styles from "./ask.module.css";
 
 type Stage = "idle" | "loading";
-type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInteractions>>>[number];
+export type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInteractions>>>[number];
 
 /**
  * Ask AquaAI, redesigned 2026-09-05 from a single-shot "ask, get one answer,
  * old answers vanish into a flat list below" form into a real scrolling
- * chat thread — Jaideep's direct ask to make the whole feature more
- * prominent, functionally as well as visually. The data was always there
- * to support this: `ai_interactions.response` already stores the full
- * structured answer for every past turn (T-019), it just wasn't being
- * rendered as anything more than a question title. Now every turn (past or
- * just-asked) renders through the same `AnswerBubble`, oldest at the top,
- * auto-scrolling to the newest — a live query, so a just-logged interaction
- * appears the instant `logAiInteraction` writes it, no separate "current
- * answer" state to keep in sync with history. The input is a real sticky
- * chat composer (`Screen`'s `footer` prop) instead of a form embedded in
- * scrolling content. Ask is now a permanent centered tab in the bottom
- * dock (2026-09-10) rather than a screen the dock hides itself for, so the
- * composer uses `footerAboveDock` to sit above the dock instead of under it.
+ * chat thread. Redesigned again 2026-09-12 (Jaideep's bug report: "the
+ * second conversation has history in the same chat, so it gets messy" —
+ * every visit used to load and render the ENTIRE all-time ai_interactions
+ * history inline, which only ever grew, plus the tank-picker context got
+ * confusing mixed into one long undifferentiated thread). Now this screen
+ * always opens on a blank slate — `sessionTurns` is local, in-memory state
+ * that starts empty every mount and only holds turns asked in the current
+ * visit, never loaded from the database. Nothing is lost: every turn is
+ * still persisted via `logAiInteraction` exactly as before, and the
+ * separate `/ask/history` screen (below) is where all of it — from every
+ * past visit — can still be browsed, filtered by tank and date. The input
+ * is a real sticky chat composer (`Screen`'s `footer` prop). Ask is a
+ * permanent centered tab in the bottom dock, so the composer uses
+ * `footerAboveDock` to sit above the dock instead of under it.
  */
 export default function AskPage() {
   const router = useRouter();
   const { data: tanks } = useLiveQuery(listTanks, []);
-  const { data: history } = useLiveQuery(listAiInteractions, []);
   const { locale } = useLocale();
   const t = useTranslation();
   const STARTER_QUESTIONS = [t.askPage.starterQuestions.setupCorrect, t.askPage.starterQuestions.thisWeek, t.askPage.starterQuestions.addMoreFish];
@@ -54,6 +54,7 @@ export default function AskPage() {
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [quota, setQuota] = useState<QuotaStatus | null>(null);
+  const [sessionTurns, setSessionTurns] = useState<AiInteractionRow[]>([]);
   const [showDetailIds, setShowDetailIds] = useState<Set<string>>(new Set());
   const [showCorrectionIds, setShowCorrectionIds] = useState<Set<string>>(new Set());
   const [correctionText, setCorrectionText] = useState<Record<string, string>>({});
@@ -64,9 +65,7 @@ export default function AskPage() {
     peekQuotaStatus("ask").then(setQuota);
   }, []);
 
-  const askHistory = (history ?? [])
-    .filter((h) => h.kind === "ask" && (!tankId || h.tankId === tankId))
-    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const askHistory = sessionTurns;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -90,7 +89,31 @@ export default function AskPage() {
         setQuestion(finalQuestion);
       } else {
         const parsed = AskZod.safeParse(result.data.answer);
-        if (!parsed.success) setError(t.askPage.unexpectedShape);
+        if (!parsed.success) {
+          setError(t.askPage.unexpectedShape);
+        } else if (result.data.interactionId) {
+          // Append to this visit's own thread only — the persisted write
+          // already happened inside askQuestion()/logAiInteraction.
+          setSessionTurns((prev) => [
+            ...prev,
+            {
+              id: result.data.interactionId!,
+              tankId: tankId || null,
+              kind: "ask",
+              promptVersion: String(result.data.answer.prompt_version ?? ""),
+              userInput: finalQuestion,
+              groundingRefs: null,
+              response: result.data.answer as unknown as string,
+              inputTokens: null,
+              outputTokens: null,
+              costUsd: null,
+              latencyMs: null,
+              rating: null,
+              correctionText: null,
+              createdAt: new Date().toISOString(),
+            },
+          ]);
+        }
       }
       peekQuotaStatus("ask").then(setQuota);
     } catch {
@@ -117,11 +140,14 @@ export default function AskPage() {
 
   async function handleRate(id: string, rating: 1 | -1) {
     await rateAiInteraction(id, rating);
+    setSessionTurns((prev) => prev.map((r) => (r.id === id ? { ...r, rating } : r)));
     if (rating === -1) setShowCorrectionIds((s) => new Set(s).add(id));
   }
 
   async function handleSaveCorrection(id: string) {
-    await rateAiInteraction(id, -1, correctionText[id]?.trim() || undefined);
+    const text = correctionText[id]?.trim() || undefined;
+    await rateAiInteraction(id, -1, text);
+    setSessionTurns((prev) => prev.map((r) => (r.id === id ? { ...r, correctionText: text ?? null } : r)));
     setShowCorrectionIds((s) => {
       const next = new Set(s);
       next.delete(id);
@@ -179,7 +205,19 @@ export default function AskPage() {
         </>
       }
     >
-      <BackHeader fallbackHref="/" />
+      <BackHeader
+        fallbackHref="/"
+        right={
+          <button
+            type="button"
+            onClick={() => router.push("/ask/history")}
+            style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, padding: "6px 8px" }}
+            aria-label={t.askPage.history}
+          >
+            🕘 {t.askPage.history}
+          </button>
+        }
+      />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 16 }}>
         <div>
           <h1 style={{ fontSize: "var(--font-title-size)" }}>{t.askPage.heading}</h1>
@@ -267,7 +305,7 @@ export default function AskPage() {
 }
 
 /** One question + answer turn, rendered as a right-aligned user bubble and a left-aligned answer card. */
-function Turn({
+export function Turn({
   row,
   showDetail,
   onShowDetail,

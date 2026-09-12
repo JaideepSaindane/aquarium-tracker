@@ -148,6 +148,7 @@ const hiLatn: Dictionary = {
     },
     heading: "💬 Ask AquaAI",
     subheading: "Grounded jawab, kabhi bhi guess ko fact bana kar nahi diya jaata.",
+    history: "History",
     generalTank: "General",
     aboutWhichTank: "Kaunse tank ke baare mein",
     emptyTitle: "Apne tank ke baare mein kuch bhi poochein",
@@ -171,6 +172,12 @@ const hiLatn: Dictionary = {
     tellMeMore: "Aur bataiye",
     thanksForFeedback: "Feedback ke liye dhanyawad.",
     correctionPlaceholder: "Kya galat tha? (optional)",
+  },
+  askHistoryPage: {
+    title: "Ask AquaAI — History",
+    filterAllTanks: "Sabhi tanks",
+    emptyTitle: "Abhi tak koi sawaal nahi",
+    emptyBody: "Aapne Ask AquaAI se jo bhi poocha hai, kisi bhi tank ke liye, wo sab yahan dikhega.",
   },
   dexPage: {
     title: "Species Dex",

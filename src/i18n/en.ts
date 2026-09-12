@@ -144,6 +144,7 @@ const en = {
     },
     heading: "💬 Ask AquaAI",
     subheading: "Grounded answers, never a guess dressed up as fact.",
+    history: "History",
     generalTank: "General",
     aboutWhichTank: "About which tank",
     emptyTitle: "Ask me anything about your tank",
@@ -167,6 +168,12 @@ const en = {
     tellMeMore: "Tell me more",
     thanksForFeedback: "Thanks for the feedback.",
     correctionPlaceholder: "What was wrong? (optional)",
+  },
+  askHistoryPage: {
+    title: "Ask AquaAI — History",
+    filterAllTanks: "All tanks",
+    emptyTitle: "No questions yet",
+    emptyBody: "Everything you've ever asked Ask AquaAI, across every tank, will show up here.",
   },
   dexPage: {
     title: "Species Dex",
