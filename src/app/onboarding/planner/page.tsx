@@ -53,6 +53,22 @@ const twoLineClamp: React.CSSProperties = {
 };
 
 /**
+ * Always-recommended beginner plants by tank layer, shown in the Requirements
+ * card for any planted tank (2026-09-12, Jaideep's ask) — separate from the
+ * AI advisor's own personalized suggested_plants in the Tips card below.
+ * This is deliberately a static, curated list (not AI-generated), so it's
+ * never empty or wrong even before/without the advisor call — these are
+ * genuinely easy, widely-available species. Ids must exist in the seed
+ * catalog; a missing id is silently skipped (filtered via speciesById.get)
+ * rather than shown broken.
+ */
+const BEGINNER_PLANT_LAYERS: { label: string; speciesIds: string[] }[] = [
+  { label: "Foreground", speciesIds: ["dwarf-hairgrass", "monte-carlo", "dwarf-baby-tears"] },
+  { label: "Midground", speciesIds: ["java-fern", "dwarf-anubias", "wendt-s-cryptocoryne"] },
+  { label: "Background", speciesIds: ["amazon-sword", "straight-vallisneria", "water-wisteria"] },
+];
+
+/**
  * T-027 — "Help me build a tank", AI-first (Jaideep's re-spec), tuned by
  * his live feedback (2026-09-06): fish typing shows instant catalog
  * suggestions; tank size is in FEET with cube/long shapes (how tanks are
@@ -537,12 +553,6 @@ export default function OnboardingPlannerPage() {
   // ---- Step 4 — the plan -----------------------------------------------------
   if (!plan) return null;
   const tempRange = plan.cityTempRange ?? { lowC: GENERIC_INDIA_CLIMATE.winterLowC, highC: GENERIC_INDIA_CLIMATE.summerHighC, band: GENERIC_INDIA_CLIMATE.band };
-  const tempSource =
-    plan.roomTempUsed?.source === "your home"
-      ? "your own room temperature"
-      : climate
-        ? `typical indoor temperatures in ${climate.band.toLowerCase()}`
-        : "typical India-wide indoor temperatures";
 
   return (
     <Screen
@@ -675,6 +685,9 @@ export default function OnboardingPlannerPage() {
 
             {picked.length > 0 && (
               <div style={{ marginTop: 10, paddingTop: 4 }}>
+                {/* Inline +/- count editor — 2026-09-12 feedback: drop the "you'll
+                    pick how many after saving" note and let the count be set
+                    right here instead. */}
                 {picked.map((p) => {
                   const s = speciesById.get(p.speciesId);
                   return (
@@ -683,24 +696,100 @@ export default function OnboardingPlannerPage() {
                       <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
                         {firstName(s?.commonNames ?? null) ?? p.speciesId}
                       </span>
-                      <Chip variant="neutral">planned</Chip>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <button
+                          type="button"
+                          aria-label="Fewer"
+                          onClick={() =>
+                            setPicked((prev) =>
+                              prev.map((x) => (x.speciesId === p.speciesId ? { ...x, count: Math.max(1, x.count - 1) } : x))
+                            )
+                          }
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: "50%",
+                            border: "1px solid var(--color-line)",
+                            background: "var(--color-surface)",
+                            color: "var(--color-ink)",
+                            fontSize: 14,
+                            lineHeight: 1,
+                          }}
+                        >
+                          −
+                        </button>
+                        <span style={{ minWidth: 20, textAlign: "center", fontSize: "var(--font-body-sm-size)", fontWeight: 700 }}>
+                          {p.count}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label="More"
+                          onClick={() =>
+                            setPicked((prev) => prev.map((x) => (x.speciesId === p.speciesId ? { ...x, count: x.count + 1 } : x)))
+                          }
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: "50%",
+                            border: "1px solid var(--color-line)",
+                            background: "var(--color-surface)",
+                            color: "var(--color-ink)",
+                            fontSize: 14,
+                            lineHeight: 1,
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
-                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-                  Just choose the fish for now — you&apos;ll pick how many of each after the tank is saved, on its Fish page.
+              </div>
+            )}
+
+            {tier === "planted" && (
+              <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--color-line-soft)" }}>
+                <p style={{ fontWeight: 700, marginBottom: 6, fontSize: "var(--font-body-sm-size)" }}>🌿 Good beginner plants for this tank</p>
+                {BEGINNER_PLANT_LAYERS.map((layer) => (
+                  <div key={layer.label} style={{ marginBottom: 6 }}>
+                    <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 2 }}>
+                      {layer.label}
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {layer.speciesIds.map((id) => {
+                        const sp = speciesById.get(id);
+                        if (!sp) return null;
+                        return (
+                          <span
+                            key={id}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                              padding: "3px 8px 3px 3px",
+                              borderRadius: 999,
+                              background: "var(--color-surface)",
+                              border: "1px solid var(--color-line)",
+                              fontSize: "var(--font-caption-size)",
+                            }}
+                          >
+                            <SpeciesThumb imageUri={sp.imageUri} category={sp.category} size={20} />
+                            {firstName(sp.commonNames) ?? id}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+                <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginTop: 4 }}>
+                  🪨 Hardscape: a piece of driftwood (tie Java Fern/Anubias to it rather than planting in substrate) plus a
+                  few rocks — Seiryu or Dragon stone are common beginner choices — gives midground structure and something
+                  for fish to shelter around.
                 </p>
               </div>
             )}
 
             <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--color-line-soft)" }}>
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-                {plan.heaterWatts != null &&
-                  (city.trim()
-                    ? `Heater sized for ${city.trim()} — rooms there typically sit around ${tempRange.lowC}°C on winter nights and ${tempRange.highC}°C in summer${plan.roomTempUsed?.source === "city typical" ? "; sized for the winter nights" : ""}. `
-                    : `Heater sized for a room around ${plan.roomTempUsed?.value}°C (${tempSource}). `)}
-                {plan.filter.why} {tier === "planted" ? "Light level is enough for easy plants." : ""}
-              </p>
               {plan.heaterNote && (
                 <div style={{ marginTop: 6 }}>
                   <Banner severity="watch">{plan.heaterNote}</Banner>
