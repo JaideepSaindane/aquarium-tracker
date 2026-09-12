@@ -17,14 +17,35 @@ import { createScan } from "@/db/queries/scans";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { addPhoto } from "@/db/queries/photos";
 import { buildTankContext } from "@/lib/tank-context";
-import { scanTank } from "@/lib/ai-client";
+import { scanTank, runHealthCheck } from "@/lib/ai-client";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
 import { readPhotoFile } from "@/lib/opfs-files";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { isRemotePhotoUrl } from "@/lib/use-photo-src";
 import { TankScanZod, type TankScanReport } from "@/server/ai/schemas/tank-scan";
+import { HealthCheckZod, HEALTH_CHECK_CATEGORIES, type HealthCheckReport } from "@/server/ai/schemas/health-check";
+import { useLocale } from "@/i18n/use-locale";
 import type { SeverityLevel } from "@/theme/tokens";
+
+const HEALTH_CATEGORY_META: Record<string, { icon: string; label: string }> = {
+  water_clarity: { icon: "💧", label: "Water clarity" },
+  algae: { icon: "🟢", label: "Algae" },
+  fish_appearance: { icon: "🐟", label: "Fish appearance" },
+  cleanliness: { icon: "🧹", label: "Cleanliness" },
+  plants: { icon: "🌿", label: "Plants" },
+  water_level: { icon: "📏", label: "Water level" },
+  equipment: { icon: "⚙️", label: "Equipment" },
+  stocking: { icon: "🐠", label: "Stocking" },
+};
+
+/** Framework's 4-real-tier severity compressed onto the app's existing 3-color palette (fixNow/watch/improve) plus neutral — see the session note on why "watch" and "na" share neutral. */
+function healthStatusColor(status: string): string {
+  if (status === "critical") return "var(--color-fix-now)";
+  if (status === "warning") return "var(--color-watch)";
+  if (status === "ok") return "var(--color-improve)";
+  return "var(--color-ink-muted)"; // watch (framework) and na
+}
 
 const SEVERITY_ORDER: SeverityLevel[] = ["fixNow", "watch", "improve"];
 const SEVERITY_KEY: Record<string, SeverityLevel> = { fix_now: "fixNow", watch: "watch", improve: "improve" };
@@ -59,6 +80,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const searchParams = useSearchParams();
   const fromCreate = searchParams.get("fromCreate") === "1";
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { locale } = useLocale();
 
   const [stage, setStage] = useState<Stage>("idle");
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null);
@@ -67,6 +89,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const [report, setReport] = useState<TankScanReport | null>(null);
+  // Health Check (re-runs, !fromCreate) uses its own dedicated contract
+  // (health-check/v1) from here on — see specs/PROGRESS.md's 2026-09-12
+  // entry. The onboarding "Scan your tank" path (fromCreate=1) is untouched
+  // and still uses `report`/TankScanZod above.
+  const [healthReport, setHealthReport] = useState<HealthCheckReport | null>(null);
   const [reusedExistingPhoto, setReusedExistingPhoto] = useState(false);
   const [existingPhotoIssue, setExistingPhotoIssue] = useState<string | null>(null);
   const [existingPhotoRuledOut, setExistingPhotoRuledOut] = useState(false);
@@ -138,6 +165,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     setUploadBlob(null);
     setOriginalPath(null);
     setReport(null);
+    setHealthReport(null);
     setReusedExistingPhoto(false);
   }
 
@@ -148,27 +176,61 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     try {
       const tankRecord = await buildTankContext(id);
       const photoFile = new File([blob], "upload.jpg", { type: "image/jpeg" });
-      const result = await scanTank({
+
+      if (fromCreate) {
+        // Onboarding path — unchanged, still the Tank Scan contract.
+        const result = await scanTank({
+          photo: photoFile,
+          lengthCm: tank.lengthCm,
+          widthCm: tank.widthCm,
+          heightCm: tank.heightCm,
+          city: tank.city ?? "",
+          tankId: id,
+          tankRecord,
+        });
+        if (!result.ok) {
+          setScanError(result.error);
+          setStage("scan-error");
+          return;
+        }
+        const parsed = TankScanZod.safeParse(result.data.report);
+        if (!parsed.success) {
+          setScanError("The check came back in an unexpected shape. Please try again.");
+          setStage("scan-error");
+          return;
+        }
+        setReport(parsed.data);
+        setStage("report");
+        return;
+      }
+
+      // Health Check path — the new health-check/v1 contract.
+      const result = await runHealthCheck({
         photo: photoFile,
         lengthCm: tank.lengthCm,
         widthCm: tank.widthCm,
         heightCm: tank.heightCm,
-        city: tank.city ?? "",
-        tankId: id,
+        tankType: tank.setupType ?? (tank.isPlanted ? "planted" : "unclear"),
         tankRecord,
+        tankId: id,
+        locale,
       });
       if (!result.ok) {
         setScanError(result.error);
         setStage("scan-error");
         return;
       }
-      const parsed = TankScanZod.safeParse(result.data.report);
+      const parsed = HealthCheckZod.safeParse(result.data.report);
       if (!parsed.success) {
         setScanError("The check came back in an unexpected shape. Please try again.");
         setStage("scan-error");
         return;
       }
-      setReport(parsed.data);
+      // overall_status is computed server-side (see health-check.ts's
+      // deriveOverallStatus) and comes back on the raw report object even
+      // though it's not part of HealthCheckZod's own shape (deliberately —
+      // the model is never asked to produce it). Re-attach it here.
+      setHealthReport({ ...parsed.data, overall_status: (result.data.report as { overall_status?: string }).overall_status as HealthCheckReport["overall_status"] });
       setStage("report");
     } catch {
       setScanError("Couldn't reach the server. Try again when you're back online.");
@@ -177,24 +239,39 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   }
 
   async function handleSave() {
-    if (!report || !originalPath) return;
+    if (!originalPath) return;
+    if (!report && !healthReport) return;
     setStage("saving");
-    await createScan({
-      tankId: id,
-      imageUri: originalPath,
-      modelName: "unknown",
-      promptVersion: report.prompt_version,
-      rawResponse: report,
-      findings: report.findings,
-      scores: report.scores,
-    });
-    const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
-    const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : "No issues flagged.";
-    const label = fromCreate ? "Tank Scan" : "Health Check";
-    const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${label}: ${findingSummary}` });
-    // Reusing the tank's own setup photo already has a Gallery entry from
-    // tank creation — don't add the same file to the Gallery twice.
-    if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+
+    if (report) {
+      await createScan({
+        tankId: id,
+        imageUri: originalPath,
+        modelName: "unknown",
+        promptVersion: report.prompt_version,
+        rawResponse: report,
+        findings: report.findings,
+        scores: report.scores,
+      });
+      const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
+      const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : "No issues flagged.";
+      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `Tank Scan: ${findingSummary}` });
+      if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+    } else if (healthReport) {
+      await createScan({
+        tankId: id,
+        imageUri: originalPath,
+        modelName: "unknown",
+        promptVersion: healthReport.prompt_version,
+        rawResponse: healthReport,
+        findings: healthReport.checks,
+        scores: { overall_status: healthReport.overall_status },
+      });
+      const flagged = healthReport.checks.filter((c) => c.status !== "ok" && c.status !== "na");
+      const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : "Nothing flagged.";
+      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `Health Check (${healthReport.overall_status}): ${summary}` });
+      if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+    }
     setStage("saved");
   }
 
@@ -310,6 +387,108 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
             </ul>
           </Card>
         )}
+      </Screen>
+    );
+  }
+
+  if (stage === "report" && healthReport) {
+    // Styled like the fish-add compatibility summary and the setup
+    // planner's requirements card, per Jaideep's direct ask (2026-09-12):
+    // one crisp report card (fixed category order, one line each, colored
+    // by severity) instead of a scattered list of separate finding cards,
+    // then a distinct tips/recommendations card below for anything that
+    // needs action.
+    const bannerSeverity: SeverityLevel =
+      healthReport.overall_status === "critical" ? "fixNow" : healthReport.overall_status === "warning" || healthReport.overall_status === "watch" ? "watch" : "improve";
+    const checksByCategory = new Map(healthReport.checks.map((c) => [c.category, c]));
+    const tips = healthReport.checks.filter((c) => c.status !== "ok" && c.status !== "na" && c.tip);
+    const insufficientPhoto = healthReport.photo_quality === "insufficient";
+
+    return (
+      <Screen
+        footer={
+          <>
+            <PrimaryButton onClick={handleSave}>Save to Journal</PrimaryButton>
+            <SecondaryButton onClick={retake}>Check again</SecondaryButton>
+          </>
+        }
+      >
+        <BackHeader title="Health Check results" fallbackHref={backTarget} />
+
+        {insufficientPhoto && (
+          <div style={{ marginBottom: 16 }}>
+            <Banner severity="watch">
+              This photo wasn&apos;t clear enough for a reliable check — the notes below are limited. A retake (whole
+              tank in frame, plain lighting) will give a much better read.
+            </Banner>
+          </div>
+        )}
+
+        <div style={{ marginBottom: 16 }}>
+          <Banner severity={bannerSeverity}>{healthReport.summary}</Banner>
+        </div>
+
+        <Card style={{ marginBottom: 12 }}>
+          <p style={{ fontWeight: 700, marginBottom: 8 }}>🩺 Health Check</p>
+          {HEALTH_CHECK_CATEGORIES.map((cat) => {
+            const check = checksByCategory.get(cat);
+            const meta = HEALTH_CATEGORY_META[cat];
+            if (!check) return null;
+            return (
+              <div
+                key={cat}
+                style={{ display: "flex", gap: 8, padding: "6px 0", borderTop: "1px solid var(--color-line-soft)" }}
+              >
+                <span style={{ flexShrink: 0, width: 130, fontSize: "var(--font-caption-size)", fontWeight: 700 }}>
+                  {meta.icon} {meta.label}
+                </span>
+                <span style={{ fontSize: "var(--font-body-sm-size)", color: healthStatusColor(check.status) }}>
+                  {check.status === "na" ? "Not visible in this photo" : check.observation}
+                </span>
+              </div>
+            );
+          })}
+        </Card>
+
+        {tips.length > 0 && (
+          <Card style={{ marginBottom: 12 }}>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>💡 Tips &amp; recommendations</p>
+            {tips.map((c, i) => {
+              const meta = HEALTH_CATEGORY_META[c.category];
+              return (
+                <div key={c.category} style={{ marginBottom: i < tips.length - 1 ? 12 : 0 }}>
+                  <p style={{ fontWeight: 600, fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>
+                    {meta.icon} {meta.label}
+                  </p>
+                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{c.tip}</p>
+                  {c.possible_causes.length > 0 && (
+                    <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>
+                      Possible causes: {c.possible_causes.join(", ")}
+                    </p>
+                  )}
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
+                    <Confidence value={c.confidence === "high" ? 0.9 : c.confidence === "medium" ? 0.6 : 0.3} />
+                    {c.grounding_refs.map((ref) => {
+                      const [type, gid] = ref.split(":");
+                      return (
+                        <GroundingLink
+                          key={ref}
+                          label={ref}
+                          onOpen={type === "species" ? () => router.push(`/dex/${gid}`) : type === "corpus" ? () => router.push(`/corpus/${gid}${locale === "hi-latn" ? "?locale=hi-latn" : ""}`) : undefined}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </Card>
+        )}
+
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
+          Visual-only — this can&apos;t measure ammonia, nitrite, nitrate, pH, GH/KH or temperature. Always confirm
+          with a real water test before treating anything.
+        </p>
       </Screen>
     );
   }
