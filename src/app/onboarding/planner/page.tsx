@@ -554,10 +554,10 @@ export default function OnboardingPlannerPage() {
           </>
         ) : (
           <>
-            <PrimaryButton onClick={handleSave} disabled={saving}>
+            <PrimaryButton onClick={handleSave} disabled={saving || aiLoading}>
               {saving ? "Saving..." : "Save to My Tanks"}
             </PrimaryButton>
-            <SecondaryButton onClick={() => setStep(3)} disabled={saving}>
+            <SecondaryButton onClick={() => setStep(3)} disabled={saving || aiLoading}>
               Step 3 of 4 — change size or city
             </SecondaryButton>
           </>
@@ -604,6 +604,15 @@ export default function OnboardingPlannerPage() {
             </div>
           )}
 
+          {/* Wait for the advisor call to actually finish (success or error)
+              before showing ANY of the plan below — Jaideep's bug report: the
+              deterministic requirements card used to render immediately while
+              the advisor spinner was still up top, so half the screen changed
+              at one time and the rest ("the advisor says...") popped in later.
+              Now it's all-or-nothing: the loading card above is the only
+              thing on screen until there's a real result to show alongside it. */}
+          {!aiLoading && (
+          <>
           {aiError && !aiPlan && (
             <div style={{ marginBottom: 12 }}>
               <Banner severity="watch">{aiError}</Banner>
@@ -863,6 +872,8 @@ export default function OnboardingPlannerPage() {
           </p>
 
           {saveError && <Banner severity="fixNow">{saveError}</Banner>}
+          </>
+          )}
         </>
       )}
     </Screen>
