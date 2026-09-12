@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const locale = body.locale === "hi-latn" ? "hi-latn" : "en";
   const replyLanguage = locale === "hi-latn" ? "Hinglish (Latin script)" : "English";
 
-  const [corpus, relevantSpecies] = await Promise.all([retrieveCorpus(question), retrieveRelevantSpecies(question, speciesIds)]);
+  const [corpus, relevantSpecies] = await Promise.all([retrieveCorpus(question, 4, locale), retrieveRelevantSpecies(question, speciesIds)]);
   const speciesContext = await getSpeciesContextTextFor(relevantSpecies);
 
   const promptText = await loadPrompt("ask.v4.md", {

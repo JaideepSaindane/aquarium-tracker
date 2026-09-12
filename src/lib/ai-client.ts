@@ -94,6 +94,7 @@ export async function runTriage(params: {
   recentTest: string;
   tankAgeDays: string;
   tankId?: string;
+  locale?: string;
 }) {
   const form = new FormData();
   if (params.photo) form.set("photo", params.photo);
@@ -102,6 +103,7 @@ export async function runTriage(params: {
   form.set("duration", params.duration);
   form.set("recent_test", params.recentTest);
   form.set("tank_age_days", params.tankAgeDays);
+  if (params.locale) form.set("locale", params.locale);
 
   const res = await fetch("/api/triage", { method: "POST", headers: headers(), body: form });
   const result = await handleJsonResponse<{ triage: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
@@ -114,6 +116,44 @@ export async function runTriage(params: {
       userInput: params.description,
       groundingRefs: extractRefs(result.data.triage),
       response: result.data.triage,
+      inputTokens: result.data.meta.tokensIn,
+      outputTokens: result.data.meta.tokensOut,
+      costUsd: result.data.meta.costUsd,
+      latencyMs: result.data.meta.latencyMs,
+    });
+  }
+  return result;
+}
+
+export async function runHealthCheck(params: {
+  photo: File;
+  lengthCm: number;
+  widthCm: number;
+  heightCm: number;
+  tankType: string;
+  tankRecord?: string;
+  tankId?: string;
+  locale?: string;
+}) {
+  const form = new FormData();
+  form.set("photo", params.photo);
+  form.set("length_cm", String(params.lengthCm));
+  form.set("width_cm", String(params.widthCm));
+  form.set("height_cm", String(params.heightCm));
+  form.set("tank_type", params.tankType);
+  if (params.tankRecord) form.set("tank_record", params.tankRecord);
+  if (params.locale) form.set("locale", params.locale);
+
+  const res = await fetch("/api/health-check", { method: "POST", headers: headers(), body: form });
+  const result = await handleJsonResponse<{ report: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
+
+  if (result.ok) {
+    await logAiInteraction({
+      tankId: params.tankId,
+      kind: "health_check",
+      promptVersion: String(result.data.report.prompt_version),
+      groundingRefs: extractRefs(result.data.report),
+      response: result.data.report,
       inputTokens: result.data.meta.tokensIn,
       outputTokens: result.data.meta.tokensOut,
       costUsd: result.data.meta.costUsd,

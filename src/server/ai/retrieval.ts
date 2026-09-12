@@ -266,18 +266,39 @@ function splitFrontmatter(raw: string): { frontmatter: string; body: string } {
   return { frontmatter: match[1], body: match[2].trim() };
 }
 
-/** Full entry (frontmatter + body) for one id — used by the corpus reader route and to pull body text for a retrieval hit. Works for any valid entry regardless of review status; the reader can show an unreviewed draft, it just won't be cited by the AI (see retrieveCorpus). */
-export async function getCorpusEntry(id: string): Promise<CorpusEntry | null> {
+/**
+ * Full entry (frontmatter + body) for one id — used by the corpus reader
+ * route and to pull body text for a retrieval hit. Works for any valid
+ * entry regardless of review status; the reader can show an unreviewed
+ * draft, it just won't be cited by the AI (see retrieveCorpus).
+ *
+ * `locale` (2026-09-12, full-app Hinglish pass): when `"hi-latn"`, tries
+ * `content/corpus-hi-latn/<id>.md` first — a parallel, hand-translated set
+ * of the same entries (same ids/status/review_tier/last_reviewed_by/
+ * sources — only the prose is translated, so an entry's safety-review
+ * status is never affected by translation). Falls back to the English
+ * original whenever a Hinglish version doesn't exist yet, so a partial
+ * translation rollout never breaks anything — it just serves English for
+ * the not-yet-translated remainder.
+ */
+export async function getCorpusEntry(id: string, locale: "en" | "hi-latn" = "en"): Promise<CorpusEntry | null> {
   const safeId = id.replace(/[^a-z0-9-]/g, "");
   if (!safeId || safeId !== id) return null;
-  try {
-    const raw = await fs.readFile(path.join(process.cwd(), "content", "corpus", `${safeId}.md`), "utf-8");
-    const { frontmatter, body } = splitFrontmatter(raw);
-    const data = yaml.load(frontmatter) as Record<string, unknown>;
-    return { ...(data as CorpusIndexEntry), body } as CorpusEntry;
-  } catch {
-    return null;
+  async function readFrom(dir: string): Promise<CorpusEntry | null> {
+    try {
+      const raw = await fs.readFile(path.join(process.cwd(), "content", dir, `${safeId}.md`), "utf-8");
+      const { frontmatter, body } = splitFrontmatter(raw);
+      const data = yaml.load(frontmatter) as Record<string, unknown>;
+      return { ...(data as CorpusIndexEntry), body } as CorpusEntry;
+    } catch {
+      return null;
+    }
   }
+  if (locale === "hi-latn") {
+    const translated = await readFrom("corpus-hi-latn");
+    if (translated) return translated;
+  }
+  return readFrom("corpus");
 }
 
 /**
@@ -289,7 +310,7 @@ export async function getCorpusEntry(id: string): Promise<CorpusEntry | null> {
  * so it is correctly invisible to the AI even though it exists on disk and
  * the corpus reader can still show it.
  */
-export async function retrieveCorpus(query: string, limit = 4): Promise<CorpusChunk[]> {
+export async function retrieveCorpus(query: string, limit = 4, locale: "en" | "hi-latn" = "en"): Promise<CorpusChunk[]> {
   const index = await loadCorpusIndex();
   const live = index.filter((e) => e.status === "live");
   if (live.length === 0) return [];
@@ -312,7 +333,7 @@ export async function retrieveCorpus(query: string, limit = 4): Promise<CorpusCh
 
   const chunks: CorpusChunk[] = [];
   for (const { entry } of scored) {
-    const full = await getCorpusEntry(entry.id);
+    const full = await getCorpusEntry(entry.id, locale);
     if (full) chunks.push({ id: full.id, text: full.body });
   }
   return chunks;

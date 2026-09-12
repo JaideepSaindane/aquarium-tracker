@@ -44,9 +44,22 @@ const TIME_TO_ACT_LABEL: Record<string, string> = {
   routine: "Routine — no rush",
 };
 
-export default async function CorpusEntryPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CorpusEntryPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ locale?: string }>;
+}) {
   const { id } = await params;
-  const entry = await getCorpusEntry(id);
+  const { locale } = await searchParams;
+  // ?locale=hi-latn (passed by GroundingLink callers when the app's own
+  // locale is Hinglish) makes this render dynamically instead of from the
+  // static English build — a deliberate tradeoff: the Hinglish version
+  // isn't aeroplane-mode-cached the way the English static page is, but
+  // the citation reader should show the language the rest of the app is
+  // showing, not silently fall back to English.
+  const entry = await getCorpusEntry(id, locale === "hi-latn" ? "hi-latn" : "en");
 
   if (!entry) {
     return (

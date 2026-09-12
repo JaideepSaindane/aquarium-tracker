@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
   const duration = String(form.get("duration") ?? "unknown");
   const recentTest = String(form.get("recent_test") ?? "none provided");
   const tankAgeDays = String(form.get("tank_age_days") ?? "unknown");
+  const locale = form.get("locale") === "hi-latn" ? "hi-latn" : "en";
+  const replyLanguage = locale === "hi-latn" ? "Hinglish (Latin script)" : "English";
 
   if (!description.trim()) return NextResponse.json({ error: "Describe what's happening first." }, { status: 400 });
 
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
     image = { base64: buffer.toString("base64"), mimeType: photo.type || "image/jpeg" };
   }
 
-  const corpus = await retrieveCorpus(description);
+  const corpus = await retrieveCorpus(description, 4, locale);
   const promptText = await loadPrompt("triage.v2.md", {
     DESCRIPTION: description,
     AFFECTED_COUNT: affectedCount,
@@ -42,6 +44,7 @@ export async function POST(req: NextRequest) {
     RECENT_TEST: recentTest,
     TANK_AGE_DAYS: tankAgeDays,
     CORPUS_CONTEXT: corpus.length ? corpus.map((c) => `[${c.id}]\n${c.text}`).join("\n\n") : "(none retrieved yet)",
+    REPLY_LANGUAGE: replyLanguage,
   });
 
   const result = await callContract({

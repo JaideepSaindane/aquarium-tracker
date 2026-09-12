@@ -13,6 +13,7 @@ import { listTanks } from "@/db/queries/tanks";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { runTriage } from "@/lib/ai-client";
 import { TriageZod, type TriageReport } from "@/server/ai/schemas/triage";
+import { useLocale } from "@/i18n/use-locale";
 
 const SYMPTOMS = [
   "Spots",
@@ -33,6 +34,7 @@ const WATER_TEST_OPTIONS = ["Tested recently, results look fine", "Tested recent
 type Stage = "intake" | "loading" | "result" | "error";
 
 export default function EmergencyPage() {
+  const { locale } = useLocale();
   const { data: tanks } = useLiveQuery(listTanks, []);
   const [stage, setStage] = useState<Stage>("intake");
   const [selectedSymptoms, setSelectedSymptoms] = useState<Set<string>>(new Set());
@@ -76,6 +78,7 @@ export default function EmergencyPage() {
         recentTest: waterTest,
         tankAgeDays,
         tankId: tankId || undefined,
+        locale,
       });
 
       if (!result.ok) {
