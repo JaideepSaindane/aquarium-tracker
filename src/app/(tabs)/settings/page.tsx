@@ -35,6 +35,9 @@ export default function SettingsPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [profileName, setProfileName] = useState("");
   const [profileUsername, setProfileUsername] = useState("");
@@ -178,6 +181,23 @@ export default function SettingsPage() {
       setShareMessage("Link copied to clipboard.");
     } catch {
       setShareMessage(url);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (deleteConfirmText.trim().toUpperCase() !== "DELETE") return;
+    setDeleteError(null);
+    setBusy("delete-account");
+    try {
+      const res = await fetch("/api/account/delete", { method: "POST" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? "Could not delete your account. Please try again.");
+      }
+      await signOut({ callbackUrl: "/login" });
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Could not delete your account. Please try again.");
+      setBusy(null);
     }
   }
 
@@ -437,6 +457,56 @@ export default function SettingsPage() {
           the natural "account" section of Settings. */}
       <Card style={{ marginBottom: 16 }}>
         <DangerButton onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</DangerButton>
+      </Card>
+
+      {/* Real self-serve account deletion (2026-09-12), built so the privacy
+          policy can honestly point at something that exists instead of
+          "email us to delete your data". Permanently deletes every tank,
+          fish, log, photo, AI-chat history and Species Dex unlock tied to
+          this account, server-side — irreversible, no undo. */}
+      <Card style={{ marginBottom: 16 }}>
+        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Delete my account</h2>
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
+          Permanently deletes every tank, fish, log entry, photo, and chat history tied to your account. This cannot be
+          undone — export your data first if you want to keep a copy.
+        </p>
+        {!showDeleteConfirm ? (
+          <DangerButton onClick={() => setShowDeleteConfirm(true)}>Delete my account</DangerButton>
+        ) : (
+          <div>
+            <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
+              Type <strong>DELETE</strong> to confirm. This is permanent.
+            </p>
+            <Field
+              label=""
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="DELETE"
+            />
+            {deleteError && (
+              <div style={{ marginTop: 8 }}>
+                <Banner severity="fixNow">{deleteError}</Banner>
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <SecondaryButton
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteConfirmText("");
+                  setDeleteError(null);
+                }}
+              >
+                Cancel
+              </SecondaryButton>
+              <DangerButton
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText.trim().toUpperCase() !== "DELETE" || busy === "delete-account"}
+              >
+                {busy === "delete-account" ? "Deleting..." : "Permanently delete my account"}
+              </DangerButton>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Share / Privacy / About */}
