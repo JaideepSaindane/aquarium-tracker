@@ -9,6 +9,7 @@ import { PrimaryButton } from "@/components/Button";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { createCommunityPost } from "@/db/queries/community";
 import { uploadPhoto } from "@/lib/photo-upload";
+import { useTranslation } from "@/i18n/use-translation";
 
 const MAX_PHOTOS = 10;
 
@@ -16,6 +17,7 @@ type PendingPhoto = { file: File; preview: string };
 
 export default function NewCommunityPostPage() {
   const router = useRouter();
+  const t = useTranslation();
   const [body, setBody] = useState("");
   const [photos, setPhotos] = useState<PendingPhoto[]>([]);
   const [posting, setPosting] = useState(false);
@@ -41,7 +43,7 @@ export default function NewCommunityPostPage() {
       await createCommunityPost({ body: body.trim(), photoUris });
       router.replace("/community");
     } catch {
-      setError("Couldn't post — check your connection and try again.");
+      setError(t.newCommunityPostPage.couldNotPost);
       setPosting(false);
     }
   }
@@ -50,11 +52,11 @@ export default function NewCommunityPostPage() {
     <Screen
       footer={
         <PrimaryButton onClick={handlePost} disabled={posting || !body.trim()}>
-          {posting ? "Posting..." : "Post"}
+          {posting ? t.newCommunityPostPage.posting : t.newCommunityPostPage.post}
         </PrimaryButton>
       }
     >
-      <BackHeader title="New Post" fallbackHref="/community" />
+      <BackHeader title={t.newCommunityPostPage.title} fallbackHref="/community" />
 
       {photos.length > 0 && (
         <div style={{ display: "flex", gap: 8, overflowX: "auto", marginBottom: 12, WebkitOverflowScrolling: "touch" }}>
@@ -65,7 +67,7 @@ export default function NewCommunityPostPage() {
               <button
                 type="button"
                 onClick={() => handleRemovePhoto(i)}
-                aria-label="Remove photo"
+                aria-label={t.newCommunityPostPage.removePhoto}
                 style={{
                   position: "absolute",
                   top: 4,
@@ -89,7 +91,7 @@ export default function NewCommunityPostPage() {
       <textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder="Just set this tank up — what fish is this? Ask a question or share your tank..."
+        placeholder={t.newCommunityPostPage.bodyPlaceholder}
         rows={6}
         style={{
           width: "100%",
@@ -108,7 +110,11 @@ export default function NewCommunityPostPage() {
       <div style={{ height: 12 }} />
       {photos.length < MAX_PHOTOS && (
         <PhotoPickerButton
-          label={photos.length === 0 ? "Add a photo (optional)" : `Add another photo (${photos.length}/${MAX_PHOTOS})`}
+          label={
+            photos.length === 0
+              ? t.newCommunityPostPage.addPhoto
+              : t.newCommunityPostPage.addAnotherPhoto.replace("{n}", String(photos.length)).replace("{max}", String(MAX_PHOTOS))
+          }
           onPick={handleAddPhoto}
         />
       )}

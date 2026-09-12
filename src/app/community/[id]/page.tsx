@@ -11,10 +11,12 @@ import { PostCard } from "@/components/community/PostCard";
 import { relativeTime } from "@/lib/relative-time";
 import { useLiveQuery } from "@/db/live";
 import { getCommunityPost, listCommunityComments, addCommunityComment, deleteCommunityComment, reportCommunityItem, type CommentRow } from "@/db/queries/community";
+import { useTranslation } from "@/i18n/use-translation";
 
 export default function CommunityPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const { data: session } = useSession();
   const currentUserId = session?.user?.id ?? null;
 
@@ -38,8 +40,8 @@ export default function CommunityPostPage({ params }: { params: Promise<{ id: st
   if (post === undefined) {
     return (
       <Screen>
-        <BackHeader title="Post" fallbackHref="/community" />
-        <p style={{ color: "var(--color-ink-muted)" }}>Loading...</p>
+        <BackHeader title={t.communityPostPage.title} fallbackHref="/community" />
+        <p style={{ color: "var(--color-ink-muted)" }}>{t.common.loading}</p>
       </Screen>
     );
   }
@@ -47,8 +49,8 @@ export default function CommunityPostPage({ params }: { params: Promise<{ id: st
   if (post === null) {
     return (
       <Screen>
-        <BackHeader title="Post" fallbackHref="/community" />
-        <p style={{ color: "var(--color-ink-muted)" }}>This post was removed.</p>
+        <BackHeader title={t.communityPostPage.title} fallbackHref="/community" />
+        <p style={{ color: "var(--color-ink-muted)" }}>{t.communityPostPage.removed}</p>
       </Screen>
     );
   }
@@ -60,7 +62,7 @@ export default function CommunityPostPage({ params }: { params: Promise<{ id: st
           <input
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Write a comment..."
+            placeholder={t.communityPostPage.writeComment}
             style={{
               flex: 1,
               padding: "10px 12px",
@@ -72,20 +74,20 @@ export default function CommunityPostPage({ params }: { params: Promise<{ id: st
             }}
           />
           <PrimaryButton onClick={handleComment} disabled={posting || !body.trim()}>
-            {posting ? "..." : "Send"}
+            {posting ? "..." : t.communityPostPage.send}
           </PrimaryButton>
         </div>
       }
     >
-      <BackHeader title="Post" fallbackHref="/community" />
+      <BackHeader title={t.communityPostPage.title} fallbackHref="/community" />
 
       <PostCard post={post} currentUserId={currentUserId} onDeleted={() => router.replace("/community")} />
 
       <p style={{ fontWeight: 600, marginBottom: 8 }}>
-        {comments ? `${comments.length} ${comments.length === 1 ? "comment" : "comments"}` : "Comments"}
+        {comments ? (comments.length === 1 ? t.communityPostPage.commentsCountOne : t.communityPostPage.commentsCountMany.replace("{n}", String(comments.length))) : t.communityPostPage.comments}
       </p>
 
-      {comments?.length === 0 && <p style={{ color: "var(--color-ink-muted)" }}>No comments yet — say something.</p>}
+      {comments?.length === 0 && <p style={{ color: "var(--color-ink-muted)" }}>{t.communityPostPage.noComments}</p>}
 
       {comments?.map((c) => (
         <CommentItem key={c.id} comment={c} currentUserId={currentUserId} />
@@ -95,11 +97,12 @@ export default function CommunityPostPage({ params }: { params: Promise<{ id: st
 }
 
 function CommentItem({ comment, currentUserId }: { comment: CommentRow; currentUserId: string | null }) {
+  const t = useTranslation();
   const [reporting, setReporting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
   const isOwn = currentUserId === comment.userId;
-  const author = comment.author.name?.trim() || comment.author.username?.trim() || "A fellow hobbyist";
+  const author = comment.author.name?.trim() || comment.author.username?.trim() || t.communityPostPage.fellowHobbyist;
 
   if (deleted) return null;
 
@@ -119,7 +122,7 @@ function CommentItem({ comment, currentUserId }: { comment: CommentRow; currentU
               onClick={() => setReporting(true)}
               style={{ background: "none", border: "none", padding: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}
             >
-              Report
+              {t.communityPostPage.report}
             </button>
           )}
           {isOwn && (
@@ -131,7 +134,7 @@ function CommentItem({ comment, currentUserId }: { comment: CommentRow; currentU
               }}
               style={{ background: "none", border: "none", padding: 0, color: "var(--color-fix-now)", fontSize: "var(--font-caption-size)" }}
             >
-              Delete
+              {t.communityPostPage.delete}
             </button>
           )}
         </div>
@@ -142,18 +145,18 @@ function CommentItem({ comment, currentUserId }: { comment: CommentRow; currentU
               onClick={async () => {
                 await reportCommunityItem({ targetType: "comment", targetId: comment.id });
                 setReporting(false);
-                setStatus("Reported.");
+                setStatus(t.communityPostPage.reported);
               }}
               style={{ background: "none", border: "none", padding: 0, color: "var(--color-fix-now)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}
             >
-              Confirm report
+              {t.communityPostPage.confirmReport}
             </button>
             <button
               type="button"
               onClick={() => setReporting(false)}
               style={{ background: "none", border: "none", padding: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}
             >
-              Cancel
+              {t.communityPostPage.cancel}
             </button>
           </div>
         )}

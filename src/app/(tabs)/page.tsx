@@ -37,11 +37,11 @@ async function loadHomeData() {
   return { tanks, livestockByTank, profileName: profile?.name };
 }
 
-function greeting(): string {
+function greeting(t: ReturnType<typeof useTranslation>): string {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
+  if (hour < 12) return t.home.goodMorning;
+  if (hour < 17) return t.home.goodAfternoon;
+  return t.home.goodEvening;
 }
 
 // Tanks list — the app's home screen. Restyled 2026-09-04 to match a
@@ -91,15 +91,15 @@ export default function TanksPage() {
       <TankHeroPhoto photoUri={mostRecentPhotoTank?.photoUri}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>{greeting()},</p>
+            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>{greeting(t)},</p>
             <h1 style={{ fontSize: "var(--font-title-size)", color: "#fff" }}>
-              {data?.profileName ? data.profileName : "Aquarist"} 👋
+              {data?.profileName ? data.profileName : t.home.aquarist} 👋
             </h1>
           </div>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
             <Link
               href="/settings"
-              aria-label="Settings"
+              aria-label={t.tabs.settings}
               style={{
                 width: 44,
                 height: 44,
@@ -122,7 +122,7 @@ export default function TanksPage() {
         </div>
 
         <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 12 }}>
-          {tanks && tanks.length > 0 ? "Your aquariums are looking good." : "Let's get your first tank set up."}
+          {tanks && tanks.length > 0 ? t.home.lookingGood : t.home.emptyHeading}
         </p>
       </TankHeroPhoto>
 
@@ -133,7 +133,7 @@ export default function TanksPage() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="⌕  Search your tanks"
+          placeholder={t.home.searchPlaceholder}
           style={{
             width: "100%",
             height: 48,
@@ -196,7 +196,7 @@ export default function TanksPage() {
         <>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, position: "relative" }}>
             <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>
-              My tanks <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
+              {t.home.myTanks} <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
             </p>
             <Link
               href="/tank/new"
@@ -214,7 +214,7 @@ export default function TanksPage() {
                 flexShrink: 0,
               }}
             >
-              + Add tank
+              + {t.home.addTank}
             </Link>
           </div>
 
@@ -280,7 +280,7 @@ export default function TanksPage() {
                           flexShrink: 0,
                         }}
                       >
-                        ● Healthy
+                        ● {t.home.healthy}
                       </span>
                     </div>
 
@@ -297,11 +297,11 @@ export default function TanksPage() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {isBrackish ? "Brackish" : "Freshwater"}
+                      {isBrackish ? t.home.brackish : t.home.freshwater}
                       {tank.isPlanted && (
                         <>
                           <span aria-hidden>·</span>
-                          Planted
+                          {t.home.planted}
                         </>
                       )}
                       {tank.hasCo2 ? " · CO₂" : ""}
@@ -333,7 +333,7 @@ export default function TanksPage() {
                         </span>
                       )}
                       {visibleThumbs.length === 0 && (
-                        <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>No fish yet</span>
+                        <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.home.noFishYet}</span>
                       )}
                     </div>
                   </Link>
@@ -366,13 +366,13 @@ export default function TanksPage() {
                           }}
                           style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}
                         >
-                          Edit
+                          {t.common.edit}
                         </button>
                         <button
                           onClick={() => handleHide(tank.id)}
                           style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}
                         >
-                          Hide
+                          {t.home.hide}
                         </button>
                         <button
                           onClick={() => {
@@ -381,7 +381,7 @@ export default function TanksPage() {
                           }}
                           style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}
                         >
-                          Delete
+                          {t.common.remove}
                         </button>
                       </div>
                     </>
@@ -391,7 +391,7 @@ export default function TanksPage() {
             })}
 
             {filteredTanks.length === 0 && (
-              <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", padding: "16px 0" }}>No tanks match your search.</p>
+              <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", padding: "16px 0" }}>{t.home.noTanksMatch}</p>
             )}
           </div>
 
@@ -408,7 +408,7 @@ export default function TanksPage() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Delete tank"
+          aria-label={t.home.deleteTankQuestion}
           style={{
             position: "fixed",
             inset: 0,
@@ -433,16 +433,16 @@ export default function TanksPage() {
               boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
             }}
           >
-            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 6, color: "var(--soft-ink)" }}>Delete tank?</p>
+            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 6, color: "var(--soft-ink)" }}>{t.home.deleteTankQuestion}</p>
             <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 20 }}>
-              This permanently deletes {deleteTarget.name} and everything logged under it. This can&apos;t be undone.
+              {t.home.deleteTankBody.replace("{name}", deleteTarget.name)}
             </p>
             <div style={{ display: "flex", gap: 8 }}>
               <SecondaryButton onClick={() => setDeleteTargetId(null)} disabled={deleting}>
-                No
+                {t.home.no}
               </SecondaryButton>
               <DangerButton onClick={handleConfirmDelete} disabled={deleting}>
-                {deleting ? "Deleting..." : "Yes, delete"}
+                {deleting ? t.home.deleting : t.home.yesDelete}
               </DangerButton>
             </div>
           </div>

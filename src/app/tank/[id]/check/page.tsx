@@ -27,17 +27,20 @@ import { TankScanZod, type TankScanReport } from "@/server/ai/schemas/tank-scan"
 import { HealthCheckZod, HEALTH_CHECK_CATEGORIES, type HealthCheckReport } from "@/server/ai/schemas/health-check";
 import { useLocale } from "@/i18n/use-locale";
 import type { SeverityLevel } from "@/theme/tokens";
+import { useTranslation } from "@/i18n/use-translation";
 
-const HEALTH_CATEGORY_META: Record<string, { icon: string; label: string }> = {
-  water_clarity: { icon: "💧", label: "Water clarity" },
-  algae: { icon: "🟢", label: "Algae" },
-  fish_appearance: { icon: "🐟", label: "Fish appearance" },
-  cleanliness: { icon: "🧹", label: "Cleanliness" },
-  plants: { icon: "🌿", label: "Plants" },
-  water_level: { icon: "📏", label: "Water level" },
-  equipment: { icon: "⚙️", label: "Equipment" },
-  stocking: { icon: "🐠", label: "Stocking" },
-};
+function healthCategoryMeta(t: ReturnType<typeof useTranslation>): Record<string, { icon: string; label: string }> {
+  return {
+    water_clarity: { icon: "💧", label: t.checkPage.waterClarity },
+    algae: { icon: "🟢", label: t.checkPage.algae },
+    fish_appearance: { icon: "🐟", label: t.checkPage.fishAppearance },
+    cleanliness: { icon: "🧹", label: t.checkPage.cleanliness },
+    plants: { icon: "🌿", label: t.checkPage.plants },
+    water_level: { icon: "📏", label: t.checkPage.waterLevel },
+    equipment: { icon: "⚙️", label: t.checkPage.equipment },
+    stocking: { icon: "🐠", label: t.checkPage.stocking },
+  };
+}
 
 /** Framework's 4-real-tier severity compressed onto the app's existing 3-color palette (fixNow/watch/improve) plus neutral — see the session note on why "watch" and "na" share neutral. */
 function healthStatusColor(status: string): string {
@@ -81,6 +84,8 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const fromCreate = searchParams.get("fromCreate") === "1";
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { locale } = useLocale();
+  const t = useTranslation();
+  const HEALTH_CATEGORY_META = healthCategoryMeta(t);
 
   const [stage, setStage] = useState<Stage>("idle");
   const [qualityReport, setQualityReport] = useState<QualityReport | null>(null);
@@ -88,6 +93,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const [uploadBlob, setUploadBlob] = useState<Blob | null>(null);
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [scanErrorOffline, setScanErrorOffline] = useState(false);
   const [report, setReport] = useState<TankScanReport | null>(null);
   // Health Check (re-runs, !fromCreate) uses its own dedicated contract
   // (health-check/v1) from here on — see specs/PROGRESS.md's 2026-09-12
@@ -137,7 +143,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       if (reusePath) {
         setReusedExistingPhoto(false);
         setExistingPhotoRuledOut(true);
-        setExistingPhotoIssue(quality.issues[0] ? ISSUE_MESSAGES[quality.issues[0]] : "That photo wasn't clear enough for a scan.");
+        setExistingPhotoIssue(quality.issues[0] ? ISSUE_MESSAGES[quality.issues[0]] : t.checkPage.photoNotClearEnough);
         setStage("idle");
         return;
       }
@@ -173,6 +179,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     if (!tank) return;
     setStage("scanning");
     setScanError(null);
+    setScanErrorOffline(false);
     try {
       const tankRecord = await buildTankContext(id);
       const photoFile = new File([blob], "upload.jpg", { type: "image/jpeg" });
@@ -195,7 +202,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         }
         const parsed = TankScanZod.safeParse(result.data.report);
         if (!parsed.success) {
-          setScanError("The check came back in an unexpected shape. Please try again.");
+          setScanError(t.checkPage.unexpectedShape);
           setStage("scan-error");
           return;
         }
@@ -222,7 +229,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       }
       const parsed = HealthCheckZod.safeParse(result.data.report);
       if (!parsed.success) {
-        setScanError("The check came back in an unexpected shape. Please try again.");
+        setScanError(t.checkPage.unexpectedShape);
         setStage("scan-error");
         return;
       }
@@ -233,7 +240,8 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       setHealthReport({ ...parsed.data, overall_status: (result.data.report as { overall_status?: string }).overall_status as HealthCheckReport["overall_status"] });
       setStage("report");
     } catch {
-      setScanError("Couldn't reach the server. Try again when you're back online.");
+      setScanError(t.checkPage.couldNotReachServer);
+      setScanErrorOffline(true);
       setStage("scan-error");
     }
   }
@@ -254,8 +262,8 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         scores: report.scores,
       });
       const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
-      const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : "No issues flagged.";
-      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `Tank Scan: ${findingSummary}` });
+      const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : t.reportPage.noIssuesFlagged;
+      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.tankScanColon} ${findingSummary}` });
       if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
     } else if (healthReport) {
       await createScan({
@@ -268,17 +276,17 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         scores: { overall_status: healthReport.overall_status },
       });
       const flagged = healthReport.checks.filter((c) => c.status !== "ok" && c.status !== "na");
-      const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : "Nothing flagged.";
-      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `Health Check (${healthReport.overall_status}): ${summary}` });
+      const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : t.checkPage.nothingFlagged;
+      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.healthCheckParen.replace("{status}", healthReport.overall_status)} ${summary}` });
       if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
     }
     setStage("saved");
   }
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   const backTarget = `/tank/${id}`;
-  const screenTitle = fromCreate ? "Scan your tank" : "Health Check";
+  const screenTitle = fromCreate ? t.checkPage.scanYourTank : t.checkPage.healthCheck;
 
   if (stage === "saved") {
     return (
@@ -287,13 +295,13 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         <div style={{ display: "flex", justifyContent: "center" }}>
           <LottiePlayer name="success" loop={false} size={100} respectReducedMotion />
         </div>
-        <Banner severity="improve">Saved to your Journal.</Banner>
+        <Banner severity="improve">{t.checkPage.savedToJournal}</Banner>
         <div style={{ height: 12 }} />
         {/* replace, not push — this is a finished/terminal screen, so the
             browser back button shouldn't be able to return into it (Jaideep
             hit this: "back" from the tank page landed back on this saved
             Check screen instead of skipping past it). */}
-        <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Back to my tank</PrimaryButton>
+        <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>{t.checkPage.backToMyTank}</PrimaryButton>
       </Screen>
     );
   }
@@ -312,16 +320,16 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={handleSave}>Save to Journal</PrimaryButton>
-            <SecondaryButton onClick={retake}>Check again</SecondaryButton>
+            <PrimaryButton onClick={handleSave}>{t.checkPage.saveToJournal}</PrimaryButton>
+            <SecondaryButton onClick={retake}>{t.checkPage.checkAgain}</SecondaryButton>
           </>
         }
       >
-        <BackHeader title={fromCreate ? "Your tank scan" : "Health Check results"} fallbackHref={backTarget} />
+        <BackHeader title={fromCreate ? t.checkPage.yourTankScan : t.checkPage.healthCheckResults} fallbackHref={backTarget} />
 
         {findings.length === 0 && findingsBySeverity.length === 0 && (
           <div style={{ marginBottom: 16 }}>
-            <Banner severity="improve">Nothing to flag — your tank looks in good shape.</Banner>
+            <Banner severity="improve">{t.checkPage.nothingToFlag}</Banner>
           </div>
         )}
 
@@ -357,7 +365,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
 
         {uncertain.length > 0 && (
           <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Not sure about these — worth a second look</p>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.notSureAboutThese}</p>
             {uncertain.map((f) => (
               <p key={f.id} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
                 {f.title}?
@@ -368,7 +376,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
 
         {algae.length > 0 && (
           <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Algae spotted</p>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.algaeSpotted}</p>
             {algae.map((a, i) => (
               <p key={i} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
                 {a.type} ({a.severity}) — {a.location}
@@ -379,7 +387,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
 
         {couldNotDetermine.length > 0 && (
           <Card>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Couldn&apos;t tell from this photo</p>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.couldNotTellFromPhoto}</p>
             <ul style={{ margin: 0, paddingLeft: 20, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
               {couldNotDetermine.map((item) => (
                 <li key={item}>{item}</li>
@@ -408,18 +416,17 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={handleSave}>Save to Journal</PrimaryButton>
-            <SecondaryButton onClick={retake}>Check again</SecondaryButton>
+            <PrimaryButton onClick={handleSave}>{t.checkPage.saveToJournal}</PrimaryButton>
+            <SecondaryButton onClick={retake}>{t.checkPage.checkAgain}</SecondaryButton>
           </>
         }
       >
-        <BackHeader title="Health Check results" fallbackHref={backTarget} />
+        <BackHeader title={t.checkPage.healthCheckResults} fallbackHref={backTarget} />
 
         {insufficientPhoto && (
           <div style={{ marginBottom: 16 }}>
             <Banner severity="watch">
-              This photo wasn&apos;t clear enough for a reliable check — the notes below are limited. A retake (whole
-              tank in frame, plain lighting) will give a much better read.
+              {t.checkPage.photoNotClearReliable}
             </Banner>
           </div>
         )}
@@ -429,7 +436,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         </div>
 
         <Card style={{ marginBottom: 12 }}>
-          <p style={{ fontWeight: 700, marginBottom: 8 }}>🩺 Health Check</p>
+          <p style={{ fontWeight: 700, marginBottom: 8 }}>🩺 {t.checkPage.healthCheck}</p>
           {HEALTH_CHECK_CATEGORIES.map((cat) => {
             const check = checksByCategory.get(cat);
             const meta = HEALTH_CATEGORY_META[cat];
@@ -443,7 +450,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
                   {meta.icon} {meta.label}
                 </span>
                 <span style={{ fontSize: "var(--font-body-sm-size)", color: healthStatusColor(check.status) }}>
-                  {check.status === "na" ? "Not visible in this photo" : check.observation}
+                  {check.status === "na" ? t.checkPage.notVisibleInPhoto : check.observation}
                 </span>
               </div>
             );
@@ -452,7 +459,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
 
         {tips.length > 0 && (
           <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>💡 Tips &amp; recommendations</p>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>💡 {t.checkPage.tipsAndRecommendations}</p>
             {tips.map((c, i) => {
               const meta = HEALTH_CATEGORY_META[c.category];
               return (
@@ -463,7 +470,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
                   <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{c.tip}</p>
                   {c.possible_causes.length > 0 && (
                     <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>
-                      Possible causes: {c.possible_causes.join(", ")}
+                      {t.checkPage.possibleCauses} {c.possible_causes.join(", ")}
                     </p>
                   )}
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
@@ -486,8 +493,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
         )}
 
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
-          Visual-only — this can&apos;t measure ammonia, nitrite, nitrate, pH, GH/KH or temperature. Always confirm
-          with a real water test before treating anything.
+          {t.checkPage.visualOnlyDisclaimer}
         </p>
       </Screen>
     );
@@ -515,25 +521,25 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
         {fromCreate
           ? hasExistingPhoto
-            ? "Let us scan your tank and give you some advice — we'll use the photo you already added. Optional, you can always do this later."
-            : "Let us scan your tank and give you some advice. Optional — you can always do this later."
-          : `A health check for ${tank.name}, using what's already logged plus a new photo.`}
+            ? t.checkPage.letUsScanExisting
+            : t.checkPage.letUsScanOptional
+          : t.checkPage.healthCheckForTank.replace("{name}", tank.name)}
       </p>
 
       {stage === "idle" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {existingPhotoIssue && (
-            <Banner severity="watch">{existingPhotoIssue} Take a new one instead.</Banner>
+            <Banner severity="watch">{existingPhotoIssue} {t.checkPage.takeANewOneInstead}</Banner>
           )}
           {hasExistingPhoto ? (
-            <PrimaryButton onClick={() => void scanExistingPhoto(tank.photoUri!)}>🔍 Scan my tank</PrimaryButton>
+            <PrimaryButton onClick={() => void scanExistingPhoto(tank.photoUri!)}>🔍 {t.checkPage.scanMyTank}</PrimaryButton>
           ) : (
             <>
-              <PrimaryButton onClick={() => cameraInputRef.current?.click()}>📷 Take a photo</PrimaryButton>
-              <SecondaryButton onClick={() => libraryInputRef.current?.click()}>Choose from library</SecondaryButton>
+              <PrimaryButton onClick={() => cameraInputRef.current?.click()}>📷 {t.scanPage.takePhoto}</PrimaryButton>
+              <SecondaryButton onClick={() => libraryInputRef.current?.click()}>{t.scanPage.chooseFromLibrary}</SecondaryButton>
             </>
           )}
-          {fromCreate && <SecondaryButton onClick={() => router.replace(`/tank/${id}`)}>Skip for now</SecondaryButton>}
+          {fromCreate && <SecondaryButton onClick={() => router.replace(`/tank/${id}`)}>{t.checkPage.skipForNow}</SecondaryButton>}
         </div>
       )}
 
@@ -543,7 +549,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
             <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 8 }} />
           )}
-          <p>Checking photo...</p>
+          <p>{t.scanPage.checkingPhoto}</p>
         </Card>
       )}
 
@@ -555,7 +561,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
           )}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <LottiePlayer name="scanning" size={72} />
-            <p>Analysing your tank...</p>
+            <p>{t.checkPage.analysingYourTank}</p>
           </div>
         </Card>
       )}
@@ -572,13 +578,13 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
             </div>
           ))}
           <div style={{ height: 8 }} />
-          <PrimaryButton onClick={retake}>Retake</PrimaryButton>
+          <PrimaryButton onClick={retake}>{t.scanPage.retake}</PrimaryButton>
         </div>
       )}
 
       {stage === "scan-error" && (
         <div>
-          {scanError?.includes("Couldn't reach the server") ? (
+          {scanErrorOffline ? (
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)", borderLeft: "3px solid var(--color-watch)" }}>
               <LottiePlayer name="offline" size={40} />
               <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)" }}>{scanError}</p>
@@ -587,9 +593,9 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
             <Banner severity="fixNow">{scanError}</Banner>
           )}
           <div style={{ height: 8 }} />
-          <PrimaryButton onClick={() => uploadBlob && runScan(uploadBlob)}>Try again</PrimaryButton>
+          <PrimaryButton onClick={() => uploadBlob && runScan(uploadBlob)}>{t.scanPage.tryAgain}</PrimaryButton>
           <div style={{ height: 8 }} />
-          <SecondaryButton onClick={retake}>Retake photo</SecondaryButton>
+          <SecondaryButton onClick={retake}>{t.scanPage.retakePhoto}</SecondaryButton>
         </div>
       )}
     </Screen>

@@ -102,21 +102,21 @@ export default function OnboardingPage() {
         }}
       >
         <div style={{ display: "flex", gap: 10 }}>
-          <FloatingField label="Name" value={name} onChange={setName} placeholder="Your name" />
-          <FloatingField label="City" value={city} onChange={setCity} placeholder="Your city" />
+          <FloatingField label={t.onboardingPage.name} value={name} onChange={setName} placeholder={t.onboardingPage.yourName} />
+          <FloatingField label={t.onboardingPage.city} value={city} onChange={setCity} placeholder={t.onboardingPage.yourCity} />
         </div>
 
         <div>
-          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Language</p>
+          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>{t.onboardingPage.language}</p>
           <SegmentedToggle
-            options={([["en", "English"], ["hi-latn", "Hinglish"]] as [Locale, string][]).map(([value, label]) => ({ value, label }))}
+            options={([["en", t.settingsPage.english], ["hi-latn", t.settingsPage.hinglish]] as [Locale, string][]).map(([value, label]) => ({ value, label }))}
             value={locale}
             onChange={setLocale}
           />
         </div>
 
         <div>
-          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>Theme</p>
+          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--font-caption-size)", marginBottom: 6 }}>{t.onboardingPage.theme}</p>
           <SegmentedToggle
             options={[
               { value: "system" as ThemeChoice, label: "⚙️" },

@@ -18,6 +18,7 @@ import { unlockDexCard } from "@/db/queries/dex";
 import { generateSpecies } from "@/lib/ai-client";
 import { isAiGenerated } from "@/lib/species-origin";
 import { CompatibilitySummary } from "@/components/CompatibilitySummary";
+import { useTranslation } from "@/i18n/use-translation";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
 
@@ -40,6 +41,7 @@ function firstName(json: string | null | undefined): string | null {
 export default function LivestockSearchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(listSpecies, []);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
@@ -112,7 +114,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
     setSaving(false);
   }
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
 
@@ -122,15 +124,15 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
         <>
           {justAdded.length > 0 && (
             <p style={{ margin: "0 0 8px", color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, textAlign: "center" }}>
-              ✓ {justAdded.length} fish added this session
+              ✓ {t.livestockScanPage.fishAddedThisSession.replace("{n}", String(justAdded.length))}
             </p>
           )}
-          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
+          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>{t.livestockScanPage.doneBackToTank}</PrimaryButton>
         </>
       }
     >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
-      <BackHeader title="Add a fish" fallbackHref={`/tank/${id}`} />
+      <BackHeader title={t.livestockSearchPage.addAFish} fallbackHref={`/tank/${id}`} />
 
       {/* Search goes first, right under the header — the "already in this
           tank" list used to sit above it, which could push search results
@@ -138,7 +140,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
           (Jaideep hit this on a tank with several species already added).
           Existing fish now show near the bottom instead, below what you're
           actively doing here. */}
-      <Field label="Search species" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder="e.g. neon tetra" autoFocus />
+      <Field label={t.livestockSearchPage.searchSpecies} value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={t.livestockSearchPage.egNeonTetra} autoFocus />
 
       {searchResults.length > 0 && (
         <div style={{ marginTop: 12 }}>
@@ -150,7 +152,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
             >
               <SpeciesThumb imageUri={s.imageUri} category={s.category} size={44} />
               <span>
-                {firstName(s.commonNames) ?? s.id} {isAiGenerated(s) && <Chip variant="unverified">AI-generated</Chip>}
+                {firstName(s.commonNames) ?? s.id} {isAiGenerated(s) && <Chip variant="unverified">{t.livestockSearchPage.aiGenerated}</Chip>}
               </span>
             </button>
           ))}
@@ -159,9 +161,9 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
 
       {query.trim().length >= 2 && searchResults.length === 0 && !selectedSpeciesId && (
         <div style={{ marginTop: 12 }}>
-          <p style={{ color: "var(--color-ink-muted)", marginBottom: 8 }}>Not in our catalog yet.</p>
+          <p style={{ color: "var(--color-ink-muted)", marginBottom: 8 }}>{t.livestockSearchPage.notInCatalogYet}</p>
           <SecondaryButton onClick={handleAddItAnyway} disabled={busy === "generate"}>
-            {busy === "generate" ? "Generating a card..." : `Add "${query}" anyway`}
+            {busy === "generate" ? t.livestockSearchPage.generatingCard : t.livestockSearchPage.addQueryAnyway.replace("{query}", query)}
           </SecondaryButton>
         </div>
       )}
@@ -178,14 +180,14 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
             <SpeciesThumb imageUri={selectedSpecies?.imageUri} category={selectedSpecies?.category} size={44} />
             <strong>
               {firstName(selectedSpecies?.commonNames ?? null) ?? selectedSpeciesId}{" "}
-              {selectedSpecies && isAiGenerated(selectedSpecies) && <Chip variant="unverified">AI-generated</Chip>}
+              {selectedSpecies && isAiGenerated(selectedSpecies) && <Chip variant="unverified">{t.livestockSearchPage.aiGenerated}</Chip>}
             </strong>
           </div>
-          <label style={{ display: "block", fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 6 }}>Count</label>
+          <label style={{ display: "block", fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 6 }}>{t.livestockScanPage.count}</label>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button
               type="button"
-              aria-label="Decrease count"
+              aria-label={t.livestockSearchPage.decreaseCount}
               onClick={() => setCount((c) => String(Math.max(1, (Number(c) || 1) - 1)))}
               style={{ width: 36, height: 36, flexShrink: 0, borderRadius: "50%", border: "1px solid var(--color-line)", background: "var(--color-surface)", color: "var(--color-ink)", fontSize: 18, fontWeight: 700, cursor: "pointer" }}
             >
@@ -200,7 +202,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
             />
             <button
               type="button"
-              aria-label="Increase count"
+              aria-label={t.livestockSearchPage.increaseCount}
               onClick={() => setCount((c) => String((Number(c) || 0) + 1))}
               style={{ width: 36, height: 36, flexShrink: 0, borderRadius: "50%", border: "1px solid var(--color-line)", background: "var(--color-surface)", color: "var(--color-ink)", fontSize: 18, fontWeight: 700, cursor: "pointer" }}
             >
@@ -221,10 +223,10 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
 
           <div style={{ height: 8 }} />
           <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1 || saving}>
-            {saving ? "Adding…" : "Add to tank"}
+            {saving ? t.livestockScanPage.addingEllipsisLong : t.dexDetailPage.addToTank}
           </PrimaryButton>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8, textAlign: "center" }}>
-            You can keep adding more fish after this — the page stays open.
+            {t.livestockSearchPage.keepAddingMore}
           </p>
         </div>
       )}
@@ -232,7 +234,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
       {/* What this session has added so far — additive flow (Jaideep, 2026-09-06). */}
       {justAdded.length > 0 && (
         <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Added just now</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.livestockScanPage.addedJustNow}</p>
           {justAdded.map((j, i) => {
             const s = speciesById.get(j.speciesId);
             return (
@@ -241,7 +243,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
                 <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
                   {j.count}× {firstName(s?.commonNames ?? null) ?? j.speciesId}
                 </span>
-                <Chip variant="improve">added</Chip>
+                <Chip variant="improve">{t.livestockScanPage.added}</Chip>
               </div>
             );
           })}
@@ -250,7 +252,7 @@ export default function LivestockSearchPage({ params }: { params: Promise<{ id: 
 
       {aliveLivestock.length > 0 && (
         <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>{t.livestockScanPage.alreadyInThisTank}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {aliveLivestock.map((l) => {
               const s = speciesById.get(l.speciesId);

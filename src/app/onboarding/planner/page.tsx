@@ -33,6 +33,7 @@ import { addPlant } from "@/db/queries/plants";
 import { unlockDexCard } from "@/db/queries/dex";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { getPlannerAdvice } from "@/lib/ai-client";
+import { useTranslation } from "@/i18n/use-translation";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
 
@@ -62,11 +63,13 @@ const twoLineClamp: React.CSSProperties = {
  * catalog; a missing id is silently skipped (filtered via speciesById.get)
  * rather than shown broken.
  */
-const BEGINNER_PLANT_LAYERS: { label: string; speciesIds: string[] }[] = [
-  { label: "Foreground", speciesIds: ["dwarf-hairgrass", "monte-carlo", "dwarf-baby-tears"] },
-  { label: "Midground", speciesIds: ["java-fern", "dwarf-anubias", "wendt-s-cryptocoryne"] },
-  { label: "Background", speciesIds: ["amazon-sword", "straight-vallisneria", "water-wisteria"] },
-];
+function beginnerPlantLayers(t: ReturnType<typeof useTranslation>): { label: string; speciesIds: string[] }[] {
+  return [
+    { label: t.plannerPage.foreground, speciesIds: ["dwarf-hairgrass", "monte-carlo", "dwarf-baby-tears"] },
+    { label: t.plannerPage.midground, speciesIds: ["java-fern", "dwarf-anubias", "wendt-s-cryptocoryne"] },
+    { label: t.plannerPage.background, speciesIds: ["amazon-sword", "straight-vallisneria", "water-wisteria"] },
+  ];
+}
 
 /**
  * T-027 — "Help me build a tank", AI-first (Jaideep's re-spec), tuned by
@@ -79,6 +82,8 @@ const BEGINNER_PLANT_LAYERS: { label: string; speciesIds: string[] }[] = [
  */
 export default function OnboardingPlannerPage() {
   const router = useRouter();
+  const t = useTranslation();
+  const BEGINNER_PLANT_LAYERS = beginnerPlantLayers(t);
   const { data: allSpecies } = useLiveQuery(listSpecies, []);
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -178,7 +183,12 @@ export default function OnboardingPlannerPage() {
       customRoomTempC: customTempNum,
     });
     setPlan(basePlan);
-    setTankName(`${lengthFt}ft ${shape} ${tier === "planted" ? "planted" : tier === "hardscape" ? "hardscape" : "bare-bottom"} tank`);
+    setTankName(
+      t.plannerPage.tankNameTemplate
+        .replace("{ft}", String(lengthFt))
+        .replace("{shape}", shape)
+        .replace("{tier}", tier === "planted" ? t.plannerPage.plantedLower : tier === "hardscape" ? t.plannerPage.hardscapeLower : t.plannerPage.bareBottomLower)
+    );
 
     try {
       const result = await getPlannerAdvice({
@@ -239,7 +249,7 @@ export default function OnboardingPlannerPage() {
         );
       }
     } catch {
-      setAiError("Couldn't reach the advisor — showing the standard plan instead. You can save it as-is.");
+      setAiError(t.plannerPage.couldNotReachAdvisor);
     } finally {
       setAiLoading(false);
     }
@@ -251,7 +261,7 @@ export default function OnboardingPlannerPage() {
     setSaveError(null);
     try {
       const tankId = await createTank({
-        name: tankName.trim() || `${lengthFt}ft tank`,
+        name: tankName.trim() || t.plannerPage.ftTank.replace("{ft}", String(lengthFt)),
         lengthCm: dims.lengthCm,
         widthCm: dims.widthCm,
         heightCm: dims.heightCm,
@@ -293,13 +303,17 @@ export default function OnboardingPlannerPage() {
       }
 
       const planLines = [
-        `Setup plan (${tier}, ${lengthFt}ft ${shape}, ~${volumeL}L)`,
-        plan.heaterWatts != null ? `Heater: ${plan.heaterWatts}W` : "Heater: not needed",
-        `Filter: ${plan.filter.shopLabel}`,
-        `Light: ~${plan.lighting.wattage}W (${plan.lighting.level})`,
-        plan.substrate.kind ? `Substrate: ${plan.substrate.kind}, ${plan.substrate.depthCm}cm (~${plan.substrate.approxKg}kg)` : "Substrate: none",
-        picked.length ? `Wishlist: ${picked.map((p) => `${p.count}× ${firstName(speciesById.get(p.speciesId)?.commonNames) ?? p.speciesId}`).join(", ")}` : "Wishlist: none yet",
-        aiPlan ? `Advisor: ${aiPlan.summary}` : "Advisor: offline — standard plan",
+        t.plannerPage.setupPlanLine.replace("{tier}", tier).replace("{ft}", String(lengthFt)).replace("{shape}", shape).replace("{v}", String(volumeL)),
+        plan.heaterWatts != null ? `${t.plannerPage.heaterLabel} ${plan.heaterWatts}W` : t.plannerPage.heaterNotNeeded,
+        `${t.plannerPage.filterLabel} ${plan.filter.shopLabel}`,
+        `${t.plannerPage.lightLabel} ~${plan.lighting.wattage}W (${plan.lighting.level})`,
+        plan.substrate.kind
+          ? `${t.plannerPage.substrateLabel} ${plan.substrate.kind}, ${plan.substrate.depthCm}cm (~${plan.substrate.approxKg}kg)`
+          : t.plannerPage.substrateNone,
+        picked.length
+          ? `${t.plannerPage.wishlistLabel} ${picked.map((p) => `${p.count}× ${firstName(speciesById.get(p.speciesId)?.commonNames) ?? p.speciesId}`).join(", ")}`
+          : t.plannerPage.wishlistNoneYet,
+        aiPlan ? `${t.plannerPage.advisorLabel} ${aiPlan.summary}` : t.plannerPage.advisorOffline,
       ];
       await addLogEntry({ tankId, type: "journal", body: planLines.join(" · ") });
 
@@ -311,7 +325,7 @@ export default function OnboardingPlannerPage() {
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- deliberate full-page nav, not an SPA transition: it must survive aeroplane mode.
       window.location.assign(`/tank/${tankId}`);
     } catch (err) {
-      setSaveError(`Something went wrong saving your plan: ${String(err)}`);
+      setSaveError(`${t.plannerPage.somethingWentWrongSavingPlan} ${String(err)}`);
       setSaving(false);
     }
   }
@@ -321,20 +335,20 @@ export default function OnboardingPlannerPage() {
     return (
       <Screen
         footer={
-          <PrimaryButton onClick={() => setStep(2)}>Next — what fish do you want?</PrimaryButton>
+          <PrimaryButton onClick={() => setStep(2)}>{t.plannerPage.nextWhatFish}</PrimaryButton>
         }
       >
-        <BackHeader title="Help me build a tank" fallbackHref="/" />
-        <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>Three quick questions, then we&apos;ll plan the whole thing together.</p>
+        <BackHeader title={t.plannerPage.title} fallbackHref="/" />
+        <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>{t.plannerPage.threeQuickQuestions}</p>
 
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>What kind of tank do you want?</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.plannerPage.whatKindOfTank}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {(
               [
-                ["planted", "🌿 Planted", "Live plants growing in the tank — the classic aquascape"],
-                ["hardscape", "🪨 Hardscape", "Rocks and driftwood only — no plants to trim"],
-                ["bare_bottom", "🫙 Bare bottom", "No substrate at all — easiest to clean"],
+                ["planted", `🌿 ${t.plannerPage.plantedOption}`, t.plannerPage.plantedHint],
+                ["hardscape", `🪨 ${t.plannerPage.hardscapeOption}`, t.plannerPage.hardscapeHint],
+                ["bare_bottom", `🫙 ${t.plannerPage.bareBottomOption}`, t.plannerPage.bareBottomHint],
               ] as [PlantedTier, string, string][]
             ).map(([value, label, hint]) => (
               <button
@@ -366,21 +380,21 @@ export default function OnboardingPlannerPage() {
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={() => setStep(3)}>Next — Tank size</PrimaryButton>
-            <SecondaryButton onClick={() => setStep(1)}>Back</SecondaryButton>
+            <PrimaryButton onClick={() => setStep(3)}>{t.plannerPage.nextTankSize}</PrimaryButton>
+            <SecondaryButton onClick={() => setStep(1)}>{t.plannerPage.backButton}</SecondaryButton>
           </>
         }
       >
-        <BackHeader title="Help me build a tank" fallbackHref="/" />
+        <BackHeader title={t.plannerPage.title} fallbackHref="/" />
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-          What fish do you imagine in it? Type anything — a species, a vibe, a colour.
+          {t.plannerPage.whatFishImagine}
         </p>
 
         <Card style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", gap: 8 }}>
             <Field
               label=""
-              placeholder="e.g. guppy, tetra, shrimp…"
+              placeholder={t.plannerPage.fishPlaceholder}
               value={wishInput}
               onChange={(e) => setWishInput(e.target.value)}
               onKeyDown={(e) => {
@@ -392,7 +406,7 @@ export default function OnboardingPlannerPage() {
               }}
             />
             <SecondaryButton style={{ width: "auto", padding: "8px 16px" }} onClick={() => addWish()}>
-              Add
+              {t.common.add}
             </SecondaryButton>
           </div>
 
@@ -410,10 +424,10 @@ export default function OnboardingPlannerPage() {
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: "block", fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>{firstName(s.commonNames) ?? s.id}</span>
                     {s.minVolumeL != null && (
-                      <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>needs {s.minVolumeL}L or more</span>
+                      <span style={{ display: "block", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.plannerPage.needsLOrMore.replace("{v}", String(s.minVolumeL))}</span>
                     )}
                   </span>
-                  <span style={{ color: "var(--color-deep)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>+ Add</span>
+                  <span style={{ color: "var(--color-deep)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>+ {t.common.add}</span>
                 </button>
               ))}
             </div>
@@ -437,7 +451,7 @@ export default function OnboardingPlannerPage() {
           {wishes.length === 0 && wishInput.trim().length < 2 && (
             <>
               <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12, marginBottom: 6 }}>
-                Not sure yet? These are proven first fish:
+                {t.plannerPage.notSureYet}
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {["guppies", "neon tetras", "a betta", "cherry shrimp", "corydoras", "harlequin rasboras"].map((s) => (
@@ -465,19 +479,19 @@ export default function OnboardingPlannerPage() {
         footer={
           <>
             <PrimaryButton onClick={handleBuildPlan} disabled={aiLoading}>
-              {aiLoading ? "Planning…" : "Build my plan"}
+              {aiLoading ? t.plannerPage.planningEllipsis : t.plannerPage.buildMyPlan}
             </PrimaryButton>
-            <SecondaryButton onClick={() => setStep(2)}>Back</SecondaryButton>
+            <SecondaryButton onClick={() => setStep(2)}>{t.plannerPage.backButton}</SecondaryButton>
           </>
         }
       >
-        <BackHeader title="Help me build a tank" fallbackHref="/" />
+        <BackHeader title={t.plannerPage.title} fallbackHref="/" />
         <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-          Bigger tanks are more forgiving for beginners — water stays stable longer. Pick what fits your space.
+          {t.plannerPage.biggerTanksForgiving}
         </p>
 
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Tank length</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.plannerPage.tankLength}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {TANK_LENGTHS_FT.map((ft) => (
               <button
@@ -504,12 +518,12 @@ export default function OnboardingPlannerPage() {
 
           {cubeAvailable(lengthFt) && (
             <div style={{ marginTop: 12 }}>
-              <p style={{ fontWeight: 600, marginBottom: 8 }}>Shape</p>
+              <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.plannerPage.shape}</p>
               <div style={{ display: "flex", gap: 8 }}>
                 {(
                   [
-                    ["long", "▭ Long", "Wider than tall — the classic showcase"],
-                    ["cube", "⬜ Cube", "Equal sides — a modern, compact look"],
+                    ["long", `▭ ${t.plannerPage.longOption}`, t.plannerPage.longHint],
+                    ["cube", `⬜ ${t.plannerPage.cubeOption}`, t.plannerPage.cubeHint],
                   ] as [TankShape, string, string][]
                 ).map(([value, label, hint]) => (
                   <button
@@ -535,19 +549,19 @@ export default function OnboardingPlannerPage() {
           )}
 
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12 }}>
-            {dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm · ≈ {volumeL} litres
+            {dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm · ≈ {volumeL} {t.scanPage.litres}
           </p>
         </Card>
 
         <Card>
-          <Field label="Your city (for heater sizing)" list="planner-city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Mumbai" />
+          <Field label={t.plannerPage.yourCityForHeater} list="planner-city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.plannerPage.cityPlaceholder} />
           <datalist id="planner-city-options">
             {COMMON_CITIES.map((c) => (
               <option key={c} value={c} />
             ))}
           </datalist>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
-            Used to pick a heater that can hold temperature in your winters. Optional.
+            {t.plannerPage.cityUsageNote}
           </p>
         </Card>
       </Screen>
@@ -563,30 +577,30 @@ export default function OnboardingPlannerPage() {
       footer={
         savedOffline ? (
           <>
-            <PrimaryButton onClick={() => router.push("/")}>Go to My Tanks</PrimaryButton>
-            <SecondaryButton onClick={() => router.push("/onboarding/scan")}>I&apos;ve set the tank up — scan it now</SecondaryButton>
+            <PrimaryButton onClick={() => router.push("/")}>{t.plannerPage.goToMyTanks}</PrimaryButton>
+            <SecondaryButton onClick={() => router.push("/onboarding/scan")}>{t.plannerPage.ivesetItUpScanNow}</SecondaryButton>
           </>
         ) : (
           <>
             <PrimaryButton onClick={handleSave} disabled={saving || aiLoading}>
-              {saving ? "Saving..." : "Save to My Tanks"}
+              {saving ? t.reportPage.savingEllipsis : t.plannerPage.saveToMyTanks}
             </PrimaryButton>
             <SecondaryButton onClick={() => setStep(3)} disabled={saving || aiLoading}>
-              Back — change size or city
+              {t.plannerPage.backChangeSizeOrCity}
             </SecondaryButton>
           </>
         )
       }
     >
-      <BackHeader title="Your setup plan" fallbackHref="/" />
+      <BackHeader title={t.plannerPage.yourSetupPlan} fallbackHref="/" />
 
       {savedOffline ? (
         <>
           <Banner severity="improve">
-            Plan saved. You&apos;re offline right now, so the tank page couldn&apos;t load — your tank is safe on this phone and will open normally once you&apos;re back online.
+            {t.plannerPage.planSavedOffline}
           </Banner>
           <p style={{ color: "var(--color-ink-muted)", marginTop: 12 }}>
-            Everything you planned — equipment and wishlist fish — is already on this device.
+            {t.plannerPage.everythingPlannedOnDevice}
           </p>
         </>
       ) : (
@@ -610,10 +624,10 @@ export default function OnboardingPlannerPage() {
             >
               <LottiePlayer name="thinking" size={110} />
               <p style={{ margin: 0, fontSize: "var(--font-body-size)", fontWeight: 700, textAlign: "center" }}>
-                Our advisor is checking your fish list…
+                {t.plannerPage.advisorChecking}
               </p>
               <p style={{ margin: 0, fontSize: "var(--font-caption-size)", opacity: 0.8, textAlign: "center" }}>
-                Matching against 1,484 species — usually 5–15 seconds.
+                {t.plannerPage.matchingSpecies}
               </p>
             </div>
           )}
@@ -642,38 +656,38 @@ export default function OnboardingPlannerPage() {
               label + one-line verdict, not a paragraph — so it reads as "here's
               what your tank needs," not a pile of unrelated boxes. */}
           <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 700, marginBottom: 2 }}>🐠 Our AI advisor says</p>
+            <p style={{ fontWeight: 700, marginBottom: 2 }}>🐠 {t.plannerPage.ourAiAdvisorSays}</p>
             <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 8 }}>
-              For your tank, here&apos;s what&apos;s needed:
+              {t.plannerPage.hereWhatsNeeded}
             </p>
 
             {[
               {
                 icon: "📐",
-                label: "Tank size",
+                label: t.plannerPage.tankSize,
                 text: `${lengthFt}ft ${shape} — ${dims.lengthCm}×${dims.widthCm}×${dims.heightCm}cm, ≈${volumeL}L`,
               },
               {
                 icon: "🌡️",
-                label: "Heater",
-                text: plan.heaterWatts == null ? "Not needed — your room stays warm enough" : `${plan.heaterWatts}W`,
+                label: t.plannerPage.heater,
+                text: plan.heaterWatts == null ? t.plannerPage.notNeededRoomWarm : `${plan.heaterWatts}W`,
               },
-              { icon: "💧", label: "Filter", text: plan.filter.shopLabel },
-              { icon: "💡", label: "Light", text: `${plan.lighting.wattage}W, ${plan.lighting.level} light` },
+              { icon: "💧", label: t.plannerPage.filterWord, text: plan.filter.shopLabel },
+              { icon: "💡", label: t.plannerPage.lightWord, text: `${plan.lighting.wattage}W, ${plan.lighting.level} ${t.plannerPage.lightSuffix}` },
               {
                 icon: "🪨",
-                label: "Substrate",
+                label: t.plannerPage.substrateWord,
                 text:
                   plan.substrate.kind == null
-                    ? "None — bare-bottom"
+                    ? t.plannerPage.noneBareBottom
                     : `${plan.substrate.kind}, ${plan.substrate.depthCm}cm (~${plan.substrate.approxKg}kg)`,
               },
               {
                 icon: "🐟",
-                label: "Fish list",
+                label: t.plannerPage.fishList,
                 text: picked.length
                   ? picked.map((p) => firstName(speciesById.get(p.speciesId)?.commonNames ?? null) ?? p.speciesId).join(", ")
-                  : "None yet — add fish above to see what your tank needs",
+                  : t.plannerPage.noneYetAddFish,
               },
             ].map((row) => (
               <div
@@ -703,7 +717,7 @@ export default function OnboardingPlannerPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <button
                           type="button"
-                          aria-label="Fewer"
+                          aria-label={t.plannerPage.fewer}
                           onClick={() =>
                             setPicked((prev) =>
                               prev.map((x) => (x.speciesId === p.speciesId ? { ...x, count: Math.max(1, x.count - 1) } : x))
@@ -727,7 +741,7 @@ export default function OnboardingPlannerPage() {
                         </span>
                         <button
                           type="button"
-                          aria-label="More"
+                          aria-label={t.plannerPage.more}
                           onClick={() =>
                             setPicked((prev) => prev.map((x) => (x.speciesId === p.speciesId ? { ...x, count: x.count + 1 } : x)))
                           }
@@ -753,7 +767,7 @@ export default function OnboardingPlannerPage() {
 
             {tier === "planted" && (
               <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--color-line-soft)" }}>
-                <p style={{ fontWeight: 700, marginBottom: 6, fontSize: "var(--font-body-sm-size)" }}>🌿 Good beginner plants for this tank</p>
+                <p style={{ fontWeight: 700, marginBottom: 6, fontSize: "var(--font-body-sm-size)" }}>🌿 {t.plannerPage.goodBeginnerPlants}</p>
                 {BEGINNER_PLANT_LAYERS.map((layer) => (
                   <div key={layer.label} style={{ marginBottom: 6 }}>
                     <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 2 }}>
@@ -786,9 +800,7 @@ export default function OnboardingPlannerPage() {
                   </div>
                 ))}
                 <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginTop: 4 }}>
-                  🪨 Hardscape: a piece of driftwood (tie Java Fern/Anubias to it rather than planting in substrate) plus a
-                  few rocks — Seiryu or Dragon stone are common beginner choices — gives midground structure and something
-                  for fish to shelter around.
+                  🪨 {t.plannerPage.hardscapeNote}
                 </p>
               </div>
             )}
@@ -801,7 +813,7 @@ export default function OnboardingPlannerPage() {
               )}
               <details style={{ marginTop: 8 }}>
                 <summary style={{ cursor: "pointer", fontSize: "var(--font-caption-size)", color: "var(--color-deep)", fontWeight: 600 }}>
-                  Adjust heater sizing for your room
+                  {t.plannerPage.adjustHeaterSizing}
                 </summary>
                 <div style={{ marginTop: 8 }}>
                   <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "var(--font-body-sm-size)" }}>
@@ -826,12 +838,12 @@ export default function OnboardingPlannerPage() {
                         );
                       }}
                     />
-                    I know my room&apos;s temperature
+                    {t.plannerPage.iKnowMyRoomTemp}
                   </label>
                   {useCustomRoomTemp && (
                     <div style={{ marginTop: 8 }}>
                       <Field
-                        label="Room temperature in winter (°C)"
+                        label={t.plannerPage.roomTempInWinter}
                         type="number"
                         value={customRoomTemp}
                         onChange={(e) => setCustomRoomTemp(e.target.value)}
@@ -856,7 +868,7 @@ export default function OnboardingPlannerPage() {
                           );
                         }}
                       >
-                        Update heater size
+                        {t.plannerPage.updateHeaterSize}
                       </SecondaryButton>
                     </div>
                   )}
@@ -866,16 +878,16 @@ export default function OnboardingPlannerPage() {
           </Card>
 
           <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 600, marginBottom: 4 }}>Tank name</p>
-            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={`${lengthFt}ft tank`} />
+            <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.plannerPage.tankNameLabel}</p>
+            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={t.plannerPage.ftTank.replace("{ft}", String(lengthFt))} />
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              {tier === "planted" ? "Planted" : tier === "hardscape" ? "Hardscape" : "Bare-bottom"} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
+              {tier === "planted" ? t.plannerPage.planted : tier === "hardscape" ? t.plannerPage.hardscape : t.plannerPage.bareBottom} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
             </p>
           </Card>
 
           {aiPlan && (
             <Card style={{ marginBottom: 12 }}>
-              <p style={{ fontWeight: 600, marginBottom: 6 }}>💡 Care tips &amp; recommendations</p>
+              <p style={{ fontWeight: 600, marginBottom: 6 }}>💡 {t.plannerPage.careTipsAndRecommendations}</p>
               <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8, ...twoLineClamp }}>{aiPlan.summary}</p>
               {aiPlan.stocking_notes.map((n, i) => (
                 <div key={i} style={{ marginBottom: 6 }}>
@@ -884,11 +896,11 @@ export default function OnboardingPlannerPage() {
               ))}
               {(aiPlan.suggested_fish.length > 0 || aiPlan.recommended_species_ids.some((id) => !picked.some((p) => p.speciesId === id) && speciesById.get(id)?.category !== "plant")) && (
                 <div style={{ marginTop: 8 }}>
-                  <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>Suggested for your tank:</p>
+                  <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>{t.plannerPage.suggestedForYourTank}</p>
                   {/* Every species the advisor confirmed or suggested, as an addable row — including ones it merely
                       confirmed (recommended_species_ids), so a confirmed companion is still one tap away. Rows already
                       on the wishlist show "Added" instead. */}
-                  {[...aiPlan.suggested_fish.map((f) => ({ species_id: f.species_id, why: f.why })), ...aiPlan.recommended_species_ids.filter((id) => !aiPlan.suggested_fish.some((f) => f.species_id === id)).map((id) => ({ species_id: id, why: "Confirmed by the advisor for this tank" }))]
+                  {[...aiPlan.suggested_fish.map((f) => ({ species_id: f.species_id, why: f.why })), ...aiPlan.recommended_species_ids.filter((id) => !aiPlan.suggested_fish.some((f) => f.species_id === id)).map((id) => ({ species_id: id, why: t.plannerPage.confirmedByAdvisor }))]
                     .filter((row) => speciesById.has(row.species_id) && speciesById.get(row.species_id)?.category !== "plant")
                     .map((row) => {
                     const sp = speciesById.get(row.species_id);
@@ -928,7 +940,7 @@ export default function OnboardingPlannerPage() {
                             );
                           }}
                         >
-                          {already ? "Added" : "+ Add"}
+                          {already ? t.plannerPage.added : `+ ${t.common.add}`}
                         </SecondaryButton>
                       </div>
                     );
@@ -937,7 +949,7 @@ export default function OnboardingPlannerPage() {
               )}
               {aiPlan.suggested_plants.some((p) => speciesById.get(p.species_id)?.category === "plant") && (
                 <div style={{ marginTop: 8 }}>
-                  <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>Plants that will thrive here:</p>
+                  <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>{t.plannerPage.plantsThatWillThrive}</p>
                   {/* Only ever show something here if our own catalog agrees it's
                       actually a plant — the advisor has named a non-plant (a
                       snail, with a description) under this heading before, which
@@ -961,7 +973,7 @@ export default function OnboardingPlannerPage() {
           )}
 
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
-            Saving creates the tank as <strong>Planned</strong>. You can adjust everything later.
+            {t.plannerPage.savingCreatesTankPrefix} <strong>{t.plannerPage.plannedWord}</strong> {t.plannerPage.savingCreatesTankSuffix}
           </p>
 
           {saveError && <Banner severity="fixNow">{saveError}</Banner>}

@@ -18,17 +18,20 @@ import { getProfile } from "@/db/queries/profile";
 import { TankScanZod } from "@/server/ai/schemas/tank-scan";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
+import { useTranslation } from "@/i18n/use-translation";
 
 type Stage = "idle" | "checking" | "rejected" | "details" | "scanning" | "scan-error";
 
 export default function ScanCapturePage() {
   const router = useRouter();
+  const t = useTranslation();
   const [stage, setStage] = useState<Stage>("idle");
   const [report, setReport] = useState<QualityReport | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadBlob, setUploadBlob] = useState<Blob | null>(null);
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [scanErrorOffline, setScanErrorOffline] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
@@ -93,7 +96,7 @@ export default function ScanCapturePage() {
     try {
       path = await uploadPhoto(file);
     } catch {
-      setUploadError("Couldn't upload your photo. Check your connection and try again.");
+      setUploadError(t.scanPage.couldNotUploadPhoto);
       setStage("rejected");
       return;
     }
@@ -117,6 +120,7 @@ export default function ScanCapturePage() {
     if (!lengthCm || !widthCm || !heightCm) return;
     setStage("scanning");
     setScanError(null);
+    setScanErrorOffline(false);
 
     try {
       const photoFile = new File([uploadBlob], "upload.jpg", { type: "image/jpeg" });
@@ -136,7 +140,7 @@ export default function ScanCapturePage() {
 
       const parsed = TankScanZod.safeParse(result.data.report);
       if (!parsed.success) {
-        setScanError("The scan came back in an unexpected shape. Please try again.");
+        setScanError(t.scanPage.unexpectedShape);
         setStage("scan-error");
         return;
       }
@@ -146,7 +150,8 @@ export default function ScanCapturePage() {
       setStoreReport(parsed.data, result.data.meta.provider);
       router.push("/onboarding/report");
     } catch {
-      setScanError("Couldn't reach the server. Your photo is saved — try again when you're back online.");
+      setScanError(t.scanPage.couldNotReachServer);
+      setScanErrorOffline(true);
       setStage("scan-error");
     }
   }
@@ -154,27 +159,27 @@ export default function ScanCapturePage() {
   const footer =
     stage === "idle" ? (
       <>
-        <PrimaryButton onClick={() => cameraInputRef.current?.click()}>Take a photo</PrimaryButton>
-        <SecondaryButton onClick={() => libraryInputRef.current?.click()}>Choose from library</SecondaryButton>
+        <PrimaryButton onClick={() => cameraInputRef.current?.click()}>{t.scanPage.takePhoto}</PrimaryButton>
+        <SecondaryButton onClick={() => libraryInputRef.current?.click()}>{t.scanPage.chooseFromLibrary}</SecondaryButton>
       </>
     ) : stage === "rejected" ? (
-      <PrimaryButton onClick={retake}>Retake</PrimaryButton>
+      <PrimaryButton onClick={retake}>{t.scanPage.retake}</PrimaryButton>
     ) : stage === "details" || stage === "scanning" || stage === "scan-error" ? (
       <>
         <PrimaryButton onClick={runScan} disabled={stage === "scanning" || !lengthCm || !widthCm || !heightCm}>
-          {stage === "scanning" ? "Analysing your tank..." : stage === "scan-error" ? "Try again" : "Scan my tank"}
+          {stage === "scanning" ? t.scanPage.analysingYourTank : stage === "scan-error" ? t.scanPage.tryAgain : t.scanPage.scanMyTank}
         </PrimaryButton>
         <SecondaryButton onClick={retake} disabled={stage === "scanning"}>
-          Retake photo
+          {t.scanPage.retakePhoto}
         </SecondaryButton>
       </>
     ) : null;
 
   return (
     <Screen footer={footer}>
-      <BackHeader title="Scan your tank" fallbackHref="/" />
+      <BackHeader title={t.scanPage.title} fallbackHref="/" />
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-        Stand square to the front glass, room light off, no flash.
+        {t.scanPage.standSquare}
       </p>
 
       {stage === "idle" && (
@@ -203,7 +208,7 @@ export default function ScanCapturePage() {
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
             <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 8 }} />
           )}
-          <p>Checking photo...</p>
+          <p>{t.scanPage.checkingPhoto}</p>
         </Card>
       )}
 
@@ -233,11 +238,11 @@ export default function ScanCapturePage() {
             <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 12 }} />
           )}
           <Card>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Two quick questions</p>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.scanPage.twoQuickQuestions}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                  <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>Dimensions</label>
+                  <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{t.scanPage.dimensions}</label>
                   <div style={{ display: "flex", gap: 4 }}>
                     <button
                       type="button"
@@ -270,17 +275,17 @@ export default function ScanCapturePage() {
                   </div>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                  <Field label="" placeholder="Length" type="number" value={length} onChange={(e) => setLength(e.target.value)} />
-                  <Field label="" placeholder="Width" type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
-                  <Field label="" placeholder="Height" type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
+                  <Field label="" placeholder={t.scanPage.length} type="number" value={length} onChange={(e) => setLength(e.target.value)} />
+                  <Field label="" placeholder={t.scanPage.width} type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
+                  <Field label="" placeholder={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
                 </div>
                 {volumeL !== null && (
                   <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
-                    ≈ {volumeL} litres
+                    ≈ {volumeL} {t.scanPage.litres}
                   </p>
                 )}
               </div>
-              <Field label="City" list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Bangalore" />
+              <Field label={t.scanPage.city} list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.scanPage.cityPlaceholder} />
               <datalist id="city-options">
                 {COMMON_CITIES.map((c) => (
                   <option key={c} value={c} />
@@ -290,7 +295,7 @@ export default function ScanCapturePage() {
 
             {stage === "scan-error" && scanError && (
               <div style={{ marginTop: 12 }}>
-                {scanError.includes("Couldn't reach the server") ? (
+                {scanErrorOffline ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)", borderLeft: "3px solid var(--color-watch)" }}>
                     <LottiePlayer name="offline" size={40} />
                     <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)" }}>{scanError}</p>
@@ -304,7 +309,7 @@ export default function ScanCapturePage() {
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 12 }}>
                 <LottiePlayer name="scanning" size={88} />
                 <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
-                  This usually takes 10–20 seconds.
+                  {t.scanPage.usuallyTakes}
                 </p>
               </div>
             )}

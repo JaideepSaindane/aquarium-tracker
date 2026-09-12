@@ -21,6 +21,7 @@ import { addLivestock, listLivestockForTank } from "@/db/queries/livestock";
 import { unlockDexCard } from "@/db/queries/dex";
 import { identifySpecies, generateSpecies } from "@/lib/ai-client";
 import { CompatibilitySummary } from "@/components/CompatibilitySummary";
+import { useTranslation } from "@/i18n/use-translation";
 
 type Candidate = { species_id: string | null; common_name: string; scientific_name: string; confidence: number; why: string };
 
@@ -43,6 +44,7 @@ function firstName(json: string | null | undefined): string | null {
 export default function LivestockScanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(listSpecies, []);
   const { data: existingLivestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
@@ -127,7 +129,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
     setSaving(false);
   }
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
 
@@ -137,21 +139,21 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
         <>
           {justAdded.length > 0 && (
             <p style={{ margin: "0 0 8px", color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, textAlign: "center" }}>
-              ✓ {justAdded.length} fish added this session
+              ✓ {t.livestockScanPage.fishAddedThisSession.replace("{n}", String(justAdded.length))}
             </p>
           )}
-          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>Done — back to my tank</PrimaryButton>
+          <PrimaryButton onClick={() => router.replace(`/tank/${id}`)}>{t.livestockScanPage.doneBackToTank}</PrimaryButton>
         </>
       }
     >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
-      <BackHeader title="Identify by photo" fallbackHref={`/tank/${id}`} />
+      <BackHeader title={t.livestockScanPage.identifyByPhoto} fallbackHref={`/tank/${id}`} />
 
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-        Take a photo or upload one of the fish you want to add — we&apos;ll suggest what it might be.
+        {t.livestockScanPage.takeOrUpload}
       </p>
 
-      <PhotoPickerButton label={busy === "identify" ? "Identifying..." : "📷 Take a photo or upload one"} onPick={handlePhoto} />
+      <PhotoPickerButton label={busy === "identify" ? t.livestockScanPage.identifying : t.livestockScanPage.takePhotoOrUpload} onPick={handlePhoto} />
 
       {error && (
         <div style={{ marginTop: 12 }}>
@@ -161,13 +163,13 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
 
       {candidates && candidates.length === 0 && (
         <p style={{ color: "var(--color-ink-muted)", marginTop: 16 }}>
-          Couldn&apos;t identify this one confidently. Try a clearer, closer photo — or go back and search by name instead.
+          {t.livestockScanPage.couldNotIdentify}
         </p>
       )}
 
       {candidates && candidates.length > 0 && !selectedSpeciesId && (
         <div style={{ marginTop: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Our best guesses:</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.livestockScanPage.ourBestGuesses}</p>
           {candidates.map((c, i) =>
             c.species_id ? (
               <button
@@ -177,7 +179,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
               >
                 <SpeciesThumb imageUri={speciesById.get(c.species_id)?.imageUri} category={speciesById.get(c.species_id)?.category} size={44} />
                 <span style={{ flex: 1 }}>
-                  {c.common_name} {c.confidence < 0.5 && <Chip variant="watch">low confidence</Chip>}
+                  {c.common_name} {c.confidence < 0.5 && <Chip variant="watch">{t.livestockScanPage.lowConfidence}</Chip>}
                   <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: 0 }}>{c.why}</p>
                 </span>
               </button>
@@ -188,9 +190,9 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
                 </p>
                 <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 8px" }}>{c.why}</p>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Chip variant="watch">Not in our catalog</Chip>
+                  <Chip variant="watch">{t.livestockScanPage.notInCatalog}</Chip>
                   <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => handleAddAnyway(c)} disabled={busy === "generate"}>
-                    {busy === "generate" ? "Adding..." : "Add it anyway"}
+                    {busy === "generate" ? t.livestockScanPage.addingEllipsis : t.livestockScanPage.addItAnyway}
                   </SecondaryButton>
                 </div>
               </div>
@@ -205,7 +207,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
             <SpeciesThumb imageUri={selectedSpecies?.imageUri} category={selectedSpecies?.category} size={44} />
             <strong>{firstName(selectedSpecies?.commonNames ?? null) ?? selectedSpeciesId}</strong>
           </div>
-          <Field label="Count" type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
+          <Field label={t.livestockScanPage.count} type="number" min={1} value={count} onChange={(e) => setCount(e.target.value)} />
           <div style={{ height: 12 }} />
           {tank && selectedSpecies && (
             <CompatibilitySummary
@@ -215,17 +217,17 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
             />
           )}
           <PrimaryButton onClick={handleConfirmAdd} disabled={!count || Number(count) < 1 || saving}>
-            {saving ? "Adding…" : "Add to tank"}
+            {saving ? t.livestockScanPage.addingEllipsisLong : t.dexDetailPage.addToTank}
           </PrimaryButton>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8, textAlign: "center" }}>
-            You can keep identifying more fish after this — the page stays open.
+            {t.livestockScanPage.keepIdentifying}
           </p>
         </Card>
       )}
 
       {justAdded.length > 0 && (
         <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Added just now</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.livestockScanPage.addedJustNow}</p>
           {justAdded.map((j, i) => {
             const s = speciesById.get(j.speciesId);
             return (
@@ -234,7 +236,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
                 <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
                   {j.count}× {firstName(s?.commonNames ?? null) ?? j.speciesId}
                 </span>
-                <Chip variant="improve">added</Chip>
+                <Chip variant="improve">{t.livestockScanPage.added}</Chip>
               </div>
             );
           })}
@@ -243,7 +245,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
 
       {aliveExisting.length > 0 && (
         <div style={{ marginTop: 24, borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>Already in this tank</p>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-ink-muted)" }}>{t.livestockScanPage.alreadyInThisTank}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {aliveExisting.map((l) => {
               const s = speciesById.get(l.speciesId);

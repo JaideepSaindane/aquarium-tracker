@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { SecondaryButton } from "@/components/Button";
+import { useTranslation } from "@/i18n/use-translation";
 
 /**
  * A button that offers "Take photo" (camera) vs "Choose from gallery" as
@@ -13,6 +14,7 @@ import { SecondaryButton } from "@/components/Button";
  * camera option, not just the one screen that happened to get fixed first.
  */
 export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (file: File) => void }) {
+  const t = useTranslation();
   const [pickerOpen, setPickerOpen] = useState(false);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +82,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
                 cursor: "pointer",
               }}
             >
-              📷 Take photo
+              📷 {t.dexPage.takePhoto}
             </button>
             <button
               type="button"
@@ -102,7 +104,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
                 cursor: "pointer",
               }}
             >
-              🖼️ Choose from gallery
+              🖼️ {t.dexPage.chooseFromGallery}
             </button>
           </div>
         </>

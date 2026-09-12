@@ -21,12 +21,14 @@ import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { isAiGenerated } from "@/lib/species-origin";
 import { CompatibilitySummary } from "@/components/CompatibilitySummary";
+import { useTranslation } from "@/i18n/use-translation";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
 
 export default function TankLivestockPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const searchParams = useSearchParams();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
@@ -142,7 +144,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     setCandidates(null);
   }
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   const aliveLivestock = (livestock ?? []).filter((l) => l.status === "alive");
   const schoolingWarnings = checkSchoolingMinimums(aliveLivestock, speciesById);
@@ -156,15 +158,15 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     <Screen
       footer={
         <>
-          <PrimaryButton onClick={() => router.push(`/tank/${id}`)}>Done — go to my tank</PrimaryButton>
+          <PrimaryButton onClick={() => router.push(`/tank/${id}`)}>{t.livestockPage.doneGoToTank}</PrimaryButton>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>
-            You can always add more fish later from here.
+            {t.livestockPage.canAlwaysAddMore}
           </p>
         </>
       }
     >
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
-      <BackHeader title="Fish" fallbackHref={`/tank/${id}`} />
+      <BackHeader title={t.livestockPage.fish} fallbackHref={`/tank/${id}`} />
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>{tank.name}</p>
 
       {schoolingWarnings.map((w) => (
@@ -173,18 +175,18 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
         </div>
       ))}
 
-      {!showAdd && <PrimaryButton onClick={() => setShowAdd(true)}>+ Add Fish</PrimaryButton>}
+      {!showAdd && <PrimaryButton onClick={() => setShowAdd(true)}>+ {t.livestockPage.addFish}</PrimaryButton>}
 
       {showAdd && (
         <Card>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
             <div style={{ flex: 1 }}>
-              <Field label="Search species" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder="e.g. neon tetra" />
+              <Field label={t.livestockSearchPage.searchSpecies} value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={t.livestockSearchPage.egNeonTetra} />
             </div>
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              aria-label="Cancel"
+              aria-label={t.common.cancel}
               style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontSize: 20, lineHeight: 1, padding: "4px 4px 0", marginTop: 22 }}
             >
               ✕
@@ -201,7 +203,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
                 >
                   <SpeciesThumb imageUri={s.imageUri} category={s.category} />
                   <span>
-                    {firstName(s.commonNames) ?? s.id} {isAiGenerated(s) && <Chip variant="unverified">AI-generated</Chip>}
+                    {firstName(s.commonNames) ?? s.id} {isAiGenerated(s) && <Chip variant="unverified">{t.livestockSearchPage.aiGenerated}</Chip>}
                   </span>
                 </button>
               ))}
@@ -211,10 +213,10 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
           {query.trim().length >= 2 && searchResults.length === 0 && !selectedSpeciesId && (
             <div style={{ marginTop: 8 }}>
               <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
-                Not in our catalog yet.
+                {t.livestockSearchPage.notInCatalogYet}
               </p>
               <SecondaryButton onClick={handleAddItAnyway} disabled={busy === "generate"}>
-                {busy === "generate" ? "Generating a card..." : `Add "${query}" anyway`}
+                {busy === "generate" ? t.livestockSearchPage.generatingCard : t.livestockSearchPage.addQueryAnyway.replace("{query}", query)}
               </SecondaryButton>
             </div>
           )}
@@ -233,14 +235,14 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
               disabled={busy === "identify"}
               style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0 }}
             >
-              {busy === "identify" ? "Identifying..." : "📷 Not sure? Identify it from a photo"}
+              {busy === "identify" ? t.livestockScanPage.identifying : `📷 ${t.livestockPage.notSureIdentifyPhoto}`}
             </button>
           </div>
 
           {candidates && candidates.length > 0 && (
             <div style={{ marginBottom: 12 }}>
               <p style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, marginBottom: 4 }}>
-                Our best guesses — may or may not be in our catalog:
+                {t.livestockPage.bestGuessesMayNotBe}
               </p>
               {candidates.map((c, i) =>
                 c.species_id ? (
@@ -251,7 +253,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
                   >
                     <SpeciesThumb imageUri={speciesById.get(c.species_id)?.imageUri} category={speciesById.get(c.species_id)?.category} />
                     <span>
-                      {c.common_name} {c.confidence < 0.5 && <Chip variant="watch">low confidence</Chip>}
+                      {c.common_name} {c.confidence < 0.5 && <Chip variant="watch">{t.livestockScanPage.lowConfidence}</Chip>}
                       <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: 0 }}>{c.why}</p>
                     </span>
                   </button>
@@ -262,13 +264,13 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
                     </p>
                     <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 6px" }}>{c.why}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Chip variant="watch">Not in our catalog</Chip>
+                      <Chip variant="watch">{t.livestockScanPage.notInCatalog}</Chip>
                       <button
                         type="button"
                         onClick={() => suggestCandidateAnyway(c.common_name)}
                         style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)" }}
                       >
-                        Add it anyway
+                        {t.livestockScanPage.addItAnyway}
                       </button>
                     </div>
                   </div>
@@ -278,7 +280,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
           )}
           {candidates && candidates.length === 0 && (
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
-              Couldn&apos;t identify this one confidently. Try a clearer photo, or search by name above and use &quot;Add anyway&quot;.
+              {t.livestockPage.couldNotIdentifyTryClearer}
             </p>
           )}
 
@@ -288,19 +290,19 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
             <div style={{ marginTop: 12, borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
               <p style={{ fontWeight: 600 }}>
                 {firstName(selectedSpecies?.commonNames ?? null) ?? selectedSpeciesId}{" "}
-                {selectedSpecies && isAiGenerated(selectedSpecies) && <Chip variant="unverified">AI-generated</Chip>}
+                {selectedSpecies && isAiGenerated(selectedSpecies) && <Chip variant="unverified">{t.livestockSearchPage.aiGenerated}</Chip>}
               </p>
-              <Field label="Count" type="number" value={count} onChange={(e) => setCount(e.target.value)} />
+              <Field label={t.livestockScanPage.count} type="number" value={count} onChange={(e) => setCount(e.target.value)} />
               <div style={{ height: 8 }} />
               {showNickname || nickname ? (
-                <Field label="Nickname (optional)" value={nickname} onChange={(e) => setNickname(e.target.value)} autoFocus={showNickname} />
+                <Field label={t.livestockPage.nicknameOptional} value={nickname} onChange={(e) => setNickname(e.target.value)} autoFocus={showNickname} />
               ) : (
                 <button
                   type="button"
                   onClick={() => setShowNickname(true)}
                   style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0 }}
                 >
-                  + Give it a nickname
+                  + {t.livestockPage.giveItANickname}
                 </button>
               )}
               <div style={{ height: 12 }} />
@@ -313,7 +315,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
                 />
               )}
 
-              <PrimaryButton onClick={handleConfirmAdd}>Add to tank</PrimaryButton>
+              <PrimaryButton onClick={handleConfirmAdd}>{t.dexDetailPage.addToTank}</PrimaryButton>
             </div>
           )}
 
@@ -322,11 +324,11 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
 
       <div style={{ height: 16 }} />
 
-      {aliveLivestock.length === 0 && <p style={{ color: "var(--color-ink-muted)" }}>No fish added yet.</p>}
+      {aliveLivestock.length === 0 && <p style={{ color: "var(--color-ink-muted)" }}>{t.livestockPage.noFishAddedYet}</p>}
 
       {newRows.length > 0 && (
         <div style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-deep)" }}>Added just now</p>
+          <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-deep)" }}>{t.livestockScanPage.addedJustNow}</p>
           {newRows.map((l) => (
             <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
           ))}
@@ -335,7 +337,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
 
       {existingRows.length > 0 && (
         <div>
-          {newRows.length > 0 && <p style={{ fontWeight: 600, marginBottom: 8 }}>Already in this tank</p>}
+          {newRows.length > 0 && <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.livestockScanPage.alreadyInThisTank}</p>}
           {existingRows.map((l) => (
             <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
           ))}
@@ -344,7 +346,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
 
       {(plannedLivestock ?? []).length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>On the wishlist — not in the tank yet</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.livestockPage.onWishlist}</p>
           {(plannedLivestock ?? []).map((l) => (
             <PlannedLivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
           ))}
@@ -372,6 +374,7 @@ function PlannedLivestockRow({
   livestock: { id: string; speciesId: string; count: number; nickname: string | null; addedOn: string };
   species: SpeciesRow | undefined;
 }) {
+  const t = useTranslation();
   const [arriving, setArriving] = useState(false);
   return (
     <Card style={{ marginBottom: 8, borderStyle: "dashed" }}>
@@ -382,7 +385,7 @@ function PlannedLivestockRow({
             <strong>
               {firstName(species?.commonNames) ?? livestock.speciesId} × {livestock.count}
             </strong>
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>Planned — not added to the tank yet</p>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.livestockPage.plannedNotAdded}</p>
           </div>
         </div>
         <SecondaryButton
@@ -393,7 +396,7 @@ function PlannedLivestockRow({
             await markLivestockArrived(livestock.id);
           }}
         >
-          {arriving ? "..." : "Arrived"}
+          {arriving ? "..." : t.livestockPage.arrived}
         </SecondaryButton>
       </div>
     </Card>
@@ -407,6 +410,7 @@ function LivestockRow({
   livestock: { id: string; speciesId: string; count: number; nickname: string | null; addedOn: string };
   species: SpeciesRow | undefined;
 }) {
+  const t = useTranslation();
   const [editingCount, setEditingCount] = useState(false);
   const [countValue, setCountValue] = useState(String(livestock.count));
   const [showDeathForm, setShowDeathForm] = useState(false);
@@ -432,11 +436,11 @@ function LivestockRow({
           <SpeciesThumb imageUri={species?.imageUri} category={species?.category} size={36} />
           <div>
             <strong>
-              {firstName(species?.commonNames) ?? livestock.speciesId} {isAiGenerated(species) && <Chip variant="unverified">AI-generated</Chip>}
+              {firstName(species?.commonNames) ?? livestock.speciesId} {isAiGenerated(species) && <Chip variant="unverified">{t.livestockSearchPage.aiGenerated}</Chip>}
             </strong>
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
               {livestock.nickname ? `"${livestock.nickname}" · ` : ""}
-              added {new Date(livestock.addedOn).toLocaleDateString()}
+              {t.livestockPage.added} {new Date(livestock.addedOn).toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -449,7 +453,7 @@ function LivestockRow({
               style={{ width: 60, padding: 4 }}
             />
             <SecondaryButton style={{ width: "auto", padding: "4px 8px" }} onClick={saveCount}>
-              Save
+              {t.common.save}
             </SecondaryButton>
           </div>
         ) : (
@@ -465,18 +469,18 @@ function LivestockRow({
           onClick={() => setShowActions(true)}
           style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0, marginTop: 8 }}
         >
-          •••  Manage
+          ••• {t.livestockPage.manage}
         </button>
       ) : (
         <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
           <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowDeathForm((v) => !v)}>
-            Record death
+            {t.livestockPage.recordDeath}
           </SecondaryButton>
           <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removeLivestock(livestock.id)}>
-            Remove
+            {t.common.remove}
           </DangerButton>
           <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowTimeline((v) => !v)}>
-            {showTimeline ? "Hide timeline" : "View timeline"}
+            {showTimeline ? t.livestockPage.hideTimeline : t.livestockPage.viewTimeline}
           </SecondaryButton>
         </div>
       )}
@@ -492,15 +496,15 @@ function LivestockRow({
               </span>
             </div>
           ))}
-          {(events ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>No events yet.</p>}
+          {(events ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.livestockPage.noEventsYet}</p>}
         </div>
       )}
 
       {showDeathForm && (
         <div style={{ marginTop: 8 }}>
-          <Field label="What happened? (optional)" value={deathCause} onChange={(e) => setDeathCause(e.target.value)} placeholder="No need to guess if you're not sure" />
+          <Field label={t.livestockPage.whatHappenedOptional} value={deathCause} onChange={(e) => setDeathCause(e.target.value)} placeholder={t.livestockPage.noNeedToGuess} />
           <div style={{ height: 8 }} />
-          <SecondaryButton onClick={confirmDeath}>Confirm</SecondaryButton>
+          <SecondaryButton onClick={confirmDeath}>{t.livestockPage.confirm}</SecondaryButton>
         </div>
       )}
     </Card>

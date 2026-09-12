@@ -18,14 +18,17 @@ import {
 import { listMeasurementsForTank, addMeasurement, getLastMeasurement } from "@/db/queries/measurements";
 import { addLogEntry, listLogEntriesForTank } from "@/db/queries/log-entries";
 import { checkParameterOutOfRange } from "@/lib/derived-checks";
+import { useTranslation } from "@/i18n/use-translation";
 
-const METHODS = [
-  { value: "liquid_kit", label: "Liquid kit" },
-  { value: "strip", label: "Test strip" },
-  { value: "probe", label: "Probe/meter" },
-  { value: "lab", label: "Lab test" },
-  { value: "estimate", label: "Estimate" },
-];
+function methods(t: ReturnType<typeof useTranslation>) {
+  return [
+    { value: "liquid_kit", label: t.logPage.liquidKit },
+    { value: "strip", label: t.logPage.testStrip },
+    { value: "probe", label: t.logPage.probeMeter },
+    { value: "lab", label: t.logPage.labTest },
+    { value: "estimate", label: t.logPage.estimate },
+  ];
+}
 
 // 5-minute liquid-test wait, the thing reviewers specifically asked for
 // timers to track — labelled so a finished notification says which test.
@@ -50,6 +53,8 @@ async function loadLogData(tankId: string) {
 
 export default function TankLogPage({ params: routeParams }: { params: Promise<{ id: string }> }) {
   const { id } = use(routeParams);
+  const t = useTranslation();
+  const METHODS = methods(t);
   const { data } = useLiveQuery(() => loadLogData(id), [id]);
 
   const [values, setValues] = useState<Record<string, string>>({});
@@ -77,18 +82,18 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
   }, []);
 
   useEffect(() => {
-    for (const t of timers) {
-      if (t.endsAt <= now && !notifiedRef.current.has(t.id)) {
-        notifiedRef.current.add(t.id);
-        setFinishedTimer(t.label);
+    for (const tm of timers) {
+      if (tm.endsAt <= now && !notifiedRef.current.has(tm.id)) {
+        notifiedRef.current.add(tm.id);
+        setFinishedTimer(tm.label);
         if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-          new Notification(`${t.label} test ready`, { body: "Your 5-minute wait is up." });
+          new Notification(t.logPage.testReadyNotifTitle.replace("{label}", tm.label), { body: t.logPage.testReadyNotifBody });
         }
       }
     }
   }, [timers, now]);
 
-  if (!data?.tank) return <Screen>Loading...</Screen>;
+  if (!data?.tank) return <Screen>{t.common.loading}</Screen>;
   const { tank, params, logEntries, lastByParam } = data;
 
   function startTimer(label: string) {
@@ -118,7 +123,7 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
 
   async function handleMaintLog(type: "water_change" | "maintenance", body: string, waterChangedPct?: number) {
     await addLogEntry({ tankId: id, type, body, waterChangedPct });
-    setMaintMessage(`Logged: ${body}`);
+    setMaintMessage(`${t.logPage.logged} ${body}`);
     setShowWaterChange(false);
   }
 
@@ -144,35 +149,35 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
 
   return (
     <Screen>
-      <BackHeader title="Parameter Log" fallbackHref={`/tank/${tank.id}`} />
+      <BackHeader title={t.logPage.parameterLog} fallbackHref={`/tank/${tank.id}`} />
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>{tank.name}</p>
 
       {finishedTimer && (
         <div style={{ marginBottom: 16 }}>
           <Banner severity="improve" onDismiss={() => setFinishedTimer(null)}>
-            {finishedTimer} test is ready to read.
+            {t.logPage.testIsReady.replace("{label}", finishedTimer)}
           </Banner>
         </div>
       )}
 
       <Card style={{ marginBottom: 16 }}>
-        <p style={{ fontWeight: 600, marginBottom: 8 }}>Quick log</p>
+        <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.logPage.quickLog}</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: showWaterChange ? 8 : 0 }}>
-          <SecondaryButton onClick={() => setShowWaterChange((v) => !v)}>Water change</SecondaryButton>
-          <SecondaryButton onClick={() => handleMaintLog("maintenance", "Feed")}>Feed</SecondaryButton>
-          <SecondaryButton onClick={() => handleMaintLog("maintenance", "Dose")}>Dose</SecondaryButton>
-          <SecondaryButton onClick={() => handleMaintLog("maintenance", "Filter clean")}>Filter clean</SecondaryButton>
+          <SecondaryButton onClick={() => setShowWaterChange((v) => !v)}>{t.logPage.waterChange}</SecondaryButton>
+          <SecondaryButton onClick={() => handleMaintLog("maintenance", t.logPage.feed)}>{t.logPage.feed}</SecondaryButton>
+          <SecondaryButton onClick={() => handleMaintLog("maintenance", t.logPage.dose)}>{t.logPage.dose}</SecondaryButton>
+          <SecondaryButton onClick={() => handleMaintLog("maintenance", t.logPage.filterClean)}>{t.logPage.filterClean}</SecondaryButton>
         </div>
         {showWaterChange && (
           <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
             <div style={{ flex: 1 }}>
-              <Field label="Percent changed" type="number" value={waterChangePct} onChange={(e) => setWaterChangePct(e.target.value)} />
+              <Field label={t.logPage.percentChanged} type="number" value={waterChangePct} onChange={(e) => setWaterChangePct(e.target.value)} />
             </div>
             <PrimaryButton
               style={{ width: "auto" }}
-              onClick={() => handleMaintLog("water_change", `Water change (${waterChangePct}%)`, Number(waterChangePct))}
+              onClick={() => handleMaintLog("water_change", `${t.logPage.waterChange} (${waterChangePct}%)`, Number(waterChangePct))}
             >
-              Log it
+              {t.logPage.logIt}
             </PrimaryButton>
           </div>
         )}
@@ -181,18 +186,18 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
 
       {timers.length > 0 && (
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Test timers</p>
-          {timers.map((t) => {
-            const remaining = Math.max(0, Math.round((t.endsAt - now) / 1000));
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.logPage.testTimers}</p>
+          {timers.map((tm) => {
+            const remaining = Math.max(0, Math.round((tm.endsAt - now) / 1000));
             const mm = Math.floor(remaining / 60);
             const ss = String(remaining % 60).padStart(2, "0");
             return (
-              <div key={t.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <div key={tm.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                 <span>
-                  {t.label}: {remaining === 0 ? "Ready!" : `${mm}:${ss}`}
+                  {tm.label}: {remaining === 0 ? t.logPage.readyExclaim : `${mm}:${ss}`}
                 </span>
-                <button onClick={() => dismissTimer(t.id)} style={{ background: "none", border: "none", color: "var(--color-ink-muted)" }}>
-                  Dismiss
+                <button onClick={() => dismissTimer(tm.id)} style={{ background: "none", border: "none", color: "var(--color-ink-muted)" }}>
+                  {t.logPage.dismiss}
                 </button>
               </div>
             );
@@ -202,9 +207,9 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
 
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <p style={{ fontWeight: 600 }}>Log readings</p>
+          <p style={{ fontWeight: 600 }}>{t.logPage.logReadings}</p>
           <button onClick={() => setShowTargets((v) => !v)} style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-caption-size)" }}>
-            {showTargets ? "Hide targets" : "Edit targets"}
+            {showTargets ? t.logPage.hideTargets : t.logPage.editTargets}
           </button>
         </div>
 
@@ -219,13 +224,13 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
                   step={p.decimals ? 1 / 10 ** p.decimals : 1}
                   value={values[p.id] ?? ""}
                   onChange={(e) => setValues((prev) => ({ ...prev, [p.id]: e.target.value }))}
-                  placeholder={last ? `last: ${last.value}` : undefined}
+                  placeholder={last ? `${t.logPage.last} ${last.value}` : undefined}
                 />
                 <button
                   onClick={() => startTimer(p.name)}
                   style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}
                 >
-                  ⏱ Start 5-min timer
+                  ⏱ {t.logPage.start5MinTimer}
                 </button>
                 {showTargets && (
                   <TargetEditor param={p} onSave={(min, max) => handleSaveTarget(p, min, max)} />
@@ -237,16 +242,16 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
 
         {showTargets && (
           <div style={{ borderTop: "1px solid var(--color-line)", paddingTop: 12, marginBottom: 12 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>Add a custom parameter</p>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.logPage.addCustomParameter}</p>
             <div style={{ display: "flex", gap: 8 }}>
               <div style={{ flex: 2 }}>
-                <Field label="" placeholder="Name" value={customName} onChange={(e) => setCustomName(e.target.value)} />
+                <Field label="" placeholder={t.settingsPage.name} value={customName} onChange={(e) => setCustomName(e.target.value)} />
               </div>
               <div style={{ flex: 1 }}>
-                <Field label="" placeholder="Unit" value={customUnit} onChange={(e) => setCustomUnit(e.target.value)} />
+                <Field label="" placeholder={t.logPage.unit} value={customUnit} onChange={(e) => setCustomUnit(e.target.value)} />
               </div>
               <PrimaryButton style={{ width: "auto" }} onClick={handleAddCustom}>
-                Add
+                {t.common.add}
               </PrimaryButton>
             </div>
           </div>
@@ -259,10 +264,10 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
             </option>
           ))}
         </select>
-        <Field label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} />
+        <Field label={t.logPage.noteOptional} value={note} onChange={(e) => setNote(e.target.value)} />
         <div style={{ height: 8 }} />
         <PrimaryButton onClick={handleSaveReadings} disabled={saving}>
-          {saving ? "Saving..." : saved ? "Saved ✓" : "Save readings"}
+          {saving ? t.settingsPage.saving : saved ? t.logPage.savedCheck : t.logPage.saveReadings}
         </PrimaryButton>
       </Card>
 
@@ -295,6 +300,7 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
 }
 
 function TargetEditor({ param, onSave }: { param: { targetMin: number | null; targetMax: number | null }; onSave: (min: string, max: string) => void }) {
+  const t = useTranslation();
   const [min, setMin] = useState(param.targetMin != null ? String(param.targetMin) : "");
   const [max, setMax] = useState(param.targetMax != null ? String(param.targetMax) : "");
   return (
@@ -303,18 +309,18 @@ function TargetEditor({ param, onSave }: { param: { targetMin: number | null; ta
         type="number"
         value={min}
         onChange={(e) => setMin(e.target.value)}
-        placeholder="min"
+        placeholder={t.logPage.min}
         style={{ width: 60, padding: 4, fontSize: 12 }}
       />
       <input
         type="number"
         value={max}
         onChange={(e) => setMax(e.target.value)}
-        placeholder="max"
+        placeholder={t.logPage.max}
         style={{ width: 60, padding: 4, fontSize: 12 }}
       />
       <button onClick={() => onSave(min, max)} style={{ fontSize: 12, background: "none", border: "1px solid var(--color-line)", borderRadius: 4 }}>
-        Save
+        {t.common.save}
       </button>
     </div>
   );

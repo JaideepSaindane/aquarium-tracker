@@ -14,6 +14,7 @@ import { identifySpecies } from "@/lib/ai-client";
 import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { addSpeciesSuggestion, type PhotoCandidate } from "@/db/queries/species-suggestions";
 import { uploadPhoto } from "@/lib/photo-upload";
+import { useTranslation } from "@/i18n/use-translation";
 
 const CATEGORY_ICON: Record<string, string> = {
   fish: "🐟",
@@ -62,6 +63,7 @@ type SectionTab = "mine" | "all";
 // reusing this row style everywhere, just with locked rows dimmed/silhouetted.
 export default function DexPage() {
   const router = useRouter();
+  const t = useTranslation();
   const { data } = useLiveQuery(loadDex, []);
   const [section, setSection] = useState<SectionTab>("mine");
   const [category, setCategory] = useState("all");
@@ -129,7 +131,7 @@ export default function DexPage() {
   function startSuggesting(candidate?: PhotoCandidate) {
     setSuggestSubmitted(false);
     setSuggestName(candidate?.common_name ?? suggestName);
-    setSuggestNote(candidate?.scientific_name ? `Scientific name (AI guess): ${candidate.scientific_name}` : suggestNote);
+    setSuggestNote(candidate?.scientific_name ? `${t.dexPage.scientificNameAiGuess} ${candidate.scientific_name}` : suggestNote);
   }
 
   async function handleSuggestSpecies() {
@@ -157,9 +159,9 @@ export default function DexPage() {
 
   return (
     <Screen background="var(--soft-bg)">
-      <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4, color: "var(--soft-ink)" }}>Species Dex</h1>
+      <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4, color: "var(--soft-ink)" }}>{t.dexPage.title}</h1>
       <p style={{ color: "var(--soft-ink-muted)", marginBottom: 16 }}>
-        {cardsBySpecies.size} of {species.length} unlocked
+        {t.dexPage.unlockedCount.replace("{unlocked}", String(cardsBySpecies.size)).replace("{total}", String(species.length))}
       </p>
 
       <div
@@ -175,13 +177,13 @@ export default function DexPage() {
         }}
       >
         {([
-          { key: "mine", label: "My Fish" },
-          { key: "all", label: "All" },
-        ] as { key: SectionTab; label: string }[]).map((t) => (
+          { key: "mine", label: t.dexPage.myFish },
+          { key: "all", label: t.dexPage.all },
+        ] as { key: SectionTab; label: string }[]).map((tab) => (
           <button
-            key={t.key}
+            key={tab.key}
             onClick={() => {
-              setSection(t.key);
+              setSection(tab.key);
               setCategory("all");
               setDifficulty("all");
               setSearchQuery("");
@@ -196,14 +198,14 @@ export default function DexPage() {
               padding: "8px 14px",
               borderRadius: "var(--radius-pill)",
               border: "none",
-              background: section === t.key ? "var(--soft-accent)" : "transparent",
-              color: section === t.key ? "#fff" : "var(--soft-ink-muted)",
+              background: section === tab.key ? "var(--soft-accent)" : "transparent",
+              color: section === tab.key ? "#fff" : "var(--soft-ink-muted)",
               fontSize: "var(--font-caption-size)",
               fontWeight: 700,
               transition: "background 150ms ease, color 150ms ease",
             }}
           >
-            {t.label}
+            {tab.label}
           </button>
         ))}
       </div>
@@ -215,7 +217,7 @@ export default function DexPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name..."
+              placeholder={t.dexPage.searchByName}
               style={{
                 flex: 1,
                 padding: "10px 14px",
@@ -252,7 +254,7 @@ export default function DexPage() {
               <button
                 onClick={() => setScanPickerOpen((v) => !v)}
                 disabled={scanning}
-                aria-label="Scan a photo to find a species"
+                aria-label={t.dexPage.scanToFind}
                 style={{
                   width: 44,
                   height: 44,
@@ -268,7 +270,7 @@ export default function DexPage() {
                   justifyContent: "center",
                 }}
               >
-                {scanning ? <span className="spinner" aria-label="Scanning..." /> : "📷"}
+                {scanning ? <span className="spinner" aria-label={t.dexPage.scanning} /> : "📷"}
               </button>
               {scanPickerOpen && (
                 <>
@@ -296,7 +298,7 @@ export default function DexPage() {
                       }}
                       style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
                     >
-                      📷 Take photo
+                      📷 {t.dexPage.takePhoto}
                     </button>
                     <button
                       type="button"
@@ -306,7 +308,7 @@ export default function DexPage() {
                       }}
                       style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", borderTop: "1px solid var(--soft-card-border)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
                     >
-                      🖼️ Choose from gallery
+                      🖼️ {t.dexPage.chooseFromGallery}
                     </button>
                   </div>
                 </>
@@ -331,7 +333,7 @@ export default function DexPage() {
               }}
             >
               <p style={{ fontWeight: 700, color: "var(--soft-ink)", marginBottom: 8, fontSize: "var(--font-body-sm-size)" }}>
-                Our best guesses — may or may not be in our catalog
+                {t.dexPage.bestGuesses}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {scanCandidates.map((c, i) => (
@@ -369,12 +371,12 @@ export default function DexPage() {
                           fontWeight: 700,
                         }}
                       >
-                        In our catalog — view card
+                        {t.dexPage.inCatalogViewCard}
                       </button>
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                         <span style={{ color: "var(--color-watch)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>
-                          Not in our catalog yet
+                          {t.dexPage.notInCatalogYet}
                         </span>
                         <button
                           onClick={() => startSuggesting(c)}
@@ -388,7 +390,7 @@ export default function DexPage() {
                             fontWeight: 700,
                           }}
                         >
-                          Suggest adding it
+                          {t.dexPage.suggestAddingIt}
                         </button>
                       </div>
                     )}
@@ -410,18 +412,18 @@ export default function DexPage() {
             >
               {suggestSubmitted ? (
                 <p style={{ color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>
-                  Thanks — sent for review.
+                  {t.dexPage.thanksSentForReview}
                 </p>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <p style={{ fontWeight: 700, color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}>
-                    Suggest this fish for our catalog
+                    {t.dexPage.suggestThisFish}
                   </p>
                   <input
                     type="text"
                     value={suggestName}
                     onChange={(e) => setSuggestName(e.target.value)}
-                    placeholder="What fish is this? (name)"
+                    placeholder={t.dexPage.whatFishIsThis}
                     style={{
                       padding: "8px 12px",
                       borderRadius: "var(--radius-md)",
@@ -434,7 +436,7 @@ export default function DexPage() {
                     type="text"
                     value={suggestNote}
                     onChange={(e) => setSuggestNote(e.target.value)}
-                    placeholder="Anything else? (optional)"
+                    placeholder={t.dexPage.anythingElse}
                     style={{
                       padding: "8px 12px",
                       borderRadius: "var(--radius-md)",
@@ -461,7 +463,7 @@ export default function DexPage() {
                     }}
                   >
                     {suggestSubmitting && <span className="spinner" aria-hidden />}
-                    {suggestSubmitting ? "Sending..." : "Suggest this fish"}
+                    {suggestSubmitting ? t.dexPage.sending : t.dexPage.suggestThisFishShort}
                   </button>
                 </div>
               )}
@@ -482,7 +484,7 @@ export default function DexPage() {
             color: "var(--soft-ink)",
           }}
         >
-          <option value="all">All categories</option>
+          <option value="all">{t.dexPage.allCategories}</option>
           {categories.map((c) => (
             <option key={c} value={c}>
               {c}
@@ -500,7 +502,7 @@ export default function DexPage() {
             color: "var(--soft-ink)",
           }}
         >
-          <option value="all">All difficulties</option>
+          <option value="all">{t.dexPage.allDifficulties}</option>
           {difficulties.map((d) => (
             <option key={d} value={d}>
               {d}
@@ -556,10 +558,10 @@ export default function DexPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontWeight: 600, color: "var(--soft-ink)", display: "flex", alignItems: "center", gap: 6 }}>
                     {name}
-                    {isAiGenerated(s) && <Chip variant="unverified">AI</Chip>}
+                    {isAiGenerated(s) && <Chip variant="unverified">{t.dexPage.ai}</Chip>}
                   </p>
                   <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", textTransform: "capitalize" }}>
-                    {s.category ?? "species"}
+                    {s.category ?? t.dexPage.species}
                     {s.difficulty ? ` · ${s.difficulty}` : ""}
                   </p>
                 </div>
@@ -588,8 +590,8 @@ export default function DexPage() {
         {filtered.length === 0 && (
           <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", marginTop: 32 }}>
             {section === "mine"
-              ? "No unlocked fish match these filters yet — add one to a tank to unlock its card."
-              : "No species match these filters."}
+              ? t.dexPage.noUnlockedMatch
+              : t.dexPage.noSpeciesMatch}
           </p>
         )}
       </div>

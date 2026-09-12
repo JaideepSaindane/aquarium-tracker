@@ -15,9 +15,12 @@ import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
+import { useTranslation } from "@/i18n/use-translation";
+import { APP_NAME } from "@/constants/app";
 
 export default function NewTankPage() {
   const router = useRouter();
+  const t = useTranslation();
 
   const [photo, setPhoto] = useState<File | null>(null);
   const [name, setName] = useState("");
@@ -49,7 +52,7 @@ export default function NewTankPage() {
 
   async function handleConfirm() {
     if (!name.trim() || !lengthCm || !widthCm || !heightCm) {
-      setError("Name and all three dimensions are required.");
+      setError(t.newTankPage.nameAndDimensionsRequired);
       return;
     }
     setSaving(true);
@@ -103,16 +106,16 @@ export default function NewTankPage() {
         // the bottom fixes that without removing the header one, which
         // some people already reach for out of habit.
         <PrimaryButton onClick={handleConfirm} disabled={saving}>
-          {saving ? "Saving..." : "Save"}
+          {saving ? t.settingsPage.saving : t.common.save}
         </PrimaryButton>
       }
     >
       <BackHeader
-        title="Add New Tank"
+        title={t.newTankPage.title}
         fallbackHref="/"
         right={
           <button type="button" onClick={handleConfirm} disabled={saving} style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, flexShrink: 0 }}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? t.settingsPage.saving : t.common.save}
           </button>
         }
       />
@@ -122,16 +125,16 @@ export default function NewTankPage() {
       </div>
       {photo && (
         <p style={{ textAlign: "center", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -8, marginBottom: 16 }}>
-          Photo selected
+          {t.newTankPage.photoSelected}
         </p>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Living Room 60L" />
+        <Field label={t.settingsPage.name} value={name} onChange={(e) => setName(e.target.value)} placeholder={t.newTankPage.namePlaceholder} />
 
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>Dimensions</label>
+            <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{t.scanPage.dimensions}</label>
             <div style={{ display: "flex", gap: 4 }}>
               <button
                 type="button"
@@ -164,17 +167,17 @@ export default function NewTankPage() {
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-            <Field label="" placeholder="Length" type="number" value={length} onChange={(e) => setLength(e.target.value)} />
-            <Field label="" placeholder="Width" type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
-            <Field label="" placeholder="Height" type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.length} type="number" value={length} onChange={(e) => setLength(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.width} type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
           </div>
           {volumeL !== null && (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>≈ {volumeL} litres</p>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>≈ {volumeL} {t.scanPage.litres}</p>
           )}
         </div>
 
         <div>
-          <Field label="City" list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Bangalore" />
+          <Field label={t.scanPage.city} list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.scanPage.cityPlaceholder} />
           <datalist id="city-options">
             {COMMON_CITIES.map((c) => (
               <option key={c} value={c} />
@@ -183,7 +186,7 @@ export default function NewTankPage() {
         </div>
 
         <div>
-          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 4 }}>Water type</label>
+          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 4 }}>{t.newTankPage.waterType}</label>
           <div style={{ display: "flex", gap: 8 }}>
             <button
               type="button"
@@ -203,7 +206,7 @@ export default function NewTankPage() {
               }}
             >
               <AquaIcon name="freshwater" size={16} />
-              Fresh water
+              {t.newTankPage.freshWater}
             </button>
             <button
               type="button"
@@ -223,18 +226,18 @@ export default function NewTankPage() {
               }}
             >
               <AquaIcon name="brackish" size={16} />
-              Brackish water
+              {t.newTankPage.brackishWater}
             </button>
           </div>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
-            AquaAI is freshwater and planted focused — no reef/marine tanks.
+            {t.newTankPage.freshwaterPlantedFocused.replace("{name}", APP_NAME)}
           </p>
         </div>
 
         <AgeBandField value={ageBand} onChange={setAgeBand} />
 
         {error && <p style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}>{error}</p>}
-        {saved && <Banner severity="improve">Tank saved — opening it now...</Banner>}
+        {saved && <Banner severity="improve">{t.newTankPage.tankSavedOpening}</Banner>}
       </div>
     </Screen>
   );

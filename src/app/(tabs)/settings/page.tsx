@@ -104,7 +104,7 @@ export default function SettingsPage() {
   async function handleLinkPhone() {
     setLinkMessage(null);
     if (linkPin !== linkPinConfirm) {
-      setLinkMessage("PINs don't match.");
+      setLinkMessage(t.settingsPage.pinsDontMatch);
       return;
     }
     setLinkBusy(true);
@@ -116,7 +116,7 @@ export default function SettingsPage() {
       });
       const body = await res.json();
       if (!res.ok) {
-        setLinkMessage(body.error ?? "Couldn't add that phone number.");
+        setLinkMessage(body.error ?? t.settingsPage.couldNotAddPhone);
         return;
       }
       setHasPhoneLinked(true);
@@ -125,7 +125,7 @@ export default function SettingsPage() {
       setLinkPinConfirm("");
       setLinkMessage(null);
     } catch (err) {
-      setLinkMessage(`Couldn't save: ${String(err)}`);
+      setLinkMessage(`${t.settingsPage.couldNotSave} ${String(err)}`);
     } finally {
       setLinkBusy(false);
     }
@@ -140,7 +140,7 @@ export default function SettingsPage() {
       const url = await uploadPhoto(file);
       setProfilePhotoUri(url);
     } catch {
-      setProfileMessage("Couldn't upload that photo — check your connection and try again.");
+      setProfileMessage(t.settingsPage.couldNotUploadPhoto);
     }
   }
 
@@ -156,9 +156,9 @@ export default function SettingsPage() {
         contact: profileContact.trim() || undefined,
         photoUri: profilePhotoUri ?? undefined,
       });
-      setProfileMessage("Saved.");
+      setProfileMessage(t.settingsPage.saved);
     } catch (err) {
-      setProfileMessage(`Couldn't save: ${String(err)}`);
+      setProfileMessage(`${t.settingsPage.couldNotSave} ${String(err)}`);
     } finally {
       setProfileBusy(false);
     }
@@ -178,7 +178,7 @@ export default function SettingsPage() {
     }
     try {
       await navigator.clipboard.writeText(url);
-      setShareMessage("Link copied to clipboard.");
+      setShareMessage(t.settingsPage.linkCopied);
     } catch {
       setShareMessage(url);
     }
@@ -192,11 +192,11 @@ export default function SettingsPage() {
       const res = await fetch("/api/account/delete", { method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? "Could not delete your account. Please try again.");
+        throw new Error(body.error ?? t.settingsPage.couldNotDeleteAccount);
       }
       await signOut({ callbackUrl: "/login" });
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : "Could not delete your account. Please try again.");
+      setDeleteError(err instanceof Error ? err.message : t.settingsPage.couldNotDeleteAccount);
       setBusy(null);
     }
   }
@@ -207,7 +207,7 @@ export default function SettingsPage() {
     try {
       await fn();
     } catch (err) {
-      setMessage(`Something went wrong: ${String(err)}`);
+      setMessage(`${t.settingsPage.somethingWentWrong} ${String(err)}`);
     } finally {
       setBusy(null);
     }
@@ -229,7 +229,7 @@ export default function SettingsPage() {
       const bytes = JSON.stringify(data, null, 2);
       const filename = `${APP_NAME.toLowerCase()}-export-${timestamp()}.json`;
       downloadBlob(bytes, filename, "application/json");
-      setMessage("Downloaded the JSON export.");
+      setMessage(t.settingsPage.downloadedJson);
     });
   }
 
@@ -238,7 +238,7 @@ export default function SettingsPage() {
       const zip = await buildCsvZip();
       const filename = `${APP_NAME.toLowerCase()}-tables-${timestamp()}.zip`;
       downloadBlob(zip, filename, "application/zip");
-      setMessage("Downloaded the CSV export.");
+      setMessage(t.settingsPage.downloadedCsv);
     });
   }
 
@@ -247,7 +247,7 @@ export default function SettingsPage() {
       const zip = await buildPhotosZip();
       const filename = `${APP_NAME.toLowerCase()}-photos-${timestamp()}.zip`;
       downloadBlob(zip, filename, "application/zip");
-      setMessage("Downloaded the photo export.");
+      setMessage(t.settingsPage.downloadedPhotos);
     });
   }
 
@@ -261,9 +261,13 @@ export default function SettingsPage() {
       const result = await importJsonExport(data);
       if (result.ok) {
         const total = Object.values(result.attempted).reduce((a, b) => a + b, 0);
-        setMessage(`Import complete — processed ${total} rows across ${Object.keys(result.attempted).length} tables.`);
+        setMessage(
+          t.settingsPage.importComplete
+            .replace("{rows}", String(total))
+            .replace("{tables}", String(Object.keys(result.attempted).length))
+        );
       } else {
-        setMessage(`Import failed: ${result.error}`);
+        setMessage(`${t.settingsPage.importFailed} ${result.error}`);
       }
     });
   }
@@ -278,13 +282,13 @@ export default function SettingsPage() {
           <TankAvatar photoUri={profilePhotoUri} size={88} onPhotoChange={handleProfilePhoto} fallbackIcon="👤" />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <Field label="Name" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="Optional" />
-          <Field label="Username" value={profileUsername} onChange={(e) => setProfileUsername(e.target.value)} placeholder="Optional" />
-          <Field label="City" value={profileCity} onChange={(e) => setProfileCity(e.target.value)} placeholder="Optional" />
-          <Field label="Email" type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} placeholder="Optional" />
-          <Field label="Contact" type="tel" value={profileContact} onChange={(e) => setProfileContact(e.target.value)} placeholder="Optional" />
+          <Field label={t.settingsPage.name} value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder={t.settingsPage.optional} />
+          <Field label={t.settingsPage.username} value={profileUsername} onChange={(e) => setProfileUsername(e.target.value)} placeholder={t.settingsPage.optional} />
+          <Field label={t.settingsPage.city} value={profileCity} onChange={(e) => setProfileCity(e.target.value)} placeholder={t.settingsPage.optional} />
+          <Field label={t.settingsPage.email} type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} placeholder={t.settingsPage.optional} />
+          <Field label={t.settingsPage.contact} type="tel" value={profileContact} onChange={(e) => setProfileContact(e.target.value)} placeholder={t.settingsPage.optional} />
           <PrimaryButton onClick={handleSaveProfile} disabled={profileBusy}>
-            {profileBusy ? "Saving..." : "Save"}
+            {profileBusy ? t.settingsPage.saving : t.common.save}
           </PrimaryButton>
         </div>
         {profileMessage && (
@@ -302,23 +306,22 @@ export default function SettingsPage() {
           2026-09-10 entry. */}
       {hasPhoneLinked === false && (
         <Card style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Add phone sign-in</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.addPhoneSignIn}</h2>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-            Optional — link a phone number and PIN so you can also sign in this way on a new device, without creating a
-            second, separate account.
+            {t.settingsPage.addPhoneSignInBody}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <Field label="Phone number" type="tel" value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)} placeholder="9876543210" />
-            <Field label="4-digit PIN" type="password" value={linkPin} onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="••••" />
+            <Field label={t.settingsPage.phoneNumber} type="tel" value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)} placeholder="9876543210" />
+            <Field label={t.settingsPage.fourDigitPin} type="password" value={linkPin} onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="••••" />
             <Field
-              label="Confirm PIN"
+              label={t.settingsPage.confirmPin}
               type="password"
               value={linkPinConfirm}
               onChange={(e) => setLinkPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
               placeholder="••••"
             />
             <PrimaryButton onClick={handleLinkPhone} disabled={linkBusy || linkPhone.trim().length < 10 || linkPin.length !== 4}>
-              {linkBusy ? "Adding..." : "Add phone sign-in"}
+              {linkBusy ? t.settingsPage.adding : t.settingsPage.addPhoneSignIn}
             </PrimaryButton>
           </div>
           {linkMessage && (
@@ -338,16 +341,15 @@ export default function SettingsPage() {
           see /api/account/link-google. */}
       {hasGoogleLinked === false && (
         <Card style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Link Google account</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.linkGoogleAccount}</h2>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-            Optional — connect a Gmail account so you can also sign in this way on a new device, without creating a
-            second, separate account.
+            {t.settingsPage.linkGoogleAccountBody}
           </p>
           {/* A full browser navigation, not router.push — this hits a route
               handler that sets a cookie and 307s on to Google's real OAuth
               consent screen, which client-side routing can't do. */}
           {/* eslint-disable-next-line @next/next/no-location-assign-relative-destination */}
-          <SecondaryButton onClick={() => (window.location.href = "/api/account/link-google")}>Link Google account</SecondaryButton>
+          <SecondaryButton onClick={() => (window.location.href = "/api/account/link-google")}>{t.settingsPage.linkGoogleAccount}</SecondaryButton>
           {googleLinkError && (
             <div style={{ marginTop: 12 }}>
               <Banner severity="watch">{googleLinkError}</Banner>
@@ -358,7 +360,7 @@ export default function SettingsPage() {
 
       {/* App settings */}
       <Card style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>App settings</h2>
+        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.appSettings}</h2>
 
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "12px 0 6px" }}>{t.settings.languageTitle}</p>
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
@@ -378,12 +380,12 @@ export default function SettingsPage() {
                 fontSize: "var(--font-caption-size)",
               }}
             >
-              {l === "en" ? "English" : "Hinglish"}
+              {l === "en" ? t.settingsPage.english : t.settingsPage.hinglish}
             </button>
           ))}
         </div>
 
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "0 0 6px" }}>Appearance</p>
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "0 0 6px" }}>{t.settingsPage.appearance}</p>
         <div style={{ display: "flex", gap: 8 }}>
           {(["system", "light", "dark"] as ThemeChoice[]).map((th) => (
             <button
@@ -402,7 +404,7 @@ export default function SettingsPage() {
                 textTransform: "capitalize",
               }}
             >
-              {th}
+              {th === "system" ? t.settingsPage.themeSystem : th === "light" ? t.settingsPage.themeLight : t.settingsPage.themeDark}
             </button>
           ))}
         </div>
@@ -411,7 +413,7 @@ export default function SettingsPage() {
       {/* Your plan */}
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)" }}>Your plan</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)" }}>{t.settingsPage.yourPlan}</h2>
           <span
             style={{
               background: "var(--color-improve)",
@@ -422,32 +424,28 @@ export default function SettingsPage() {
               fontWeight: 600,
             }}
           >
-            🐦 Early Bird
+            🐦 {t.settingsPage.earlyBird}
           </span>
         </div>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-          Pro isn&apos;t built yet, so everything is unlocked and free for everyone right now — no card needed, nothing to
-          cancel.
+          {t.settingsPage.proNotBuilt}
         </p>
         <details>
           <summary style={{ cursor: "pointer", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>
-            What happens when Pro launches?
+            {t.settingsPage.whatHappensWhenPro}
           </summary>
           <div style={{ marginTop: 8, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", lineHeight: 1.6 }}>
             <p style={{ marginBottom: 8 }}>
-              Species care data, disease reference, emergency triage, all 8 standard water parameters, compatibility checks,
-              journal, export and the Species Dex stay free forever for everyone — always have, always will.
+              {t.settingsPage.stayFreeForever}
             </p>
             <p style={{ marginBottom: 8 }}>
               <strong>
-                If you&apos;re using the app before Pro launches, this Early Bird period is honoured for as long as you keep
-                using the app
+                {t.settingsPage.earlyBirdHonoured}
               </strong>{" "}
-              — that&apos;s the deal for being here early, in writing.
+              {t.settingsPage.earlyBirdDeal}
             </p>
             <p>
-              And if development on this app ever stops for good, everything unlocks for everyone and your data stays fully
-              exportable — that commitment doesn&apos;t depend on Pro existing.
+              {t.settingsPage.ifDevelopmentStops}
             </p>
           </div>
         </details>
@@ -456,7 +454,7 @@ export default function SettingsPage() {
       {/* Real accounts, added 2026-09-10 — sign-out lives here since it's
           the natural "account" section of Settings. */}
       <Card style={{ marginBottom: 16 }}>
-        <DangerButton onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</DangerButton>
+        <DangerButton onClick={() => signOut({ callbackUrl: "/login" })}>{t.settingsPage.signOut}</DangerButton>
       </Card>
 
       {/* Real self-serve account deletion (2026-09-12), built so the privacy
@@ -465,17 +463,16 @@ export default function SettingsPage() {
           fish, log, photo, AI-chat history and Species Dex unlock tied to
           this account, server-side — irreversible, no undo. */}
       <Card style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Delete my account</h2>
+        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.deleteMyAccount}</h2>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-          Permanently deletes every tank, fish, log entry, photo, and chat history tied to your account. This cannot be
-          undone — export your data first if you want to keep a copy.
+          {t.settingsPage.deleteAccountBody}
         </p>
         {!showDeleteConfirm ? (
-          <DangerButton onClick={() => setShowDeleteConfirm(true)}>Delete my account</DangerButton>
+          <DangerButton onClick={() => setShowDeleteConfirm(true)}>{t.settingsPage.deleteMyAccount}</DangerButton>
         ) : (
           <div>
             <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
-              Type <strong>DELETE</strong> to confirm. This is permanent.
+              {t.settingsPage.typeDeleteToConfirm} <strong>DELETE</strong> {t.settingsPage.toConfirmPermanent}
             </p>
             <Field
               label=""
@@ -496,13 +493,13 @@ export default function SettingsPage() {
                   setDeleteError(null);
                 }}
               >
-                Cancel
+                {t.common.cancel}
               </SecondaryButton>
               <DangerButton
                 onClick={handleDeleteAccount}
                 disabled={deleteConfirmText.trim().toUpperCase() !== "DELETE" || busy === "delete-account"}
               >
-                {busy === "delete-account" ? "Deleting..." : "Permanently delete my account"}
+                {busy === "delete-account" ? t.settingsPage.deleting : t.settingsPage.permanentlyDeleteAccount}
               </DangerButton>
             </div>
           </div>
@@ -512,12 +509,12 @@ export default function SettingsPage() {
       {/* Share / Privacy / About */}
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <SecondaryButton onClick={handleShareApp}>📤 Share this app</SecondaryButton>
+          <SecondaryButton onClick={handleShareApp}>📤 {t.settingsPage.shareThisApp}</SecondaryButton>
           <Link href="/privacy">
-            <SecondaryButton>🔒 Privacy policy</SecondaryButton>
+            <SecondaryButton>🔒 {t.settingsPage.privacyPolicy}</SecondaryButton>
           </Link>
           <Link href="/about">
-            <SecondaryButton>ℹ️ About {APP_NAME}</SecondaryButton>
+            <SecondaryButton>ℹ️ {t.settingsPage.aboutApp.replace("{name}", APP_NAME)}</SecondaryButton>
           </Link>
         </div>
         {shareMessage && (
@@ -532,7 +529,7 @@ export default function SettingsPage() {
           not something a returning user should have to guess is hidden behind a triangle. */}
       <details>
         <summary style={{ cursor: "pointer", color: "var(--color-ink)", fontWeight: 700, fontSize: "var(--font-body-size)", padding: "10px 0" }}>
-          More: export &amp; import your data, restart the tour
+          {t.settingsPage.moreSummary}
         </summary>
 
         <div style={{ height: 8 }} />
@@ -542,21 +539,21 @@ export default function SettingsPage() {
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>{t.settings.exportSubtitle}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <PrimaryButton onClick={handleExportJson} disabled={busy !== null}>
-              {busy === "json" ? "Exporting..." : "Export everything (JSON)"}
+              {busy === "json" ? t.settingsPage.exporting : t.settingsPage.exportJson}
             </PrimaryButton>
             <SecondaryButton onClick={handleExportCsv} disabled={busy !== null}>
-              {busy === "csv" ? "Exporting..." : "Export as spreadsheets (CSV zip)"}
+              {busy === "csv" ? t.settingsPage.exporting : t.settingsPage.exportCsv}
             </SecondaryButton>
             <SecondaryButton onClick={handleExportPhotos} disabled={busy !== null}>
-              {busy === "photos" ? "Exporting..." : "Export photos (zip)"}
+              {busy === "photos" ? t.settingsPage.exporting : t.settingsPage.exportPhotos}
             </SecondaryButton>
           </div>
         </Card>
 
         <Card style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Import</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.import}</h2>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-            Restore from a JSON export. Safe to run more than once — it will not create duplicates.
+            {t.settingsPage.importBody}
           </p>
           <input
             ref={fileInputRef}
@@ -567,7 +564,7 @@ export default function SettingsPage() {
             style={{ display: "none" }}
           />
           <SecondaryButton onClick={() => fileInputRef.current?.click()} disabled={busy !== null}>
-            {busy === "import" ? "Importing..." : "Choose a JSON export file..."}
+            {busy === "import" ? t.settingsPage.importing : t.settingsPage.chooseJsonFile}
           </SecondaryButton>
         </Card>
 
@@ -578,9 +575,9 @@ export default function SettingsPage() {
         )}
 
         <Card style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Onboarding</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.onboarding}</h2>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-            Replays the &quot;what brings you here?&quot; screen. Doesn&apos;t touch your tanks or any other data.
+            {t.settingsPage.onboardingBody}
           </p>
           <SecondaryButton
             onClick={async () => {
@@ -593,13 +590,12 @@ export default function SettingsPage() {
         </Card>
 
         <Card>
-          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Fish check-ins</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.fishCheckIns}</h2>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
-            Every few weeks, we ask &quot;still doing well?&quot; about fish added over 90 days ago — just so your records
-            stay accurate. No scores, no streaks.
+            {t.settingsPage.fishCheckInsBody}
           </p>
           {survivalPromptOff ? (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>Turned off. You won&apos;t be asked again.</p>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.settingsPage.turnedOff}</p>
           ) : (
             <SecondaryButton
               onClick={async () => {
@@ -607,7 +603,7 @@ export default function SettingsPage() {
                 setSurvivalPromptOff(true);
               }}
             >
-              Turn off check-ins
+              {t.settingsPage.turnOffCheckIns}
             </SecondaryButton>
           )}
         </Card>

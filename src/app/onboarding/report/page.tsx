@@ -20,6 +20,7 @@ import { addLogEntry } from "@/db/queries/log-entries";
 import { addPhoto } from "@/db/queries/photos";
 import { FILTER_SUBTYPES } from "@/lib/common-options";
 import type { SeverityLevel } from "@/theme/tokens";
+import { useTranslation } from "@/i18n/use-translation";
 
 const SEVERITY_ORDER: SeverityLevel[] = ["fixNow", "watch", "improve"];
 const SEVERITY_KEY: Record<string, SeverityLevel> = { fix_now: "fixNow", watch: "watch", improve: "improve" };
@@ -34,19 +35,23 @@ const QUESTION_THRESHOLD = 0.35;
 // case the model doesn't fully comply.
 const NEVER_PHOTO_ANSWERABLE = /\bph\b|ammonia|nitrite|nitrate|water parameter|temperature/i;
 
-const EQUIPMENT_TYPES = [
-  { value: "heater", label: "Heater" },
-  { value: "filter", label: "Filter" },
-  { value: "light", label: "Light" },
-  { value: "co2", label: "CO2" },
-  { value: "air_pump", label: "Air pump" },
-  { value: "other", label: "Other" },
-];
+function equipmentTypes(t: ReturnType<typeof useTranslation>) {
+  return [
+    { value: "heater", label: t.reportPage.heater },
+    { value: "filter", label: t.reportPage.filter },
+    { value: "light", label: t.reportPage.light },
+    { value: "co2", label: t.reportPage.co2 },
+    { value: "air_pump", label: t.reportPage.airPump },
+    { value: "other", label: t.reportPage.other },
+  ];
+}
 
 type ManualEquipment = { type: string; subtype?: string; wattage?: number; ratedLph?: number };
 
 export default function ScanReportPage() {
   const router = useRouter();
+  const t = useTranslation();
+  const EQUIPMENT_TYPES = equipmentTypes(t);
   const session = useScanSession();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +67,7 @@ export default function ScanReportPage() {
   }, [session.report]);
 
   const report = session.report;
-  if (!report) return <Screen>Loading...</Screen>;
+  if (!report) return <Screen>{t.common.loading}</Screen>;
 
   if (!report.image_quality.usable) {
     return (
@@ -74,12 +79,12 @@ export default function ScanReportPage() {
               router.push("/onboarding/scan");
             }}
           >
-            Retake photo
+            {t.reportPage.retakePhoto}
           </PrimaryButton>
         }
       >
-        <BackHeader title="That photo didn't come through clearly" fallbackHref="/onboarding/scan" />
-        <Banner severity="watch">{report.image_quality.advice || "Please take another photo and try again."}</Banner>
+        <BackHeader title={t.reportPage.photoUnclear} fallbackHref="/onboarding/scan" />
+        <Banner severity="watch">{report.image_quality.advice || t.reportPage.pleaseRetake}</Banner>
       </Screen>
     );
   }
@@ -122,8 +127,8 @@ export default function ScanReportPage() {
         report.equipment_visible.some((e) => e.type.toLowerCase().includes("co2")) ||
         manualEquipment.some((e) => e.type.toLowerCase().includes("co2"));
       const volumeName = session.lengthCm && session.widthCm && session.heightCm
-        ? `${Math.round(((session.lengthCm * session.widthCm * session.heightCm) / 1000) * 10) / 10}L tank`
-        : "My tank";
+        ? t.reportPage.lTank.replace("{v}", String(Math.round(((session.lengthCm * session.widthCm * session.heightCm) / 1000) * 10) / 10))
+        : t.reportPage.myTank;
 
       const tankId = await createTank({
         name: volumeName,
@@ -167,11 +172,11 @@ export default function ScanReportPage() {
 
         // The scan builds the tank's history for free — specs/T-022 wants
         // every scan to leave a journal entry with the report attached.
-        const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : "No issues flagged.";
+        const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : t.reportPage.noIssuesFlagged;
         const entryId = await addLogEntry({
           tankId,
           type: "journal",
-          body: `Tank Scan: ${report.setup.type} setup. ${findingSummary}`,
+          body: t.reportPage.tankScanJournalEntry.replace("{setup}", report.setup.type).replace("{summary}", findingSummary),
         });
         await addPhoto({ tankId, logEntryId: entryId, localUri: session.originalPhotoPath });
       }
@@ -183,7 +188,7 @@ export default function ScanReportPage() {
       // session itself on next mount instead.
       router.push(`/tank/${tankId}/livestock`);
     } catch (err) {
-      setError(`Something went wrong saving your tank: ${String(err)}`);
+      setError(`${t.reportPage.somethingWentWrongSaving} ${String(err)}`);
       setSaving(false);
     }
   }
@@ -193,7 +198,7 @@ export default function ScanReportPage() {
       footer={
         <>
           <PrimaryButton onClick={handleAcceptAndAddLivestock} disabled={saving}>
-            {saving ? "Saving..." : "Looks good — add what's living here"}
+            {saving ? t.reportPage.savingEllipsis : t.reportPage.looksGoodAddLivestock}
           </PrimaryButton>
           <SecondaryButton
             onClick={() => {
@@ -202,14 +207,14 @@ export default function ScanReportPage() {
             }}
             disabled={saving}
           >
-            Retake photo instead
+            {t.reportPage.retakePhotoInstead}
           </SecondaryButton>
         </>
       }
     >
-      <BackHeader title="Tank Report" fallbackHref="/onboarding/scan" />
+      <BackHeader title={t.reportPage.tankReport} fallbackHref="/onboarding/scan" />
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-        {report.setup.type} setup · {report.tank_estimate.clarity}
+        {report.setup.type} {t.reportPage.setup} · {report.tank_estimate.clarity}
       </p>
 
       {findingsBySeverity.map((group) => (
@@ -244,7 +249,7 @@ export default function ScanReportPage() {
 
       {uncertain.length > 0 && (
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Not sure about these — worth a second look</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.notSureAboutThese}</p>
           {uncertain.map((f) => (
             <p key={f.id} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
               {f.title}?
@@ -255,7 +260,7 @@ export default function ScanReportPage() {
 
       {couldNotDetermine.length > 0 && (
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Couldn&apos;t tell from this photo</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.couldNotTellFromPhoto}</p>
           <ul style={{ margin: 0, paddingLeft: 20, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
             {couldNotDetermine.map((item) => (
               <li key={item}>{item}</li>
@@ -266,10 +271,10 @@ export default function ScanReportPage() {
 
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAddEquipment || manualEquipment.length ? 8 : 0 }}>
-          <p style={{ fontWeight: 600 }}>Equipment we missed?</p>
+          <p style={{ fontWeight: 600 }}>{t.reportPage.equipmentWeMissed}</p>
           {!showAddEquipment && (
             <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowAddEquipment(true)}>
-              + Add
+              + {t.common.add}
             </SecondaryButton>
           )}
         </div>
@@ -287,7 +292,7 @@ export default function ScanReportPage() {
               onClick={() => removeManualEquipment(i)}
               style={{ background: "none", border: "none", color: "var(--color-fix-now)", fontSize: "var(--font-caption-size)" }}
             >
-              Remove
+              {t.common.remove}
             </button>
           </div>
         ))}
@@ -310,14 +315,14 @@ export default function ScanReportPage() {
               </select>
             )}
             <Field
-              label={newEquipType === "filter" ? "Rated flow (L/h) — optional" : "Wattage"}
+              label={newEquipType === "filter" ? t.reportPage.ratedFlow : t.reportPage.wattage}
               type="number"
               value={newEquipRating}
               onChange={(e) => setNewEquipRating(e.target.value)}
             />
             <div style={{ display: "flex", gap: 8 }}>
-              <PrimaryButton onClick={addManualEquipment}>Save</PrimaryButton>
-              <SecondaryButton onClick={() => setShowAddEquipment(false)}>Cancel</SecondaryButton>
+              <PrimaryButton onClick={addManualEquipment}>{t.common.save}</PrimaryButton>
+              <SecondaryButton onClick={() => setShowAddEquipment(false)}>{t.common.cancel}</SecondaryButton>
             </div>
           </div>
         )}
@@ -325,7 +330,7 @@ export default function ScanReportPage() {
 
       {algae.length > 0 && (
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Algae spotted</p>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.algaeSpotted}</p>
           {algae.map((a, i) => (
             <p key={i} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
               {a.type} ({a.severity}) — {a.location}

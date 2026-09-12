@@ -16,10 +16,9 @@ import { listLivestockForTank } from "@/db/queries/livestock";
 import { askQuestion, peekQuotaStatus, type QuotaStatus } from "@/lib/ai-client";
 import { buildTankContext } from "@/lib/tank-context";
 import { useLocale } from "@/i18n/use-locale";
+import { useTranslation } from "@/i18n/use-translation";
 import { AskZod, type AskAnswer } from "@/server/ai/schemas/ask";
 import styles from "./ask.module.css";
-
-const STARTER_QUESTIONS = ["Is my tank set up correctly?", "What should I be doing this week?", "Can I add more fish?"];
 
 type Stage = "idle" | "loading";
 type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInteractions>>>[number];
@@ -46,6 +45,8 @@ export default function AskPage() {
   const { data: tanks } = useLiveQuery(listTanks, []);
   const { data: history } = useLiveQuery(listAiInteractions, []);
   const { locale } = useLocale();
+  const t = useTranslation();
+  const STARTER_QUESTIONS = [t.askPage.starterQuestions.setupCorrect, t.askPage.starterQuestions.thisWeek, t.askPage.starterQuestions.addMoreFish];
 
   const [tankId, setTankId] = useState("");
   const [question, setQuestion] = useState("");
@@ -89,11 +90,11 @@ export default function AskPage() {
         setQuestion(finalQuestion);
       } else {
         const parsed = AskZod.safeParse(result.data.answer);
-        if (!parsed.success) setError("The answer came back in an unexpected shape. Please try again.");
+        if (!parsed.success) setError(t.askPage.unexpectedShape);
       }
       peekQuotaStatus("ask").then(setQuota);
     } catch {
-      setError("Couldn't reach the server. Please try again.");
+      setError(t.askPage.couldNotReachServer);
       setQuestion(finalQuestion);
     } finally {
       setStage("idle");
@@ -103,14 +104,14 @@ export default function AskPage() {
 
   async function runAction(action: AskAnswer["actions"][number], forTankId: string, key: string) {
     if (action.type === "create_task") {
-      setActionMessage((m) => ({ ...m, [key]: "Reminders aren't available in this version." }));
+      setActionMessage((m) => ({ ...m, [key]: t.askPage.remindersUnavailable }));
     } else if (action.type === "open_species") {
       const payload = action.payload as { species_id?: string };
       if (payload.species_id) router.push(`/dex/${payload.species_id}`);
     } else if (action.type === "log_measurement") {
-      setActionMessage((m) => ({ ...m, [key]: "Parameter logging isn't available yet in this version." }));
+      setActionMessage((m) => ({ ...m, [key]: t.askPage.loggingUnavailable }));
     } else if (action.type === "open_corpus") {
-      setActionMessage((m) => ({ ...m, [key]: "Corpus browsing isn't available yet in this version." }));
+      setActionMessage((m) => ({ ...m, [key]: t.askPage.corpusUnavailable }));
     }
   }
 
@@ -129,9 +130,12 @@ export default function AskPage() {
   }
 
   const isEarlyBird = quota && quota.earlyBird;
+  const remaining = quota ? quota.limit - quota.used : 0;
   const quotaWarning =
-    quota && !quota.earlyBird && quota.allowed && quota.limit - quota.used <= 3
-      ? `${quota.limit - quota.used} free question${quota.limit - quota.used === 1 ? "" : "s"} left this month.`
+    quota && !quota.earlyBird && quota.allowed && remaining <= 3
+      ? remaining === 1
+        ? t.askPage.questionsLeftOne
+        : t.askPage.questionsLeftMany.replace("{n}", String(remaining))
       : null;
   const quotaExhausted = quota && !quota.earlyBird && !quota.allowed;
 
@@ -142,13 +146,13 @@ export default function AskPage() {
         <>
           {isEarlyBird && (
             <p style={{ color: "var(--color-improve)", fontSize: "var(--font-caption-size)" }}>
-              🐦 Early Bird — unlimited Ask AquaAI, free, while we build out Pro.
+              {t.askPage.earlyBird}
             </p>
           )}
           {quotaWarning && <p style={{ color: "var(--color-watch)", fontSize: "var(--font-caption-size)" }}>{quotaWarning}</p>}
           {quotaExhausted && (
             <Banner severity="watch">
-              {"resetsAt" in (quota ?? {}) ? `You've used your free questions this month. Resets ${(quota as { resetsAt: string }).resetsAt}.` : ""}
+              {"resetsAt" in (quota ?? {}) ? t.askPage.quotaExhausted.replace("{resetsAt}", (quota as { resetsAt: string }).resetsAt) : ""}
             </Banner>
           )}
           <div className={styles.composer}>
@@ -158,7 +162,7 @@ export default function AskPage() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAsk();
               }}
-              placeholder="Ask AquaAI anything..."
+              placeholder={t.askPage.inputPlaceholder}
               className={styles.composerInput}
               disabled={!!quotaExhausted}
             />
@@ -167,7 +171,7 @@ export default function AskPage() {
               onClick={() => handleAsk()}
               disabled={stage === "loading" || !!quotaExhausted || !question.trim()}
               className={styles.sendButton}
-              aria-label="Send"
+              aria-label={t.askPage.send}
             >
               {stage === "loading" ? "…" : "➤"}
             </button>
@@ -178,16 +182,16 @@ export default function AskPage() {
       <BackHeader fallbackHref="/" />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 16 }}>
         <div>
-          <h1 style={{ fontSize: "var(--font-title-size)" }}>💬 Ask AquaAI</h1>
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>Grounded answers, never a guess dressed up as fact.</p>
+          <h1 style={{ fontSize: "var(--font-title-size)" }}>{t.askPage.heading}</h1>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.askPage.subheading}</p>
         </div>
         <select
           value={tankId}
           onChange={(e) => setTankId(e.target.value)}
           className={styles.tankPicker}
-          aria-label="About which tank"
+          aria-label={t.askPage.aboutWhichTank}
         >
-          <option value="">General</option>
+          <option value="">{t.askPage.generalTank}</option>
           {(tanks ?? []).map((t) => (
             <option key={t.id} value={t.id}>
               {t.name}
@@ -199,9 +203,9 @@ export default function AskPage() {
       {askHistory.length === 0 && !pendingQuestion && (
         <div className={styles.emptyState}>
           <LottiePlayer name="listening" size={72} className={styles.emptyStateAnim} />
-          <p style={{ fontWeight: 600, marginBottom: 4 }}>Ask me anything about your tank</p>
+          <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.askPage.emptyTitle}</p>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
-            Water parameters, compatibility, a fish acting strangely — I&apos;ll ground the answer in your own tank&apos;s data where I can.
+            {t.askPage.emptyBody}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", maxWidth: 320 }}>
             {STARTER_QUESTIONS.map((q) => (
@@ -288,6 +292,7 @@ function Turn({
   onAction: (a: AskAnswer["actions"][number]) => void;
   onOpenRef: (type: string, id: string) => void;
 }) {
+  const t = useTranslation();
   const parsed = AskZod.safeParse(typeof row.response === "string" ? JSON.parse(row.response) : row.response);
   const answer = parsed.success ? parsed.data : null;
   const feedbackGiven = row.rating != null;
@@ -301,14 +306,14 @@ function Turn({
       <div className={styles.assistantBubbleWrap}>
         <Card className={styles.answerCard}>
           {!answer ? (
-            <p style={{ color: "var(--color-ink-muted)" }}>Couldn&apos;t render this answer.</p>
+            <p style={{ color: "var(--color-ink-muted)" }}>{t.askPage.couldNotRender}</p>
           ) : (
             <>
               <p style={{ fontWeight: 600, marginBottom: 10 }}>{answer.answer}</p>
 
               {answer.based_on_your_tank.length > 0 && (
                 <div style={{ marginBottom: 10 }}>
-                  <p style={{ fontWeight: 600, fontSize: "var(--font-caption-size)", marginBottom: 4 }}>Based on your tank</p>
+                  <p style={{ fontWeight: 600, fontSize: "var(--font-caption-size)", marginBottom: 4 }}>{t.askPage.basedOnYourTank}</p>
                   <ul style={{ margin: 0, paddingLeft: 20, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
                     {answer.based_on_your_tank.map((b) => (
                       <li key={b}>{b}</li>
@@ -326,14 +331,14 @@ function Turn({
               {answer.medical_disclaimer && (
                 <div style={{ marginBottom: 8 }}>
                   <Banner severity="fixNow">
-                    This is an AI-generated answer about medication or treatment — it has not been reviewed by a vet or aquaculture professional. Please confirm with a vet before trying it.
+                    {t.askPage.medicalDisclaimer}
                   </Banner>
                 </div>
               )}
 
               {answer.uncovered && !answer.medical_disclaimer && (
                 <div style={{ marginBottom: 8 }}>
-                  <Banner severity="neutral">This is an LLM-generated response, not our own verified data.</Banner>
+                  <Banner severity="neutral">{t.askPage.ungroundedNotice}</Banner>
                 </div>
               )}
 
@@ -360,7 +365,7 @@ function Turn({
               )}
 
               {answer.detail && !showDetail && (
-                <SecondaryButton onClick={onShowDetail}>Tell me more</SecondaryButton>
+                <SecondaryButton onClick={onShowDetail}>{t.askPage.tellMeMore}</SecondaryButton>
               )}
               {showDetail && answer.detail && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{answer.detail}</p>}
 
@@ -375,7 +380,7 @@ function Turn({
                     </button>
                   </>
                 ) : (
-                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>Thanks for the feedback.</p>
+                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.askPage.thanksForFeedback}</p>
                 )}
               </div>
 
@@ -384,11 +389,11 @@ function Turn({
                   <input
                     value={correctionText}
                     onChange={(e) => onCorrectionChange(e.target.value)}
-                    placeholder="What was wrong? (optional)"
+                    placeholder={t.askPage.correctionPlaceholder}
                     className={styles.correctionInput}
                   />
                   <div style={{ height: 8 }} />
-                  <SecondaryButton onClick={onSaveCorrection}>Save</SecondaryButton>
+                  <SecondaryButton onClick={onSaveCorrection}>{t.common.save}</SecondaryButton>
                 </div>
               )}
             </>

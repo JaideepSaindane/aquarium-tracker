@@ -24,6 +24,7 @@ import { usePhotoSrc } from "@/lib/use-photo-src";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { checkFilterFlow, checkHeaterWattage } from "@/lib/derived-checks";
 import { isAiGenerated } from "@/lib/species-origin";
+import { useTranslation } from "@/i18n/use-translation";
 
 type SpeciesRow = Awaited<ReturnType<typeof listSpecies>>[number];
 
@@ -46,6 +47,7 @@ function formatDate(date: Date): string {
 export default function TankOverviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const setPendingLivestockScanFile = useLivestockScanSession((s) => s.setPendingFile);
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: equipmentList } = useLiveQuery(() => listEquipmentForTank(id), [id]);
@@ -66,7 +68,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const [addingPhoto, setAddingPhoto] = useState(false);
   const [addPhotoError, setAddPhotoError] = useState<string | null>(null);
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   async function handleConfirmDelete() {
     setDeleting(true);
@@ -90,7 +92,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       await updateTank(id, { photoUri: url });
       await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
     } catch {
-      setAddPhotoError("Couldn't upload that photo — check your connection and try again.");
+      setAddPhotoError(t.settingsPage.couldNotUploadPhoto);
     } finally {
       setAddingPhoto(false);
     }
@@ -117,8 +119,8 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
 
   const aliveLivestock = (livestock ?? []).filter((l) => l.status === "alive");
   const setupDate = tank.startedOn ? new Date(tank.startedOn) : new Date(tank.createdAt);
-  const dateLabel = `Created ${formatDate(setupDate)}`;
-  const waterBadge = tank.waterType === "brackish" ? { label: "Brackish", color: "var(--color-deep)" } : { label: "Freshwater", color: "var(--color-improve)" };
+  const dateLabel = `${t.tankOverviewPage.created} ${formatDate(setupDate)}`;
+  const waterBadge = tank.waterType === "brackish" ? { label: t.home.brackish, color: "var(--color-deep)" } : { label: t.home.freshwater, color: "var(--color-improve)" };
 
   const aliveSpeciesRows = aliveLivestock
     .map((l) => (allSpecies ?? []).find((s) => s.id === l.speciesId))
@@ -142,7 +144,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
         <button
           type="button"
           onClick={() => router.back()}
-          aria-label="Back"
+          aria-label={t.common.back}
           style={{
             width: 36,
             height: 36,
@@ -163,7 +165,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           <button
             type="button"
             onClick={() => setShowMenu((v) => !v)}
-            aria-label="More actions"
+            aria-label={t.tankOverviewPage.moreActions}
             style={{
               width: 36,
               height: 36,
@@ -203,13 +205,13 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
                   }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--color-ink)", fontSize: "var(--font-body-sm-size)" }}
                 >
-                  Edit Tank
+                  {t.tankOverviewPage.editTank}
                 </button>
                 <button
                   onClick={handleHide}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--color-ink)", fontSize: "var(--font-body-sm-size)" }}
                 >
-                  Hide
+                  {t.home.hide}
                 </button>
                 <button
                   onClick={() => {
@@ -218,7 +220,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
                   }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}
                 >
-                  Delete
+                  {t.tankOverviewPage.deleteWord}
                 </button>
               </div>
             </>
@@ -250,13 +252,13 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           {tank.isPlanted && (
             <>
               <span aria-hidden>·</span>
-              Planted
+              {t.home.planted}
             </>
           )}
         </p>
         <p style={{ margin: "6px 0 0", display: "flex", alignItems: "center", gap: 6, fontSize: "var(--font-caption-size)", fontWeight: 600, color: "var(--color-improve)" }}>
           <span aria-hidden>●</span>
-          Healthy
+          {t.home.healthy}
         </p>
       </div>
 
@@ -283,9 +285,9 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
             📷
           </span>
           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)" }}>
-            {addingPhoto ? "Adding photo..." : "Add a photo of your tank"}
+            {addingPhoto ? t.tankOverviewPage.addingPhoto : t.tankOverviewPage.addPhotoOfTank}
           </p>
-          <PhotoPickerButton label={addingPhoto ? "Adding..." : "Add a photo"} onPick={handleAddPhoto} />
+          <PhotoPickerButton label={addingPhoto ? t.livestockScanPage.addingEllipsis : t.tankOverviewPage.addAPhoto} onPick={handleAddPhoto} />
           {addPhotoError && (
             <p style={{ margin: 0, fontSize: "var(--font-caption-size)", color: "var(--color-fix-now)" }}>{addPhotoError}</p>
           )}
@@ -310,7 +312,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
             🩺
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <strong style={{ fontSize: "var(--font-body-sm-size)" }}>Health Check</strong>
+            <strong style={{ fontSize: "var(--font-body-sm-size)" }}>{t.checkPage.healthCheck}</strong>
             <p
               style={{
                 fontSize: "var(--font-caption-size)",
@@ -321,7 +323,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
                 whiteSpace: "nowrap",
               }}
             >
-              Expert analysis — just upload a new picture
+              {t.tankOverviewPage.expertAnalysis}
             </p>
           </div>
           <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>
@@ -334,7 +336,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Delete tank"
+          aria-label={t.home.deleteTankQuestion}
           style={{
             position: "fixed",
             inset: 0,
@@ -359,16 +361,16 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
               boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
             }}
           >
-            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 6 }}>Delete tank?</p>
+            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 6 }}>{t.home.deleteTankQuestion}</p>
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 20 }}>
-              This permanently deletes {tank.name} and everything logged under it. This can&apos;t be undone.
+              {t.home.deleteTankBody.replace("{name}", tank.name)}
             </p>
             <div style={{ display: "flex", gap: 8 }}>
               <SecondaryButton onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
-                No
+                {t.home.no}
               </SecondaryButton>
               <DangerButton onClick={handleConfirmDelete} disabled={deleting}>
-                {deleting ? "Deleting..." : "Yes, delete"}
+                {deleting ? t.home.deleting : t.home.yesDelete}
               </DangerButton>
             </div>
           </div>
@@ -382,7 +384,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       ))}
 
       <CollapsedSectionCard
-        label="Fish"
+        label={t.livestockPage.fish}
         onToggle={() => setLivestockExpanded((v) => !v)}
         onAdd={() => setShowAddPopup(true)}
         expanded={livestockExpanded}
@@ -395,7 +397,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
               })}
             />
           ) : (
-            <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>No fish added yet</span>
+            <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.tankOverviewPage.noFishAddedYetShort}</span>
           )
         }
       />
@@ -403,10 +405,10 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       {livestockExpanded && (
         <div style={sectionBodyStyle}>
           <div style={{ paddingTop: 8, paddingBottom: 4 }}>
-            <SecondaryButton onClick={() => setShowAddPopup(true)}>⊕ Add fish</SecondaryButton>
+            <SecondaryButton onClick={() => setShowAddPopup(true)}>⊕ {t.tankOverviewPage.addFishLower}</SecondaryButton>
           </div>
           {aliveLivestock.length === 0 && (
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", padding: "6px 0" }}>No fish added yet.</p>
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", padding: "6px 0" }}>{t.livestockPage.noFishAddedYet}</p>
           )}
           {aliveLivestock.map((l) => (
             <LivestockInlineRow
@@ -429,7 +431,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Add fish"
+          aria-label={t.livestockSearchPage.addAFish}
           style={{
             position: "fixed",
             inset: 0,
@@ -454,11 +456,11 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
               boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
             }}
           >
-            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 16 }}>Add a fish</p>
+            <p style={{ fontWeight: 700, fontSize: "var(--font-body-size)", marginBottom: 16 }}>{t.livestockSearchPage.addAFish}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <PrimaryButton onClick={() => router.push(`/tank/${id}/livestock/search`)}>🔍 Search by name</PrimaryButton>
+              <PrimaryButton onClick={() => router.push(`/tank/${id}/livestock/search`)}>🔍 {t.tankOverviewPage.searchByName}</PrimaryButton>
               <PhotoPickerButton
-                label="📷 Take a pic"
+                label={`📷 ${t.tankOverviewPage.takeAPic}`}
                 onPick={(file) => {
                   setPendingLivestockScanFile(file);
                   setShowAddPopup(false);
@@ -467,19 +469,19 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
               />
             </div>
             <div style={{ height: 10 }} />
-            <SecondaryButton onClick={() => setShowAddPopup(false)}>Cancel</SecondaryButton>
+            <SecondaryButton onClick={() => setShowAddPopup(false)}>{t.common.cancel}</SecondaryButton>
           </div>
         </div>
       )}
 
       <CollapsedSectionCard
-        label="Gallery"
+        label={t.galleryPage.title}
         onToggle={() => setGalleryExpanded((v) => !v)}
         onAdd={() => setGalleryExpanded(true)}
         expanded={galleryExpanded}
         preview={
           <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-            {(photos ?? []).length > 0 ? `${(photos ?? []).length} photos` : "No photos yet"}
+            {(photos ?? []).length > 0 ? t.tankOverviewPage.nPhotos.replace("{n}", String((photos ?? []).length)) : t.tankOverviewPage.noPhotosYet}
           </span>
         }
       />
@@ -490,7 +492,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       )}
 
       <CollapsedSectionCard
-        label="Journal"
+        label={t.journalPage.title}
         onToggle={() => setJournalExpanded((v) => !v)}
         onAdd={() => {
           setJournalExpanded(true);
@@ -499,7 +501,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
         expanded={journalExpanded}
         preview={
           <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-            {(journalEntries ?? []).length > 0 ? `${(journalEntries ?? []).length} entries` : "No entries yet"}
+            {(journalEntries ?? []).length > 0 ? t.tankOverviewPage.nEntries.replace("{n}", String((journalEntries ?? []).length)) : t.tankOverviewPage.noEntriesYet}
           </span>
         }
       />
@@ -529,10 +531,11 @@ function AboutSection({
   tank: { lengthCm: number; widthCm: number; heightCm: number; volumeL: number };
   recommendedTempC: { min: number; max: number } | null;
 }) {
+  const t = useTranslation();
   const rows: { label: string; value: string }[] = [
-    { label: "Size", value: `${tank.lengthCm} × ${tank.widthCm} × ${tank.heightCm} cm` },
-    { label: "Volume", value: `${tank.volumeL} L` },
-    { label: "Temp", value: recommendedTempC ? `${recommendedTempC.min}–${recommendedTempC.max}°C` : "Add fish for a range" },
+    { label: t.tankOverviewPage.size, value: `${tank.lengthCm} × ${tank.widthCm} × ${tank.heightCm} cm` },
+    { label: t.tankOverviewPage.volume, value: `${tank.volumeL} L` },
+    { label: t.dexDetailPage.temp, value: recommendedTempC ? `${recommendedTempC.min}–${recommendedTempC.max}°C` : t.tankOverviewPage.addFishForRange },
   ];
 
   return (
@@ -588,6 +591,7 @@ function CollapsedSectionCard({
   keepAddWhenExpanded?: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslation();
   return (
     <div
       role="button"
@@ -650,7 +654,7 @@ function CollapsedSectionCard({
                 cursor: "pointer",
               }}
             >
-              <span aria-hidden>⊕</span> Add
+              <span aria-hidden>⊕</span> {t.common.add}
             </button>
           ) : (
             <Link
@@ -666,7 +670,7 @@ function CollapsedSectionCard({
                 fontSize: "var(--font-caption-size)",
               }}
             >
-              <span aria-hidden>⊕</span> Add
+              <span aria-hidden>⊕</span> {t.common.add}
             </Link>
           ))}
         <span
@@ -747,6 +751,7 @@ function LivestockInlineRow({
   onCancelDelete: () => void;
   onConfirmDelete: () => void;
 }) {
+  const t = useTranslation();
   const [countValue, setCountValue] = useState(String(livestock.count));
 
   async function commitCount() {
@@ -765,29 +770,29 @@ function LivestockInlineRow({
       <SpeciesThumb imageUri={species?.imageUri} category={species?.category} size={40} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <strong style={{ display: "block", fontSize: "var(--font-body-sm-size)" }}>
-          {firstName(species?.commonNames) ?? livestock.speciesId} {isAiGenerated(species) && <Chip variant="unverified">AI</Chip>}
+          {firstName(species?.commonNames) ?? livestock.speciesId} {isAiGenerated(species) && <Chip variant="unverified">{t.dexPage.ai}</Chip>}
         </strong>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "1px 0 0" }}>
-          Added {new Date(livestock.addedOn).toLocaleDateString()}
+          {t.tankOverviewPage.addedDate} {new Date(livestock.addedOn).toLocaleDateString()}
         </p>
       </div>
 
       {confirmingDelete ? (
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-          <span style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)" }}>Remove?</span>
+          <span style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)" }}>{t.tankOverviewPage.removeQuestion}</span>
           <button
             type="button"
             onClick={onConfirmDelete}
             style={{ background: "var(--color-fix-now)", color: "#fff", border: "none", borderRadius: "var(--radius-sm, 6px)", padding: "4px 8px", fontSize: "var(--font-caption-size)", fontWeight: 700, cursor: "pointer" }}
           >
-            Yes
+            {t.tankOverviewPage.yes}
           </button>
           <button
             type="button"
             onClick={onCancelDelete}
             style={{ background: "none", border: "1px solid var(--color-line)", borderRadius: "var(--radius-sm, 6px)", padding: "4px 8px", fontSize: "var(--font-caption-size)", cursor: "pointer" }}
           >
-            No
+            {t.home.no}
           </button>
         </div>
       ) : (
@@ -814,7 +819,7 @@ function LivestockInlineRow({
           <button
             type="button"
             onClick={onAskDelete}
-            aria-label="Remove fish"
+            aria-label={t.tankOverviewPage.removeFish}
             style={{ flexShrink: 0, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", color: "var(--color-fix-now)", fontSize: 18, cursor: "pointer" }}
           >
             🗑️

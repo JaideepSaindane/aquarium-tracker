@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { PostCard } from "@/components/community/PostCard";
 import { useLiveQuery } from "@/db/live";
 import { listCommunityPosts } from "@/db/queries/community";
+import { useTranslation } from "@/i18n/use-translation";
 
 /**
  * Community (MVP, 2026-09-11) — a deliberate, confirmed exception to
@@ -21,20 +22,21 @@ export default function CommunityPage() {
   const { data: session } = useSession();
   const { data: posts } = useLiveQuery(() => listCommunityPosts(), []);
   const currentUserId = session?.user?.id ?? null;
+  const t = useTranslation();
 
   return (
     <Screen>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <h1 style={{ fontSize: "var(--font-title-size)", margin: 0 }}>Community</h1>
+        <h1 style={{ fontSize: "var(--font-title-size)", margin: 0 }}>{t.communityPage.title}</h1>
         <Link href="/community/new">
-          <PrimaryButton>+ New Post</PrimaryButton>
+          <PrimaryButton>{t.communityPage.newPost}</PrimaryButton>
         </Link>
       </div>
 
-      {!posts && <p style={{ color: "var(--color-ink-muted)" }}>Loading...</p>}
+      {!posts && <p style={{ color: "var(--color-ink-muted)" }}>{t.common.loading}</p>}
 
       {posts && posts.length === 0 && (
-        <EmptyState icon="💬" message="No posts yet — be the first to share your tank or ask a question." />
+        <EmptyState icon="💬" message={t.communityPage.empty} />
       )}
 
       {posts?.map((post) => (

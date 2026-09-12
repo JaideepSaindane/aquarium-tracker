@@ -10,10 +10,12 @@ import { Banner } from "@/components/Banner";
 import { useLiveQuery } from "@/db/live";
 import { getTank, updateTank } from "@/db/queries/tanks";
 import { convertDimension } from "@/lib/dimension-units";
+import { useTranslation } from "@/i18n/use-translation";
 
 export default function TankSizePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
 
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
@@ -50,7 +52,7 @@ export default function TankSizePage({ params }: { params: Promise<{ id: string 
 
   async function handleSave() {
     if (!lengthCm || !widthCm || !heightCm) {
-      setError("All three dimensions are required.");
+      setError(t.tankSizePage.allThreeRequired);
       return;
     }
     setSaving(true);
@@ -64,11 +66,11 @@ export default function TankSizePage({ params }: { params: Promise<{ id: string 
     }
   }
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   return (
     <Screen>
-      <BackHeader title="Tank Size" fallbackHref={`/tank/${tank.id}/edit`} />
+      <BackHeader title={t.tankSizePage.title} fallbackHref={`/tank/${tank.id}/edit`} />
 
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
         <div style={{ display: "flex", gap: 4 }}>
@@ -104,12 +106,12 @@ export default function TankSizePage({ params }: { params: Promise<{ id: string 
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-        <Field label="Length" type="number" value={length} onChange={(e) => setLength(e.target.value)} />
-        <Field label="Width" type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
-        <Field label="Height" type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
+        <Field label={t.scanPage.length} type="number" value={length} onChange={(e) => setLength(e.target.value)} />
+        <Field label={t.scanPage.width} type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
+        <Field label={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
       </div>
       {volumeL !== null && (
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>≈ {volumeL} litres</p>
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>≈ {volumeL} {t.scanPage.litres}</p>
       )}
 
       {error && (
@@ -120,7 +122,7 @@ export default function TankSizePage({ params }: { params: Promise<{ id: string 
 
       <div style={{ height: 16 }} />
       <PrimaryButton onClick={handleSave} disabled={saving}>
-        {saving ? "Saving..." : "Save"}
+        {saving ? t.settingsPage.saving : t.common.save}
       </PrimaryButton>
     </Screen>
   );

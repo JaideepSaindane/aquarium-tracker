@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { useTranslation } from "@/i18n/use-translation";
 
 /**
  * Standard top-left back button + optional title, used on every screen
@@ -13,6 +14,7 @@ import type { ReactNode } from "react";
  */
 export function BackHeader({ title, fallbackHref, right }: { title?: ReactNode; fallbackHref?: string; right?: ReactNode }) {
   const router = useRouter();
+  const t = useTranslation();
 
   function handleBack() {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -28,7 +30,7 @@ export function BackHeader({ title, fallbackHref, right }: { title?: ReactNode; 
         <button
           type="button"
           onClick={handleBack}
-          aria-label="Back"
+          aria-label={t.common.back}
           style={{
             width: 36,
             height: 36,

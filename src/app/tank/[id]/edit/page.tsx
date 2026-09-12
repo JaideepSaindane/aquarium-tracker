@@ -19,10 +19,12 @@ import { listEquipmentForTank, addEquipment, removeEquipment } from "@/db/querie
 import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
 import { FILTER_SUBTYPES, COMMON_PLANTS, COMMON_CITIES } from "@/lib/common-options";
+import { useTranslation } from "@/i18n/use-translation";
 
 export default function EditTankPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslation();
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: plants } = useLiveQuery(() => listPlantsForTank(id), [id]);
   const { data: equipmentList } = useLiveQuery(() => listEquipmentForTank(id), [id]);
@@ -75,13 +77,13 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
       // Gallery tab.
       await addPhoto({ tankId: id, localUri: url, caption: "Tank photo" });
     } catch {
-      setError("Couldn't upload that photo — check your connection and try again.");
+      setError(t.settingsPage.couldNotUploadPhoto);
     }
   }
 
   async function handleSave() {
     if (!name.trim()) {
-      setError("Name is required.");
+      setError(t.editTankPage.nameRequired);
       return;
     }
     setSaving(true);
@@ -138,7 +140,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
     setShowAddEquipment(false);
   }
 
-  if (!tank) return <Screen>Loading...</Screen>;
+  if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   return (
     <Screen>
@@ -149,10 +151,10 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} />
+        <Field label={t.settingsPage.name} value={name} onChange={(e) => setName(e.target.value)} />
 
         <div>
-          <Field label="City" list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Bangalore" />
+          <Field label={t.scanPage.city} list="city-options" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.scanPage.cityPlaceholder} />
           <datalist id="city-options">
             {COMMON_CITIES.map((c) => (
               <option key={c} value={c} />
@@ -161,7 +163,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
         </div>
 
         <div>
-          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 4 }}>Water type</label>
+          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 4 }}>{t.newTankPage.waterType}</label>
           <div style={{ display: "flex", gap: 8 }}>
             <button
               type="button"
@@ -181,7 +183,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               }}
             >
               <AquaIcon name="freshwater" size={16} />
-              Fresh water
+              {t.newTankPage.freshWater}
             </button>
             <button
               type="button"
@@ -201,7 +203,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               }}
             >
               <AquaIcon name="brackish" size={16} />
-              Brackish water
+              {t.newTankPage.brackishWater}
             </button>
           </div>
         </div>
@@ -219,7 +221,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               borderRadius: 8,
             }}
           >
-            <span>Tank Size</span>
+            <span>{t.tankSizePage.title}</span>
             <span style={{ color: "var(--color-ink-muted)" }}>
               {tank.lengthCm}×{tank.widthCm}×{tank.heightCm}cm · {tank.volumeL}L ›
             </span>
@@ -229,18 +231,18 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
           <AquaIcon name="planted" size={16} />
-          Planted tank
+          {t.editTankPage.plantedTank}
         </label>
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
-          CO2 injection
+          {t.editTankPage.co2Injection}
         </label>
 
         {error && <p style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}>{error}</p>}
-        {saved && <Banner severity="improve">Saved.</Banner>}
+        {saved && <Banner severity="improve">{t.editTankPage.saved}</Banner>}
 
         <PrimaryButton onClick={handleSave} disabled={saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? t.settingsPage.saving : t.editTankPage.saveChanges}
         </PrimaryButton>
       </div>
 
@@ -248,9 +250,9 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
 
       <section style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)" }}>Plants</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)" }}>{t.editTankPage.plants}</h2>
           <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowAddPlant((v) => !v)}>
-            + Add
+            + {t.common.add}
           </SecondaryButton>
         </div>
         {showAddPlant && (
@@ -263,28 +265,28 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               }}
               style={{ padding: 8 }}
             >
-              <option value="">Choose a plant...</option>
+              <option value="">{t.editTankPage.choosePlant}</option>
               {COMMON_PLANTS.map((p) => (
                 <option key={p} value={p}>
                   {p}
                 </option>
               ))}
-              <option value="other">Other (type below)</option>
+              <option value="other">{t.editTankPage.otherTypeBelow}</option>
             </select>
             {plantSelect === "other" && (
-              <Field label="" placeholder="e.g. Ludwigia" value={plantName} onChange={(e) => setPlantName(e.target.value)} />
+              <Field label="" placeholder={t.editTankPage.egLudwigia} value={plantName} onChange={(e) => setPlantName(e.target.value)} />
             )}
             <PrimaryButton onClick={handleAddPlant} disabled={!plantName.trim()}>
-              Save
+              {t.common.save}
             </PrimaryButton>
           </div>
         )}
-        {(plants ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>None added yet.</p>}
+        {(plants ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.editTankPage.noneAddedYet}</p>}
         {(plants ?? []).map((p) => (
           <Card key={p.id} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>{p.commonName}</span>
             <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removePlant(p.id)}>
-              Remove
+              {t.common.remove}
             </DangerButton>
           </Card>
         ))}
@@ -292,32 +294,32 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
 
       <section style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <h2 style={{ fontSize: "var(--font-heading-size)" }}>Equipment</h2>
+          <h2 style={{ fontSize: "var(--font-heading-size)" }}>{t.editTankPage.equipment}</h2>
           <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowAddEquipment((v) => !v)}>
-            + Add
+            + {t.common.add}
           </SecondaryButton>
         </div>
         {showAddEquipment && (
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
             <select value={equipType} onChange={(e) => setEquipType(e.target.value)} style={{ padding: 8 }}>
-              <option value="filter">Filter</option>
-              <option value="heater">Heater</option>
-              <option value="light">Light</option>
-              <option value="co2">CO2</option>
-              <option value="air_pump">Air pump</option>
-              <option value="other">Other</option>
+              <option value="filter">{t.reportPage.filter}</option>
+              <option value="heater">{t.reportPage.heater}</option>
+              <option value="light">{t.reportPage.light}</option>
+              <option value="co2">{t.reportPage.co2}</option>
+              <option value="air_pump">{t.reportPage.airPump}</option>
+              <option value="other">{t.reportPage.other}</option>
             </select>
             {equipType === "filter" && (
               <>
                 <select value={equipSubtype} onChange={(e) => setEquipSubtype(e.target.value)} style={{ padding: 8 }}>
-                  {FILTER_SUBTYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
+                  {FILTER_SUBTYPES.map((fs) => (
+                    <option key={fs.value} value={fs.value}>
+                      {fs.label}
                     </option>
                   ))}
                 </select>
                 <Field
-                  label="Rated flow (L/h) — optional, skip if you don't know it"
+                  label={t.editTankPage.ratedFlowOptional}
                   type="number"
                   value={equipRatedLph}
                   onChange={(e) => setEquipRatedLph(e.target.value)}
@@ -325,29 +327,29 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
               </>
             )}
             {(equipType === "heater" || equipType === "light") && (
-              <Field label="Wattage" type="number" value={equipWattage} onChange={(e) => setEquipWattage(e.target.value)} />
+              <Field label={t.reportPage.wattage} type="number" value={equipWattage} onChange={(e) => setEquipWattage(e.target.value)} />
             )}
-            <PrimaryButton onClick={handleAddEquipment}>Save</PrimaryButton>
+            <PrimaryButton onClick={handleAddEquipment}>{t.common.save}</PrimaryButton>
           </div>
         )}
-        {(equipmentList ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>None added yet.</p>}
+        {(equipmentList ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.editTankPage.noneAddedYet}</p>}
         {(equipmentList ?? []).map((eq) => (
           <Card key={eq.id} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>
-              {eq.subtype ? FILTER_SUBTYPES.find((t) => t.value === eq.subtype)?.label ?? eq.subtype : eq.type}
+              {eq.subtype ? FILTER_SUBTYPES.find((fs) => fs.value === eq.subtype)?.label ?? eq.subtype : eq.type}
               {eq.ratedLph ? ` — ${eq.ratedLph} L/h` : ""}
               {eq.wattage ? ` — ${eq.wattage}W` : ""}
             </span>
             <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removeEquipment(eq.id)}>
-              Remove
+              {t.common.remove}
             </DangerButton>
           </Card>
         ))}
       </section>
 
       <div style={{ display: "flex", gap: 8 }}>
-        <SecondaryButton onClick={handleHide}>Hide Tank</SecondaryButton>
-        <DangerButton onClick={handleDelete}>{confirmDelete ? "Tap again to confirm delete" : "Delete tank"}</DangerButton>
+        <SecondaryButton onClick={handleHide}>{t.editTankPage.hideTank}</SecondaryButton>
+        <DangerButton onClick={handleDelete}>{confirmDelete ? t.editTankPage.tapAgainToConfirm : t.editTankPage.deleteTank}</DangerButton>
       </div>
     </Screen>
   );

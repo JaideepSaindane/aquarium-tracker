@@ -70,7 +70,7 @@ export function TabBar() {
   }, []);
 
   return (
-    <nav className={`${styles.bar} ${hidden ? styles.barHidden : ""}`} aria-label="Main">
+    <nav className={`${styles.bar} ${hidden ? styles.barHidden : ""}`} aria-label={t.tabBar.main}>
       {TABS.map((tab) => {
         const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
         return (
