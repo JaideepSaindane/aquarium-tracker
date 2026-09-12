@@ -72,6 +72,9 @@ const en = {
     statusOk: "Healthy",
     statusOkExplanation: "{n} fish · nothing flagged",
     askAquaAction: "Ask Aqua",
+    statusNeedsAttention: "Needs attention",
+    statusNeedsAttentionExplanation: "{n} equipment check needs a look",
+    statusNeedsAttentionExplanationPlural: "{n} equipment checks need a look",
   },
   settings: {
     title: "My Profile & Settings",
@@ -375,6 +378,8 @@ const en = {
     removeQuestion: "Remove?",
     yes: "Yes",
     removeFish: "Remove fish",
+    water: "Water",
+    notLogged: "Not logged yet",
   },
   checkPage: {
     waterClarity: "Water clarity",

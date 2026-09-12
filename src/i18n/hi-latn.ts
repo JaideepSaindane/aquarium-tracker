@@ -76,6 +76,9 @@ const hiLatn: Dictionary = {
     statusOk: "Healthy",
     statusOkExplanation: "{n} fish · kuch bhi flag nahi hua",
     askAquaAction: "Ask Aqua",
+    statusNeedsAttention: "Dhyan dein",
+    statusNeedsAttentionExplanation: "{n} equipment check dekhne layak hai",
+    statusNeedsAttentionExplanationPlural: "{n} equipment checks dekhne layak hain",
   },
   settings: {
     title: "My Profile & Settings",
@@ -379,6 +382,8 @@ const hiLatn: Dictionary = {
     removeQuestion: "Remove karein?",
     yes: "Haan",
     removeFish: "Fish remove karein",
+    water: "Paani",
+    notLogged: "Abhi tak log nahi hua",
   },
   checkPage: {
     waterClarity: "Water clarity",
