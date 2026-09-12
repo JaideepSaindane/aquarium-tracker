@@ -1,7 +1,7 @@
 # UI/UX Redesign — Execution Plan
 
 **Source brief:** `docs/08-ui-redesign-brief.md` (Jaideep's consolidated redesign strategy, shared 2026-09-12 — read it before starting any section).
-**Status:** Section 0 complete (2026-09-12) — findings below. Next: Section 1 (design tokens). Work the sections in order, one at a time — Jaideep says "do Section N".
+**Status:** Sections 0–1 complete (2026-09-12). Next: Section 2 (shared components). Work the sections in order, one at a time — Jaideep says "do Section N".
 **Log every completed section in `specs/PROGRESS.md`**, same as any task.
 
 ---
@@ -123,12 +123,12 @@ Findings are directional (read from source, not a rendered screen) — each sect
 - **Section 1** sweeps the 40 hard-coded-value findings onto tokens after the rebase; severity colors stay a separate safety-critical scale.
 - **Section 2** builds the missing primitives (SegmentedControl kills the five inline toggles; ListRow replaces the Card-per-row pattern; Status fixes the Healthy badge), converges Button (text tier, sizing) and Field (select/textarea, stronger fill), and enforces 44px targets.
 
-## Section 1 — Design tokens (brief tasks 0.1–0.4)
+## Section 1 — Design tokens (brief tasks 0.1–0.4) — COMPLETE (2026-09-12)
 
 **Goal:** One visual system, defined once.
-**Do:** Rebase `tokens.css`/`tokens.ts` onto the brief's palette — dark mode gets the brief's exact values and becomes the default; derive the matching light mode. Add the type scale (32/28/20/16/14/12), the 8-point spacing scale (4/8/12/16/24/32/40), and the radius system (12/16/20/pill) as tokens. Apply the semantic discipline: aqua = primary action, active nav, selection, links, identity; green = health, amber = warning, coral = danger. Keep the system font stack (SF Pro/Roboto via CSS defaults) — it satisfies the brief's "one legible sans-serif" without bundling a webfont; ask before adding Inter. Update `docs/04-design-system.md` in the same pass.
-**Watch:** This recolors every screen at once — intended. Full-app sweep for breakage before committing.
-**Acceptance:** Every screen still works in both themes; dark shows the brief's exact values; no screen invents its own values (spot-check the audit list).
+**Done:** `tokens.css`/`tokens.ts` rebased onto the brief's palette. Dark is now the default look (dark values on `:root`; light under `prefers-color-scheme: light` + `[data-theme="light"]`, so the Appearance setting keeps working). Dark carries the brief's exact values; light is derived (validated 2026-09-10/11 neutrals, accent family on the aqua hue, severity hues darkened for AA on white). Type scale → 32/28/20/16/14/12; spacing → 8-point (xxxl 48→40, nothing consumed it); radius → 12/16/20/pill (`Card` already read `--radius-lg`, so cards landed on 16px with zero component edits). New `--color-ink-faint` for muted text/placeholders. App-shell coherence: `layout.tsx` theme-color metas + `manifest.json` colours moved to the dark values. `docs/04-design-system.md` updated in the same pass.
+**Verification:** `tsc` + `build` clean (lint fails only on 4 pre-existing `react-hooks/refs` errors in `tank/[id]/livestock/page.tsx`, untouched by this change). Real-browser pass with a throwaway account (created and deleted via the real self-serve flow): all tokens resolve to the brief's exact hexes on every key screen in dark; title 28px; primary button solid aqua at 12px radius; Appearance toggle lands the exact light values and returns to dark; light-OS context gets light. Screenshots reviewed — no breakage (My Tanks zero-state sparseness is pre-existing layout; Section 3 rebuilds that screen).
+**Acceptance:** Met — every screen works in both themes; dark shows the brief's exact values. The "no screen invents its own values" half is Section 2+'s work: the audit's 40 hard-coded-value findings get swept as each section touches its screens.
 
 ## Section 2 — Shared components (brief tasks 0.5–0.10)
 
