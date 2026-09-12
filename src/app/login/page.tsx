@@ -3,7 +3,6 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Screen } from "@/components/Screen";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
@@ -61,50 +60,79 @@ function LoginForm() {
   }
 
   return (
-    <Screen>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 40, marginBottom: 24 }}>
+    <div
+      style={{
+        minHeight: "100dvh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px 20px",
+        boxSizing: "border-box",
+        // Jaideep's reference image (a moonlit lake scene) as the sign-in
+        // backdrop, matching the onboarding welcome screen's treatment.
+        background: "#0b1620 url(/login-bg.jpg) center / cover no-repeat",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
         <AquaIcon name="tanks" size={40} />
-        <h1 style={{ fontSize: "var(--font-title-size)", marginTop: 12 }}>{APP_NAME}</h1>
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginTop: 4 }}>Sign in to continue</p>
-      </div>
-
-      <SecondaryButton onClick={handleGoogle} style={{ marginBottom: 20 }}>
-        Continue with Google
-      </SecondaryButton>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "8px 0 20px", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-        <div style={{ flex: 1, height: 1, background: "var(--color-line)" }} />
-        or
-        <div style={{ flex: 1, height: 1, background: "var(--color-line)" }} />
-      </div>
-
-      <form onSubmit={handlePhoneSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <Field label="4-digit PIN" type="password" inputMode="numeric" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))} />
-        <Field
-          label="Confirm PIN"
-          type="password"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="••••"
-          value={confirmPin}
-          onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-        />
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-          New number? This creates your account. Already have one? Just enter your existing PIN in both boxes.
+        <h1 style={{ fontSize: "var(--font-title-size)", marginTop: 12, color: "#fff", textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>{APP_NAME}</h1>
+        <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 4, textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>
+          Sign in to continue
         </p>
-        {error && <Banner severity="fixNow">{error}</Banner>}
-        <PrimaryButton type="submit" disabled={busy}>
-          {busy ? "Checking..." : "Continue"}
-        </PrimaryButton>
-      </form>
-    </Screen>
+      </div>
+
+      {/* A frosted card holds the actual controls so Field/Button/Banner
+          keep their normal light-surface contrast instead of sitting
+          directly on a busy photo. */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 420,
+          background: "var(--color-surface, var(--color-ground))",
+          borderRadius: "var(--radius-lg)",
+          padding: 24,
+          boxShadow: "var(--shadow-lift, 0 12px 40px rgba(0,0,0,0.35))",
+        }}
+      >
+        <SecondaryButton onClick={handleGoogle} style={{ marginBottom: 20 }}>
+          Continue with Google
+        </SecondaryButton>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "8px 0 20px", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+          <div style={{ flex: 1, height: 1, background: "var(--color-line)" }} />
+          or
+          <div style={{ flex: 1, height: 1, background: "var(--color-line)" }} />
+        </div>
+
+        <form onSubmit={handlePhoneSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Field label="4-digit PIN" type="password" inputMode="numeric" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))} />
+          <Field
+            label="Confirm PIN"
+            type="password"
+            inputMode="numeric"
+            maxLength={4}
+            placeholder="••••"
+            value={confirmPin}
+            onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          />
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+            New number? This creates your account. Already have one? Just enter your existing PIN in both boxes.
+          </p>
+          {error && <Banner severity="fixNow">{error}</Banner>}
+          <PrimaryButton type="submit" disabled={busy}>
+            {busy ? "Checking..." : "Continue"}
+          </PrimaryButton>
+        </form>
+      </div>
+    </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<Screen>Loading...</Screen>}>
+    <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#0b1620" }} />}>
       <LoginForm />
     </Suspense>
   );

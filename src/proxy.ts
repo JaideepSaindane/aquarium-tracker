@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 // CLAUDE.md's old Principle 5 "works at the tank, offline"; see the dated
 // note there). Every route redirects to /login when signed out, except the
 // auth machinery itself and a couple of static/public files.
-const PUBLIC_PATHS = ["/login", "/api/auth", "/manifest.json", "/icon.svg", "/icon-alternate.svg", "/sw.js"];
+const PUBLIC_PATHS = ["/login", "/api/auth", "/manifest.json", "/icon.svg", "/icon-alternate.svg", "/sw.js", "/login-bg.jpg"];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
