@@ -74,7 +74,7 @@ const hiLatn: Dictionary = {
     statusNoFish: "Abhi tak koi fish nahi",
     statusNoFishExplanation: "Shuru karne ke liye apni pehli fish add karein",
     statusOk: "Healthy",
-    statusOkExplanation: "{n} fish · kuch bhi flag nahi hua",
+    statusOkExplanation: "{n} fish",
     askAquaAction: "Ask Aqua",
     statusNeedsAttention: "Dhyan dein",
     statusNeedsAttentionExplanation: "{n} equipment check dekhne layak hai",

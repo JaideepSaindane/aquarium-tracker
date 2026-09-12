@@ -70,7 +70,7 @@ const en = {
     statusNoFish: "No fish yet",
     statusNoFishExplanation: "Add your first fish to get started",
     statusOk: "Healthy",
-    statusOkExplanation: "{n} fish · nothing flagged",
+    statusOkExplanation: "{n} fish",
     askAquaAction: "Ask Aqua",
     statusNeedsAttention: "Needs attention",
     statusNeedsAttentionExplanation: "{n} equipment check needs a look",
