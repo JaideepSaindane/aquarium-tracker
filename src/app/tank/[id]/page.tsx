@@ -15,7 +15,7 @@ import { useLivestockScanSession } from "@/store/use-livestock-scan-session";
 import { useLiveQuery } from "@/db/live";
 import { getTank, deleteTank, updateTank } from "@/db/queries/tanks";
 import { listEquipmentForTank } from "@/db/queries/equipment";
-import { listLivestockForTank, removeLivestock, updateLivestockCount } from "@/db/queries/livestock";
+import { listLivestockForTank, listPlannedLivestockForTank, removeLivestock, updateLivestockCount, markLivestockArrived } from "@/db/queries/livestock";
 import { listPhotosForTank, addPhoto } from "@/db/queries/photos";
 import { listSpecies } from "@/db/queries/species";
 import { listLogEntriesForTank } from "@/db/queries/log-entries";
@@ -50,6 +50,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const { data: tank } = useLiveQuery(() => getTank(id), [id]);
   const { data: equipmentList } = useLiveQuery(() => listEquipmentForTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
+  const { data: plannedLivestock } = useLiveQuery(() => listPlannedLivestockForTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(() => listSpecies(), []);
   const { data: photos } = useLiveQuery(() => listPhotosForTank(id), [id]);
   const { data: journalEntries } = useLiveQuery(() => listLogEntriesForTank(id), [id]);
@@ -394,6 +395,10 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
                 return { key: l.id, imageUri: sp?.imageUri, category: sp?.category };
               })}
             />
+          ) : (plannedLivestock ?? []).length > 0 ? (
+            <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+              {(plannedLivestock ?? []).length} on the wishlist
+            </span>
           ) : (
             <span style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>No fish added yet</span>
           )
@@ -405,7 +410,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           <div style={{ paddingTop: 8, paddingBottom: 4 }}>
             <SecondaryButton onClick={() => setShowAddPopup(true)}>⊕ Add fish</SecondaryButton>
           </div>
-          {aliveLivestock.length === 0 && (
+          {aliveLivestock.length === 0 && (plannedLivestock ?? []).length === 0 && (
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", padding: "6px 0" }}>No fish added yet.</p>
           )}
           {aliveLivestock.map((l) => (
@@ -422,6 +427,44 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
               }}
             />
           ))}
+          {/* Fish saved from the Guided Setup Planner land as real livestock
+              rows with status "planned" (2026-09-06 decision) — never counted
+              as living in the tank until marked arrived, but they were
+              completely invisible on this page (only aliveLivestock rendered
+              here), which is exactly the bug Jaideep hit: "I built and saved
+              a tank, but the fishes did not come under the fishes section." */}
+          {(plannedLivestock ?? []).length > 0 && (
+            <div style={{ marginTop: aliveLivestock.length > 0 ? 12 : 0 }}>
+              <p style={{ fontWeight: 600, fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", padding: "6px 0 2px" }}>
+                On the wishlist — not in the tank yet
+              </p>
+              {(plannedLivestock ?? []).map((l) => {
+                const sp = (allSpecies ?? []).find((s) => s.id === l.speciesId);
+                return (
+                  <div
+                    key={l.id}
+                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderTop: "1px solid var(--color-line-soft)" }}
+                  >
+                    <SpeciesThumb imageUri={sp?.imageUri} category={sp?.category} size={40} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ display: "block", fontSize: "var(--font-body-sm-size)" }}>
+                        {firstName(sp?.commonNames) ?? l.speciesId} {isAiGenerated(sp) && <Chip variant="unverified">AI</Chip>}
+                      </strong>
+                      <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "1px 0 0" }}>
+                        × {l.count} · planned
+                      </p>
+                    </div>
+                    <SecondaryButton
+                      style={{ width: "auto", padding: "6px 12px", flexShrink: 0, fontSize: "var(--font-caption-size)" }}
+                      onClick={() => markLivestockArrived(l.id)}
+                    >
+                      Arrived
+                    </SecondaryButton>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
