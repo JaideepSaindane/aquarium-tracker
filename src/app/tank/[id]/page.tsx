@@ -4,6 +4,7 @@ import { use, useState, type ReactNode, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
+import { TabBar } from "@/components/TabBar";
 import { Banner } from "@/components/Banner";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
@@ -204,6 +205,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   }
 
   return (
+    <>
     <Screen>
       {unlockToast && <DexUnlockToast speciesName={unlockToast} onDismiss={() => setUnlockToast(null)} />}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -596,6 +598,17 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
         </div>
       )}
     </Screen>
+    {/* Jaideep's ask, 2026-09-13: right after saving a new tank, the flow
+        (Add Tank -> Health Check -> here) is several router.replace hops
+        deep, so the header's back arrow doesn't reliably lead to My
+        Tanks — it leads wherever the replace chain started (e.g. back
+        into the onboarding/scan flow). This screen isn't inside the
+        (tabs) route group (it's a pushed detail screen, not a tab
+        destination), so it never got the floating tab bar other screens
+        have — rendering it here directly gives a guaranteed way home
+        regardless of how the user arrived. */}
+    <TabBar />
+    </>
   );
 }
 
