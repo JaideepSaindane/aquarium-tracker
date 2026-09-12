@@ -38,13 +38,6 @@ async function loadHomeData() {
   return { tanks, livestockByTank, profileName: profile?.name };
 }
 
-function greeting(t: ReturnType<typeof useTranslation>): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return t.home.goodMorning;
-  if (hour < 17) return t.home.goodAfternoon;
-  return t.home.goodEvening;
-}
-
 // Tanks list — the app's home screen. Restyled 2026-09-04 to match a
 // reference screenshot Jaideep shared: hero + greeting + search/filter row,
 // and tank cards redesigned with a bigger photo, water-type icon, Planted/CO2
@@ -94,7 +87,7 @@ export default function TanksPage() {
           backdrop for the header. */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <div>
-          <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 2 }}>{greeting(t)},</p>
+          <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 2 }}>{t.home.welcome},</p>
           <h1 style={{ fontSize: "var(--font-heading-size)", color: "var(--soft-ink)" }}>
             {data?.profileName ? data.profileName : t.home.aquarist} 👋
           </h1>
@@ -213,13 +206,21 @@ export default function TanksPage() {
                       border: "none",
                       background: "rgba(255,255,255,0.85)",
                       color: "var(--color-ink)",
-                      fontSize: 16,
                       display: "flex",
+                      flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
+                      gap: 2,
                     }}
                   >
-                    ⋮
+                    {/* The single "⋮" glyph read as an unlabeled blob at this
+                        size in some fonts (Jaideep: "the white bubble on tank
+                        images doesn't convey what it does") — three explicit
+                        dots render reliably as a "more actions" affordance
+                        regardless of font. */}
+                    {[0, 1, 2].map((i) => (
+                      <span key={i} aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: "var(--color-ink)" }} />
+                    ))}
                   </button>
 
                   <Link href={`/tank/${tank.id}`} style={{ display: "block", padding: 12, color: "inherit" }}>
