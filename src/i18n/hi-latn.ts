@@ -383,7 +383,6 @@ const hiLatn: Dictionary = {
     yes: "Haan",
     removeFish: "Fish remove karein",
     water: "Paani",
-    notLogged: "Abhi tak log nahi hua",
   },
   checkPage: {
     waterClarity: "Water clarity",

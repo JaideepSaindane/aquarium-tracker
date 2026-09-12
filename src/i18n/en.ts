@@ -379,7 +379,6 @@ const en = {
     yes: "Yes",
     removeFish: "Remove fish",
     water: "Water",
-    notLogged: "Not logged yet",
   },
   checkPage: {
     waterClarity: "Water clarity",
