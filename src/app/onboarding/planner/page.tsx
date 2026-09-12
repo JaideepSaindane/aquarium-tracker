@@ -604,9 +604,170 @@ export default function OnboardingPlannerPage() {
             </div>
           )}
 
+          {/* Unified "what's needed" report — rewritten 2026-09-12 per Jaideep's direct
+              feedback: the old version was five separate boxy cards (Heater/Filter/
+              Light/Substrate/wishlist) that read as disconnected labels, not a
+              coherent recommendation. This is now one advisor-framed report, with
+              each requirement shown as a single crisp row in the same visual
+              language as the fish-compatibility summary (CompatibilitySummary) —
+              label + one-line verdict, not a paragraph — so it reads as "here's
+              what your tank needs," not a pile of unrelated boxes. */}
+          <Card style={{ marginBottom: 12 }}>
+            <p style={{ fontWeight: 700, marginBottom: 2 }}>🐠 Our AI advisor says</p>
+            <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 8 }}>
+              For your tank, here&apos;s what&apos;s needed:
+            </p>
+
+            {[
+              {
+                icon: "📐",
+                label: "Tank size",
+                text: `${lengthFt}ft ${shape} — ${dims.lengthCm}×${dims.widthCm}×${dims.heightCm}cm, ≈${volumeL}L`,
+              },
+              {
+                icon: "🌡️",
+                label: "Heater",
+                text: plan.heaterWatts == null ? "Not needed — your room stays warm enough" : `${plan.heaterWatts}W`,
+              },
+              { icon: "💧", label: "Filter", text: plan.filter.shopLabel },
+              { icon: "💡", label: "Light", text: `${plan.lighting.wattage}W, ${plan.lighting.level} light` },
+              {
+                icon: "🪨",
+                label: "Substrate",
+                text:
+                  plan.substrate.kind == null
+                    ? "None — bare-bottom"
+                    : `${plan.substrate.kind}, ${plan.substrate.depthCm}cm (~${plan.substrate.approxKg}kg)`,
+              },
+              {
+                icon: "🐟",
+                label: "Fish list",
+                text: picked.length
+                  ? picked.map((p) => firstName(speciesById.get(p.speciesId)?.commonNames ?? null) ?? p.speciesId).join(", ")
+                  : "None yet — add fish above to see what your tank needs",
+              },
+            ].map((row) => (
+              <div
+                key={row.label}
+                style={{ display: "flex", gap: 8, padding: "6px 0", borderTop: "1px solid var(--color-line-soft)" }}
+              >
+                <span style={{ flexShrink: 0, width: 92, fontSize: "var(--font-caption-size)", fontWeight: 700 }}>
+                  {row.icon} {row.label}
+                </span>
+                <span style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-ink)" }}>{row.text}</span>
+              </div>
+            ))}
+
+            {picked.length > 0 && (
+              <div style={{ marginTop: 10, paddingTop: 4 }}>
+                {picked.map((p) => {
+                  const s = speciesById.get(p.speciesId);
+                  return (
+                    <div key={p.speciesId} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={26} />
+                      <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
+                        {firstName(s?.commonNames ?? null) ?? p.speciesId}
+                      </span>
+                      <Chip variant="neutral">planned</Chip>
+                    </div>
+                  );
+                })}
+                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+                  Just choose the fish for now — you&apos;ll pick how many of each after the tank is saved, on its Fish page.
+                </p>
+              </div>
+            )}
+
+            <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--color-line-soft)" }}>
+              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+                {plan.heaterWatts != null &&
+                  (city.trim()
+                    ? `Heater sized for ${city.trim()} — rooms there typically sit around ${tempRange.lowC}°C on winter nights and ${tempRange.highC}°C in summer${plan.roomTempUsed?.source === "city typical" ? "; sized for the winter nights" : ""}. `
+                    : `Heater sized for a room around ${plan.roomTempUsed?.value}°C (${tempSource}). `)}
+                {plan.filter.why} {tier === "planted" ? "Light level is enough for easy plants." : ""}
+              </p>
+              {plan.heaterNote && (
+                <div style={{ marginTop: 6 }}>
+                  <Banner severity="watch">{plan.heaterNote}</Banner>
+                </div>
+              )}
+              <details style={{ marginTop: 8 }}>
+                <summary style={{ cursor: "pointer", fontSize: "var(--font-caption-size)", color: "var(--color-deep)", fontWeight: 600 }}>
+                  Adjust heater sizing for your room
+                </summary>
+                <div style={{ marginTop: 8 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "var(--font-body-sm-size)" }}>
+                    <input
+                      type="checkbox"
+                      checked={useCustomRoomTemp}
+                      onChange={(e) => {
+                        setUseCustomRoomTemp(e.target.checked);
+                        const t = customRoomTemp ? Number(customRoomTemp) : null;
+                        const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
+                        setPlan(
+                          buildSetupPlan({
+                            volumeL,
+                            lengthCm: dims.lengthCm,
+                            widthCm: dims.widthCm,
+                            tier,
+                            hasCo2: false,
+                            speciesRows: rows,
+                            climate,
+                            customRoomTempC: e.target.checked ? t : null,
+                          })
+                        );
+                      }}
+                    />
+                    I know my room&apos;s temperature
+                  </label>
+                  {useCustomRoomTemp && (
+                    <div style={{ marginTop: 8 }}>
+                      <Field
+                        label="Room temperature in winter (°C)"
+                        type="number"
+                        value={customRoomTemp}
+                        onChange={(e) => setCustomRoomTemp(e.target.value)}
+                        placeholder={`e.g. ${tempRange.lowC}`}
+                      />
+                      <SecondaryButton
+                        style={{ width: "auto", padding: "6px 14px", marginTop: 4 }}
+                        onClick={() => {
+                          const t = customRoomTemp ? Number(customRoomTemp) : null;
+                          const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
+                          setPlan(
+                            buildSetupPlan({
+                              volumeL,
+                              lengthCm: dims.lengthCm,
+                              widthCm: dims.widthCm,
+                              tier,
+                              hasCo2: false,
+                              speciesRows: rows,
+                              climate,
+                              customRoomTempC: t,
+                            })
+                          );
+                        }}
+                      >
+                        Update heater size
+                      </SecondaryButton>
+                    </div>
+                  )}
+                </div>
+              </details>
+            </div>
+          </Card>
+
+          <Card style={{ marginBottom: 12 }}>
+            <p style={{ fontWeight: 600, marginBottom: 4 }}>Tank name</p>
+            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={`${lengthFt}ft tank`} />
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
+              {tier === "planted" ? "Planted" : tier === "hardscape" ? "Hardscape" : "Bare-bottom"} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
+            </p>
+          </Card>
+
           {aiPlan && (
             <Card style={{ marginBottom: 12 }}>
-              <p style={{ fontWeight: 600, marginBottom: 6 }}>🐠 The advisor says</p>
+              <p style={{ fontWeight: 600, marginBottom: 6 }}>💡 Care tips &amp; recommendations</p>
               <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8, ...twoLineClamp }}>{aiPlan.summary}</p>
               {aiPlan.stocking_notes.map((n, i) => (
                 <div key={i} style={{ marginBottom: 6 }}>
@@ -683,145 +844,6 @@ export default function OnboardingPlannerPage() {
                   })}
                 </div>
               )}
-            </Card>
-          )}
-
-          <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 600, marginBottom: 4 }}>Tank name</p>
-            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={`${lengthFt}ft tank`} />
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              {tier === "planted" ? "Planted" : tier === "hardscape" ? "Hardscape" : "Bare-bottom"} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
-            </p>
-          </Card>
-
-          <Card style={{ marginBottom: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ fontWeight: 600 }}>🌡️ Heater</p>
-              {plan.heaterWatts == null ? (
-                <Chip variant="improve">Not needed</Chip>
-              ) : (
-                <span style={{ fontWeight: 700 }}>{plan.heaterWatts}W</span>
-              )}
-            </div>
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              {plan.heaterWatts == null
-                ? "Your room stays warm enough that a heater may never switch on."
-                : city.trim()
-                  ? `${city.trim()} rooms typically sit around ${tempRange.lowC}°C on winter nights and ${tempRange.highC}°C in summer${plan.roomTempUsed?.source === "city typical" ? " — the heater is sized for the winter nights" : ""}.`
-                  : `Sized for a room around ${plan.roomTempUsed?.value}°C (${tempSource}).`}
-            </p>
-            {plan.heaterNote && (
-              <div style={{ marginTop: 8 }}>
-                <Banner severity="watch">{plan.heaterNote}</Banner>
-              </div>
-            )}
-            <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, fontSize: "var(--font-body-sm-size)" }}>
-              <input
-                type="checkbox"
-                checked={useCustomRoomTemp}
-                onChange={(e) => {
-                  setUseCustomRoomTemp(e.target.checked);
-                  const t = customRoomTemp ? Number(customRoomTemp) : null;
-                  const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
-                  setPlan(
-                    buildSetupPlan({
-                      volumeL,
-                      lengthCm: dims.lengthCm,
-                      widthCm: dims.widthCm,
-                      tier,
-                      hasCo2: false,
-                      speciesRows: rows,
-                      climate,
-                      customRoomTempC: e.target.checked ? t : null,
-                    })
-                  );
-                }}
-              />
-              I know my room&apos;s temperature
-            </label>
-            {useCustomRoomTemp && (
-              <div style={{ marginTop: 8 }}>
-                <Field
-                  label="Room temperature in winter (°C)"
-                  type="number"
-                  value={customRoomTemp}
-                  onChange={(e) => setCustomRoomTemp(e.target.value)}
-                  placeholder={`e.g. ${tempRange.lowC}`}
-                />
-                <SecondaryButton
-                  style={{ width: "auto", padding: "6px 14px", marginTop: 4 }}
-                  onClick={() => {
-                    const t = customRoomTemp ? Number(customRoomTemp) : null;
-                    const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
-                    setPlan(
-                      buildSetupPlan({
-                        volumeL,
-                        lengthCm: dims.lengthCm,
-                        widthCm: dims.widthCm,
-                        tier,
-                        hasCo2: false,
-                        speciesRows: rows,
-                        climate,
-                        customRoomTempC: t,
-                      })
-                    );
-                  }}
-                >
-                  Update heater size
-                </SecondaryButton>
-              </div>
-            )}
-          </Card>
-
-          <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 600 }}>💧 Filter</p>
-            <p style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, margin: "6px 0 0" }}>{plan.filter.shopLabel}</p>
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>{plan.filter.why}</p>
-          </Card>
-
-          <Card style={{ marginBottom: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ fontWeight: 600 }}>💡 Light</p>
-              <span style={{ fontWeight: 700 }}>{plan.lighting.wattage}W</span>
-            </div>
-            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              {plan.lighting.level} light, ~{plan.lighting.fixtureLengthCm}cm fixture
-              {tier === "planted" ? " — enough for easy plants" : ""}.
-            </p>
-          </Card>
-
-          <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 600 }}>🪨 Substrate</p>
-            {plan.substrate.kind == null ? (
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>None needed for a bare-bottom tank.</p>
-            ) : (
-              <>
-                <p style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, margin: "6px 0 0" }}>{plan.substrate.kind}</p>
-                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>
-                  {plan.substrate.depthCm}cm deep — about {plan.substrate.approxKg}kg for this footprint. {plan.substrate.shopLabel}.
-                </p>
-              </>
-            )}
-          </Card>
-
-          {picked.length > 0 && (
-            <Card style={{ marginBottom: 12 }}>
-              <p style={{ fontWeight: 600, marginBottom: 6 }}>Fish on your wishlist</p>
-              {picked.map((p) => {
-                const s = speciesById.get(p.speciesId);
-                return (
-                  <div key={p.speciesId} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <SpeciesThumb imageUri={s?.imageUri} category={s?.category} size={28} />
-                    <span style={{ flex: 1, fontSize: "var(--font-body-sm-size)" }}>
-                      {firstName(s?.commonNames ?? null) ?? p.speciesId}
-                    </span>
-                    <Chip variant="neutral">planned</Chip>
-                  </div>
-                );
-              })}
-              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-                Just choose the fish for now — you&apos;ll pick how many of each after the tank is saved, on its Fish page.
-              </p>
             </Card>
           )}
 
