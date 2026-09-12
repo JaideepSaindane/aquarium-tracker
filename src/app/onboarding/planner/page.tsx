@@ -283,8 +283,12 @@ export default function OnboardingPlannerPage() {
         }
       }
 
+      // Fish chosen in the planner used to save as status "planned" (a
+      // wishlist, per a 2026-09-06 decision) — Jaideep reversed that
+      // 2026-09-12: fish picked here should just be in the tank, for real,
+      // the moment it's saved, not sitting in a separate wishlist section.
       for (const p of picked) {
-        await addLivestock({ tankId, speciesId: p.speciesId, count: p.count, status: "planned" });
+        await addLivestock({ tankId, speciesId: p.speciesId, count: p.count, status: "alive" });
         await unlockDexCard({ speciesId: p.speciesId, unlockSource: "added_to_tank" }).catch(() => {});
       }
 
