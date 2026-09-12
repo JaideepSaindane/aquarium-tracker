@@ -69,14 +69,27 @@ export function IntroAnimation() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        // Jaideep's reference image (a calm sailboat-on-water scene) as the
-        // backdrop instead of a flat colour, per his ask.
-        background: "var(--color-ground) url(/onboarding/intro-bg.jpg) center / cover no-repeat",
+        background: "var(--color-ground)",
         opacity: fading ? 0 : 1,
         transition: "opacity 300ms ease",
         cursor: "pointer",
       }}
     >
+      {/* A CSS background-image on this div loaded noticeably later than
+          the Lottie (the preload scanner doesn't discover url()s inside an
+          inline style attribute, so the fetch only started once React had
+          hydrated and painted) — an <img> with fetchPriority="high" is
+          discovered immediately in the initial HTML and fetched ahead of
+          the animation's own JS/JSON, so Jaideep's reference photo is
+          already on screen before the fish starts jumping. */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- fixed full-bleed backdrop, not a Next/Image-optimizable content image */}
+      <img
+        src="/onboarding/intro-bg.jpg"
+        alt=""
+        fetchPriority="high"
+        decoding="sync"
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: -1 }}
+      />
       {/* Jaideep: "move the fish jumping animation lower on the screen -
           bottom 2/3rd" — a top spacer twice the height of the bottom one
           pushes the animation's centre down to roughly the two-thirds
