@@ -130,6 +130,14 @@ export type SeedSpecies = {
   dex?: { rarity?: string; tier?: number };
   /** Bundled static reference photo, e.g. "/species/betta.jpg" — see the schema comment on `imageUri`. */
   image?: string;
+  /**
+   * Set only on seed entries whose care numbers were AI-drafted from general
+   * knowledge rather than a checked source (2026-09-12 placeholder-catalog
+   * fill) — surfaced as the same "not yet reviewed" disclosure the app
+   * already shows for user-added AI-generated species. Absent/undefined for
+   * every hand-researched seed entry.
+   */
+  uncertainty_note?: string;
 };
 
 /**
@@ -174,6 +182,7 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
         incompatibleWith: JSON.stringify(s.incompatible_with ?? []),
         disputed: s.disputed,
         origin: "seed",
+        uncertaintyNote: s.uncertainty_note,
         dexRarity: s.dex?.rarity,
         dexTier: s.dex?.tier,
         imageUri: s.image,
@@ -221,6 +230,7 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
           commonMistakes: JSON.stringify(s.common_mistakes ?? []),
           incompatibleWith: JSON.stringify(s.incompatible_with ?? []),
           disputed: s.disputed,
+          uncertaintyNote: s.uncertainty_note,
           dexRarity: s.dex?.rarity,
           dexTier: s.dex?.tier,
           imageUri: s.image,
