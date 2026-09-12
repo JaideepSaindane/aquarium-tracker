@@ -36,6 +36,8 @@ const en = {
   },
   home: {
     title: "My Tanks",
+    couldntLoadTanks: "Couldn't load your tanks. Check your connection and try again.",
+    tryAgain: "Try again",
     newTank: "+ New tank",
     noTanksYet: "No tanks yet. Scan a tank to set one up in a couple of minutes.",
     emptyHeading: "Let's get your first tank set up",

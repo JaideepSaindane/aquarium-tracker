@@ -40,6 +40,8 @@ const hiLatn: Dictionary = {
   },
   home: {
     title: "Mere Tanks",
+    couldntLoadTanks: "Aapke tanks load nahi ho paye. Apna connection check karke phir try karein.",
+    tryAgain: "Phir try karein",
     newTank: "+ Naya tank",
     noTanksYet: "Abhi koi tank nahi hai. Ek tank scan karke chand minute mein set up karein.",
     emptyHeading: "Chaliye aapka pehla tank set up karte hain",

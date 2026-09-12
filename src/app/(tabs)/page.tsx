@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
+import { Banner } from "@/components/Banner";
 import { TankThumbnail } from "@/components/TankThumbnail";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { Status } from "@/components/Status";
 import { ListRow } from "@/components/ListRow";
 import { FirstTankTour } from "@/components/FirstTankTour";
-import { useLiveQuery } from "@/db/live";
+import { useLiveQuery, notifyChanged } from "@/db/live";
 import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listAllAliveLivestock } from "@/db/queries/livestock";
 import { listSpecies } from "@/db/queries/species";
@@ -49,7 +50,7 @@ async function loadHomeData() {
 // app-wide, so every tank now just shows a plain "Healthy" badge.
 export default function TanksPage() {
   const router = useRouter();
-  const { data, loading } = useLiveQuery(loadHomeData, []);
+  const { data, loading, error } = useLiveQuery(loadHomeData, []);
   const tanks = data?.tanks;
   const t = useTranslation();
   const [query, setQuery] = useState("");
@@ -111,6 +112,22 @@ export default function TanksPage() {
           ⚙️
         </Link>
       </div>
+
+      {/* Real bug fix, 2026-09-13 (Jaideep: "I signed in... the page is
+          stuck and I dont see anything") — a failed load (most often a
+          transient 401 right after sign-in, before the session cookie is
+          fully live server-side) used to leave this screen permanently
+          blank with no error and nothing to tap. useLiveQuery now retries
+          once automatically and only surfaces this banner if that retry
+          also fails, with a manual retry action. */}
+      {error != null && !loading && (
+        <div style={{ marginBottom: 16 }}>
+          <Banner severity="fixNow">{t.home.couldntLoadTanks}</Banner>
+          <div style={{ marginTop: 8 }}>
+            <SecondaryButton onClick={() => notifyChanged()}>{t.home.tryAgain}</SecondaryButton>
+          </div>
+        </div>
+      )}
 
       {/* A search box is dead weight when every tank already fits on screen
           at a glance — only earns its place once there's enough to actually
