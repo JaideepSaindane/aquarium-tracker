@@ -44,3 +44,22 @@
   color: var(--color-fix-now);
   border-color: var(--color-fix-now);
 }
+
+/* Text-only tier (Section 2) — no fill, no border, aqua text. Still a real
+   ≥44px tap target (min-height is on .button, unaffected by this variant),
+   just no visual weight beyond the text itself. */
+.tertiary {
+  background: transparent;
+  color: var(--color-deep);
+  border-color: transparent;
+  box-shadow: none;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+/* Opt out of the full-width default (Section 2: "not every action should
+   be a giant pill" — the visual size should match the action's importance,
+   which needs the button to size to its content, not stretch to fill). */
+.inline {
+  width: auto;
+}

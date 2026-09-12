@@ -37,6 +37,22 @@
   border-color: var(--color-fix-now);
 }
 
+.select {
+  appearance: none;
+  /* A visible caret so a select doesn't read as a plain text input —
+     drawn with currentColor via a data-URI so it follows --color-ink in
+     both themes without a second hardcoded hex. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%239BA9A8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-md) center;
+  padding-right: var(--space-xxl);
+}
+
+.textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
 .error {
   font-size: var(--font-caption-size);
   line-height: var(--font-caption-line);

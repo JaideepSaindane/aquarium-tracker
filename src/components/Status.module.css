@@ -1,0 +1,63 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.headline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* The dot only ever needs a background fill — colouring its (empty) text
+   too was harmless on its own, but sharing the same variant classes with
+   .label below meant the label's own text colour and background-color
+   were both set to the same hue, painting a solid block over the label
+   text instead of a small coloured dot next to readable text. Split into
+   dedicated dot/label variant classes so each element only gets the one
+   property it actually needs. */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: var(--font-body-size);
+  font-weight: 700;
+}
+
+.explanation {
+  margin: 0;
+  padding-left: calc(8px + var(--space-sm));
+  font-size: var(--font-body-sm-size);
+  color: var(--color-ink-muted);
+}
+
+.dotImprove {
+  background-color: var(--color-improve);
+}
+.dotWatch {
+  background-color: var(--color-watch);
+}
+.dotFixNow {
+  background-color: var(--color-fix-now);
+}
+.dotNeutral {
+  background-color: var(--color-neutral);
+}
+
+.labelImprove {
+  color: var(--color-improve);
+}
+.labelWatch {
+  color: var(--color-watch);
+}
+.labelFixNow {
+  color: var(--color-fix-now);
+}
+.labelNeutral {
+  color: var(--color-neutral);
+}

@@ -1,28 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 import { SeverityCard } from "@/components/SeverityCard";
 import { Chip } from "@/components/Chip";
-import { Field } from "@/components/Field";
-import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
+import { Field, SelectField, TextAreaField } from "@/components/Field";
+import { PrimaryButton, SecondaryButton, DangerButton, TextButton } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { EmptyState } from "@/components/EmptyState";
 import { Confidence } from "@/components/Confidence";
 import { GroundingLink } from "@/components/GroundingLink";
+import { ListRow } from "@/components/ListRow";
+import { Status } from "@/components/Status";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import { ChoiceCard } from "@/components/ChoiceCard";
 
 // T-010 acceptance criterion 3: every shared component, in both themes, for
 // eyeballing. Not linked from the app nav — visit /dev/components directly.
 export default function ComponentsDevPage() {
   const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
   const [dismissed, setDismissed] = useState(false);
+  const [segment, setSegment] = useState("cm");
+  const [choice, setChoice] = useState("planted");
+
+  // The token system's light override is `:root[data-theme="light"]` (set
+  // on <html> by the real ThemeProvider) — this dev-only preview toggle
+  // needs to set the attribute in the same place, not on a wrapper div a
+  // few levels below :root, or the light override never actually matches.
+  useEffect(() => {
+    if (theme === "system") {
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+    return () => {
+      document.documentElement.removeAttribute("data-theme");
+    };
+  }, [theme]);
 
   return (
-    <div
-      data-theme={theme === "system" ? undefined : theme}
-      style={{ minHeight: "100dvh", background: "var(--color-ground)" }}
-    >
+    <div style={{ minHeight: "100dvh", background: "var(--color-ground)" }}>
       <Screen>
         <h1 style={{ fontSize: "var(--font-title-size)" }}>Component gallery</h1>
         <div style={{ display: "flex", gap: 8, margin: "12px 0 24px" }}>
@@ -64,6 +82,13 @@ export default function ComponentsDevPage() {
           <Field label="Tank length (cm)" placeholder="60" />
           <div style={{ height: 8 }} />
           <Field label="City" error="This field is required" />
+          <div style={{ height: 8 }} />
+          <SelectField label="Water type" defaultValue="fresh">
+            <option value="fresh">Freshwater</option>
+            <option value="brackish">Brackish</option>
+          </SelectField>
+          <div style={{ height: 8 }} />
+          <TextAreaField label="Notes" placeholder="Anything worth remembering about this tank..." />
         </Section>
 
         <Section title="Buttons">
@@ -71,7 +96,54 @@ export default function ComponentsDevPage() {
             <PrimaryButton>Primary action</PrimaryButton>
             <SecondaryButton>Secondary action</SecondaryButton>
             <DangerButton>Delete tank</DangerButton>
+            <TextButton>Text / tertiary action</TextButton>
           </div>
+        </Section>
+
+        <Section title="SegmentedControl">
+          <SegmentedControl
+            value={segment}
+            onChange={setSegment}
+            options={[
+              { value: "cm", label: "cm" },
+              { value: "ft", label: "ft" },
+            ]}
+          />
+        </Section>
+
+        <Section title="ChoiceCard">
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <ChoiceCard
+              selected={choice === "planted"}
+              onClick={() => setChoice("planted")}
+              icon="🌿"
+              title="Planted"
+              subtitle="Live plants, aquasoil substrate"
+            />
+            <ChoiceCard
+              selected={choice === "bare"}
+              onClick={() => setChoice("bare")}
+              icon="🪵"
+              title="Bare-bottom"
+              subtitle="No substrate, easiest to clean"
+            />
+          </div>
+        </Section>
+
+        <Section title="Status">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <Status variant="improve" label="Healthy" explanation="4 key parameters look good" />
+            <Status variant="watch" label="Needs attention" explanation="Ammonia hasn't been checked recently" />
+            <Status variant="fixNow" label="Critical" explanation="Ammonia reading is dangerously high" />
+          </div>
+        </Section>
+
+        <Section title="ListRow">
+          <Card>
+            <ListRow icon="🐟" label="Fish" meta="6 species" showChevron onClick={() => {}} />
+            <ListRow icon="📷" label="Photos" meta="12 photos" showChevron onClick={() => {}} />
+            <ListRow icon="📓" label="Journal" meta="3 entries" showChevron onClick={() => {}} />
+          </Card>
         </Section>
 
         <Section title="Banner">

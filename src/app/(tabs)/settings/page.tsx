@@ -11,6 +11,7 @@ import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Butto
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { APP_NAME } from "@/constants/app";
 import { ensureDb } from "@/db/client";
 import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob } from "@/lib/export";
@@ -363,51 +364,27 @@ export default function SettingsPage() {
         <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.appSettings}</h2>
 
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "12px 0 6px" }}>{t.settings.languageTitle}</p>
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-          {(["en", "hi-latn"] as Locale[]).map((l) => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => setLocale(l)}
-              style={{
-                flex: 1,
-                padding: "8px 12px",
-                borderRadius: 8,
-                border: "1px solid var(--color-line)",
-                background: locale === l ? "var(--color-deep)" : "transparent",
-                color: locale === l ? "#fff" : "var(--color-ink)",
-                fontWeight: 600,
-                fontSize: "var(--font-caption-size)",
-              }}
-            >
-              {l === "en" ? t.settingsPage.english : t.settingsPage.hinglish}
-            </button>
-          ))}
+        <div style={{ marginBottom: 16 }}>
+          <SegmentedControl
+            value={locale}
+            onChange={(l) => setLocale(l as Locale)}
+            options={[
+              { value: "en", label: t.settingsPage.english },
+              { value: "hi-latn", label: t.settingsPage.hinglish },
+            ]}
+          />
         </div>
 
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "0 0 6px" }}>{t.settingsPage.appearance}</p>
-        <div style={{ display: "flex", gap: 8 }}>
-          {(["system", "light", "dark"] as ThemeChoice[]).map((th) => (
-            <button
-              key={th}
-              type="button"
-              onClick={() => setTheme(th)}
-              style={{
-                flex: 1,
-                padding: "8px 12px",
-                borderRadius: 8,
-                border: "1px solid var(--color-line)",
-                background: theme === th ? "var(--color-deep)" : "transparent",
-                color: theme === th ? "#fff" : "var(--color-ink)",
-                fontWeight: 600,
-                fontSize: "var(--font-caption-size)",
-                textTransform: "capitalize",
-              }}
-            >
-              {th === "system" ? t.settingsPage.themeSystem : th === "light" ? t.settingsPage.themeLight : t.settingsPage.themeDark}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          value={theme}
+          onChange={(th) => setTheme(th as ThemeChoice)}
+          options={[
+            { value: "system", label: t.settingsPage.themeSystem },
+            { value: "light", label: t.settingsPage.themeLight },
+            { value: "dark", label: t.settingsPage.themeDark },
+          ]}
+        />
       </Card>
 
       {/* Your plan */}
