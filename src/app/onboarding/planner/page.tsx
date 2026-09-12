@@ -340,7 +340,7 @@ export default function OnboardingPlannerPage() {
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={() => setStep(3)}>Next — how big?</PrimaryButton>
+            <PrimaryButton onClick={() => setStep(3)}>Next — Tank size</PrimaryButton>
             <SecondaryButton onClick={() => setStep(1)}>Back</SecondaryButton>
           </>
         }
