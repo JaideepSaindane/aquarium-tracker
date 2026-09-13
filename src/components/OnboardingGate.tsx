@@ -24,11 +24,17 @@ import { getProfile } from "@/db/queries/profile";
  * real content (My Tanks, with its placeholder "Welcome, Aquarist" before
  * the profile loads) rendered and was visible for a moment before this
  * gate's async profile check resolved and redirected to /onboarding. This
- * withholds `children` until the check finishes, showing nothing (the
- * layout still paints its own chrome) rather than a flash of the wrong
- * screen — the same "don't show real content before you know which
- * screen it should be" principle DbBootProvider already applies to the
- * whole app's boot.
+ * withholds `children` until the check finishes — the same "don't show
+ * real content before you know which screen it should be" principle
+ * DbBootProvider already applies to the whole app's boot.
+ *
+ * Shows the same "Loading..." treatment as DbBootProvider's own boot
+ * screen while withheld (not a bare `null`) — Jaideep hit the withheld
+ * state itself read as a second real bug the same day: with nothing on
+ * screen, the page body's own near-black ground colour (the app's dark
+ * default) showed through with zero indication anything was happening,
+ * described as "a blank black thing" between the onboarding flow and My
+ * Tanks appearing.
  */
 export function OnboardingGate({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -51,6 +57,12 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!ready) return null;
+  if (!ready) {
+    return (
+      <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-ground)" }}>
+        <p style={{ color: "var(--color-ink-muted)" }}>Loading...</p>
+      </div>
+    );
+  }
   return <>{children}</>;
 }

@@ -149,6 +149,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const aliveLivestock = (livestock ?? []).filter((l) => l.status === "alive");
   const schoolingWarnings = checkSchoolingMinimums(aliveLivestock, speciesById);
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
+  const isFirstFish = aliveLivestock.length === 0;
 
   const initialAliveIds = new Set((initialAliveRef.current ?? []).map((r) => r.id));
   const existingRows = aliveLivestock.filter((l) => initialAliveIds.has(l.id));
@@ -293,28 +294,40 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
                 {selectedSpecies && isAiGenerated(selectedSpecies) && <Chip variant="unverified">{t.livestockSearchPage.aiGenerated}</Chip>}
               </p>
               <Field label={t.livestockScanPage.count} type="number" value={count} onChange={(e) => setCount(e.target.value)} />
-              <div style={{ height: 8 }} />
-              {showNickname || nickname ? (
-                <Field label={t.livestockPage.nicknameOptional} value={nickname} onChange={(e) => setNickname(e.target.value)} autoFocus={showNickname} />
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowNickname(true)}
-                  style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0 }}
-                >
-                  + {t.livestockPage.giveItANickname}
-                </button>
+
+              {/* Nickname and the compatibility summary (which only has
+                  anything to compare against once there's an existing fish)
+                  are real clutter for the very first fish going into a brand
+                  new tank — Jaideep hit this right after onboarding and
+                  asked to simplify it. Both come back once the tank has at
+                  least one fish, when they're actually useful. */}
+              {!isFirstFish && (
+                <>
+                  <div style={{ height: 8 }} />
+                  {showNickname || nickname ? (
+                    <Field label={t.livestockPage.nicknameOptional} value={nickname} onChange={(e) => setNickname(e.target.value)} autoFocus={showNickname} />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowNickname(true)}
+                      style={{ background: "none", border: "none", color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0 }}
+                    >
+                      + {t.livestockPage.giveItANickname}
+                    </button>
+                  )}
+                  <div style={{ height: 12 }} />
+
+                  {tank && selectedSpecies && (
+                    <CompatibilitySummary
+                      tank={tank}
+                      species={selectedSpecies}
+                      existingSpecies={aliveLivestock.map((l) => speciesById.get(l.speciesId)).filter((s): s is SpeciesRow => !!s)}
+                    />
+                  )}
+                </>
               )}
+
               <div style={{ height: 12 }} />
-
-              {tank && selectedSpecies && (
-                <CompatibilitySummary
-                  tank={tank}
-                  species={selectedSpecies}
-                  existingSpecies={aliveLivestock.map((l) => speciesById.get(l.speciesId)).filter((s): s is SpeciesRow => !!s)}
-                />
-              )}
-
               <PrimaryButton onClick={handleConfirmAdd}>{t.dexDetailPage.addToTank}</PrimaryButton>
             </div>
           )}
@@ -330,7 +343,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
         <div style={{ marginBottom: 16 }}>
           <p style={{ fontWeight: 600, marginBottom: 8, color: "var(--color-deep)" }}>{t.livestockScanPage.addedJustNow}</p>
           {newRows.map((l) => (
-            <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} />
+            <LivestockRow key={l.id} livestock={l} species={speciesById.get(l.speciesId)} simplified />
           ))}
         </div>
       )}
@@ -406,9 +419,12 @@ function PlannedLivestockRow({
 function LivestockRow({
   livestock,
   species,
+  simplified,
 }: {
   livestock: { id: string; speciesId: string; count: number; nickname: string | null; addedOn: string };
   species: SpeciesRow | undefined;
+  /** For a fish added moments ago in this same visit — Record Death/View Timeline are meaningless for something added seconds ago, so just offer a plain Remove (undo a mistake) instead of the full "••• Manage" menu. Jaideep asked to cut this clutter from the screen right after onboarding. */
+  simplified?: boolean;
 }) {
   const t = useTranslation();
   const [editingCount, setEditingCount] = useState(false);
@@ -463,7 +479,15 @@ function LivestockRow({
         )}
       </div>
 
-      {!showActions ? (
+      {simplified ? (
+        <button
+          type="button"
+          onClick={() => removeLivestock(livestock.id)}
+          style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontWeight: 600, fontSize: "var(--font-caption-size)", padding: 0, marginTop: 8 }}
+        >
+          {t.common.remove}
+        </button>
+      ) : !showActions ? (
         <button
           type="button"
           onClick={() => setShowActions(true)}
@@ -485,7 +509,7 @@ function LivestockRow({
         </div>
       )}
 
-      {showTimeline && (
+      {!simplified && showTimeline && (
         <div style={{ marginTop: 8, borderTop: "1px solid var(--color-line)", paddingTop: 8 }}>
           {(events ?? []).map((e) => (
             <div key={e.id} style={{ display: "flex", gap: 8, marginBottom: 6, fontSize: "var(--font-body-sm-size)" }}>

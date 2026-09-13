@@ -212,7 +212,7 @@ export default function ScanCapturePage() {
         <Card>
           {previewUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
-            <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 8 }} />
+            <img src={previewUrl} alt="" style={{ width: "100%", height: 180, objectFit: "cover", borderRadius: 8, marginBottom: 8 }} />
           )}
           <p>{t.scanPage.checkingPhoto}</p>
         </Card>
@@ -222,7 +222,7 @@ export default function ScanCapturePage() {
         <div>
           {previewUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
-            <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 12 }} />
+            <img src={previewUrl} alt="" style={{ width: "100%", height: 180, objectFit: "cover", borderRadius: 8, marginBottom: 12 }} />
           )}
           {uploadError && (
             <div style={{ marginBottom: 8 }}>
@@ -241,7 +241,7 @@ export default function ScanCapturePage() {
         <div>
           {previewUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
-            <img src={previewUrl} alt="" style={{ width: "100%", borderRadius: 8, marginBottom: 12 }} />
+            <img src={previewUrl} alt="" style={{ width: "100%", height: 180, objectFit: "cover", borderRadius: 8, marginBottom: 12 }} />
           )}
           <Card>
             <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.scanPage.twoQuickQuestions}</p>
