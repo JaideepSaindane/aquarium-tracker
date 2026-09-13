@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IntroAnimation } from "@/components/IntroAnimation";
-import { saveProfile } from "@/db/queries/profile";
+import { getProfile, saveProfile } from "@/db/queries/profile";
 import { useTranslation } from "@/i18n/use-translation";
 import { hasIntroPlayedThisSession } from "@/lib/intro-session";
 import styles from "./onboarding.module.css";
@@ -49,6 +49,13 @@ import styles from "./onboarding.module.css";
  * push, never a real per-visitor server render, so that default is only a
  * fallback) so a deliberate "Start over" from Settings — which clears the
  * session flag first — still replays it.
+ *
+ * The Name field prefills from the profile (2026-09-13) — Jaideep signed
+ * up with Google and expected to see the name Google already gave the app
+ * (src/auth.ts seeds the profile row with it on a fresh Google sign-up)
+ * show up here, not just on the Settings profile screen later. Only ever
+ * fills an empty field — if the fetch resolves after the user has already
+ * started typing, their input wins.
  */
 export default function OnboardingPage() {
   const router = useRouter();
@@ -56,6 +63,12 @@ export default function OnboardingPage() {
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const [showIntro] = useState(() => typeof window === "undefined" || !hasIntroPlayedThisSession());
+
+  useEffect(() => {
+    getProfile().then((p) => {
+      if (p?.name) setName((current) => current || p.name || "");
+    });
+  }, []);
 
   async function handleContinue() {
     setSaving(true);

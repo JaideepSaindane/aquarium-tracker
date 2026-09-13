@@ -30,8 +30,9 @@ export function DexUnlockToast({ speciesName, onDismiss }: { speciesName: string
         <div style={{ display: "flex", justifyContent: "center" }}>
           <LottiePlayer name="unlock" loop={false} size={96} respectReducedMotion />
         </div>
-        <p style={{ fontWeight: 700, fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Dex card unlocked!</p>
-        <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>{speciesName}</p>
+        <p style={{ fontWeight: 700, fontSize: "var(--font-heading-size)", marginBottom: 4 }}>Species unlocked!</p>
+        <p style={{ fontWeight: 600, marginBottom: 2 }}>{speciesName}</p>
+        <p style={{ color: "var(--color-ink-muted)", marginBottom: 16, fontSize: "var(--font-caption-size)" }}>You can see its care details anytime in Discover.</p>
         <PrimaryButton onClick={onDismiss}>Nice!</PrimaryButton>
       </div>
     </div>
