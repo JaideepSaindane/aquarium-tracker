@@ -1,7 +1,7 @@
 # UI/UX Redesign — Execution Plan
 
 **Source brief:** `docs/08-ui-redesign-brief.md` (Jaideep's consolidated redesign strategy, shared 2026-09-12 — read it before starting any section).
-**Status:** Sections 0–8 complete (2026-09-12/13). Section 9 (Profile + Settings) was built then reverted at Jaideep's request — he preferred the previous Settings page; do not redo it without him asking again. Next: Section 10 (Final polish). Work the sections in order, one at a time — Jaideep says "do Section N".
+**Status:** Sections 0–8 complete (2026-09-12/13). Section 9 (Profile + Settings) was built, reverted, then partially restored at Jaideep's request: the Profile card (avatar + name, "Edit profile ›" row) and its `/settings/edit-profile` subpage stay; everything else from Section 9 (list-based Preferences/Account rows, the six other subpages, the red-bordered Danger zone) is reverted back to the original single-page Settings screen. Do not redo the rest of Section 9 without him asking again. Next: Section 10 (Final polish). Work the sections in order, one at a time — Jaideep says "do Section N".
 **Log every completed section in `specs/PROGRESS.md`**, same as any task.
 
 ---
