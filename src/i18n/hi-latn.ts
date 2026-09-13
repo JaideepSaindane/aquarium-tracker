@@ -233,7 +233,6 @@ const hiLatn: Dictionary = {
     minVolume: "{v}L minimum",
     hearPronounced: '"{name}" ka pronunciation sunein',
     aiGeneratedProvisional: "AI-generated — provisional",
-    lockedAddToUnlock: "Locked — unlock karne ke liye ek tank mein add karein",
     keptSince: "Se rakha hua hai:",
     aiGeneratedCardNote: "Ye card AI dwara generate kiya gaya hai, abhi kisi insaan ne review nahi kiya hai. ",
     aiDraftedNumbersNote: "Is species ke care numbers general knowledge se AI-drafted hain, kisi named source se check nahi kiye gaye. ",

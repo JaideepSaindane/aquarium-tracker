@@ -121,7 +121,6 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
 
   if (!species) return <Screen background="var(--soft-bg)">{t.common.loading}</Screen>;
 
-  const unlocked = !!card;
   const commonNames = parseArray(species.commonNames);
   const name = commonNames[0] ?? species.id;
   const icon = CATEGORY_ICON[species.category ?? ""] ?? "❓";
@@ -263,7 +262,6 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
           </span>
         )}
         {isAiGenerated(species) && <Chip variant="unverified">{t.dexDetailPage.aiGeneratedProvisional}</Chip>}
-        {!unlocked && <Chip variant="neutral">{t.dexDetailPage.lockedAddToUnlock}</Chip>}
       </div>
 
       <div
@@ -281,10 +279,9 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
           justifyContent: "center",
           overflow: "hidden",
           marginBottom: 16,
-          filter: unlocked ? "none" : "grayscale(100%)",
         }}
       >
-        {unlocked && species.imageUri ? (
+        {species.imageUri ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={species.imageUri} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
