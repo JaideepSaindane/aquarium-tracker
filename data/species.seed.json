@@ -12962,6 +12962,7 @@
     "id": "white-seam-bristlenose",
     "scientific_name": "Ancistrus dolichopterus",
     "common_names": [
+      "Starlight Pleco",
       "White Seam Bristlenose",
       "Starlight",
       "L183"
@@ -13000,7 +13001,7 @@
     "inat_wikipedia_url": "http://en.wikipedia.org/wiki/Bushymouth_catfish",
     "inat_class_ok": true,
     "inat_ancestry": "48460/1/2/355675/47178/1543570/49175/1303577/85876/788573/86457",
-    "preferred_common_name": "Starlight Bristlenose Catfish",
+    "preferred_common_name": "Starlight Pleco",
     "resolution_status": "ok",
     "wikipedia_title": "Bushymouth catfish",
     "wikipedia_url": "https://en.wikipedia.org/wiki/Bushymouth_catfish",
