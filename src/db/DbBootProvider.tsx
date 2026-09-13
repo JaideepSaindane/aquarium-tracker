@@ -12,7 +12,7 @@ import { getSpeciesSeedVersion, setSpeciesSeedVersion } from "./queries/settings
 // installs should pick up (new species, corrected care data, or — the bug
 // this version marker was added to fix — new `imageUri` values). A device
 // that seeded species before this existed reseeds once, then stores "2".
-const SPECIES_SEED_VERSION = "3";
+const SPECIES_SEED_VERSION = "4";
 
 // Ids the seed file used to define but no longer does, retired on the
 // SPECIES_SEED_VERSION bump that made the change — e.g. "ram-cichlid" was

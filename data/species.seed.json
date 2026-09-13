@@ -13039,30 +13039,7 @@
       "hardness_dgh": "genus-inherited from Ancistrus cf. cirrhosus",
       "lifespan_years": "genus-inherited from Ancistrus cf. cirrhosus",
       "min_volume_l": "derived:tank-volume (size 14.5cm -> 150L (no modifiers))"
-    },
-    "images": [
-      {
-        "source": "wikipedia:lead",
-        "source_url": "https://upload.wikimedia.org/wikipedia/commons/6/62/Ancistrus_dolichopterus_Kner%2C_1854_type.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-        "source_page": "https://en.wikipedia.org/wiki/Bushymouth_catfish",
-        "license": null,
-        "attribution": null,
-        "original_width": 1963,
-        "original_height": 1753,
-        "dhash": "00327353084b1f10",
-        "score": 7.77,
-        "skin_fraction": 0,
-        "colourfulness": 0,
-        "candidates_examined": 5,
-        "files": {
-          "full": "full/white-seam-bristlenose.jpg",
-          "card": "card/white-seam-bristlenose.jpg",
-          "thumb": "thumb/white-seam-bristlenose.jpg"
-        },
-        "stored_width": 1963,
-        "stored_height": 1753
-      }
-    ]
+    }
   },
   {
     "id": "honeycomb-bristlenose",
