@@ -65,6 +65,17 @@
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 20px;
 
+  /* A second "loud accent" experiment on Home (2026-09-13), same idea as
+     the first (now reverted) aqua-everywhere pass, but pulled from a
+     reference image Jaideep shared — a dusk sailboat scene (deep navy sky/
+     water, a steel-blue mid-tone, and a pale moonlit cream). Kept as its
+     own token trio rather than overwriting --color-deep/--color-accent, so
+     this stays a Home-only, easily-revertable experiment exactly like the
+     one before it, not a change to the app's actual brand colour. */
+  --sail-accent: #1e3f61;
+  --sail-accent-soft: #e8e1cd;
+  --sail-on-accent: #f4ecd8;
+
   /* The bottom nav is a plain, quiet, mostly-opaque bar — but still needs to
      read as its own surface floating over the page, not vanish into it.
      Jaideep, 2026-09-13: "in dark mode, it is not very visible" — the
