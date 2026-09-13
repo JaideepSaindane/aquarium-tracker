@@ -4,21 +4,36 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/i18n/use-translation";
-import { AquaIcon, type AquaIconName } from "@/components/icons/AquaIcon";
 import styles from "./TabBar.module.css";
 
-const TABS: { href: string; icon: AquaIconName; key: "dex" | "tanks" | "ask" | "community" | "profile"; center?: boolean }[] = [
-  { href: "/dex", icon: "dex", key: "dex" },
-  { href: "/", icon: "tanks", key: "tanks" },
-  { href: "/ask", icon: "ask-aqua", key: "ask", center: true },
-  { href: "/community", icon: "community", key: "community" },
-  { href: "/settings", icon: "profile", key: "profile" },
+const TABS: { href: string; key: "dex" | "tanks" | "ask" | "community" | "profile" }[] = [
+  { href: "/dex", key: "dex" },
+  { href: "/", key: "tanks" },
+  { href: "/ask", key: "ask" },
+  { href: "/community", key: "community" },
+  { href: "/settings", key: "profile" },
 ];
 
 const BOTTOM_HIDE_PX = 24; // collapse once within this many px of the true bottom of the page
 const BOTTOM_SHOW_PX = 64; // reappear once this far from the bottom (hysteresis, avoids flicker right at the edge)
 
-/** Persistent bottom tab bar: Home, Dex, Ask Aqua, Community, My Profile. The "tanks" tab (key kept for its route/icon, `/`) is labelled "Home" — Jaideep renamed it from "My Tanks" 2026-09-13; a separate cross-tank-calendar "Home" tab was removed entirely back on 2026-09-04 (that calendar wasn't earning its slot), unrelated to this label. Ask AquaAI moved from a floating button (see git history — FloatingAskButton was removed 2026-09-10) into a centered tab per Jaideep's "AI-first" ask, so it's a permanent destination rather than something to discover — initially a raised gradient circle, restyled the same day to a small flat teal icon as part of a wider "quieter, neutral nav" pass (see TabBar.module.css). "My Profile" links to the existing Settings screen — no separate profile screen, just a relabeled/repositioned entry point. Floats like a dock and is visible at all times except right at the very bottom of a page's own content, where it collapses out of the way (2026-09-11, Jaideep: "make the bottom nav always on. Collapse it only when the user reaches the bottom of each page.") — this replaced an earlier scroll-direction-based hide/show (hid on any scroll-down, reappeared on scroll-up), which read as unpredictable compared to this simpler rule. */
+/**
+ * Persistent bottom tab bar: Home, Dex, Ask Aqua, Community, My Profile.
+ * Restyled 2026-09-13 (Jaideep, pointing at a reference mockup: "make the
+ * bottom nav a bit differently coloured... dont keep the bottom nav the
+ * same as now") — dropped the floating rounded glass dock with icon-pill
+ * highlights for the reference's flatter, plainer pattern: a bar attached
+ * flush to the bottom edge (not floating with side margins), plain text
+ * labels only (no icons — the reference has none), and a small dot under
+ * the active label instead of a filled background pill. Kept the app's own
+ * aqua accent for the active state rather than the mockup's navy palette —
+ * this app has one brand colour reserved for exactly this kind of active/
+ * primary state (docs/04-design-system.md), swapping it for a foreign hue
+ * would fight that system rather than follow the mockup's actual point
+ * (a calmer, flatter nav). Still floats via `position: fixed` and still
+ * collapses at the very bottom of a page's own content (2026-09-11 rule),
+ * just without the rounded-corner/side-margin/blur treatment.
+ */
 export function TabBar() {
   const pathname = usePathname();
   const t = useTranslation();
@@ -80,10 +95,8 @@ export function TabBar() {
             className={`${styles.tab} ${active ? styles.tabActive : ""}`}
             aria-current={active ? "page" : undefined}
           >
-            <span className={`${styles.icon} ${tab.center ? styles.iconCenter : ""}`}>
-              <AquaIcon name={tab.icon} size={tab.center ? 18 : 22} />
-            </span>
             <span>{t.tabs[tab.key]}</span>
+            <span className={styles.dot} aria-hidden />
           </Link>
         );
       })}

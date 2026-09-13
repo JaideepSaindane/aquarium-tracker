@@ -65,6 +65,18 @@
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 20px;
 
+  /* A permanently-dark gradient, regardless of light/dark theme — for the
+     Home screen's "featured tank" hero card (2026-09-13, matching the
+     structure of a mockup Jaideep shared: a dark gradient card widget
+     floating on an otherwise light or dark page). Deliberately not derived
+     from --color-deep — in dark mode --color-deep IS the bright brand aqua
+     (paired with dark text elsewhere, per the button convention above),
+     which would fail contrast against the white text this card needs.
+     Defined once here, not redeclared under the light-mode blocks, so it
+     stays this same dark pair in both themes on purpose. */
+  --hero-gradient-start: #123a37;
+  --hero-gradient-end: #071615;
+
   /* The bottom nav is a plain, quiet, mostly-opaque bar — but still needs to
      read as its own surface floating over the page, not vanish into it.
      Jaideep, 2026-09-13: "in dark mode, it is not very visible" — the

@@ -76,6 +76,11 @@ const en = {
     statusNeedsAttention: "Needs attention",
     statusNeedsAttentionExplanation: "{n} equipment check needs a look",
     statusNeedsAttentionExplanationPlural: "{n} equipment checks need a look",
+    heroHeadline: "Let's see your tanks",
+    featuredBadge: "Your tank",
+    viewTank: "View tank →",
+    scanAction: "Scan",
+    statsLine: "{tanks} tanks · {fish} fish",
   },
   settings: {
     title: "My Profile & Settings",

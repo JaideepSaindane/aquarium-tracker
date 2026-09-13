@@ -8,7 +8,6 @@ import { Banner } from "@/components/Banner";
 import { TankThumbnail } from "@/components/TankThumbnail";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
-import { Status } from "@/components/Status";
 import { ListRow } from "@/components/ListRow";
 import { FirstTankTour } from "@/components/FirstTankTour";
 import { useLiveQuery, notifyChanged } from "@/db/live";
@@ -16,6 +15,7 @@ import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listAllAliveLivestock } from "@/db/queries/livestock";
 import { listSpecies } from "@/db/queries/species";
 import { getProfile } from "@/db/queries/profile";
+import { formatVolumeDual } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
 
 type TankLivestockThumb = { speciesId: string; count: number; imageUri?: string | null; category?: string | null };
@@ -43,11 +43,23 @@ async function loadHomeData() {
 // reference screenshot Jaideep shared: hero + greeting + search/filter row,
 // and tank cards redesigned with a bigger photo, water-type icon, Planted/CO2
 // pills, creation date, per-fish circular thumbnails, and a per-card "⋮"
-// quick-actions menu (Edit/Hide/Delete). Bottom nav and the name-based
-// greeting were deliberately kept as-is — Jaideep's call when asked, over
-// switching to the mockup's own nav/persona-title styling. The reminders
-// feature (task-due card/chip) was removed 2026-09-10 — reminders are gone
-// app-wide, so every tank now just shows a plain "Healthy" badge.
+// quick-actions menu (Edit/Hide/Delete). The reminders feature (task-due
+// card/chip) was removed 2026-09-10 — reminders are gone app-wide, so every
+// tank now just shows a plain "Healthy" badge.
+//
+// Restyled again 2026-09-13 against a second reference mockup Jaideep
+// shared (a fintech dashboard: dark gradient "card" widget, a send-action +
+// stat pill row, then a rounded white panel holding a compact transaction
+// list). Translated structurally, not literally — this is a fish-tank
+// tracker, not a bank app, so "Physical Card" becomes the most recently
+// added tank as a featured hero, "Send" becomes "Scan" (the app's actual
+// primary action), and the transaction list becomes the same tank list as
+// before, condensed into compact rows inside one panel instead of separate
+// photo-led cards. Colours stay the app's own token system (one aqua brand
+// colour, reserved for active/primary states) rather than the mockup's navy
+// palette — see tokens.css's new --hero-gradient-* pair for the one
+// deliberate exception (a permanently-dark card, by design, regardless of
+// theme). The bottom nav itself was restyled in TabBar.tsx per the same ask.
 export default function TanksPage() {
   const router = useRouter();
   const { data, loading, error } = useLiveQuery(loadHomeData, []);
@@ -64,6 +76,12 @@ export default function TanksPage() {
       return b.createdAt.localeCompare(a.createdAt);
     });
   const deleteTarget = (tanks ?? []).find((t) => t.id === deleteTargetId);
+
+  // The hero card always features the most recently added tank, independent
+  // of the search box above (which only filters the list panel below it).
+  const featuredTank = (tanks ?? []).length > 0 ? [...(tanks ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] : null;
+  const featuredFishTotal = featuredTank ? (data?.livestockByTank.get(featuredTank.id) ?? []).reduce((sum, l) => sum + l.count, 0) : 0;
+  const totalFishAcrossTanks = (tanks ?? []).reduce((sum, tank) => sum + (data?.livestockByTank.get(tank.id) ?? []).reduce((s, l) => s + l.count, 0), 0);
 
   async function handleHide(tankId: string) {
     setOpenMenuTankId(null);
@@ -129,6 +147,107 @@ export default function TanksPage() {
         </div>
       )}
 
+      {/* Hero: the most recently added tank as a permanently-dark gradient
+          card, plus a quick "Scan" action and a stat pill beside it — the
+          2026-09-13 mockup's "Physical Card" + "Send" + Visa-pill row,
+          translated to this app's own content. */}
+      {featuredTank && (
+        <div style={{ marginBottom: 20 }}>
+          <Link
+            href={`/tank/${featuredTank.id}`}
+            style={{
+              display: "block",
+              borderRadius: "var(--radius-xl)",
+              padding: 20,
+              marginBottom: 12,
+              background: `linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end))`,
+              color: "#fff",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <p style={{ fontSize: "var(--font-caption-size)", color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>{t.home.featuredBadge}</p>
+            <strong style={{ display: "block", fontSize: "var(--font-heading-size)", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {featuredTank.name}
+            </strong>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+              <span style={{ fontSize: "var(--font-display-size, 28px)", fontWeight: 700 }}>{formatVolumeDual(featuredTank.volumeL)}</span>
+            </div>
+            <p style={{ fontSize: "var(--font-body-sm-size)", color: "rgba(255,255,255,0.75)", marginTop: 8 }}>
+              {featuredFishTotal > 0 ? t.home.statusOkExplanation.replace("{n}", String(featuredFishTotal)) : t.home.statusNoFishExplanation}
+            </p>
+            <span
+              aria-hidden
+              style={{
+                position: "absolute",
+                right: -10,
+                bottom: -20,
+                fontSize: 84,
+                opacity: 0.12,
+                lineHeight: 1,
+              }}
+            >
+              🐠
+            </span>
+          </Link>
+
+          <div style={{ display: "flex", gap: 12, alignItems: "stretch" }}>
+            <button
+              onClick={() => router.push("/onboarding/scan")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                width: 76,
+                flexShrink: 0,
+                padding: "12px 0",
+                borderRadius: "var(--radius-lg)",
+                border: "none",
+                background: "var(--color-surface)",
+                boxShadow: "var(--shadow-sm)",
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  background: "var(--color-deep)",
+                  color: "var(--color-surface)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 16,
+                }}
+              >
+                ↗
+              </span>
+              <span style={{ fontSize: "var(--font-caption-size)", fontWeight: 600, color: "var(--soft-ink)" }}>{t.home.scanAction}</span>
+            </button>
+
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                padding: "0 16px",
+                borderRadius: "var(--radius-lg)",
+                background: "var(--color-surface)",
+                boxShadow: "var(--shadow-sm)",
+                color: "var(--soft-ink)",
+                fontWeight: 600,
+                fontSize: "var(--font-body-sm-size)",
+              }}
+            >
+              {t.home.statsLine.replace("{tanks}", String(tanks?.length ?? 0)).replace("{fish}", String(totalFishAcrossTanks))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* A search box is dead weight when every tank already fits on screen
           at a glance — only earns its place once there's enough to actually
           search through. Jaideep's ask, 2026-09-10. */}
@@ -174,16 +293,28 @@ export default function TanksPage() {
 
       {tanks && tanks.length > 0 && (
         <>
-          <div style={{ marginBottom: 10 }}>
-            <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>
+          {/* The "Statistics" panel from the 2026-09-13 mockup — one rounded
+              surface holding a compact row per tank, instead of the earlier
+              stack of separate big-photo cards. Menu (Edit/Hide/Delete) and
+              delete-confirm behaviour are unchanged, just triggered from a
+              plain trailing "⋮" button instead of one floating over a photo. */}
+          <div
+            style={{
+              borderRadius: "var(--radius-xl)",
+              background: "var(--color-surface)",
+              border: "1px solid var(--color-line)",
+              boxShadow: "var(--shadow-sm)",
+              padding: "16px 16px 4px",
+              marginBottom: 20,
+            }}
+          >
+            <p style={{ fontWeight: 700, color: "var(--soft-ink)", marginBottom: 4 }}>
               {t.home.myTanks} <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
             </p>
-          </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
-            {filteredTanks.map((tank) => {
+            {filteredTanks.map((tank, i) => {
               const livestockThumbs = data?.livestockByTank.get(tank.id) ?? [];
-              const visibleThumbs = livestockThumbs.slice(0, 4);
+              const visibleThumbs = livestockThumbs.slice(0, 3);
               const overflowCount = livestockThumbs.length - visibleThumbs.length;
               const isBrackish = tank.waterType === "brackish";
               // Real, honest count — not a deep health analysis (that's
@@ -199,30 +330,93 @@ export default function TanksPage() {
                   key={tank.id}
                   style={{
                     position: "relative",
-                    borderRadius: "var(--radius-lg)",
-                    background: "var(--color-surface)",
-                    border: "1px solid var(--color-line)",
-                    boxShadow: "var(--shadow-sm)",
-                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "12px 0",
+                    borderTop: i === 0 ? "none" : "1px solid var(--color-line-soft)",
                   }}
                 >
-                  <Link href={`/tank/${tank.id}`} style={{ display: "block" }}>
-                    <TankThumbnail photoUri={tank.photoUri} width="100%" height={180} radius="0" />
+                  <Link href={`/tank/${tank.id}`} style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0, color: "inherit", textDecoration: "none" }}>
+                    <TankThumbnail photoUri={tank.photoUri} size={48} radius="var(--radius-md)" />
+
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <strong style={{ display: "block", color: "var(--soft-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {tank.name}
+                      </strong>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                          color: "var(--soft-ink-muted)",
+                          fontSize: "var(--font-caption-size)",
+                          margin: "2px 0 6px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {isBrackish ? t.home.brackish : t.home.freshwater}
+                        {tank.isPlanted && (
+                          <>
+                            <span aria-hidden>·</span>
+                            {t.home.planted}
+                          </>
+                        )}
+                        {tank.hasCo2 ? " · CO₂" : ""}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ display: "flex", gap: 4 }}>
+                          {visibleThumbs.map((l, ti) => (
+                            <SpeciesThumb key={`${l.speciesId}-${ti}`} imageUri={l.imageUri} category={l.category} size={20} />
+                          ))}
+                          {overflowCount > 0 && (
+                            <span
+                              style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: "50%",
+                                background: "var(--soft-bg-alt)",
+                                color: "var(--soft-ink-muted)",
+                                fontSize: 9,
+                                fontWeight: 700,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                              }}
+                            >
+                              +{overflowCount}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <span
+                      style={{
+                        flexShrink: 0,
+                        fontSize: "var(--font-caption-size)",
+                        fontWeight: 700,
+                        color: fishTotal > 0 ? "var(--color-improve)" : "var(--soft-ink-muted)",
+                      }}
+                    >
+                      {fishTotal > 0 ? t.home.statusOk : t.home.statusNoFish}
+                    </span>
                   </Link>
 
                   <button
                     onClick={() => setOpenMenuTankId((cur) => (cur === tank.id ? null : tank.id))}
                     aria-label={`More actions for ${tank.name}`}
                     style={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
+                      flexShrink: 0,
                       width: 28,
                       height: 28,
                       borderRadius: "50%",
                       border: "none",
-                      background: "rgba(255,255,255,0.85)",
-                      color: "var(--color-ink)",
+                      background: "transparent",
+                      color: "var(--soft-ink-muted)",
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -230,95 +424,19 @@ export default function TanksPage() {
                       gap: 2,
                     }}
                   >
-                    {/* The single "⋮" glyph read as an unlabeled blob at this
-                        size in some fonts (Jaideep: "the white bubble on tank
-                        images doesn't convey what it does") — three explicit
-                        dots render reliably as a "more actions" affordance
-                        regardless of font. */}
-                    {[0, 1, 2].map((i) => (
-                      <span key={i} aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: "#000" }} />
+                    {[0, 1, 2].map((dotIndex) => (
+                      <span key={dotIndex} aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: "currentColor" }} />
                     ))}
                   </button>
 
-                  <Link href={`/tank/${tank.id}`} style={{ display: "block", padding: 12, color: "inherit" }}>
-                    <strong style={{ display: "block", color: "var(--soft-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {tank.name}
-                    </strong>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                        color: "var(--soft-ink-muted)",
-                        fontSize: "var(--font-caption-size)",
-                        margin: "4px 0 0",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {isBrackish ? t.home.brackish : t.home.freshwater}
-                      {tank.isPlanted && (
-                        <>
-                          <span aria-hidden>·</span>
-                          {t.home.planted}
-                        </>
-                      )}
-                      {tank.hasCo2 ? " · CO₂" : ""}
-                      {" · "}
-                      {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
-                    </div>
-
-                    {/* Status now always carries a real explanation (the
-                        new Status primitive requires one) — never a bare
-                        "● Healthy" with nothing behind it. */}
-                    <div style={{ marginTop: 8 }}>
-                      <Status
-                        variant={fishTotal > 0 ? "improve" : "neutral"}
-                        label={fishTotal > 0 ? t.home.statusOk : t.home.statusNoFish}
-                        explanation={fishTotal > 0 ? t.home.statusOkExplanation.replace("{n}", String(fishTotal)) : t.home.statusNoFishExplanation}
-                      />
-                    </div>
-
-                    <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
-                      {visibleThumbs.map((l, i) => (
-                        <SpeciesThumb key={`${l.speciesId}-${i}`} imageUri={l.imageUri} category={l.category} size={24} />
-                      ))}
-                      {overflowCount > 0 && (
-                        <span
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: "50%",
-                            background: "var(--soft-bg-alt)",
-                            color: "var(--soft-ink-muted)",
-                            fontSize: 10,
-                            fontWeight: 700,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                          }}
-                        >
-                          +{overflowCount}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-
                   {openMenuTankId === tank.id && (
                     <>
-                      <div
-                        onClick={() => setOpenMenuTankId(null)}
-                        style={{ position: "fixed", inset: 0, zIndex: 29 }}
-                        aria-hidden
-                      />
+                      <div onClick={() => setOpenMenuTankId(null)} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
                       <div
                         style={{
                           position: "absolute",
-                          top: 38,
-                          right: 8,
+                          top: 42,
+                          right: 0,
                           zIndex: 30,
                           background: "var(--color-surface)",
                           border: "1px solid var(--color-line)",
