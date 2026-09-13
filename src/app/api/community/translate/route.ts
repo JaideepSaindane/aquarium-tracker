@@ -8,7 +8,14 @@ import { stripCodeFences } from "@/server/ai/prompt-loader";
 // quota system. Deliberately a plain free-text-in/free-text-out call, not
 // a full callContract() (no grounding_refs/prompt_version to track — a
 // translation makes no factual claim of its own to cite).
-const SCHEMA = { type: "object", properties: { translated: { type: "string" } }, required: ["translated"] };
+// `detected_language` powers the "Translated from Marathi · Show original"
+// pattern (redesign brief, Section 8) — a plain English name (e.g.
+// "Marathi", "Hindi"), never a code, since that's what shows on screen.
+const SCHEMA = {
+  type: "object",
+  properties: { translated: { type: "string" }, detected_language: { type: "string" } },
+  required: ["translated", "detected_language"],
+};
 
 export async function POST(req: NextRequest) {
   const ctx = resolveRequestContext(req);
@@ -26,7 +33,8 @@ export async function POST(req: NextRequest) {
   const promptText = [
     `Translate the following user-generated community post/comment into ${targetLabel}.`,
     `Keep the meaning and tone. Do not add commentary, notes, or explanation of what you changed.`,
-    `Return ONLY JSON matching the schema: {"translated": "..."}`,
+    `Also identify the source language it was actually written in, as a plain English name (e.g. "Marathi", "Hindi", "Tamil", "English") — this is shown to the user as "Translated from {language}", so it must be a real language name, never a code like "mr" or "hi".`,
+    `Return ONLY JSON matching the schema: {"translated": "...", "detected_language": "..."}`,
     ``,
     `TEXT:`,
     text,
@@ -38,7 +46,7 @@ export async function POST(req: NextRequest) {
     if (typeof parsed.translated !== "string" || !parsed.translated.trim()) {
       return NextResponse.json({ error: "Translation came back empty." }, { status: 422 });
     }
-    return NextResponse.json({ translated: parsed.translated });
+    return NextResponse.json({ translated: parsed.translated, detectedLanguage: typeof parsed.detected_language === "string" ? parsed.detected_language : null });
   } catch {
     return NextResponse.json({ error: "Translation failed." }, { status: 422 });
   }

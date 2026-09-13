@@ -29,11 +29,13 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [likeBusy, setLikeBusy] = useState(false);
   const [translated, setTranslated] = useState<string | null>(null);
+  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
   const [translating, setTranslating] = useState(false);
   const [translateError, setTranslateError] = useState<string | null>(null);
   const isOwn = currentUserId === post.userId;
   const { locale } = useLocale();
   const showTranslate = looksNonEnglish(post.body);
+  const hasPhoto = post.photoUris.length > 0;
 
   async function handleTranslate() {
     if (translated) {
@@ -47,6 +49,7 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
     setTranslating(false);
     if (result.ok) {
       setTranslated(result.data.translated);
+      setDetectedLanguage(result.data.detectedLanguage);
     } else {
       setTranslateError("Couldn't translate — try again.");
     }
@@ -83,8 +86,19 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
     onDeleted?.();
   }
 
+  // Redesign Section 8 ("a living feed that scans quickly"): a Card around
+  // every post — background, border, shadow, full padding — read as heavy
+  // for a plain text post with nothing to contain. A photo post keeps the
+  // Card (a real surface for the image to sit on); a text-only post is
+  // just content with a hairline divider underneath, like a normal list
+  // row, so more of them fit on screen at once.
+  const Wrapper = hasPhoto ? Card : "div";
+  const wrapperStyle = hasPhoto
+    ? { padding: "var(--space-md)", marginBottom: "var(--space-md)" }
+    : { padding: "var(--space-md) 0", borderBottom: "1px solid var(--color-line-soft)" };
+
   return (
-    <Card style={{ marginBottom: 12 }}>
+    <Wrapper style={wrapperStyle}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <AuthorAvatar photoUri={post.author.photoUri} />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -154,14 +168,17 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
           disabled={translating}
           style={{ background: "none", border: "none", padding: 0, marginTop: 4, color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-caption-size)" }}
         >
-          {translating ? "Translating..." : translated ? "Show original" : "Translate"}
+          {translating ? "Translating..." : translated ? `Translated from ${detectedLanguage ?? "another language"} · Show original` : "Translate"}
         </button>
       )}
       {translateError && <p style={{ margin: "4px 0 0", color: "var(--color-fix-now)", fontSize: "var(--font-caption-size)" }}>{translateError}</p>}
 
       <PostPhotoStrip photoUris={post.photoUris} />
 
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 8 }}>
+      {/* Redesign Section 8: "like/comment affordances more visible" — bigger
+          icons, real text weight, and a real ≥44px tap target instead of
+          small muted-gray text sized to the icon next to it. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 8 }}>
         <button
           type="button"
           onClick={handleLike}
@@ -170,22 +187,31 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 5,
+            gap: 6,
+            minHeight: 44,
             background: "none",
             border: "none",
-            padding: 0,
-            color: liked ? "var(--color-fix-now)" : "var(--color-ink-muted)",
-            fontSize: "var(--font-caption-size)",
-            fontWeight: liked ? 700 : 400,
+            padding: "0 4px 0 0",
+            color: liked ? "var(--color-fix-now)" : "var(--color-ink)",
+            fontSize: "var(--font-body-sm-size)",
+            fontWeight: 700,
           }}
         >
-          <span aria-hidden>{liked ? "❤️" : "🤍"}</span>
+          <span aria-hidden style={{ fontSize: 20 }}>
+            {liked ? "❤️" : "🤍"}
+          </span>
           {likeCount > 0 ? likeCount : "Like"}
         </button>
 
         {linkToDetail && (
-          <Link href={`/community/${post.id}`} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-            💬 {post.commentCount} {post.commentCount === 1 ? "comment" : "comments"}
+          <Link
+            href={`/community/${post.id}`}
+            style={{ display: "flex", alignItems: "center", gap: 6, minHeight: 44, color: "var(--color-ink)", fontSize: "var(--font-body-sm-size)", fontWeight: 700 }}
+          >
+            <span aria-hidden style={{ fontSize: 20 }}>
+              💬
+            </span>
+            {post.commentCount > 0 ? post.commentCount : "Comment"}
           </Link>
         )}
       </div>
@@ -219,6 +245,6 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
       )}
 
       {status && <p style={{ margin: "8px 0 0", color: "var(--color-improve)", fontSize: "var(--font-caption-size)" }}>{status}</p>}
-    </Card>
+    </Wrapper>
   );
 }

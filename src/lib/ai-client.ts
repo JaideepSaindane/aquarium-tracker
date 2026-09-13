@@ -279,11 +279,11 @@ function extractRefs(data: Record<string, unknown>): string[] {
 }
 
 /** Un-metered, no interaction logging — a low-frequency convenience call, same tier as /api/compat. Used by Community's "Translate" link. */
-export async function translateText(text: string, targetLocale: "en" | "hi-latn"): Promise<AiCallResult<{ translated: string }>> {
+export async function translateText(text: string, targetLocale: "en" | "hi-latn"): Promise<AiCallResult<{ translated: string; detectedLanguage: string | null }>> {
   const res = await fetch("/api/community/translate", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify({ text, targetLocale }),
   });
-  return handleJsonResponse<{ translated: string }>(res);
+  return handleJsonResponse<{ translated: string; detectedLanguage: string | null }>(res);
 }
