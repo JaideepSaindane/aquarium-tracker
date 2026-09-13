@@ -13,11 +13,9 @@ import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { listAiInteractions, rateAiInteraction } from "@/db/queries/ai-interactions";
 import { listLivestockForTank } from "@/db/queries/livestock";
-import { listSpecies } from "@/db/queries/species";
-import { askQuestion, peekQuotaStatus, type QuotaStatus } from "@/lib/ai-client";
+import { askQuestion, identifySpecies, peekQuotaStatus, type QuotaStatus } from "@/lib/ai-client";
 import { buildTankContext } from "@/lib/tank-context";
-import { useUnits } from "@/lib/UnitsProvider";
-import { formatLength, formatVolume, formatTempRange } from "@/lib/units";
+import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { useLocale } from "@/i18n/use-locale";
 import { useTranslation } from "@/i18n/use-translation";
 import { AskZod, type AskAnswer } from "@/server/ai/schemas/ask";
@@ -44,27 +42,28 @@ export type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInter
  * permanent centered tab in the bottom dock, so the composer uses
  * `footerAboveDock` to sit above the dock instead of under it.
  *
- * Redesign Section 7 (2026-09-13): "a specialist that knows your tank, not
- * a generic chatbot" — the empty state now leads with the selected tank's
- * own vitals (size · volume · safe temperature range for whatever's
- * actually living in it) instead of a generic "ask me anything" line, and
- * auto-selects the user's first tank on load (rather than defaulting to
- * "General") so that context is there before they've typed anything.
- * Starter questions became lightweight wrapping chips instead of three
- * stacked full-width buttons. The Early Bird promo line is gone from the
- * composer — it already lives in Settings → Your Plan, so this was a
- * duplicate, not a second real placement.
+ * Redesign Section 7 (2026-09-13) first tried making this screen lead with
+ * the selected tank's own vitals and auto-selecting the user's first tank
+ * on load. Jaideep reversed that the same day: "What I want this section
+ * to be is Ask anything... default setting must be general question...
+ * the actual tank selector must come up only when user wants to ask tank
+ * related questions." So: no auto-select, `tankId` defaults to "" (General)
+ * and stays there until the user deliberately opens the tank picker
+ * (`tankPickerOpen`) — it's not shown at all in the header, only as a
+ * small toggle near the composer. The three starter chips are now generic,
+ * not tank-specific: identify a fish from a photo, beginner stocking
+ * advice, and a common disease symptom — none of which need a tank
+ * selected to make sense.
  */
 export default function AskPage() {
   const router = useRouter();
   const { data: tanks } = useLiveQuery(listTanks, []);
   const { locale } = useLocale();
   const t = useTranslation();
-  const units = useUnits();
-  const STARTER_QUESTIONS = [t.askPage.starterQuestions.setupCorrect, t.askPage.starterQuestions.thisWeek, t.askPage.starterQuestions.addMoreFish];
+  const STARTER_QUESTIONS = [t.askPage.starterQuestions.beginnerFish, t.askPage.starterQuestions.whiteSpots];
 
   const [tankId, setTankId] = useState("");
-  const didAutoSelectTank = useRef(false);
+  const [tankPickerOpen, setTankPickerOpen] = useState(false);
   const [question, setQuestion] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
@@ -75,45 +74,32 @@ export default function AskPage() {
   const [showCorrectionIds, setShowCorrectionIds] = useState<Set<string>>(new Set());
   const [correctionText, setCorrectionText] = useState<Record<string, string>>({});
   const [actionMessage, setActionMessage] = useState<Record<string, string>>({});
+  const [identifying, setIdentifying] = useState(false);
+  const [identifyCandidates, setIdentifyCandidates] = useState<{ species_id: string | null; common_name: string; scientific_name: string; confidence: number; why: string }[] | null>(null);
+  const [identifyError, setIdentifyError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const identifyInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     peekQuotaStatus("ask").then(setQuota);
   }, []);
 
-  // Lead with "I know your aquarium," not "General" — auto-select the
-  // user's first tank once tanks have loaded, but only ever once, so a
-  // deliberate switch back to "General" afterward sticks.
-  useEffect(() => {
-    if (!didAutoSelectTank.current && !tankId && tanks && tanks.length > 0) {
-      didAutoSelectTank.current = true;
-      setTankId(tanks[0].id);
+  async function handleIdentifyPhoto(file: File) {
+    setIdentifying(true);
+    setIdentifyError(null);
+    setIdentifyCandidates(null);
+    const upload = await downscaleForUpload(file);
+    const result = await identifySpecies(upload);
+    setIdentifying(false);
+    if (!result.ok) {
+      setIdentifyError(result.error);
+      return;
     }
-  }, [tanks, tankId]);
-
-  const { data: tankLivestock } = useLiveQuery(() => (tankId ? listLivestockForTank(tankId) : Promise.resolve([])), [tankId]);
-  const { data: allSpecies } = useLiveQuery(listSpecies, []);
-  const selectedTank = (tanks ?? []).find((tk) => tk.id === tankId) ?? null;
-  const aliveSpeciesRows = (tankLivestock ?? [])
-    .filter((l) => l.status === "alive")
-    .map((l) => (allSpecies ?? []).find((s) => s.id === l.speciesId))
-    .filter((s): s is NonNullable<typeof s> => !!s && s.tempCMin != null && s.tempCMax != null);
-  // Same "overlap of every kept species' own safe range" logic as Tank
-  // Detail's own recommended-temperature card — the actual constraint this
-  // tank is under, not one species' number.
-  const tankTempRange =
-    aliveSpeciesRows.length > 0
-      ? { min: Math.max(...aliveSpeciesRows.map((s) => s.tempCMin as number)), max: Math.min(...aliveSpeciesRows.map((s) => s.tempCMax as number)) }
-      : null;
-  const tankVitalsLine = selectedTank
-    ? [
-        `${formatLength(selectedTank.lengthCm, units)} ${selectedTank.isPlanted ? t.askPage.plantedTank : t.askPage.tank}`,
-        formatVolume(selectedTank.volumeL, units),
-        tankTempRange ? formatTempRange(tankTempRange.min, tankTempRange.max, units) : null,
-      ]
-        .filter(Boolean)
-        .join(" · ")
-    : null;
+    const data = result.data.speciesId as unknown as {
+      candidates: { species_id: string | null; common_name: string; scientific_name: string; confidence: number; why: string }[];
+    };
+    setIdentifyCandidates(data.candidates);
+  }
 
   const askHistory = sessionTurns;
 
@@ -225,6 +211,47 @@ export default function AskPage() {
               {"resetsAt" in (quota ?? {}) ? t.askPage.quotaExhausted.replace("{resetsAt}", (quota as { resetsAt: string }).resetsAt) : ""}
             </Banner>
           )}
+          {/* Tank context is opt-in, not a default — the picker only shows
+              once the user actually asks for it (or already has a tank
+              picked), instead of always sitting in the header. */}
+          {(tanks ?? []).length > 0 &&
+            (tankPickerOpen || tankId ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                <select
+                  value={tankId}
+                  onChange={(e) => setTankId(e.target.value)}
+                  className={styles.tankPicker}
+                  aria-label={t.askPage.aboutWhichTank}
+                  autoFocus={tankPickerOpen && !tankId}
+                >
+                  <option value="">{t.askPage.generalTank}</option>
+                  {(tanks ?? []).map((tk) => (
+                    <option key={tk.id} value={tk.id}>
+                      {tk.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTankId("");
+                    setTankPickerOpen(false);
+                  }}
+                  aria-label={t.common.cancel}
+                  style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", padding: "4px 6px" }}
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setTankPickerOpen(true)}
+                style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-caption-size)", fontWeight: 600, padding: "4px 0", marginBottom: 6, textAlign: "left" }}
+              >
+                🐠 {t.askPage.askAboutATank}
+              </button>
+            ))}
           <div className={styles.composer}>
             <input
               value={question}
@@ -262,37 +289,34 @@ export default function AskPage() {
           </button>
         }
       />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 16 }}>
-        <div>
-          <h1 style={{ fontSize: "var(--font-title-size)" }}>{t.askPage.heading}</h1>
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.askPage.subheading}</p>
-        </div>
-        <select
-          value={tankId}
-          onChange={(e) => setTankId(e.target.value)}
-          className={styles.tankPicker}
-          aria-label={t.askPage.aboutWhichTank}
-        >
-          <option value="">{t.askPage.generalTank}</option>
-          {(tanks ?? []).map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
+      <div style={{ marginBottom: 16 }}>
+        <h1 style={{ fontSize: "var(--font-title-size)" }}>{t.askPage.heading}</h1>
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.askPage.subheading}</p>
       </div>
 
-      {askHistory.length === 0 && !pendingQuestion && (
+      <input
+        ref={identifyInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (file) handleIdentifyPhoto(file);
+        }}
+      />
+
+      {askHistory.length === 0 && !pendingQuestion && !identifying && !identifyCandidates && !identifyError && (
         <div className={styles.emptyState}>
           <LottiePlayer name="listening" size={72} className={styles.emptyStateAnim} />
-          <p style={{ fontWeight: 600, marginBottom: 4 }}>{selectedTank ? t.askPage.emptyTitle : t.askPage.emptyTitleNoTank}</p>
-          {tankVitalsLine && (
-            <p style={{ color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-body-sm-size)", marginBottom: 4 }}>{tankVitalsLine}</p>
-          )}
+          <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.askPage.emptyTitle}</p>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
             {t.askPage.emptyBody}
           </p>
           <div className={styles.starterChips}>
+            <button type="button" className={styles.starterChip} onClick={() => identifyInputRef.current?.click()}>
+              📷 {t.askPage.starterQuestions.identifyFish}
+            </button>
             {STARTER_QUESTIONS.map((q) => (
               <button key={q} type="button" className={styles.starterChip} onClick={() => handleAsk(q)}>
                 {q}
@@ -300,6 +324,51 @@ export default function AskPage() {
             ))}
           </div>
         </div>
+      )}
+
+      {identifying && (
+        <div className={styles.emptyState}>
+          <LottiePlayer name="thinking" size={56} />
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.livestockScanPage.identifying}</p>
+        </div>
+      )}
+
+      {identifyError && (
+        <div style={{ marginBottom: 16 }}>
+          <Banner severity="watch">{identifyError}</Banner>
+        </div>
+      )}
+
+      {identifyCandidates && (
+        <Card style={{ marginBottom: 16 }}>
+          <p style={{ fontWeight: 700, marginBottom: 8 }}>{t.livestockPage.bestGuessesMayNotBe}</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {identifyCandidates.map((c, i) =>
+              c.species_id ? (
+                <button
+                  key={i}
+                  onClick={() => router.push(`/dex/${c.species_id}`)}
+                  style={{ display: "block", textAlign: "left", padding: 10, border: "1px solid var(--color-line)", borderRadius: 8, background: "var(--color-surface)" }}
+                >
+                  <span style={{ fontWeight: 600 }}>{c.common_name}</span>{" "}
+                  <span style={{ color: "var(--color-ink-muted)", fontStyle: "italic", fontSize: "var(--font-caption-size)" }}>{c.scientific_name}</span>
+                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 0" }}>{c.why}</p>
+                </button>
+              ) : (
+                <div key={i} style={{ padding: 10, border: "1px solid var(--color-line)", borderRadius: 8, background: "var(--color-surface)" }}>
+                  <p style={{ margin: 0, fontWeight: 600 }}>
+                    {c.common_name} <span style={{ color: "var(--color-ink-muted)", fontStyle: "italic", fontSize: "var(--font-caption-size)", fontWeight: 400 }}>{c.scientific_name}</span>
+                  </p>
+                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 0" }}>{c.why}</p>
+                </div>
+              )
+            )}
+            {identifyCandidates.length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.livestockPage.couldNotIdentifyTryClearer}</p>}
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <SecondaryButton onClick={() => setIdentifyCandidates(null)}>{t.common.back}</SecondaryButton>
+          </div>
+        </Card>
       )}
 
       <div className={styles.thread}>
