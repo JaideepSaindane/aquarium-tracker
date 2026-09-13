@@ -11,6 +11,11 @@
 // The brief's healthy/warning/danger hues map onto the severity scale below —
 // structure unchanged, hues rebased. The `soft` export stays as an alias so
 // older screens don't need editing.
+//
+// Reskinned 2026-09-13 onto a navy-ground/blue-accent palette (the app's
+// fifth identity) — see tokens.css's header comment for the full reasoning.
+// Only these two colour objects (and glass.dark.bg) actually changed value;
+// the severity scale, shadows, type scale and spacing are untouched.
 
 export const light = {
   ground: "#F6F7F5",
@@ -23,32 +28,34 @@ export const light = {
   line: "#C7D1CF",
   lineSoft: "#D9E1DF",
 
-  // Darkened aquas — the bright #35C6BE brand aqua is a fill colour, not a
-  // text colour, on white; these pass AA for text and primary-button fills.
-  accent: "#0D7A73",
-  accentSoft: "#D5F1EE",
-  deep: "#0B6B65",
-  deepSoft: "#C8ECE8",
+  // Darkened blues (2026-09-13, was aqua) — the bright #3B82F6 brand blue is
+  // a fill colour, not a text colour, on white; these pass AA for text and
+  // primary-button fills.
+  accent: "#2955C9",
+  accentSoft: "#DFE7FB",
+  deep: "#1D4ED8",
+  deepSoft: "#DFE7FB",
 } as const;
 
 export const dark = {
-  // The brief's exact dark values.
-  ground: "#0B1112",
-  surface: "#151D1E",
-  surfaceAlt: "#1C2627",
-  ink: "#F3F6F5",
-  inkMuted: "#9BA9A8",
-  inkFaint: "#71807F",
-  line: "#293637",
-  lineSoft: "#232E2F",
+  // Navy ground (2026-09-13, was the brief's near-black teal-tinted values).
+  ground: "#0B0F1A",
+  surface: "#141A2B",
+  surfaceAlt: "#1C2440",
+  ink: "#F3F6FB",
+  inkMuted: "#93A0C2",
+  inkFaint: "#6F7BA0",
+  line: "#26304A",
+  lineSoft: "#1E2740",
 
-  // One aqua: accent (text/links/active) and deep (primary-action fill) are
-  // the same colour in dark mode — primary buttons are solid aqua with dark
-  // text, exactly per the brief.
-  accent: "#35C6BE",
-  accentSoft: "#143432",
-  deep: "#35C6BE",
-  deepSoft: "#143432",
+  // One blue (2026-09-13, was aqua #35C6BE): accent (text/links/active) and
+  // deep (primary-action fill) are the same colour in dark mode — primary
+  // buttons are solid blue with dark navy text, same convention as before,
+  // just recoloured.
+  accent: "#3B82F6",
+  accentSoft: "#16213F",
+  deep: "#3B82F6",
+  deepSoft: "#16213F",
 } as const;
 
 // Severity — the only colours allowed to signal state. Deliberately separate
@@ -75,7 +82,7 @@ export const shadow = {
 
 export const glass = {
   light: { bg: "rgba(255, 255, 255, 0.78)", border: "rgba(23, 32, 30, 0.14)" },
-  dark: { bg: "rgba(21, 29, 30, 0.78)", border: "rgba(255, 255, 255, 0.08)" },
+  dark: { bg: "rgba(20, 26, 43, 0.78)", border: "rgba(255, 255, 255, 0.08)" },
   blur: "20px",
 } as const;
 
