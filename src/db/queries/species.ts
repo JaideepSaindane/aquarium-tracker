@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "../client";
 import { species } from "../schema";
 import { nowIso } from "../id";
@@ -239,5 +239,26 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
         where: sql`${species.origin} = 'seed'`,
       });
   }
+  notifyChanged();
+}
+
+/**
+ * Deletes species rows the seed file no longer defines (e.g. an id split
+ * into several new ids, or merged away) — only rows still owned by the
+ * seed (`origin: 'seed'`), never a user's own edited/AI-generated species.
+ * `seedSpecies()` itself only upserts and never deletes, so a renamed/
+ * retired seed id would otherwise linger forever in an already-provisioned
+ * browser's local catalog. Call once per removed id, gated by a
+ * `SPECIES_SEED_VERSION` bump in `DbBootProvider`, alongside a normal
+ * `seedSpecies()` reseed. A tank that already has this species as
+ * livestock keeps that livestock row — a local catalog delete does not
+ * touch server-side tank data — but that fish's name/care-card lookup by
+ * the old id will stop resolving; there is no known real usage of
+ * `ram-cichlid` yet to actually hit this, but it's a real, flagged gap if
+ * there is.
+ */
+export async function retireSeedSpecies(ids: string[]) {
+  if (ids.length === 0) return;
+  await db.delete(species).where(and(eq(species.origin, "seed"), inArray(species.id, ids)));
   notifyChanged();
 }

@@ -595,7 +595,9 @@
     "incompatible_with": [
       "fin-nipper",
       "soft-water-species",
-      "ram-cichlid",
+      "german-blue-ram",
+      "golden-ram",
+      "electric-blue-ram",
       "cardinal-tetra"
     ],
     "disputed": "Minimum volume is commonly cited between 76 L and 208 L. Seriously Fish specifies 90x30x30 cm (about 81 L) for the short-finned molly; Aquarium Co-Op says 20 gal (76 L) minimum but 29-55 gal (110-208 L) for larger sailfin types. We list 80 L for P. sphenops and flag that sailfin mollies need substantially more. Some published guides listing 40 gal (151 L) as the minimum for all mollies are conflating sailfin and short-finned types.",
@@ -1005,7 +1007,9 @@
       "betta",
       "long-finned",
       "slow-swimmer",
-      "ram-cichlid"
+      "german-blue-ram",
+      "golden-ram",
+      "electric-blue-ram"
     ],
     "disputed": "Minimum volume is commonly cited between 38 L and 81 L. Aquarium Co-Op recommends a 20 gal long (76 L) and a group of 5-6; Seriously Fish specifies a 90x30 cm base (about 81 L) and a group of 8-10. We list 76 L, a 90 cm length, and a group of 8. Temperature: Seriously Fish gives 18-25 C, Aquarium Co-Op 18-24 C - both notably cooler than the 24-28 C many retail tags print.",
     "dex": {
@@ -1928,7 +1932,9 @@
       "long-finned",
       "betta",
       "angelfish",
-      "ram-cichlid",
+      "german-blue-ram",
+      "golden-ram",
+      "electric-blue-ram",
       "discus"
     ],
     "disputed": "Adult size is disputed: Seriously Fish says most are fully grown at 6.5-7.5 cm but some forms reach 9-10 cm; Aquarium Co-Op gives 7-10 cm. We list 10 cm. Minimum volume: Seriously Fish requires a 100x30 cm base (about 105 L), Aquarium Co-Op 29 gal (110 L) - these agree. Temperature is where the hobby is most often wrong; we follow Seriously Fish's 16-24 C.",
@@ -3210,18 +3216,208 @@
     "image": "/species/otocinclus.jpg"
   },
   {
-    "id": "ram-cichlid",
+    "id": "german-blue-ram",
     "scientific_name": "Mikrogeophagus ramirezi",
     "common_names": [
-      "Ram Cichlid",
       "German Blue Ram",
-      "Butterfly Cichlid",
-      "Electric Blue Ram"
+      "Ram Cichlid",
+      "Blue Ram",
+      "Butterfly Cichlid"
     ],
     "common_names_in": [
       "German Blue Ram",
       "Blue Ram",
-      "Butterfly Cichlid",
+      "Butterfly Cichlid"
+    ],
+    "category": "fish",
+    "verified": false,
+    "source_refs": [
+      "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+      "https://www.aquariumcoop.com/blogs/aquarium/ram-cichlid-care-guide"
+    ],
+    "temp_c": {
+      "min": 27,
+      "max": 30
+    },
+    "ph": {
+      "min": 5,
+      "max": 7.5
+    },
+    "hardness_dgh": {
+      "min": 1,
+      "max": 10
+    },
+    "adult_size_cm": 5,
+    "min_volume_l": 76,
+    "min_footprint_cm": {
+      "length": 75,
+      "width": 30
+    },
+    "social_min_group": 2,
+    "temperament": "territorial",
+    "swim_level": "bottom",
+    "diet": "omnivore",
+    "difficulty": "advanced",
+    "lifespan_years": {
+      "min": 2,
+      "max": 4
+    },
+    "breeding": "egglayer",
+    "care_notes": "The standard wild-type-coloured form of the species and the most robust of the three colour strains, though still a genuinely demanding fish. Rams need hot water — Seriously Fish gives 27-30 C and Aquarium Co-Op calls 29-30 C the single most important husbandry factor; kept at the 24-25 C of a normal community tank they slowly decline and die, which is the most common cause of ram deaths. They also need soft, acidic, pristine water and a mature tank; they are poor competitors and should not go in a busy community. Warm Indian ambient temperatures actually suit this species well.",
+    "common_mistakes": [
+      "Keeping them at standard community temperatures of 24-25 C",
+      "Adding them to a tank less than a few months old",
+      "Buying a pair from a tank of unsexed juveniles and getting two males",
+      "Keeping them in hard alkaline water",
+      "Housing them with fast, greedy feeders that outcompete them",
+      "Adding dwarf shrimp, which rams hunt"
+    ],
+    "incompatible_with": [
+      "shrimp",
+      "cherry-shrimp",
+      "zebra-danio",
+      "boisterous",
+      "molly",
+      "rosy-barb"
+    ],
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. Seriously Fish says a 60x30 cm base (about 54 L) is sufficient for one pair; Aquarium Co-Op recommends 20 gal (76 L) for a pair in a community. We list 76 L. Difficulty is disputed: Aquarium Co-Op rates them moderate, Seriously Fish's requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) put them at advanced. We list advanced.",
+    "dex": {
+      "rarity": "common",
+      "tier": 3
+    },
+    "origin": "curated-v1",
+    "synonyms": [],
+    "query_name": "Mikrogeophagus ramirezi",
+    "resolution_notes": [],
+    "family": "Cichlidae",
+    "order": "Perciformes",
+    "genus": "Mikrogeophagus",
+    "class": null,
+    "rank": "SPECIES",
+    "preferred_common_name": "German Blue Ram",
+    "resolution_status": "ok",
+    "wikipedia_title": "Ram cichlid",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Ram_cichlid",
+    "description": "The german blue ram is a selectively bred/wild-type colour form of Mikrogeophagus ramirezi, a dwarf cichlid native to the Orinoco River basin savannahs of Venezuela and Colombia.",
+    "iucn_status": "LC",
+    "native_range": "the Orinoco River basin, in the savannahs of Venezuela and Colombia in South America (wild-type colouring; ornamental colour strains are captive-bred)",
+    "provenance": {
+      "adult_size_cm": "curated",
+      "iucn_status": "wikidata:P141",
+      "native_range": "wikipedia:text",
+      "temp_c": "curated",
+      "ph": "curated",
+      "hardness_dgh": "curated",
+      "lifespan_years": "curated",
+      "min_volume_l": "curated"
+    },
+    "image": "/species/german-blue-ram.jpg"
+  },
+  {
+    "id": "golden-ram",
+    "scientific_name": "Mikrogeophagus ramirezi",
+    "common_names": [
+      "Golden Ram",
+      "Gold Ram",
+      "Golden Ramirezi"
+    ],
+    "common_names_in": [
+      "Golden Ram",
+      "Gold Ram"
+    ],
+    "category": "fish",
+    "verified": false,
+    "source_refs": [
+      "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+      "https://www.aquariumcoop.com/blogs/aquarium/ram-cichlid-care-guide"
+    ],
+    "temp_c": {
+      "min": 27,
+      "max": 30
+    },
+    "ph": {
+      "min": 5,
+      "max": 7.5
+    },
+    "hardness_dgh": {
+      "min": 1,
+      "max": 10
+    },
+    "adult_size_cm": 5,
+    "min_volume_l": 76,
+    "min_footprint_cm": {
+      "length": 75,
+      "width": 30
+    },
+    "social_min_group": 2,
+    "temperament": "territorial",
+    "swim_level": "bottom",
+    "diet": "omnivore",
+    "difficulty": "advanced",
+    "lifespan_years": {
+      "min": 2,
+      "max": 4
+    },
+    "breeding": "egglayer",
+    "care_notes": "A selectively bred gold/xanthic colour strain of the same species as the German Blue Ram, needing identical care: genuinely hot water (27-30 C — the single most important husbandry factor per Aquarium Co-Op), soft acidic pristine water, and a mature, uncrowded tank. Farmed gold-strain stock is often more inbred and hormone-treated than wild-type/German Blue stock, and tends to be noticeably less hardy with a shorter lifespan — buy from a breeder who can speak to the line's health where possible, not just the colour.",
+    "common_mistakes": [
+      "Keeping them at standard community temperatures of 24-25 C",
+      "Adding them to a tank less than a few months old",
+      "Buying a pair from a tank of unsexed juveniles and getting two males",
+      "Keeping them in hard alkaline water",
+      "Housing them with fast, greedy feeders that outcompete them",
+      "Adding dwarf shrimp, which rams hunt",
+      "Assuming the gold colour strain is as hardy as wild-type/German Blue stock — it usually isn't"
+    ],
+    "incompatible_with": [
+      "shrimp",
+      "cherry-shrimp",
+      "zebra-danio",
+      "boisterous",
+      "molly",
+      "rosy-barb"
+    ],
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. Seriously Fish says a 60x30 cm base (about 54 L) is sufficient for one pair; Aquarium Co-Op recommends 20 gal (76 L) for a pair in a community. We list 76 L. Difficulty is disputed: Aquarium Co-Op rates them moderate, Seriously Fish's requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) put them at advanced. We list advanced.",
+    "dex": {
+      "rarity": "common",
+      "tier": 3
+    },
+    "origin": "curated-v1",
+    "synonyms": [],
+    "query_name": "Mikrogeophagus ramirezi",
+    "resolution_notes": [],
+    "family": "Cichlidae",
+    "order": "Perciformes",
+    "genus": "Mikrogeophagus",
+    "class": null,
+    "rank": "SPECIES",
+    "preferred_common_name": "Golden Ram",
+    "resolution_status": "ok",
+    "wikipedia_title": "Ram cichlid",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Ram_cichlid",
+    "description": "The golden ram is a selectively bred/wild-type colour form of Mikrogeophagus ramirezi, a dwarf cichlid native to the Orinoco River basin savannahs of Venezuela and Colombia.",
+    "iucn_status": "LC",
+    "native_range": "the Orinoco River basin, in the savannahs of Venezuela and Colombia in South America (wild-type colouring; ornamental colour strains are captive-bred)",
+    "provenance": {
+      "adult_size_cm": "curated",
+      "iucn_status": "wikidata:P141",
+      "native_range": "wikipedia:text",
+      "temp_c": "curated",
+      "ph": "curated",
+      "hardness_dgh": "curated",
+      "lifespan_years": "curated",
+      "min_volume_l": "curated"
+    },
+    "image": "/species/golden-ram.jpg"
+  },
+  {
+    "id": "electric-blue-ram",
+    "scientific_name": "Mikrogeophagus ramirezi",
+    "common_names": [
+      "Electric Blue Ram",
+      "Electric Blue Ramirezi"
+    ],
+    "common_names_in": [
       "Electric Blue Ram"
     ],
     "category": "fish",
@@ -3258,14 +3454,15 @@
       "max": 4
     },
     "breeding": "egglayer",
-    "care_notes": "Rams need genuinely hot water - Seriously Fish gives 27-30 C and Aquarium Co-Op calls 29-30 C the single most important husbandry factor. Kept at the 24-25 C of a normal community tank they slowly decline and die, and this is the most common cause of ram deaths. They also need soft, acidic, pristine water and a mature tank; they are poor competitors and should not go in a busy community. Farmed stock, especially hormone-treated 'electric blue' and 'gold' strains, is often genetically weak with a shortened lifespan. Warm Indian ambient temperatures actually suit this species well.",
+    "care_notes": "A selectively bred, all-blue colour strain of the same species as the German Blue Ram, needing identical care: genuinely hot water (27-30 C — the single most important husbandry factor per Aquarium Co-Op), soft acidic pristine water, and a mature, uncrowded tank. Farmed electric-blue stock is often hormone-treated and more inbred than wild-type/German Blue stock, and is widely reported as the least hardy of the common colour strains — expect a shorter lifespan and source from a specialist breeder where possible.",
     "common_mistakes": [
       "Keeping them at standard community temperatures of 24-25 C",
       "Adding them to a tank less than a few months old",
       "Buying a pair from a tank of unsexed juveniles and getting two males",
       "Keeping them in hard alkaline water",
       "Housing them with fast, greedy feeders that outcompete them",
-      "Adding dwarf shrimp, which rams hunt"
+      "Adding dwarf shrimp, which rams hunt",
+      "Assuming the electric blue colour strain is as hardy as wild-type/German Blue stock — it's usually the least hardy of the three"
     ],
     "incompatible_with": [
       "shrimp",
@@ -3280,43 +3477,23 @@
       "rarity": "common",
       "tier": 3
     },
-    "image": "/species/ram-cichlid.jpg",
     "origin": "curated-v1",
     "synonyms": [],
     "query_name": "Mikrogeophagus ramirezi",
     "resolution_notes": [],
-    "gbif_key": 2373104,
-    "gbif_status": "ACCEPTED",
-    "gbif_confidence": 100,
-    "gbif_match_type": "EXACT",
-    "accepted_name": "Mikrogeophagus ramirezi",
     "family": "Cichlidae",
     "order": "Perciformes",
     "genus": "Mikrogeophagus",
     "class": null,
     "rank": "SPECIES",
-    "inat_id": 418115,
-    "inat_name": "Mikrogeophagus ramirezi",
-    "inat_rank": "species",
-    "inat_iconic": "Actinopterygii",
-    "inat_exact": true,
-    "inat_observations": 153,
-    "inat_wikipedia_url": "http://en.wikipedia.org/wiki/Ram_cichlid",
-    "inat_class_ok": true,
-    "inat_ancestry": "48460/1/2/355675/47178/1632273/1303736/54196/567544/89965",
-    "preferred_common_name": "Blue Ram Cichlid",
+    "preferred_common_name": "Electric Blue Ram",
     "resolution_status": "ok",
     "wikipedia_title": "Ram cichlid",
     "wikipedia_url": "https://en.wikipedia.org/wiki/Ram_cichlid",
-    "wikidata_id": "Q260468",
-    "description": "The ram cichlid is a species of freshwater fish endemic to the Orinoco River basin, in the savannahs of Venezuela and Colombia in South America. The species has been examined in studies on fish behaviour and is a popular aquarium fish, traded under a variety of common names, including ram, blue ram, German blue ram, Asian ram, butterfly cichlid, Ramirez's dwarf cichlid, dwarf butterfly cichlid and Ramirezi. The species is a member of the family Cichlidae and subfamily Geophaginae.",
+    "description": "The electric blue ram is a selectively bred/wild-type colour form of Mikrogeophagus ramirezi, a dwarf cichlid native to the Orinoco River basin savannahs of Venezuela and Colombia.",
     "iucn_status": "LC",
-    "native_range": "the Orinoco River basin, in the savannahs of Venezuela and Colombia in South America",
+    "native_range": "the Orinoco River basin, in the savannahs of Venezuela and Colombia in South America (wild-type colouring; ornamental colour strains are captive-bred)",
     "provenance": {
-      "wikipedia_title": "wikipedia",
-      "wikipedia_url": "wikipedia",
-      "wikidata_id": "wikipedia",
-      "description": "wikipedia",
       "adult_size_cm": "curated",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
@@ -3326,29 +3503,7 @@
       "lifespan_years": "curated",
       "min_volume_l": "curated"
     },
-    "images": [
-      {
-        "source": "inaturalist:captive",
-        "source_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/41797083/original.jpeg",
-        "source_page": "https://www.inaturalist.org/observations/26898914",
-        "license": "cc-by-sa",
-        "attribution": "(c) Alexandre S. Michelotto, some rights reserved (CC BY-SA)",
-        "original_width": 2048,
-        "original_height": 1536,
-        "dhash": "994ccbe8e8b0e5c9",
-        "score": 13.48,
-        "skin_fraction": 0.019,
-        "colourfulness": 0.7,
-        "candidates_examined": 7,
-        "files": {
-          "full": "full/ram-cichlid.jpg",
-          "card": "card/ram-cichlid.jpg",
-          "thumb": "thumb/ram-cichlid.jpg"
-        },
-        "stored_width": 2048,
-        "stored_height": 1536
-      }
-    ]
+    "image": "/species/electric-blue-ram.jpg"
   },
   {
     "id": "rainbow-shark",
@@ -3551,7 +3706,9 @@
       "goldfish-fancy",
       "angelfish",
       "copper-medication",
-      "ram-cichlid"
+      "german-blue-ram",
+      "golden-ram",
+      "electric-blue-ram"
     ],
     "disputed": "Neither trusted source states a minimum tank size; Aquarium Co-Op describes them as suitable for 'nano tanks or larger'. We list 20 L as a practical floor because water stability, not swimming room, is the limiting factor. Adult size cited as 4-5 cm across Aquarium Co-Op's two guides. Temperature cited as 18-28 C and 18-27 C.",
     "dex": {
@@ -3688,7 +3845,9 @@
       "betta",
       "angelfish",
       "large-cichlid",
-      "ram-cichlid",
+      "german-blue-ram",
+      "golden-ram",
+      "electric-blue-ram",
       "goldfish-fancy",
       "copper-medication",
       "amano-shrimp"

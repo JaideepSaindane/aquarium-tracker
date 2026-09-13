@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { ensureDb } from "./client";
 import { runMigrations } from "./migrate";
-import { seedSpecies, countSpecies } from "./queries/species";
+import { seedSpecies, countSpecies, retireSeedSpecies } from "./queries/species";
 import { seedParameterDefs } from "./queries/parameter-defs";
 import { getSpeciesSeedVersion, setSpeciesSeedVersion } from "./queries/settings";
 
@@ -12,7 +12,15 @@ import { getSpeciesSeedVersion, setSpeciesSeedVersion } from "./queries/settings
 // installs should pick up (new species, corrected care data, or — the bug
 // this version marker was added to fix — new `imageUri` values). A device
 // that seeded species before this existed reseeds once, then stores "2".
-const SPECIES_SEED_VERSION = "2";
+const SPECIES_SEED_VERSION = "3";
+
+// Ids the seed file used to define but no longer does, retired on the
+// SPECIES_SEED_VERSION bump that made the change — e.g. "ram-cichlid" was
+// split into "german-blue-ram"/"golden-ram"/"electric-blue-ram" (2026-09-13)
+// so each colour strain gets its own catalog entry instead of one merged
+// card. Grows over time; never remove an old entry from this list, since a
+// device could be jumping several versions at once.
+const RETIRED_SPECIES_IDS: string[] = ["ram-cichlid"];
 
 /**
  * Seeds species + the 8 global parameter defs on first real boot, and
@@ -33,6 +41,7 @@ async function seedIfEmpty() {
     const res = await fetch("/api/species-seed");
     const seedData = await res.json();
     await seedSpecies(seedData);
+    await retireSeedSpecies(RETIRED_SPECIES_IDS);
     await setSpeciesSeedVersion(SPECIES_SEED_VERSION);
   }
   await seedParameterDefs(); // itself idempotent — no-ops if already seeded

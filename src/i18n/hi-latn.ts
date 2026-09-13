@@ -617,7 +617,7 @@ const hiLatn: Dictionary = {
       "Plan save ho gaya. Aap abhi offline hain, isliye tank page load nahi ho saka — aapka tank is phone par safe hai aur wapas online aate hi normally khulega.",
     everythingPlannedOnDevice: "Aapne jo bhi plan kiya — equipment aur wishlist fish — wo already is device par hai.",
     advisorChecking: "Hamara advisor aapki fish list check kar raha hai…",
-    matchingSpecies: "1,484 species se match kiya ja raha hai — aam taur par 5–15 seconds.",
+    matchingSpecies: "1,486 species se match kiya ja raha hai — aam taur par 5–15 seconds.",
     ourAiAdvisorSays: "Hamara AI advisor kehta hai",
     hereWhatsNeeded: "Aapke tank ke liye, ye chahiye:",
     tankSize: "Tank size",
@@ -748,7 +748,7 @@ const hiLatn: Dictionary = {
       "are stored on Vercel Blob storage. These files sit at an unguessable, randomly generated URL rather than behind a login check — in practice this means a photo can only be found by someone who already has its exact link, but it is not access-controlled the way your other data is. Don't upload a photo containing something you wouldn't want seen by someone who somehow obtained that link.",
     appLabel: "The app itself and its serverless functions",
     appBody: "run on Vercel.",
-    catalogLabel: "The 1,484-entry species reference catalog",
+    catalogLabel: "The 1,486-entry species reference catalog",
     catalogBody: "(care info for fish/plants/shrimp/snails) is shared, identical for every user, and stored locally in your browser — it is not personal data.",
     aiProvidersHeading: "What gets sent to AI providers",
     aiProvidersBullet1:

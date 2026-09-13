@@ -613,7 +613,7 @@ const en = {
       "Plan saved. You're offline right now, so the tank page couldn't load — your tank is safe on this phone and will open normally once you're back online.",
     everythingPlannedOnDevice: "Everything you planned — equipment and wishlist fish — is already on this device.",
     advisorChecking: "Our advisor is checking your fish list…",
-    matchingSpecies: "Matching against 1,484 species — usually 5–15 seconds.",
+    matchingSpecies: "Matching against 1,486 species — usually 5–15 seconds.",
     ourAiAdvisorSays: "Our AI advisor says",
     hereWhatsNeeded: "For your tank, here's what's needed:",
     tankSize: "Tank size",
@@ -743,7 +743,7 @@ const en = {
       "are stored on Vercel Blob storage. These files sit at an unguessable, randomly generated URL rather than behind a login check — in practice this means a photo can only be found by someone who already has its exact link, but it is not access-controlled the way your other data is. Don't upload a photo containing something you wouldn't want seen by someone who somehow obtained that link.",
     appLabel: "The app itself and its serverless functions",
     appBody: "run on Vercel.",
-    catalogLabel: "The 1,484-entry species reference catalog",
+    catalogLabel: "The 1,486-entry species reference catalog",
     catalogBody: "(care info for fish/plants/shrimp/snails) is shared, identical for every user, and stored locally in your browser — it is not personal data.",
     aiProvidersHeading: "What gets sent to AI providers",
     aiProvidersBullet1:
