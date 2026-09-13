@@ -175,10 +175,7 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
 
       <PostPhotoStrip photoUris={post.photoUris} />
 
-      {/* Redesign Section 8: "like/comment affordances more visible" — bigger
-          icons, real text weight, and a real ≥44px tap target instead of
-          small muted-gray text sized to the icon next to it. */}
-      <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 8 }}>
         <button
           type="button"
           onClick={handleLike}
@@ -187,31 +184,22 @@ export function PostCard({ post, currentUserId, linkToDetail, onDeleted }: { pos
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 6,
-            minHeight: 44,
+            gap: 5,
             background: "none",
             border: "none",
-            padding: "0 4px 0 0",
-            color: liked ? "var(--color-fix-now)" : "var(--color-ink)",
-            fontSize: "var(--font-body-sm-size)",
-            fontWeight: 700,
+            padding: 0,
+            color: liked ? "var(--color-fix-now)" : "var(--color-ink-muted)",
+            fontSize: "var(--font-caption-size)",
+            fontWeight: liked ? 700 : 400,
           }}
         >
-          <span aria-hidden style={{ fontSize: 20 }}>
-            {liked ? "❤️" : "🤍"}
-          </span>
+          <span aria-hidden>{liked ? "❤️" : "🤍"}</span>
           {likeCount > 0 ? likeCount : "Like"}
         </button>
 
         {linkToDetail && (
-          <Link
-            href={`/community/${post.id}`}
-            style={{ display: "flex", alignItems: "center", gap: 6, minHeight: 44, color: "var(--color-ink)", fontSize: "var(--font-body-sm-size)", fontWeight: 700 }}
-          >
-            <span aria-hidden style={{ fontSize: 20 }}>
-              💬
-            </span>
-            {post.commentCount > 0 ? post.commentCount : "Comment"}
+          <Link href={`/community/${post.id}`} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+            💬 {post.commentCount} {post.commentCount === 1 ? "comment" : "comments"}
           </Link>
         )}
       </div>
