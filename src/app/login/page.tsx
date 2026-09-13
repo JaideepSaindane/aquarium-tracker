@@ -9,6 +9,7 @@ import { PrimaryButton } from "@/components/Button";
 import { APP_NAME } from "@/constants/app";
 import { AquaIcon } from "@/components/icons/AquaIcon";
 import { IntroAnimation } from "@/components/IntroAnimation";
+import { markIntroPlayed } from "@/lib/intro-session";
 
 /** The standard four-colour Google "G" mark — Google's brand guidelines require the real logo (not a generic icon) on a "Continue/Sign in with Google" button. */
 function GoogleLogo() {
@@ -232,7 +233,11 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
  * ("Continue with Google" / "Continue with phone number") replace the old
  * single screen that showed the Google button and all three phone fields
  * at once — the phone path only reveals its three fields after that pill
- * is tapped, on its own step with a back arrow.
+ * is tapped, on its own step with a back arrow. The intro step calls
+ * `markIntroPlayed()` on dismiss (`src/lib/intro-session.ts`) so a fresh
+ * sign-up's redirect to `/onboarding` right after doesn't play the exact
+ * same animation a second time — Jaideep hit that as a real bug the same
+ * day this landed.
  */
 function LoginFlow() {
   const searchParams = useSearchParams();
@@ -244,7 +249,15 @@ function LoginFlow() {
   }
 
   if (step === "intro") {
-    return <IntroAnimation backgroundSrc="/login-bg.jpg" onDismiss={() => setStep("choose")} />;
+    return (
+      <IntroAnimation
+        backgroundSrc="/login-bg.jpg"
+        onDismiss={() => {
+          markIntroPlayed();
+          setStep("choose");
+        }}
+      />
+    );
   }
 
   if (step === "phone") {

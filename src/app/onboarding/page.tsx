@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { IntroAnimation } from "@/components/IntroAnimation";
 import { saveProfile } from "@/db/queries/profile";
 import { useTranslation } from "@/i18n/use-translation";
+import { hasIntroPlayedThisSession } from "@/lib/intro-session";
 import styles from "./onboarding.module.css";
 
 /**
@@ -36,12 +37,25 @@ import styles from "./onboarding.module.css";
  * doesn't want to photograph a tank straight to the same empty-state choices
  * (scan / build / just look around) that were always the fallback, so
  * nobody is blocked (Principle 1).
+ *
+ * The fish-leap intro (2026-09-13) skips itself here if it already played
+ * moments earlier on `/login` this tab session — Jaideep hit it playing
+ * twice back-to-back on a fresh Google/phone sign-up (`/login`'s own
+ * intro, then this page's, right after) and called it "a bad experience."
+ * `hasIntroPlayedThisSession()` is read once via a lazy `useState`
+ * initializer (defaulting to "play" during SSR/build, where there's no
+ * `sessionStorage` to check — this route is statically prerendered but,
+ * behind auth, only ever actually reached via a client-side redirect or
+ * push, never a real per-visitor server render, so that default is only a
+ * fallback) so a deliberate "Start over" from Settings — which clears the
+ * session flag first — still replays it.
  */
 export default function OnboardingPage() {
   const router = useRouter();
   const t = useTranslation();
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showIntro] = useState(() => typeof window === "undefined" || !hasIntroPlayedThisSession());
 
   async function handleContinue() {
     setSaving(true);
@@ -69,7 +83,7 @@ export default function OnboardingPage() {
         background: "#18242b url(/onboarding/welcome-bg.jpg) center / cover no-repeat",
       }}
     >
-      <IntroAnimation />
+      {showIntro && <IntroAnimation />}
 
       {/* Top-to-bottom scrim so the title reads clearly against the photo
           up near the top third, on top of the existing bottom scrim that

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { stampInstalledAtIfMissing } from "@/db/queries/settings";
 import { getProfile } from "@/db/queries/profile";
@@ -18,17 +18,39 @@ import { getProfile } from "@/db/queries/profile";
  * fresh account signing in on a browser that had already onboarded a
  * different account used to skip onboarding incorrectly and land on an
  * empty "My Tanks" (plus whatever language that browser last had set).
+ *
+ * Wraps `children` (2026-09-13) rather than rendering standalone —
+ * Jaideep hit a real bug signing up fresh with Google: the tabs layout's
+ * real content (My Tanks, with its placeholder "Welcome, Aquarist" before
+ * the profile loads) rendered and was visible for a moment before this
+ * gate's async profile check resolved and redirected to /onboarding. This
+ * withholds `children` until the check finishes, showing nothing (the
+ * layout still paints its own chrome) rather than a flash of the wrong
+ * screen — the same "don't show real content before you know which
+ * screen it should be" principle DbBootProvider already applies to the
+ * whole app's boot.
  */
-export function OnboardingGate() {
+export function OnboardingGate({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     stampInstalledAtIfMissing();
     getProfile().then((profile) => {
-      if (!profile?.onboardingCompletedAt) router.replace("/onboarding");
+      if (cancelled) return;
+      if (!profile?.onboardingCompletedAt) {
+        router.replace("/onboarding");
+        return; // stay withheld — we're navigating away, not rendering here
+      }
+      setReady(true);
     });
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return null;
+  if (!ready) return null;
+  return <>{children}</>;
 }

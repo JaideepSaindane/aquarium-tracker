@@ -19,6 +19,7 @@ import { importJsonExport } from "@/lib/import";
 import { getProfile, saveProfile } from "@/db/queries/profile";
 import { isSurvivalPromptDisabled, disableSurvivalPromptForever } from "@/db/queries/settings";
 import { uploadPhoto } from "@/lib/photo-upload";
+import { clearIntroPlayed } from "@/lib/intro-session";
 import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
 import { useTheme, type ThemeChoice } from "@/theme/ThemeProvider";
@@ -574,6 +575,7 @@ export default function SettingsPage() {
           <SecondaryButton
             onClick={async () => {
               await saveProfile({ onboardingCompletedAt: null });
+              clearIntroPlayed();
               router.push("/onboarding");
             }}
           >
