@@ -80,11 +80,6 @@ const hiLatn: Dictionary = {
     statusNeedsAttention: "Dhyan dein",
     statusNeedsAttentionExplanation: "{n} equipment check dekhne layak hai",
     statusNeedsAttentionExplanationPlural: "{n} equipment checks dekhne layak hain",
-    heroHeadline: "Chalo, aapke tanks dekhte hain",
-    featuredBadge: "Aapka tank",
-    viewTank: "Tank dekhein →",
-    scanAction: "Scan",
-    statsLine: "{tanks} tanks · {fish} fish",
   },
   settings: {
     title: "My Profile & Settings",

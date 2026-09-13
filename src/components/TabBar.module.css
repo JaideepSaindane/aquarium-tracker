@@ -1,37 +1,44 @@
-/* Flat bar attached to the bottom edge — restyled 2026-09-13 away from the
-   earlier floating rounded glass dock (see TabBar.tsx's comment for why). */
+/* Quiet, neutral bottom nav — Jaideep's ask, 2026-09-10: "the current
+   bottom nav is visually enormous," make it a plain, mostly-opaque white
+   bar instead of a blue-tinted glass dock. Kept as a floating, auto-hiding
+   bar (see .barHidden) since that behavior was validated earlier
+   ("hide them smartly when required") — only its colour/weight changed. */
 .bar {
   position: fixed;
   left: 50%;
-  bottom: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom));
   transform: translate(-50%, 0);
   display: flex;
-  align-items: stretch;
-  width: 100%;
+  align-items: center;
+  width: calc(100% - 24px);
   max-width: 480px;
-  height: calc(60px + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
-  border-top: 1px solid var(--color-line);
-  background: var(--color-surface);
+  height: 76px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--dock-border);
+  background: var(--dock-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--dock-shadow);
   z-index: 20;
   transition: transform 220ms ease;
 }
 
-/* Slides the whole bar down out of the way while scrolling through a long
-   list, and back up the moment scrolling stops or reverses at the very
-   bottom of a page's own content (2026-09-11 rule) — unchanged behaviour,
-   just a plain vertical slide now that the bar has no side margins to clear. */
+/* Smart-hide (TabBar.tsx tracks scroll direction): slides the whole dock
+   down out of the way while scrolling down through a long list, and back
+   up the moment scrolling stops or reverses — same idea as a MacBook dock
+   auto-hiding, so it never permanently blocks content on a long page. */
 .barHidden {
-  transform: translate(-50%, 100%);
+  transform: translate(-50%, calc(100% + 24px));
 }
 
 .tab {
   flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 3px;
   color: var(--color-ink-muted);
   text-decoration: none;
   font-size: var(--font-caption-size);
@@ -41,20 +48,33 @@
 
 .tabActive {
   color: var(--color-deep);
-  font-weight: 700;
 }
 
-/* Small dot under the active label instead of an icon-pill highlight — the
-   reference mockup's own active-state treatment (text label + dot, no
-   icons at all). Reserves space at all times so an active tab's label
-   doesn't shift the row when the dot appears. */
-.dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: transparent;
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  transition: background 150ms ease;
 }
 
-.tabActive .dot {
+.tabActive .icon {
+  background: var(--color-deep-soft);
+}
+
+/* Ask Aqua's icon gets a small filled teal circle so it's still findable at
+   a glance, without the nav item being visually enormous — Jaideep's ask,
+   2026-09-10, over the earlier raised/gradient treatment: "small teal
+   circular icon while keeping the same nav height." */
+.iconCenter {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--color-deep);
+  color: #fff;
+}
+
+.tabActive .iconCenter {
   background: var(--color-deep);
 }
