@@ -11,6 +11,7 @@ import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Butto
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
+import { ListRow } from "@/components/ListRow";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { APP_NAME } from "@/constants/app";
 import { ensureDb } from "@/db/client";
@@ -18,7 +19,6 @@ import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob } from "@/li
 import { importJsonExport } from "@/lib/import";
 import { getProfile, saveProfile } from "@/db/queries/profile";
 import { isSurvivalPromptDisabled, disableSurvivalPromptForever } from "@/db/queries/settings";
-import { uploadPhoto } from "@/lib/photo-upload";
 import { clearIntroPlayed } from "@/lib/intro-session";
 import { useTranslation } from "@/i18n/use-translation";
 import { useLocale } from "@/i18n/use-locale";
@@ -46,12 +46,7 @@ export default function SettingsPage() {
 
   const [profileName, setProfileName] = useState("");
   const [profileUsername, setProfileUsername] = useState("");
-  const [profileCity, setProfileCity] = useState("");
-  const [profileEmail, setProfileEmail] = useState("");
-  const [profileContact, setProfileContact] = useState("");
   const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
-  const [profileBusy, setProfileBusy] = useState(false);
-  const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
 
   const [survivalPromptOff, setSurvivalPromptOff] = useState(false);
@@ -71,9 +66,6 @@ export default function SettingsPage() {
       if (p) {
         setProfileName(p.name ?? "");
         setProfileUsername(p.username ?? "");
-        setProfileCity(p.city ?? "");
-        setProfileEmail(p.email ?? "");
-        setProfileContact(p.contact ?? "");
         setProfilePhotoUri(p.photoUri ?? null);
       }
     });
@@ -133,39 +125,6 @@ export default function SettingsPage() {
       setLinkMessage(`${t.settingsPage.couldNotSave} ${String(err)}`);
     } finally {
       setLinkBusy(false);
-    }
-  }
-
-  async function handleProfilePhoto(file: File) {
-    // Uploads to Vercel Blob (2026-09-11), not OPFS — the profile itself
-    // is already server-backed (per-account, not per-device), so the photo
-    // needs to be reachable from any device too, not just this one.
-    setProfileMessage(null);
-    try {
-      const url = await uploadPhoto(file);
-      setProfilePhotoUri(url);
-    } catch {
-      setProfileMessage(t.settingsPage.couldNotUploadPhoto);
-    }
-  }
-
-  async function handleSaveProfile() {
-    setProfileBusy(true);
-    setProfileMessage(null);
-    try {
-      await saveProfile({
-        name: profileName.trim() || undefined,
-        username: profileUsername.trim() || undefined,
-        city: profileCity.trim() || undefined,
-        email: profileEmail.trim() || undefined,
-        contact: profileContact.trim() || undefined,
-        photoUri: profilePhotoUri ?? undefined,
-      });
-      setProfileMessage(t.settingsPage.saved);
-    } catch (err) {
-      setProfileMessage(`${t.settingsPage.couldNotSave} ${String(err)}`);
-    } finally {
-      setProfileBusy(false);
     }
   }
 
@@ -281,27 +240,19 @@ export default function SettingsPage() {
     <Screen>
       <BackHeader title={t.settings.title} fallbackHref="/" />
 
-      {/* My Info */}
+      {/* Profile — the person, not a form. Editable fields live one level
+          down at /settings/edit-profile; kept from Section 9 per Jaideep's
+          feedback ("I actually liked the previous profile page") even
+          though the rest of that section was reverted. */}
       <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-          <TankAvatar photoUri={profilePhotoUri} size={88} onPhotoChange={handleProfilePhoto} fallbackIcon="👤" />
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <Field label={t.settingsPage.name} value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder={t.settingsPage.optional} />
-          <Field label={t.settingsPage.username} value={profileUsername} onChange={(e) => setProfileUsername(e.target.value)} placeholder={t.settingsPage.optional} />
-          <Field label={t.settingsPage.city} value={profileCity} onChange={(e) => setProfileCity(e.target.value)} placeholder={t.settingsPage.optional} />
-          <Field label={t.settingsPage.email} type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} placeholder={t.settingsPage.optional} />
-          <Field label={t.settingsPage.contact} type="tel" value={profileContact} onChange={(e) => setProfileContact(e.target.value)} placeholder={t.settingsPage.optional} />
-          <PrimaryButton onClick={handleSaveProfile} disabled={profileBusy}>
-            {profileBusy ? t.settingsPage.saving : t.common.save}
-          </PrimaryButton>
-        </div>
-        {profileMessage && (
-          <div style={{ marginTop: 12 }}>
-            <Banner severity="neutral">{profileMessage}</Banner>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+          <TankAvatar photoUri={profilePhotoUri} size={64} fallbackIcon="👤" />
+          <div style={{ minWidth: 0 }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: "var(--font-body-size)" }}>{profileName || t.home.aquarist}</p>
+            {profileUsername && <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>@{profileUsername}</p>}
           </div>
-        )}
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>{t.settings.profileSubtitle}</p>
+        </div>
+        <ListRow label={t.settingsPage.editProfile} showChevron onClick={() => router.push("/settings/edit-profile")} />
       </Card>
 
       {/* Add phone sign-in — only shown to an account (in practice, a Google

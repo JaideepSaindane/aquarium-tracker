@@ -337,6 +337,7 @@ const hiLatn: Dictionary = {
       "Har kuch hafton mein, hum 90 din se zyada purani add ki gayi fish ke baare mein poochte hain \"abhi bhi theek hai?\" — bas taaki aapke records accurate rahein. Koi scores nahi, koi streaks nahi.",
     turnedOff: "Band kar diya gaya. Aapse dobara nahi poocha jayega.",
     turnOffCheckIns: "Check-ins band karein",
+    editProfile: "Profile edit karein",
   },
   communityPage: {
     title: "Community",

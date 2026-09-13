@@ -333,6 +333,7 @@ const en = {
       "Every few weeks, we ask \"still doing well?\" about fish added over 90 days ago — just so your records stay accurate. No scores, no streaks.",
     turnedOff: "Turned off. You won't be asked again.",
     turnOffCheckIns: "Turn off check-ins",
+    editProfile: "Edit profile",
   },
   communityPage: {
     title: "Community",
