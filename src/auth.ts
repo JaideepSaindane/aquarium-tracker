@@ -4,8 +4,8 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
-import { users } from "@/server/db/schema";
-import { newId } from "@/db/id";
+import { users, profile } from "@/server/db/schema";
+import { newId, nowIso } from "@/db/id";
 import { isLockedOut, recordFailedAttempt, clearAttempts } from "@/server/auth/login-rate-limit";
 import { consumeLinkIntent } from "@/server/auth/link-intent";
 
@@ -105,6 +105,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           googleId: account.providerAccountId,
           name: user.name ?? null,
           createdAt: new Date(),
+        });
+        // Seed the (separate) profile row's name/email from what Google
+        // already gave us — Jaideep: "my email should already be autofilled
+        // and saved in my profile... we can also save the name." Only done
+        // on this brand-new-account path, never on a later Google login to
+        // an existing account, so a name/email the user later clears on
+        // purpose in Settings doesn't keep getting silently refilled.
+        const now = nowIso();
+        await serverDb.insert(profile).values({
+          userId: id,
+          name: user.name ?? null,
+          email: user.email,
+          createdAt: now,
+          updatedAt: now,
         });
         user.id = id;
       }
