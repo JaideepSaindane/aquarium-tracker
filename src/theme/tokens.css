@@ -65,10 +65,18 @@
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 20px;
 
-  /* The bottom nav is a plain, quiet, mostly-opaque dark bar. */
-  --dock-bg: rgba(11, 17, 18, 0.97);
-  --dock-border: rgba(255, 255, 255, 0.08);
-  --dock-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+  /* The bottom nav is a plain, quiet, mostly-opaque bar — but still needs to
+     read as its own surface floating over the page, not vanish into it.
+     Jaideep, 2026-09-13: "in dark mode, it is not very visible" — the
+     original rgba(11,17,18,*) dock background was nearly identical to
+     --color-ground (#0b1112) itself, so the whole dock blended into the
+     page behind it with only a faint 8%-white hairline to go on. Lifted the
+     fill to --color-surface-alt's tone (the same "one real step lighter"
+     elevated surface Cards/inputs already use) and doubled the border
+     opacity so the dock is visibly a raised surface against a dark page. */
+  --dock-bg: rgba(28, 38, 39, 0.97);
+  --dock-border: rgba(255, 255, 255, 0.16);
+  --dock-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.35);
 
   /* The floating bottom dock's own height (56px) plus its bottom margin
      (12px) plus a little breathing room — anything positioned above it

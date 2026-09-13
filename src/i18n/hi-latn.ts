@@ -8,7 +8,7 @@ import type { Dictionary } from "./types";
 
 const hiLatn: Dictionary = {
   tabs: {
-    tanks: "Mere Tanks",
+    tanks: "Home",
     dex: "Discover",
     home: "Home",
     ask: "Ask Aqua",

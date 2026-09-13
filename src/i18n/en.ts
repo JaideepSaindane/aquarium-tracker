@@ -4,7 +4,7 @@
 // against English.
 const en = {
   tabs: {
-    tanks: "My Tanks",
+    tanks: "Home",
     dex: "Discover",
     home: "Home",
     ask: "Ask Aqua",
