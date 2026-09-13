@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { Chip } from "@/components/Chip";
 import { Banner } from "@/components/Banner";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { useLiveQuery } from "@/db/live";
 import { listSpecies } from "@/db/queries/species";
 import { listDexCards } from "@/db/queries/dex";
@@ -15,14 +17,6 @@ import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { addSpeciesSuggestion, type PhotoCandidate } from "@/db/queries/species-suggestions";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { useTranslation } from "@/i18n/use-translation";
-
-const CATEGORY_ICON: Record<string, string> = {
-  fish: "🐟",
-  shrimp: "🦐",
-  snail: "🐌",
-  crayfish: "🦞",
-  plant: "🌿",
-};
 
 function firstName(json: string | null | undefined, fallback: string): string {
   if (!json) return fallback;
@@ -160,54 +154,27 @@ export default function DexPage() {
   return (
     <Screen background="var(--soft-bg)">
       <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4, color: "var(--soft-ink)" }}>{t.dexPage.title}</h1>
-      <p style={{ color: "var(--soft-ink-muted)", marginBottom: 16 }}>
-        {t.dexPage.unlockedCount.replace("{unlocked}", String(cardsBySpecies.size)).replace("{total}", String(species.length))}
-      </p>
+      <p style={{ color: "var(--soft-ink-muted)", marginBottom: 16 }}>{t.dexPage.subtitle}</p>
 
-      <div
-        style={{
-          display: "flex",
-          padding: 4,
-          borderRadius: "var(--radius-pill)",
-          background: "var(--soft-card-bg)",
-          border: "1px solid var(--soft-card-border)",
-          backdropFilter: "blur(var(--glass-blur))",
-          WebkitBackdropFilter: "blur(var(--glass-blur))",
-          marginBottom: 12,
-        }}
-      >
-        {([
-          { key: "mine", label: t.dexPage.myFish },
-          { key: "all", label: t.dexPage.all },
-        ] as { key: SectionTab; label: string }[]).map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => {
-              setSection(tab.key);
-              setCategory("all");
-              setDifficulty("all");
-              setSearchQuery("");
-              setScanCandidates(null);
-              setScanError(null);
-              setSuggestName("");
-              setSuggestNote("");
-              setSuggestSubmitted(false);
-            }}
-            style={{
-              flex: 1,
-              padding: "8px 14px",
-              borderRadius: "var(--radius-pill)",
-              border: "none",
-              background: section === tab.key ? "var(--soft-accent)" : "transparent",
-              color: section === tab.key ? "#fff" : "var(--soft-ink-muted)",
-              fontSize: "var(--font-caption-size)",
-              fontWeight: 700,
-              transition: "background 150ms ease, color 150ms ease",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div style={{ marginBottom: 12 }}>
+        <SegmentedControl
+          options={[
+            { value: "mine" as SectionTab, label: t.dexPage.myFish },
+            { value: "all" as SectionTab, label: t.dexPage.all },
+          ]}
+          value={section}
+          onChange={(v) => {
+            setSection(v);
+            setCategory("all");
+            setDifficulty("all");
+            setSearchQuery("");
+            setScanCandidates(null);
+            setScanError(null);
+            setSuggestName("");
+            setSuggestNote("");
+            setSuggestSubmitted(false);
+          }}
+        />
       </div>
 
       {section === "all" && (
@@ -472,49 +439,58 @@ export default function DexPage() {
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          style={{
-            padding: "8px 12px",
-            borderRadius: "var(--radius-md)",
-            border: "1px solid var(--soft-card-border)",
-            background: "var(--soft-card-bg)",
-            color: "var(--soft-ink)",
-          }}
-        >
-          <option value="all">{t.dexPage.allCategories}</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <select
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value)}
-          style={{
-            padding: "8px 12px",
-            borderRadius: "var(--radius-md)",
-            border: "1px solid var(--soft-card-border)",
-            background: "var(--soft-card-bg)",
-            color: "var(--soft-ink)",
-          }}
-        >
-          <option value="all">{t.dexPage.allDifficulties}</option>
-          {difficulties.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
+      <div style={{ display: "flex", gap: 6, marginBottom: 10, overflowX: "auto", paddingBottom: 2 }}>
+        {["all", ...categories].map((c) => (
+          <button
+            key={c}
+            onClick={() => setCategory(c)}
+            style={{
+              flexShrink: 0,
+              padding: "6px 14px",
+              minHeight: 32,
+              borderRadius: "var(--radius-pill)",
+              border: "1px solid var(--soft-card-border)",
+              background: category === c ? "var(--soft-accent)" : "var(--soft-card-bg)",
+              color: category === c ? "var(--color-surface)" : "var(--soft-ink)",
+              fontSize: "var(--font-caption-size)",
+              fontWeight: 600,
+              textTransform: "capitalize",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {c === "all" ? t.dexPage.allCategories : c}
+          </button>
+        ))}
       </div>
+      {difficulties.length > 0 && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 2 }}>
+          {["all", ...difficulties].map((d) => (
+            <button
+              key={d}
+              onClick={() => setDifficulty(d)}
+              style={{
+                flexShrink: 0,
+                padding: "6px 14px",
+                minHeight: 32,
+                borderRadius: "var(--radius-pill)",
+                border: "1px solid var(--soft-card-border)",
+                background: difficulty === d ? "var(--soft-accent-soft)" : "transparent",
+                color: difficulty === d ? "var(--soft-ink)" : "var(--soft-ink-muted)",
+                fontSize: "var(--font-caption-size)",
+                fontWeight: 600,
+                textTransform: "capitalize",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {d === "all" ? t.dexPage.allDifficulties : d}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {filtered.map((s) => {
-          const unlocked = cardsBySpecies.has(s.id);
-          const icon = CATEGORY_ICON[s.category ?? ""] ?? "❓";
+          const added = cardsBySpecies.has(s.id);
           const name = firstName(s.commonNames, s.id);
           return (
             <Link key={s.id} href={`/dex/${s.id}`}>
@@ -529,32 +505,9 @@ export default function DexPage() {
                   border: "1px solid var(--soft-card-border)",
                   backdropFilter: "blur(var(--glass-blur))",
                   WebkitBackdropFilter: "blur(var(--glass-blur))",
-                  boxShadow: unlocked ? "var(--shadow-sm)" : "none",
-                  opacity: unlocked ? 1 : 0.7,
                 }}
               >
-                <span
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "var(--soft-accent-soft)",
-                  }}
-                >
-                  {unlocked && s.imageUri ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={s.imageUri} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    <span style={{ fontSize: 20 }} aria-hidden>
-                      {icon}
-                    </span>
-                  )}
-                </span>
+                <SpeciesThumb imageUri={s.imageUri} category={s.category} size={44} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontWeight: 600, color: "var(--soft-ink)", display: "flex", alignItems: "center", gap: 6 }}>
                     {name}
@@ -565,23 +518,11 @@ export default function DexPage() {
                     {s.difficulty ? ` · ${s.difficulty}` : ""}
                   </p>
                 </div>
-                <span
-                  aria-hidden
-                  style={{
-                    width: 26,
-                    height: 26,
-                    borderRadius: "50%",
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 14,
-                    color: "#fff",
-                    background: unlocked ? "var(--color-improve)" : "var(--soft-card-border)",
-                  }}
-                >
-                  {unlocked ? "✓" : "🔒"}
-                </span>
+                {added && (
+                  <span style={{ color: "var(--color-improve)", fontSize: "var(--font-caption-size)", fontWeight: 700, flexShrink: 0 }}>
+                    ✓ {t.dexPage.added}
+                  </span>
+                )}
               </div>
             </Link>
           );
