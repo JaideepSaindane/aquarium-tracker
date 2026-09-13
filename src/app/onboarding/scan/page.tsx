@@ -12,13 +12,14 @@ import { LottiePlayer } from "@/components/LottiePlayer";
 import { assessPhotoQuality, downscaleForUpload } from "@/lib/image-quality/browser";
 import { ISSUE_MESSAGES, type QualityReport } from "@/lib/image-quality/algorithm";
 import { uploadPhoto } from "@/lib/photo-upload";
-import { scanTank } from "@/lib/ai-client";
+import { runHealthCheck } from "@/lib/ai-client";
 import { useScanSession } from "@/store/use-scan-session";
 import { getProfile } from "@/db/queries/profile";
-import { TankScanZod } from "@/server/ai/schemas/tank-scan";
+import { HealthCheckZod, deriveOverallStatus, type HealthCheckReport } from "@/server/ai/schemas/health-check";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { convertDimension } from "@/lib/dimension-units";
 import { formatVolumeDual } from "@/lib/units";
+import { useLocale } from "@/i18n/use-locale";
 import { useTranslation } from "@/i18n/use-translation";
 
 type Stage = "idle" | "rejected" | "details" | "scanning" | "scan-error";
@@ -26,6 +27,7 @@ type Stage = "idle" | "rejected" | "details" | "scanning" | "scan-error";
 export default function ScanCapturePage() {
   const router = useRouter();
   const t = useTranslation();
+  const { locale } = useLocale();
   const [stage, setStage] = useState<Stage>("idle");
   // Whether the (near-instant, client-side) photo-quality check and upload
   // are still running. Jaideep: a separate full "Checking photo..." screen
@@ -140,12 +142,13 @@ export default function ScanCapturePage() {
 
     try {
       const photoFile = new File([uploadBlob], "upload.jpg", { type: "image/jpeg" });
-      const result = await scanTank({
+      const result = await runHealthCheck({
         photo: photoFile,
         lengthCm,
         widthCm,
         heightCm,
-        city: city.trim(),
+        tankType: "unclear",
+        locale,
       });
 
       if (!result.ok) {
@@ -154,16 +157,17 @@ export default function ScanCapturePage() {
         return;
       }
 
-      const parsed = TankScanZod.safeParse(result.data.report);
+      const parsed = HealthCheckZod.safeParse(result.data.report);
       if (!parsed.success) {
         setScanError(t.scanPage.unexpectedShape);
         setStage("scan-error");
         return;
       }
 
+      const report: HealthCheckReport = { ...parsed.data, overall_status: deriveOverallStatus(parsed.data.checks) };
       setCapture({ originalPhotoPath: originalPath, uploadBlob });
       setDimensions({ lengthCm, widthCm, heightCm, city: city.trim() });
-      setStoreReport(parsed.data, result.data.meta.provider);
+      setStoreReport(report, result.data.meta.provider);
       router.push("/onboarding/report");
     } catch {
       setScanError(t.scanPage.couldNotReachServer);

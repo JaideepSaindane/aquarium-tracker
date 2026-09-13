@@ -5,61 +5,64 @@ import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
-import { Field } from "@/components/Field";
-import { SeverityCard } from "@/components/SeverityCard";
 import { Confidence } from "@/components/Confidence";
 import { GroundingLink } from "@/components/GroundingLink";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { useScanSession } from "@/store/use-scan-session";
+import { useLocale } from "@/i18n/use-locale";
 import { createTank } from "@/db/queries/tanks";
-import { addEquipment } from "@/db/queries/equipment";
-import { addPlant } from "@/db/queries/plants";
 import { createScan } from "@/db/queries/scans";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { addPhoto } from "@/db/queries/photos";
-import { FILTER_SUBTYPES } from "@/lib/common-options";
+import { HEALTH_CHECK_CATEGORIES } from "@/server/ai/schemas/health-check";
 import type { SeverityLevel } from "@/theme/tokens";
 import { useTranslation } from "@/i18n/use-translation";
 
-const SEVERITY_ORDER: SeverityLevel[] = ["fixNow", "watch", "improve"];
-const SEVERITY_KEY: Record<string, SeverityLevel> = { fix_now: "fixNow", watch: "watch", improve: "improve" };
-
-// Below this, a "finding" reads as more guess than fact — render it as an
-// open question instead of asserting it. docs/03-ai-contracts.md rendering rules.
-const QUESTION_THRESHOLD = 0.35;
-
-// Belt-and-suspenders alongside the prompt instruction (prompts/tank-scan.v1.md)
-// telling the model never to list these — no photo can ever answer them, so
-// stating "couldn't determine" is obvious and unhelpful. Filtered here too in
-// case the model doesn't fully comply.
-const NEVER_PHOTO_ANSWERABLE = /\bph\b|ammonia|nitrite|nitrate|water parameter|temperature/i;
-
-function equipmentTypes(t: ReturnType<typeof useTranslation>) {
-  return [
-    { value: "heater", label: t.reportPage.heater },
-    { value: "filter", label: t.reportPage.filter },
-    { value: "light", label: t.reportPage.light },
-    { value: "co2", label: t.reportPage.co2 },
-    { value: "air_pump", label: t.reportPage.airPump },
-    { value: "other", label: t.reportPage.other },
-  ];
+function healthCategoryMeta(t: ReturnType<typeof useTranslation>): Record<string, { icon: string; label: string }> {
+  return {
+    water_clarity: { icon: "💧", label: t.checkPage.waterClarity },
+    algae: { icon: "🟢", label: t.checkPage.algae },
+    fish_appearance: { icon: "🐟", label: t.checkPage.fishAppearance },
+    cleanliness: { icon: "🧹", label: t.checkPage.cleanliness },
+    plants: { icon: "🌿", label: t.checkPage.plants },
+    water_level: { icon: "📏", label: t.checkPage.waterLevel },
+    equipment: { icon: "⚙️", label: t.checkPage.equipment },
+    stocking: { icon: "🐠", label: t.checkPage.stocking },
+  };
 }
 
-type ManualEquipment = { type: string; subtype?: string; wattage?: number; ratedLph?: number };
+/** Same 4-tier-to-3-color compression used on the re-check Health Check screen — see tank/[id]/check/page.tsx's identical helper. */
+function healthStatusColor(status: string): string {
+  if (status === "critical") return "var(--color-fix-now)";
+  if (status === "warning") return "var(--color-watch)";
+  if (status === "ok") return "var(--color-improve)";
+  return "var(--color-ink-muted)"; // watch (framework) and na
+}
 
+/**
+ * The onboarding first scan now runs the same Health Check contract
+ * (health-check/v1) as every later re-check, per Jaideep's direct feedback
+ * ("I found the first tank scan to be utterly useless. The health scan was
+ * fantastic") — this screen renders it the same way tank/[id]/check's
+ * Health Check result does (one crisp category card, then a tips card).
+ *
+ * The Health Check prompt has no setup/equipment/plant extraction (it's
+ * built to assess an already-set-up tank, not describe one for the first
+ * time), so — per Jaideep's explicit choice over running two AI calls to
+ * keep the old auto-fill — the tank this creates starts bare, exactly like
+ * skipping the scan entirely: just dimensions/city, no auto-added
+ * equipment or plants. The scan and its findings still get saved to the
+ * new tank's journal.
+ */
 export default function ScanReportPage() {
   const router = useRouter();
   const t = useTranslation();
-  const EQUIPMENT_TYPES = equipmentTypes(t);
+  const { locale } = useLocale();
+  const HEALTH_CATEGORY_META = healthCategoryMeta(t);
   const session = useScanSession();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [manualEquipment, setManualEquipment] = useState<ManualEquipment[]>([]);
-  const [showAddEquipment, setShowAddEquipment] = useState(false);
-  const [newEquipType, setNewEquipType] = useState("heater");
-  const [newEquipSubtype, setNewEquipSubtype] = useState(FILTER_SUBTYPES[0].value);
-  const [newEquipRating, setNewEquipRating] = useState("");
 
   useEffect(() => {
     if (!session.report) router.replace("/onboarding/scan");
@@ -69,66 +72,21 @@ export default function ScanReportPage() {
   const report = session.report;
   if (!report) return <Screen>{t.common.loading}</Screen>;
 
-  if (!report.image_quality.usable) {
-    return (
-      <Screen
-        footer={
-          <PrimaryButton
-            onClick={() => {
-              session.reset();
-              router.push("/onboarding/scan");
-            }}
-          >
-            {t.reportPage.retakePhoto}
-          </PrimaryButton>
-        }
-      >
-        <BackHeader title={t.reportPage.photoUnclear} fallbackHref="/onboarding/scan" />
-        <Banner severity="watch">{report.image_quality.advice || t.reportPage.pleaseRetake}</Banner>
-      </Screen>
-    );
-  }
-
-  // The model sometimes returns a single { type: "none" } placeholder
-  // instead of an empty array when there's no algae to report — filter
-  // those out rather than showing a confusing "none (none) — none" card.
-  const algae = report.algae.filter((a) => a.type.toLowerCase() !== "none");
-  const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
-  const uncertain = report.findings.filter((f) => f.confidence < QUESTION_THRESHOLD);
-  const findingsBySeverity = SEVERITY_ORDER.map((level) => ({
-    level,
-    items: findings.filter((f) => SEVERITY_KEY[f.severity] === level),
-  })).filter((g) => g.items.length > 0);
-  const couldNotDetermine = report.could_not_determine.filter((item) => !NEVER_PHOTO_ANSWERABLE.test(item));
-
-  function addManualEquipment() {
-    const rating = newEquipRating ? Number(newEquipRating) : undefined;
-    const entry: ManualEquipment =
-      newEquipType === "filter"
-        ? { type: newEquipType, subtype: newEquipSubtype, ratedLph: rating }
-        : { type: newEquipType, wattage: rating };
-    setManualEquipment((list) => [...list, entry]);
-    setNewEquipRating("");
-    setShowAddEquipment(false);
-  }
-
-  function removeManualEquipment(index: number) {
-    setManualEquipment((list) => list.filter((_, i) => i !== index));
-  }
+  const bannerSeverity: SeverityLevel =
+    report.overall_status === "critical" ? "fixNow" : report.overall_status === "warning" || report.overall_status === "watch" ? "watch" : "improve";
+  const checksByCategory = new Map(report.checks.map((c) => [c.category, c]));
+  const tips = report.checks.filter((c) => c.status !== "ok" && c.status !== "na" && c.tip);
+  const insufficientPhoto = report.photo_quality === "insufficient";
 
   async function handleAcceptAndAddLivestock() {
     if (!report || saving) return;
     setSaving(true);
     setError(null);
     try {
-      const realPlants = report.plants.filter((p) => p.label.toLowerCase() !== "none");
-      const isPlanted = realPlants.length > 0 || report.plant_mass.score > 0.1;
-      const hasCo2 =
-        report.equipment_visible.some((e) => e.type.toLowerCase().includes("co2")) ||
-        manualEquipment.some((e) => e.type.toLowerCase().includes("co2"));
-      const volumeName = session.lengthCm && session.widthCm && session.heightCm
-        ? t.reportPage.lTank.replace("{v}", String(Math.round(((session.lengthCm * session.widthCm * session.heightCm) / 1000) * 10) / 10))
-        : t.reportPage.myTank;
+      const volumeName =
+        session.lengthCm && session.widthCm && session.heightCm
+          ? t.reportPage.lTank.replace("{v}", String(Math.round(((session.lengthCm * session.widthCm * session.heightCm) / 1000) * 10) / 10))
+          : t.reportPage.myTank;
 
       const tankId = await createTank({
         name: volumeName,
@@ -136,28 +94,10 @@ export default function ScanReportPage() {
         widthCm: session.widthCm ?? 0,
         heightCm: session.heightCm ?? 0,
         city: session.city || undefined,
-        isPlanted,
-        hasCo2,
-        setupType: report.setup.type,
-        substrate: report.hardscape.substrate || undefined,
         status: "active",
         photoUri: session.originalPhotoPath ?? undefined,
       });
 
-      // The model sometimes returns a single { type: "none" } / { label: "none" }
-      // placeholder instead of an empty array — skip those rather than
-      // inserting a bogus equipment/plant row.
-      for (const item of report.equipment_visible) {
-        if (item.type.toLowerCase() === "none") continue;
-        await addEquipment({ tankId, type: item.type, subtype: item.subtype || undefined });
-      }
-      for (const item of manualEquipment) {
-        await addEquipment({ tankId, type: item.type, subtype: item.subtype, wattage: item.wattage, ratedLph: item.ratedLph });
-      }
-      for (const plant of report.plants) {
-        if (plant.label.toLowerCase() === "none") continue;
-        await addPlant({ tankId, commonName: plant.label });
-      }
       if (session.originalPhotoPath) {
         await createScan({
           tankId,
@@ -165,18 +105,16 @@ export default function ScanReportPage() {
           modelName: session.modelName ?? "unknown",
           promptVersion: report.prompt_version,
           rawResponse: report,
-          findings: report.findings,
-          scores: report.scores,
-          userCorrections: Object.keys(session.clarifyingAnswers).length ? session.clarifyingAnswers : undefined,
+          findings: report.checks,
+          scores: { overall_status: report.overall_status },
         });
 
-        // The scan builds the tank's history for free — specs/T-022 wants
-        // every scan to leave a journal entry with the report attached.
-        const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : t.reportPage.noIssuesFlagged;
+        const flagged = report.checks.filter((c) => c.status !== "ok" && c.status !== "na");
+        const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : t.checkPage.nothingFlagged;
         const entryId = await addLogEntry({
           tankId,
           type: "journal",
-          body: t.reportPage.tankScanJournalEntry.replace("{setup}", report.setup.type).replace("{summary}", findingSummary),
+          body: `${t.checkPage.healthCheckParen.replace("{status}", report.overall_status)} ${summary}`,
         });
         await addPhoto({ tankId, logEntryId: entryId, localUri: session.originalPhotoPath });
       }
@@ -213,129 +151,68 @@ export default function ScanReportPage() {
       }
     >
       <BackHeader title={t.reportPage.tankReport} fallbackHref="/onboarding/scan" />
-      <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-        {report.setup.type} {t.reportPage.setup} · {report.tank_estimate.clarity}
-      </p>
 
-      {findingsBySeverity.map((group) => (
-        <div key={group.level} style={{ marginBottom: 16 }}>
-          {group.items.map((f) => (
-            <div key={f.id} style={{ marginBottom: 8 }}>
-              <SeverityCard severity={group.level} title={f.title}>
-                {f.explanation}
-              </SeverityCard>
-              {f.recommended_action && (
-                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginTop: 4, marginLeft: 4 }}>
-                  → {f.recommended_action}
-                </p>
-              )}
-              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 4, marginLeft: 4 }}>
-                <Confidence value={f.confidence} />
-                {f.grounding_refs.map((ref) => {
-                  const [type, id] = ref.split(":");
-                  return (
-                    <GroundingLink
-                      key={ref}
-                      label={ref}
-                      onOpen={type === "species" ? () => router.push(`/dex/${id}`) : type === "corpus" ? () => router.push(`/corpus/${id}`) : undefined}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+      {insufficientPhoto && (
+        <div style={{ marginBottom: 16 }}>
+          <Banner severity="watch">{t.checkPage.photoNotClearReliable}</Banner>
         </div>
-      ))}
-
-      {uncertain.length > 0 && (
-        <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.notSureAboutThese}</p>
-          {uncertain.map((f) => (
-            <p key={f.id} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>
-              {f.title}?
-            </p>
-          ))}
-        </Card>
       )}
 
-      {couldNotDetermine.length > 0 && (
-        <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.couldNotTellFromPhoto}</p>
-          <ul style={{ margin: 0, paddingLeft: 20, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
-            {couldNotDetermine.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </Card>
-      )}
+      <div style={{ marginBottom: 16 }}>
+        <Banner severity={bannerSeverity}>{report.summary}</Banner>
+      </div>
 
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAddEquipment || manualEquipment.length ? 8 : 0 }}>
-          <p style={{ fontWeight: 600 }}>{t.reportPage.equipmentWeMissed}</p>
-          {!showAddEquipment && (
-            <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowAddEquipment(true)}>
-              + {t.common.add}
-            </SecondaryButton>
-          )}
-        </div>
-        {manualEquipment.map((item, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <span style={{ fontSize: "var(--font-body-sm-size)" }}>
-              {item.subtype
-                ? FILTER_SUBTYPES.find((t) => t.value === item.subtype)?.label ?? item.subtype
-                : EQUIPMENT_TYPES.find((t) => t.value === item.type)?.label ?? item.type}
-              {item.wattage ? ` — ${item.wattage}W` : ""}
-              {item.ratedLph ? ` — ${item.ratedLph} L/h` : ""}
-            </span>
-            <button
-              type="button"
-              onClick={() => removeManualEquipment(i)}
-              style={{ background: "none", border: "none", color: "var(--color-fix-now)", fontSize: "var(--font-caption-size)" }}
-            >
-              {t.common.remove}
-            </button>
-          </div>
-        ))}
-        {showAddEquipment && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <select value={newEquipType} onChange={(e) => setNewEquipType(e.target.value)} style={{ padding: 8 }}>
-              {EQUIPMENT_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-            {newEquipType === "filter" && (
-              <select value={newEquipSubtype} onChange={(e) => setNewEquipSubtype(e.target.value)} style={{ padding: 8 }}>
-                {FILTER_SUBTYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            )}
-            <Field
-              label={newEquipType === "filter" ? t.reportPage.ratedFlow : t.reportPage.wattage}
-              type="number"
-              value={newEquipRating}
-              onChange={(e) => setNewEquipRating(e.target.value)}
-            />
-            <div style={{ display: "flex", gap: 8 }}>
-              <PrimaryButton onClick={addManualEquipment}>{t.common.save}</PrimaryButton>
-              <SecondaryButton onClick={() => setShowAddEquipment(false)}>{t.common.cancel}</SecondaryButton>
+      <Card style={{ marginBottom: 12 }}>
+        <p style={{ fontWeight: 700, marginBottom: 8 }}>🩺 {t.checkPage.healthCheck}</p>
+        {HEALTH_CHECK_CATEGORIES.map((cat) => {
+          const check = checksByCategory.get(cat);
+          const meta = HEALTH_CATEGORY_META[cat];
+          if (!check) return null;
+          return (
+            <div key={cat} style={{ display: "flex", gap: 8, padding: "6px 0", borderTop: "1px solid var(--color-line-soft)" }}>
+              <span style={{ flexShrink: 0, width: 130, fontSize: "var(--font-caption-size)", fontWeight: 700 }}>
+                {meta.icon} {meta.label}
+              </span>
+              <span style={{ fontSize: "var(--font-body-sm-size)", color: healthStatusColor(check.status) }}>
+                {check.status === "na" ? t.checkPage.notVisibleInPhoto : check.observation}
+              </span>
             </div>
-          </div>
-        )}
+          );
+        })}
       </Card>
 
-      {algae.length > 0 && (
-        <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.reportPage.algaeSpotted}</p>
-          {algae.map((a, i) => (
-            <p key={i} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
-              {a.type} ({a.severity}) — {a.location}
-            </p>
-          ))}
+      {tips.length > 0 && (
+        <Card style={{ marginBottom: 12 }}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>💡 {t.checkPage.tipsAndRecommendations}</p>
+          {tips.map((c, i) => {
+            const meta = HEALTH_CATEGORY_META[c.category];
+            return (
+              <div key={c.category} style={{ marginBottom: i < tips.length - 1 ? 12 : 0 }}>
+                <p style={{ fontWeight: 600, fontSize: "var(--font-body-sm-size)", marginBottom: 2 }}>
+                  {meta.icon} {meta.label}
+                </p>
+                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{c.tip}</p>
+                {c.possible_causes.length > 0 && (
+                  <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2 }}>
+                    {t.checkPage.possibleCauses} {c.possible_causes.join(", ")}
+                  </p>
+                )}
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
+                  <Confidence value={c.confidence === "high" ? 0.9 : c.confidence === "medium" ? 0.6 : 0.3} />
+                  {c.grounding_refs.map((ref) => {
+                    const [type, gid] = ref.split(":");
+                    return (
+                      <GroundingLink
+                        key={ref}
+                        label={ref}
+                        onOpen={type === "species" ? () => router.push(`/dex/${gid}`) : type === "corpus" ? () => router.push(`/corpus/${gid}${locale === "hi-latn" ? "?locale=hi-latn" : ""}`) : undefined}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </Card>
       )}
 
@@ -344,6 +221,8 @@ export default function ScanReportPage() {
           <Banner severity="fixNow">{error}</Banner>
         </div>
       )}
+
+      <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center" }}>{t.checkPage.visualOnlyDisclaimer}</p>
     </Screen>
   );
 }
