@@ -1,22 +1,40 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { Chip } from "@/components/Chip";
 import { Banner } from "@/components/Banner";
-import { SegmentedControl } from "@/components/SegmentedControl";
-import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { useLiveQuery } from "@/db/live";
 import { listSpecies } from "@/db/queries/species";
 import { listDexCards } from "@/db/queries/dex";
+import { listTanks } from "@/db/queries/tanks";
+import { listAllAliveLivestock } from "@/db/queries/livestock";
 import { isAiGenerated } from "@/lib/species-origin";
 import { identifySpecies } from "@/lib/ai-client";
 import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { addSpeciesSuggestion, type PhotoCandidate } from "@/db/queries/species-suggestions";
 import { uploadPhoto } from "@/lib/photo-upload";
+import { useUnitsContext } from "@/lib/UnitsProvider";
+import { formatTempRange } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
+
+const CATEGORY_ICON: Record<string, string> = {
+  fish: "🐟",
+  shrimp: "🦐",
+  snail: "🐌",
+  crayfish: "🦞",
+  plant: "🌿",
+};
+
+/** dGH band → a plain-language water-hardness descriptor — Jaideep asked for this instead of a raw pH number, matching the reference image's "Soft & Acidic" style chip. Bands follow the standard aquarium-hobby dGH scale (soft < 6, medium 6–12, hard > 12); the midpoint of the species' own range decides which band it falls in. */
+function hardnessLabel(min: number, max: number, t: ReturnType<typeof useTranslation>): string {
+  const mid = (min + max) / 2;
+  if (mid < 6) return t.dexPage.softWater;
+  if (mid > 12) return t.dexPage.hardWater;
+  return t.dexPage.mediumWater;
+}
 
 function firstName(json: string | null | undefined, fallback: string): string {
   if (!json) return fallback;
@@ -39,29 +57,133 @@ function safeParseArray(json: string | null | undefined): string[] {
 }
 
 async function loadDex() {
-  const [species, cards] = await Promise.all([listSpecies(), listDexCards()]);
-  return { species, cards };
+  const [species, cards, tanks, livestock] = await Promise.all([listSpecies(), listDexCards(), listTanks(), listAllAliveLivestock()]);
+  return { species, cards, tanks, livestock };
 }
 
 type SectionTab = "mine" | "all";
+
+/** A small, self-contained pill chip that shows the current value of one filter and opens a dropdown of its options — replaces a full horizontally-scrolling row of every option with one compact control, per the reference image. */
+function FilterChip({
+  label,
+  value,
+  options,
+  allLabel,
+  open,
+  onToggle,
+  onSelect,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  allLabel: string;
+  open: boolean;
+  onToggle: () => void;
+  onSelect: (v: string) => void;
+}) {
+  const isAll = value === "all";
+  return (
+    <div style={{ position: "relative" }}>
+      <button
+        onClick={onToggle}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          flexShrink: 0,
+          padding: "8px 14px",
+          minHeight: 36,
+          borderRadius: "var(--radius-pill)",
+          border: "1px solid var(--soft-card-border)",
+          background: isAll ? "var(--soft-card-bg)" : "var(--soft-accent-soft)",
+          color: isAll ? "var(--soft-ink)" : "var(--soft-accent)",
+          fontSize: "var(--font-caption-size)",
+          fontWeight: 700,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {!isAll && <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--soft-accent)" }} />}
+        <span style={{ textTransform: "capitalize" }}>{isAll ? label : value}</span>
+        <span aria-hidden style={{ fontSize: 10 }}>{open ? "︿" : "﹀"}</span>
+      </button>
+      {open && (
+        <>
+          <div onClick={onToggle} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
+          <div
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              marginTop: 6,
+              zIndex: 30,
+              background: "var(--soft-card-bg)",
+              border: "1px solid var(--soft-card-border)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lift)",
+              overflow: "hidden",
+              minWidth: 170,
+              maxHeight: 260,
+              overflowY: "auto",
+            }}
+          >
+            {["all", ...options].map((opt) => (
+              <button
+                key={opt}
+                onClick={() => onSelect(opt)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "10px 14px",
+                  background: opt === value ? "var(--soft-accent-soft)" : "none",
+                  border: "none",
+                  borderTop: opt === "all" ? "none" : "1px solid var(--soft-card-border)",
+                  fontSize: "var(--font-body-sm-size)",
+                  fontWeight: 600,
+                  color: opt === value ? "var(--soft-accent)" : "var(--soft-ink)",
+                  textTransform: "capitalize",
+                  cursor: "pointer",
+                }}
+              >
+                {opt === "all" ? allLabel : opt}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 // Restyled 2026-09-02 from a list-style layout in a reference screenshot
 // Jaideep shared — segmented pill tabs + photo/name/checkmark rows, in the
 // scoped "soft" blue palette (tokens.css --soft-*), replacing the previous
 // 3-column icon grid.
 //
-// Split into two top-level sections per Jaideep's request: "My Fish" (species
-// already unlocked, default/first tab) and "All" (the full catalog). Both use
-// the same row layout — an earlier 2-column square-card grid for "All"
-// overflowed horizontally on a real phone, so that was reverted in favour of
-// reusing this row style everywhere, just with locked rows dimmed/silhouetted.
+// Restyled again 2026-09-13 against a second reference screenshot: filled
+// pill tabs with counts ("My Fish 4" / "All Species 1,484"), a single
+// search bar with an inline scan-camera button, two compact dropdown
+// filter chips (Categories/Difficulty — replacing the earlier row of every
+// option scrolling horizontally), and richer per-species rows: a rounded-
+// square thumbnail (with a small tank-name badge when it's actually in one
+// of the viewer's tanks — real data, not the reference's generic "Tank #1"
+// placeholder), a filled checkmark circle for species already unlocked,
+// and a row of stat chips (temperature range, pH range, temperament) below
+// the name. The reference's "Freshwater" chip was dropped — every species
+// in this catalog already is freshwater (CLAUDE.md's scope), so a filter
+// that can never exclude anything isn't a real control, just a static
+// label; not worth adding for that. Search and filters now apply on both
+// tabs (the reference shows them under "My Fish" too), not just "All".
 export default function DexPage() {
   const router = useRouter();
   const t = useTranslation();
+  const { units } = useUnitsContext();
   const { data } = useLiveQuery(loadDex, []);
   const [section, setSection] = useState<SectionTab>("mine");
   const [category, setCategory] = useState("all");
   const [difficulty, setDifficulty] = useState("all");
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [difficultyMenuOpen, setDifficultyMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [scanning, setScanning] = useState(false);
   const [scanCandidates, setScanCandidates] = useState<PhotoCandidate[] | null>(null);
@@ -77,9 +199,19 @@ export default function DexPage() {
 
   const species = data?.species ?? [];
   const cardsBySpecies = new Map((data?.cards ?? []).map((c) => [c.speciesId, c]));
+  const tankNameById = new Map((data?.tanks ?? []).map((tk) => [tk.id, tk.name]));
+
+  const stockBySpecies = new Map<string, { total: number; tankCounts: Map<string, number> }>();
+  for (const row of data?.livestock ?? []) {
+    const entry = stockBySpecies.get(row.speciesId) ?? { total: 0, tankCounts: new Map<string, number>() };
+    entry.total += row.count;
+    entry.tankCounts.set(row.tankId, (entry.tankCounts.get(row.tankId) ?? 0) + row.count);
+    stockBySpecies.set(row.speciesId, entry);
+  }
 
   const categories = Array.from(new Set(species.map((s) => s.category).filter(Boolean))) as string[];
   const difficulties = Array.from(new Set(species.map((s) => s.difficulty).filter(Boolean))) as string[];
+  const unlockedCount = species.filter((s) => cardsBySpecies.has(s.id)).length;
 
   const q = searchQuery.trim().toLowerCase();
   const filtered = species.filter((s) => {
@@ -87,7 +219,7 @@ export default function DexPage() {
     if (section === "mine" && !unlocked) return false;
     if (category !== "all" && s.category !== category) return false;
     if (difficulty !== "all" && s.difficulty !== difficulty) return false;
-    if (section === "all" && q) {
+    if (q) {
       const names = safeParseArray(s.commonNames).concat(safeParseArray(s.commonNamesIn));
       const matches =
         s.id.toLowerCase().includes(q) ||
@@ -156,354 +288,371 @@ export default function DexPage() {
       <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4, color: "var(--soft-ink)" }}>{t.dexPage.title}</h1>
       <p style={{ color: "var(--soft-ink-muted)", marginBottom: 16 }}>{t.dexPage.subtitle}</p>
 
-      <div style={{ marginBottom: 12 }}>
-        <SegmentedControl
-          options={[
-            { value: "mine" as SectionTab, label: t.dexPage.myFish },
-            { value: "all" as SectionTab, label: t.dexPage.all },
-          ]}
-          value={section}
-          onChange={(v) => {
-            setSection(v);
-            setCategory("all");
-            setDifficulty("all");
-            setSearchQuery("");
-            setScanCandidates(null);
-            setScanError(null);
-            setSuggestName("");
-            setSuggestNote("");
-            setSuggestSubmitted(false);
-          }}
-        />
-      </div>
-
-      {section === "all" && (
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ display: "flex", gap: 8 }}>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.dexPage.searchByName}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        {(
+          [
+            { value: "mine" as SectionTab, icon: "🐟", label: t.dexPage.myFish, count: unlockedCount },
+            { value: "all" as SectionTab, icon: "📖", label: t.dexPage.all, count: species.length },
+          ]
+        ).map((tab) => {
+          const active = section === tab.value;
+          return (
+            <button
+              key={tab.value}
+              onClick={() => {
+                setSection(tab.value);
+                setCategoryMenuOpen(false);
+                setDifficultyMenuOpen(false);
+              }}
               style={{
                 flex: 1,
-                padding: "10px 14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                padding: "12px 10px",
                 borderRadius: "var(--radius-pill)",
+                border: active ? "none" : "1px solid var(--soft-card-border)",
+                background: active ? "var(--soft-accent)" : "var(--soft-card-bg)",
+                color: active ? "var(--color-surface)" : "var(--soft-ink)",
+                fontWeight: 700,
+                fontSize: "var(--font-body-sm-size)",
+              }}
+            >
+              <span aria-hidden>{tab.icon}</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tab.label}</span>
+              <span
+                style={{
+                  padding: "1px 8px",
+                  borderRadius: "var(--radius-pill)",
+                  background: active ? "rgba(255,255,255,0.25)" : "var(--soft-bg-alt)",
+                  fontSize: "var(--font-caption-size)",
+                  fontWeight: 700,
+                }}
+              >
+                {tab.count.toLocaleString()}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t.dexPage.searchByName}
+            style={{
+              flex: 1,
+              padding: "10px 14px",
+              borderRadius: "var(--radius-pill)",
+              border: "1px solid var(--soft-card-border)",
+              background: "var(--soft-card-bg)",
+              color: "var(--soft-ink)",
+            }}
+          />
+          <div style={{ position: "relative" }}>
+            <input
+              ref={scanCameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (file) handleScanPhoto(file);
+              }}
+            />
+            <input
+              ref={scanGalleryInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (file) handleScanPhoto(file);
+              }}
+            />
+            <button
+              onClick={() => setScanPickerOpen((v) => !v)}
+              disabled={scanning}
+              aria-label={t.dexPage.scanToFind}
+              style={{
+                width: 44,
+                height: 44,
+                flexShrink: 0,
+                borderRadius: "50%",
                 border: "1px solid var(--soft-card-border)",
                 background: "var(--soft-card-bg)",
                 color: "var(--soft-ink)",
-              }}
-            />
-            <div style={{ position: "relative" }}>
-              <input
-                ref={scanCameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                style={{ display: "none" }}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  e.target.value = "";
-                  if (file) handleScanPhoto(file);
-                }}
-              />
-              <input
-                ref={scanGalleryInputRef}
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  e.target.value = "";
-                  if (file) handleScanPhoto(file);
-                }}
-              />
-              <button
-                onClick={() => setScanPickerOpen((v) => !v)}
-                disabled={scanning}
-                aria-label={t.dexPage.scanToFind}
-                style={{
-                  width: 44,
-                  height: 44,
-                  flexShrink: 0,
-                  borderRadius: "50%",
-                  border: "1px solid var(--soft-card-border)",
-                  background: "var(--soft-card-bg)",
-                  color: "var(--soft-ink)",
-                  fontSize: 18,
-                  opacity: scanning ? 0.6 : 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {scanning ? <span className="spinner" aria-label={t.dexPage.scanning} /> : "📷"}
-              </button>
-              {scanPickerOpen && (
-                <>
-                  <div onClick={() => setScanPickerOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "100%",
-                      right: 0,
-                      marginTop: 6,
-                      zIndex: 30,
-                      background: "var(--soft-card-bg)",
-                      border: "1px solid var(--soft-card-border)",
-                      borderRadius: "var(--radius-md)",
-                      boxShadow: "var(--shadow-lift)",
-                      overflow: "hidden",
-                      minWidth: 190,
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setScanPickerOpen(false);
-                        scanCameraInputRef.current?.click();
-                      }}
-                      style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
-                    >
-                      📷 {t.dexPage.takePhoto}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setScanPickerOpen(false);
-                        scanGalleryInputRef.current?.click();
-                      }}
-                      style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", borderTop: "1px solid var(--soft-card-border)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
-                    >
-                      🖼️ {t.dexPage.chooseFromGallery}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {scanError && (
-            <div style={{ marginTop: 10 }}>
-              <Banner severity="fixNow">{scanError}</Banner>
-            </div>
-          )}
-
-          {scanCandidates && scanCandidates.length > 0 && (
-            <div
-              style={{
-                marginTop: 10,
-                padding: 12,
-                borderRadius: "var(--radius-lg)",
-                background: "var(--soft-card-bg)",
-                border: "1px solid var(--soft-card-border)",
+                fontSize: 18,
+                opacity: scanning ? 0.6 : 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <p style={{ fontWeight: 700, color: "var(--soft-ink)", marginBottom: 8, fontSize: "var(--font-body-sm-size)" }}>
-                {t.dexPage.bestGuesses}
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {scanCandidates.map((c, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      padding: "8px 10px",
-                      borderRadius: "var(--radius-md)",
-                      border: "1px solid var(--soft-card-border)",
-                      background: "var(--soft-bg-alt)",
+              {scanning ? <span className="spinner" aria-label={t.dexPage.scanning} /> : "📷"}
+            </button>
+            {scanPickerOpen && (
+              <>
+                <div onClick={() => setScanPickerOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    marginTop: 6,
+                    zIndex: 30,
+                    background: "var(--soft-card-bg)",
+                    border: "1px solid var(--soft-card-border)",
+                    borderRadius: "var(--radius-md)",
+                    boxShadow: "var(--shadow-lift)",
+                    overflow: "hidden",
+                    minWidth: 190,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScanPickerOpen(false);
+                      scanCameraInputRef.current?.click();
                     }}
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-                      <div style={{ minWidth: 0 }}>
-                        <span style={{ fontWeight: 600, color: "var(--soft-ink)" }}>{c.common_name}</span>{" "}
-                        <span style={{ color: "var(--soft-ink-muted)", fontStyle: "italic", fontSize: "var(--font-caption-size)" }}>
-                          {c.scientific_name}
-                        </span>
-                      </div>
-                      <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", flexShrink: 0 }}>
-                        {Math.round(c.confidence * 100)}%
+                    📷 {t.dexPage.takePhoto}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScanPickerOpen(false);
+                      scanGalleryInputRef.current?.click();
+                    }}
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", borderTop: "1px solid var(--soft-card-border)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
+                  >
+                    🖼️ {t.dexPage.chooseFromGallery}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {scanError && (
+          <div style={{ marginTop: 10 }}>
+            <Banner severity="fixNow">{scanError}</Banner>
+          </div>
+        )}
+
+        {scanCandidates && scanCandidates.length > 0 && (
+          <div
+            style={{
+              marginTop: 10,
+              padding: 12,
+              borderRadius: "var(--radius-lg)",
+              background: "var(--soft-card-bg)",
+              border: "1px solid var(--soft-card-border)",
+            }}
+          >
+            <p style={{ fontWeight: 700, color: "var(--soft-ink)", marginBottom: 8, fontSize: "var(--font-body-sm-size)" }}>
+              {t.dexPage.bestGuesses}
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {scanCandidates.map((c, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: "8px 10px",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--soft-card-border)",
+                    background: "var(--soft-bg-alt)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <span style={{ fontWeight: 600, color: "var(--soft-ink)" }}>{c.common_name}</span>{" "}
+                      <span style={{ color: "var(--soft-ink-muted)", fontStyle: "italic", fontSize: "var(--font-caption-size)" }}>
+                        {c.scientific_name}
                       </span>
                     </div>
-                    <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2, marginBottom: 8 }}>{c.why}</p>
-                    {c.species_id ? (
+                    <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", flexShrink: 0 }}>
+                      {Math.round(c.confidence * 100)}%
+                    </span>
+                  </div>
+                  <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 2, marginBottom: 8 }}>{c.why}</p>
+                  {c.species_id ? (
+                    <button
+                      onClick={() => router.push(`/dex/${c.species_id}`)}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "var(--radius-pill)",
+                        border: "none",
+                        background: "var(--soft-accent)",
+                        color: "#fff",
+                        fontSize: "var(--font-caption-size)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {t.dexPage.inCatalogViewCard}
+                    </button>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      <span style={{ color: "var(--color-watch)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>
+                        {t.dexPage.notInCatalogYet}
+                      </span>
                       <button
-                        onClick={() => router.push(`/dex/${c.species_id}`)}
+                        onClick={() => startSuggesting(c)}
                         style={{
                           padding: "6px 12px",
                           borderRadius: "var(--radius-pill)",
-                          border: "none",
-                          background: "var(--soft-accent)",
-                          color: "#fff",
+                          border: "1px solid var(--soft-card-border)",
+                          background: "transparent",
+                          color: "var(--soft-ink)",
                           fontSize: "var(--font-caption-size)",
                           fontWeight: 700,
                         }}
                       >
-                        {t.dexPage.inCatalogViewCard}
+                        {t.dexPage.suggestAddingIt}
                       </button>
-                    ) : (
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ color: "var(--color-watch)", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>
-                          {t.dexPage.notInCatalogYet}
-                        </span>
-                        <button
-                          onClick={() => startSuggesting(c)}
-                          style={{
-                            padding: "6px 12px",
-                            borderRadius: "var(--radius-pill)",
-                            border: "1px solid var(--soft-card-border)",
-                            background: "transparent",
-                            color: "var(--soft-ink)",
-                            fontSize: "var(--font-caption-size)",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {t.dexPage.suggestAddingIt}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(suggestName || (scanCandidates && scanCandidates.length === 0)) && (
-            <div
-              style={{
-                marginTop: 10,
-                padding: 12,
-                borderRadius: "var(--radius-lg)",
-                background: "var(--soft-card-bg)",
-                border: "1px solid var(--soft-card-border)",
-              }}
-            >
-              {suggestSubmitted ? (
-                <p style={{ color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>
-                  {t.dexPage.thanksSentForReview}
-                </p>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <p style={{ fontWeight: 700, color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}>
-                    {t.dexPage.suggestThisFish}
-                  </p>
-                  <input
-                    type="text"
-                    value={suggestName}
-                    onChange={(e) => setSuggestName(e.target.value)}
-                    placeholder={t.dexPage.whatFishIsThis}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: "var(--radius-md)",
-                      border: "1px solid var(--soft-card-border)",
-                      background: "var(--soft-bg-alt)",
-                      color: "var(--soft-ink)",
-                    }}
-                  />
-                  <input
-                    type="text"
-                    value={suggestNote}
-                    onChange={(e) => setSuggestNote(e.target.value)}
-                    placeholder={t.dexPage.anythingElse}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: "var(--radius-md)",
-                      border: "1px solid var(--soft-card-border)",
-                      background: "var(--soft-bg-alt)",
-                      color: "var(--soft-ink)",
-                    }}
-                  />
-                  <button
-                    onClick={handleSuggestSpecies}
-                    disabled={!suggestName.trim() || suggestSubmitting}
-                    style={{
-                      padding: "10px",
-                      borderRadius: "var(--radius-pill)",
-                      border: "none",
-                      background: "var(--soft-accent)",
-                      color: "#fff",
-                      fontWeight: 700,
-                      opacity: !suggestName.trim() || suggestSubmitting ? 0.6 : 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 8,
-                    }}
-                  >
-                    {suggestSubmitting && <span className="spinner" aria-hidden />}
-                    {suggestSubmitting ? t.dexPage.sending : t.dexPage.suggestThisFishShort}
-                  </button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {section === "all" && (
-        <>
-          <div style={{ display: "flex", gap: 6, marginBottom: 10, overflowX: "auto", paddingBottom: 2 }}>
-            {["all", ...categories].map((c) => (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                style={{
-                  flexShrink: 0,
-                  padding: "6px 14px",
-                  minHeight: 32,
-                  borderRadius: "var(--radius-pill)",
-                  border: "1px solid var(--soft-card-border)",
-                  background: category === c ? "var(--soft-accent)" : "var(--soft-card-bg)",
-                  color: category === c ? "var(--color-surface)" : "var(--soft-ink)",
-                  fontSize: "var(--font-caption-size)",
-                  fontWeight: 600,
-                  textTransform: "capitalize",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {c === "all" ? t.dexPage.allCategories : c}
-              </button>
-            ))}
-          </div>
-          {difficulties.length > 0 && (
-            <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 2 }}>
-              {["all", ...difficulties].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDifficulty(d)}
-                  style={{
-                    flexShrink: 0,
-                    padding: "6px 14px",
-                    minHeight: 32,
-                    borderRadius: "var(--radius-pill)",
-                    border: "1px solid var(--soft-card-border)",
-                    background: difficulty === d ? "var(--soft-accent-soft)" : "transparent",
-                    color: difficulty === d ? "var(--soft-ink)" : "var(--soft-ink-muted)",
-                    fontSize: "var(--font-caption-size)",
-                    fontWeight: 600,
-                    textTransform: "capitalize",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {d === "all" ? t.dexPage.allDifficulties : d}
-                </button>
               ))}
             </div>
-          )}
-        </>
-      )}
+          </div>
+        )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: section === "mine" ? 12 : 0 }}>
+        {(suggestName || (scanCandidates && scanCandidates.length === 0)) && (
+          <div
+            style={{
+              marginTop: 10,
+              padding: 12,
+              borderRadius: "var(--radius-lg)",
+              background: "var(--soft-card-bg)",
+              border: "1px solid var(--soft-card-border)",
+            }}
+          >
+            {suggestSubmitted ? (
+              <p style={{ color: "var(--color-improve)", fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>
+                {t.dexPage.thanksSentForReview}
+              </p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <p style={{ fontWeight: 700, color: "var(--soft-ink)", fontSize: "var(--font-body-sm-size)" }}>
+                  {t.dexPage.suggestThisFish}
+                </p>
+                <input
+                  type="text"
+                  value={suggestName}
+                  onChange={(e) => setSuggestName(e.target.value)}
+                  placeholder={t.dexPage.whatFishIsThis}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--soft-card-border)",
+                    background: "var(--soft-bg-alt)",
+                    color: "var(--soft-ink)",
+                  }}
+                />
+                <input
+                  type="text"
+                  value={suggestNote}
+                  onChange={(e) => setSuggestNote(e.target.value)}
+                  placeholder={t.dexPage.anythingElse}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--soft-card-border)",
+                    background: "var(--soft-bg-alt)",
+                    color: "var(--soft-ink)",
+                  }}
+                />
+                <button
+                  onClick={handleSuggestSpecies}
+                  disabled={!suggestName.trim() || suggestSubmitting}
+                  style={{
+                    padding: "10px",
+                    borderRadius: "var(--radius-pill)",
+                    border: "none",
+                    background: "var(--soft-accent)",
+                    color: "#fff",
+                    fontWeight: 700,
+                    opacity: !suggestName.trim() || suggestSubmitting ? 0.6 : 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                  }}
+                >
+                  {suggestSubmitting && <span className="spinner" aria-hidden />}
+                  {suggestSubmitting ? t.dexPage.sending : t.dexPage.suggestThisFishShort}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* flexWrap, not overflowX — a scrolling container clips an
+          absolutely-positioned dropdown to its own bounds, which hid the
+          FilterChip popovers entirely. Only two chips ever render here, so
+          wrapping (rather than scrolling) never costs anything. */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <FilterChip
+          label={t.dexPage.categoriesLabel}
+          value={category}
+          options={categories}
+          allLabel={t.dexPage.allCategories}
+          open={categoryMenuOpen}
+          onToggle={() => {
+            setCategoryMenuOpen((v) => !v);
+            setDifficultyMenuOpen(false);
+          }}
+          onSelect={(v) => {
+            setCategory(v);
+            setCategoryMenuOpen(false);
+          }}
+        />
+        {difficulties.length > 0 && (
+          <FilterChip
+            label={t.dexPage.difficultyLabel}
+            value={difficulty}
+            options={difficulties}
+            allLabel={t.dexPage.allDifficulties}
+            open={difficultyMenuOpen}
+            onToggle={() => {
+              setDifficultyMenuOpen((v) => !v);
+              setCategoryMenuOpen(false);
+            }}
+            onSelect={(v) => {
+              setDifficulty(v);
+              setDifficultyMenuOpen(false);
+            }}
+          />
+        )}
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {filtered.map((s) => {
           const added = cardsBySpecies.has(s.id);
           const name = firstName(s.commonNames, s.id);
+          const stock = stockBySpecies.get(s.id);
+          const primaryTankId = stock ? [...stock.tankCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] : undefined;
+          const primaryTankName = primaryTankId ? tankNameById.get(primaryTankId) : undefined;
+          const hasTemp = s.tempCMin != null && s.tempCMax != null;
+          const hasHardness = s.hardnessDghMin != null && s.hardnessDghMax != null;
+
           return (
             <Link key={s.id} href={`/dex/${s.id}`}>
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
                   gap: 12,
-                  padding: 10,
+                  padding: 12,
                   borderRadius: "var(--radius-lg)",
                   background: "var(--soft-card-bg)",
                   border: "1px solid var(--soft-card-border)",
@@ -511,20 +660,108 @@ export default function DexPage() {
                   WebkitBackdropFilter: "blur(var(--glass-blur))",
                 }}
               >
-                <SpeciesThumb imageUri={s.imageUri} category={s.category} size={44} />
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div
+                    style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: "var(--radius-md)",
+                      overflow: "hidden",
+                      background: "var(--soft-bg-alt)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {s.imageUri ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.imageUri} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span aria-hidden style={{ fontSize: 28 }}>
+                        {CATEGORY_ICON[s.category ?? ""] ?? "❓"}
+                      </span>
+                    )}
+                  </div>
+                  {primaryTankName && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 4,
+                        left: 4,
+                        maxWidth: 56,
+                        padding: "1px 6px",
+                        borderRadius: "var(--radius-sm)",
+                        background: "rgba(0,0,0,0.65)",
+                        color: "#fff",
+                        fontSize: 9,
+                        fontWeight: 700,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {primaryTankName}
+                    </span>
+                  )}
+                </div>
+
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: 600, color: "var(--soft-ink)", display: "flex", alignItems: "center", gap: 6 }}>
-                    {name}
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+                    <strong style={{ fontSize: "var(--font-heading-size)", color: "var(--soft-ink)" }}>{name}</strong>
+                    {s.scientificName && (
+                      <span style={{ fontStyle: "italic", color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+                        {s.scientificName}
+                      </span>
+                    )}
                     {isAiGenerated(s) && <Chip variant="unverified">{t.dexPage.ai}</Chip>}
-                  </p>
-                  <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", textTransform: "capitalize" }}>
+                  </div>
+
+                  <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", textTransform: "capitalize", margin: "2px 0 6px" }}>
                     {s.category ?? t.dexPage.species}
                     {s.difficulty ? ` · ${s.difficulty}` : ""}
+                    {stock && stock.total > 0 && (
+                      <>
+                        {" · "}
+                        <span style={{ color: "var(--color-improve)", fontWeight: 700 }}>{t.dexPage.inTank.replace("{n}", String(stock.total))}</span>
+                      </>
+                    )}
                   </p>
+
+                  {(hasTemp || hasHardness || s.temperament) && (
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {hasTemp && (
+                        <span style={statChipStyle}>
+                          🌡️ {formatTempRange(s.tempCMin!, s.tempCMax!, units)}
+                        </span>
+                      )}
+                      {hasHardness && <span style={statChipStyle}>💧 {hardnessLabel(s.hardnessDghMin!, s.hardnessDghMax!, t)}</span>}
+                      {s.temperament && (
+                        <span style={{ ...statChipStyle, color: "var(--soft-accent)", background: "var(--soft-accent-soft)", textTransform: "capitalize" }}>
+                          {s.temperament}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
+
                 {added && (
-                  <span style={{ color: "var(--color-improve)", fontSize: "var(--font-caption-size)", fontWeight: 700, flexShrink: 0 }}>
-                    ✓ {t.dexPage.added}
+                  <span
+                    aria-label={t.dexPage.added}
+                    style={{
+                      flexShrink: 0,
+                      width: 26,
+                      height: 26,
+                      borderRadius: "50%",
+                      background: "var(--color-improve)",
+                      color: "#fff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 14,
+                      fontWeight: 700,
+                    }}
+                  >
+                    ✓
                   </span>
                 )}
               </div>
@@ -534,12 +771,22 @@ export default function DexPage() {
 
         {filtered.length === 0 && (
           <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", marginTop: 32 }}>
-            {section === "mine"
-              ? t.dexPage.noUnlockedMatch
-              : t.dexPage.noSpeciesMatch}
+            {section === "mine" ? t.dexPage.noUnlockedMatch : t.dexPage.noSpeciesMatch}
           </p>
         )}
       </div>
     </Screen>
   );
 }
+
+const statChipStyle: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+  padding: "3px 9px",
+  borderRadius: "var(--radius-pill)",
+  background: "var(--soft-bg-alt)",
+  color: "var(--soft-ink-muted)",
+  fontSize: 11,
+  fontWeight: 600,
+};
