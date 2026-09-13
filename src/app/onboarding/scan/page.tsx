@@ -21,12 +21,20 @@ import { convertDimension } from "@/lib/dimension-units";
 import { formatVolumeDual } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
 
-type Stage = "idle" | "checking" | "rejected" | "details" | "scanning" | "scan-error";
+type Stage = "idle" | "rejected" | "details" | "scanning" | "scan-error";
 
 export default function ScanCapturePage() {
   const router = useRouter();
   const t = useTranslation();
   const [stage, setStage] = useState<Stage>("idle");
+  // Whether the (near-instant, client-side) photo-quality check and upload
+  // are still running. Jaideep: a separate full "Checking photo..." screen
+  // between taking the picture and seeing the two questions read like the
+  // real scan had already happened, making the actual "Scan my tank" button
+  // afterward feel redundant ("scan again?"). Now the photo and the two
+  // questions appear together immediately — `checking` just keeps the Scan
+  // button disabled until the upload this needs is actually ready.
+  const [checking, setChecking] = useState(false);
   const [report, setReport] = useState<QualityReport | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadBlob, setUploadBlob] = useState<Blob | null>(null);
@@ -73,7 +81,11 @@ export default function ScanCapturePage() {
   const volumeL = lengthCm && widthCm && heightCm ? Math.round(((lengthCm * widthCm * heightCm) / 1000) * 10) / 10 : null;
 
   async function handleFile(file: File) {
-    setStage("checking");
+    // Show the photo and the two questions right away — the quality check
+    // and upload below run quietly in the background (`checking`), not as
+    // their own separate "scanning" screen.
+    setStage("details");
+    setChecking(true);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(file));
 
@@ -81,6 +93,7 @@ export default function ScanCapturePage() {
     setReport(quality);
 
     if (!quality.usable) {
+      setChecking(false);
       setStage("rejected");
       return;
     }
@@ -97,17 +110,19 @@ export default function ScanCapturePage() {
     try {
       path = await uploadPhoto(file);
     } catch {
+      setChecking(false);
       setUploadError(t.scanPage.couldNotUploadPhoto);
       setStage("rejected");
       return;
     }
     setUploadBlob(blob);
     setOriginalPath(path);
-    setStage("details");
+    setChecking(false);
   }
 
   function retake() {
     setStage("idle");
+    setChecking(false);
     setReport(null);
     setUploadError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -167,12 +182,20 @@ export default function ScanCapturePage() {
             tank yet) can still reach a real tank via the plain manual
             form instead of being stuck on this screen. */}
         <TextButton onClick={() => router.push("/tank/new")}>{t.scanPage.setUpManuallyInstead}</TextButton>
+        {/* A real skip, not just "manual setup instead" — someone who
+            doesn't want to add a tank at all right now (just wants to look
+            around the app first) shouldn't be stuck here either. Onboarding
+            already marked onboardingCompletedAt before routing here, so
+            this is a plain nav to My Tanks, no extra save needed. Jaideep:
+            "the user can just go land on My tanks page with nothing added,
+            and explore the app." */}
+        <TextButton onClick={() => router.push("/")}>{t.scanPage.skipForNow}</TextButton>
       </>
     ) : stage === "rejected" ? (
       <PrimaryButton onClick={retake}>{t.scanPage.retake}</PrimaryButton>
     ) : stage === "details" || stage === "scanning" || stage === "scan-error" ? (
       <>
-        <PrimaryButton onClick={runScan} disabled={stage === "scanning" || !lengthCm || !widthCm || !heightCm}>
+        <PrimaryButton onClick={runScan} disabled={checking || stage === "scanning" || !lengthCm || !widthCm || !heightCm}>
           {stage === "scanning" ? t.scanPage.analysingYourTank : stage === "scan-error" ? t.scanPage.tryAgain : t.scanPage.scanMyTank}
         </PrimaryButton>
         <SecondaryButton onClick={retake} disabled={stage === "scanning"}>
@@ -185,7 +208,7 @@ export default function ScanCapturePage() {
     <Screen footer={footer}>
       <BackHeader title={t.scanPage.title} fallbackHref="/" />
       <p style={{ color: "var(--color-ink-muted)", marginBottom: 16 }}>
-        {t.scanPage.standSquare}
+        {t.scanPage.uploadFullTank}
       </p>
 
       {stage === "idle" && (
@@ -206,16 +229,6 @@ export default function ScanCapturePage() {
           onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
           style={{ display: "none" }}
         />
-      )}
-
-      {stage === "checking" && (
-        <Card>
-          {previewUrl && (
-            // eslint-disable-next-line @next/next/no-img-element -- ephemeral blob: URL preview
-            <img src={previewUrl} alt="" style={{ width: "100%", height: 180, objectFit: "cover", borderRadius: 8, marginBottom: 8 }} />
-          )}
-          <p>{t.scanPage.checkingPhoto}</p>
-        </Card>
       )}
 
       {stage === "rejected" && (
@@ -245,6 +258,9 @@ export default function ScanCapturePage() {
           )}
           <Card>
             <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.scanPage.twoQuickQuestions}</p>
+            {checking && (
+              <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 8 }}>{t.scanPage.checkingPhoto}</p>
+            )}
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>

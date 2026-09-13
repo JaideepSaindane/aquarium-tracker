@@ -11,6 +11,16 @@ import { useTranslation } from "@/i18n/use-translation";
  * when there's no real history to go back to (e.g. this page was opened
  * directly, or is the first screen in a flow) — `router.back()` alone would
  * otherwise silently do nothing.
+ *
+ * The title's `text-overflow: ellipsis` only actually clips a long title
+ * (instead of pushing the whole header wider than the screen and forcing a
+ * horizontal scroll) once the wrapping div around it has a *bounded* width
+ * to overflow against — `flex: 1` on that div gives it exactly the
+ * available space in the header row, same idea as `minWidth: 0` on the
+ * title itself. Jaideep hit "Show us your..." running off the edge of
+ * `/onboarding/scan`'s header (2026-09-13) because that div had no `flex`
+ * set at all, so it just grew to fit its content — fixed here once, for
+ * every screen that uses this component, not per-screen.
  */
 export function BackHeader({ title, fallbackHref, right }: { title?: ReactNode; fallbackHref?: string; right?: ReactNode }) {
   const router = useRouter();
@@ -25,8 +35,8 @@ export function BackHeader({ title, fallbackHref, right }: { title?: ReactNode; 
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: title ? 16 : 8 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: title ? 16 : 8, minWidth: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
         <button
           type="button"
           onClick={handleBack}
