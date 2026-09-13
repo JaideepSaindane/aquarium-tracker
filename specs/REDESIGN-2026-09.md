@@ -1,7 +1,7 @@
 # UI/UX Redesign — Execution Plan
 
 **Source brief:** `docs/08-ui-redesign-brief.md` (Jaideep's consolidated redesign strategy, shared 2026-09-12 — read it before starting any section).
-**Status:** Sections 0–5 complete (2026-09-12/13). Next: Section 6 (Discover). Work the sections in order, one at a time — Jaideep says "do Section N".
+**Status:** Sections 0–6 complete (2026-09-12/13). Next: Section 7 (Ask Aqua). Work the sections in order, one at a time — Jaideep says "do Section N".
 **Log every completed section in `specs/PROGRESS.md`**, same as any task.
 
 ---
