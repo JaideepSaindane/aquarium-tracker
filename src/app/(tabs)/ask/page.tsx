@@ -13,8 +13,11 @@ import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { listAiInteractions, rateAiInteraction } from "@/db/queries/ai-interactions";
 import { listLivestockForTank } from "@/db/queries/livestock";
+import { listSpecies } from "@/db/queries/species";
 import { askQuestion, peekQuotaStatus, type QuotaStatus } from "@/lib/ai-client";
 import { buildTankContext } from "@/lib/tank-context";
+import { useUnits } from "@/lib/UnitsProvider";
+import { formatLength, formatVolume, formatTempRange } from "@/lib/units";
 import { useLocale } from "@/i18n/use-locale";
 import { useTranslation } from "@/i18n/use-translation";
 import { AskZod, type AskAnswer } from "@/server/ai/schemas/ask";
@@ -40,15 +43,28 @@ export type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInter
  * is a real sticky chat composer (`Screen`'s `footer` prop). Ask is a
  * permanent centered tab in the bottom dock, so the composer uses
  * `footerAboveDock` to sit above the dock instead of under it.
+ *
+ * Redesign Section 7 (2026-09-13): "a specialist that knows your tank, not
+ * a generic chatbot" — the empty state now leads with the selected tank's
+ * own vitals (size · volume · safe temperature range for whatever's
+ * actually living in it) instead of a generic "ask me anything" line, and
+ * auto-selects the user's first tank on load (rather than defaulting to
+ * "General") so that context is there before they've typed anything.
+ * Starter questions became lightweight wrapping chips instead of three
+ * stacked full-width buttons. The Early Bird promo line is gone from the
+ * composer — it already lives in Settings → Your Plan, so this was a
+ * duplicate, not a second real placement.
  */
 export default function AskPage() {
   const router = useRouter();
   const { data: tanks } = useLiveQuery(listTanks, []);
   const { locale } = useLocale();
   const t = useTranslation();
+  const units = useUnits();
   const STARTER_QUESTIONS = [t.askPage.starterQuestions.setupCorrect, t.askPage.starterQuestions.thisWeek, t.askPage.starterQuestions.addMoreFish];
 
   const [tankId, setTankId] = useState("");
+  const didAutoSelectTank = useRef(false);
   const [question, setQuestion] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
@@ -64,6 +80,40 @@ export default function AskPage() {
   useEffect(() => {
     peekQuotaStatus("ask").then(setQuota);
   }, []);
+
+  // Lead with "I know your aquarium," not "General" — auto-select the
+  // user's first tank once tanks have loaded, but only ever once, so a
+  // deliberate switch back to "General" afterward sticks.
+  useEffect(() => {
+    if (!didAutoSelectTank.current && !tankId && tanks && tanks.length > 0) {
+      didAutoSelectTank.current = true;
+      setTankId(tanks[0].id);
+    }
+  }, [tanks, tankId]);
+
+  const { data: tankLivestock } = useLiveQuery(() => (tankId ? listLivestockForTank(tankId) : Promise.resolve([])), [tankId]);
+  const { data: allSpecies } = useLiveQuery(listSpecies, []);
+  const selectedTank = (tanks ?? []).find((tk) => tk.id === tankId) ?? null;
+  const aliveSpeciesRows = (tankLivestock ?? [])
+    .filter((l) => l.status === "alive")
+    .map((l) => (allSpecies ?? []).find((s) => s.id === l.speciesId))
+    .filter((s): s is NonNullable<typeof s> => !!s && s.tempCMin != null && s.tempCMax != null);
+  // Same "overlap of every kept species' own safe range" logic as Tank
+  // Detail's own recommended-temperature card — the actual constraint this
+  // tank is under, not one species' number.
+  const tankTempRange =
+    aliveSpeciesRows.length > 0
+      ? { min: Math.max(...aliveSpeciesRows.map((s) => s.tempCMin as number)), max: Math.min(...aliveSpeciesRows.map((s) => s.tempCMax as number)) }
+      : null;
+  const tankVitalsLine = selectedTank
+    ? [
+        `${formatLength(selectedTank.lengthCm, units)} ${selectedTank.isPlanted ? t.askPage.plantedTank : t.askPage.tank}`,
+        formatVolume(selectedTank.volumeL, units),
+        tankTempRange ? formatTempRange(tankTempRange.min, tankTempRange.max, units) : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : null;
 
   const askHistory = sessionTurns;
 
@@ -155,7 +205,6 @@ export default function AskPage() {
     });
   }
 
-  const isEarlyBird = quota && quota.earlyBird;
   const remaining = quota ? quota.limit - quota.used : 0;
   const quotaWarning =
     quota && !quota.earlyBird && quota.allowed && remaining <= 3
@@ -170,11 +219,6 @@ export default function AskPage() {
       footerAboveDock
       footer={
         <>
-          {isEarlyBird && (
-            <p style={{ color: "var(--color-improve)", fontSize: "var(--font-caption-size)" }}>
-              {t.askPage.earlyBird}
-            </p>
-          )}
           {quotaWarning && <p style={{ color: "var(--color-watch)", fontSize: "var(--font-caption-size)" }}>{quotaWarning}</p>}
           {quotaExhausted && (
             <Banner severity="watch">
@@ -241,15 +285,18 @@ export default function AskPage() {
       {askHistory.length === 0 && !pendingQuestion && (
         <div className={styles.emptyState}>
           <LottiePlayer name="listening" size={72} className={styles.emptyStateAnim} />
-          <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.askPage.emptyTitle}</p>
+          <p style={{ fontWeight: 600, marginBottom: 4 }}>{selectedTank ? t.askPage.emptyTitle : t.askPage.emptyTitleNoTank}</p>
+          {tankVitalsLine && (
+            <p style={{ color: "var(--color-deep)", fontWeight: 600, fontSize: "var(--font-body-sm-size)", marginBottom: 4 }}>{tankVitalsLine}</p>
+          )}
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
             {t.askPage.emptyBody}
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", maxWidth: 320 }}>
+          <div className={styles.starterChips}>
             {STARTER_QUESTIONS.map((q) => (
-              <SecondaryButton key={q} onClick={() => handleAsk(q)}>
+              <button key={q} type="button" className={styles.starterChip} onClick={() => handleAsk(q)}>
                 {q}
-              </SecondaryButton>
+              </button>
             ))}
           </div>
         </div>
