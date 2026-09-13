@@ -48,15 +48,6 @@ async function loadHomeData() {
 // switching to the mockup's own nav/persona-title styling. The reminders
 // feature (task-due card/chip) was removed 2026-09-10 — reminders are gone
 // app-wide, so every tank now just shows a plain "Healthy" badge.
-//
-// 2026-09-13: accent colour used more aggressively on this screen only, per
-// Jaideep's ask after a Meesho-style "one loud accent colour, everywhere"
-// design idea — the settings icon, search box, tank count badge, water-type/
-// planted/CO2 pills, species-thumb rings, and the "+ Add tank" button all
-// switched to a solid or tinted aqua fill. The Status component's
-// healthy/no-fish severity colouring is deliberately untouched — Jaideep's
-// own call, keeping the safety-critical severity palette separate from the
-// brand accent. Scoped to Home only; no other screen was touched.
 export default function TanksPage() {
   const router = useRouter();
   const { data, loading, error } = useLiveQuery(loadHomeData, []);
@@ -109,7 +100,8 @@ export default function TanksPage() {
             width: 44,
             height: 44,
             borderRadius: "50%",
-            background: "var(--color-deep)",
+            background: "var(--soft-card-bg)",
+            border: "1px solid var(--soft-card-border)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -150,8 +142,8 @@ export default function TanksPage() {
             height: 48,
             padding: "0 16px",
             borderRadius: "var(--radius-md)",
-            border: "1px solid var(--color-deep)",
-            background: "var(--color-accent-soft)",
+            border: "1px solid var(--color-line)",
+            background: "var(--color-surface)",
             color: "var(--soft-ink)",
             fontSize: "var(--font-body-size)",
             marginBottom: 20,
@@ -182,25 +174,10 @@ export default function TanksPage() {
 
       {tanks && tanks.length > 0 && (
         <>
-          <div style={{ marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
-            <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>{t.home.myTanks}</p>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minWidth: 22,
-                height: 22,
-                padding: "0 7px",
-                borderRadius: "var(--radius-pill)",
-                background: "var(--color-deep)",
-                color: "var(--color-surface)",
-                fontSize: "var(--font-caption-size)",
-                fontWeight: 700,
-              }}
-            >
-              {tanks.length}
-            </span>
+          <div style={{ marginBottom: 10 }}>
+            <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>
+              {t.home.myTanks} <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
+            </p>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
@@ -225,7 +202,6 @@ export default function TanksPage() {
                     borderRadius: "var(--radius-lg)",
                     background: "var(--color-surface)",
                     border: "1px solid var(--color-line)",
-                    borderTop: "3px solid var(--color-deep)",
                     boxShadow: "var(--shadow-sm)",
                     overflow: "hidden",
                   }}
@@ -269,31 +245,29 @@ export default function TanksPage() {
                       {tank.name}
                     </strong>
 
-                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "6px 0 0" }}>
-                      {[
-                        isBrackish ? t.home.brackish : t.home.freshwater,
-                        ...(tank.isPlanted ? [t.home.planted] : []),
-                        ...(tank.hasCo2 ? ["CO₂"] : []),
-                      ].map((label) => (
-                        <span
-                          key={label}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            padding: "2px 10px",
-                            borderRadius: "var(--radius-pill)",
-                            background: "var(--color-accent-soft)",
-                            color: "var(--color-deep)",
-                            fontSize: "var(--font-caption-size)",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {label}
-                        </span>
-                      ))}
-                      <span style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-                        {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
-                      </span>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                        color: "var(--soft-ink-muted)",
+                        fontSize: "var(--font-caption-size)",
+                        margin: "4px 0 0",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {isBrackish ? t.home.brackish : t.home.freshwater}
+                      {tank.isPlanted && (
+                        <>
+                          <span aria-hidden>·</span>
+                          {t.home.planted}
+                        </>
+                      )}
+                      {tank.hasCo2 ? " · CO₂" : ""}
+                      {" · "}
+                      {new Date(tank.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
                     </div>
 
                     {/* Status now always carries a real explanation (the
@@ -307,11 +281,9 @@ export default function TanksPage() {
                       />
                     </div>
 
-                    <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                    <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                       {visibleThumbs.map((l, i) => (
-                        <span key={`${l.speciesId}-${i}`} style={{ display: "inline-flex", borderRadius: "50%", border: "2px solid var(--color-deep)" }}>
-                          <SpeciesThumb imageUri={l.imageUri} category={l.category} size={24} />
-                        </span>
+                        <SpeciesThumb key={`${l.speciesId}-${i}`} imageUri={l.imageUri} category={l.category} size={24} />
                       ))}
                       {overflowCount > 0 && (
                         <span
@@ -397,9 +369,9 @@ export default function TanksPage() {
               instead of a pill fighting for space next to the section
               header above. */}
           <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            <PrimaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/tank/new")}>
+            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/tank/new")}>
               + {t.home.addTank}
-            </PrimaryButton>
+            </SecondaryButton>
             <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/onboarding/planner")}>
               🧭 {t.home.plannerCta}
             </SecondaryButton>
