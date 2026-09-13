@@ -15,11 +15,32 @@ const FALLBACK_MS = 4500;
  * naturally re-plays every time that page mounts. Source:
  * Intro-fish-animation/, copied into public/animations/ since it needs to
  * be fetchable at runtime.
+ *
+ * Also mounted on `/login` (2026-09-13) — Jaideep wanted a brand-new,
+ * signed-out visitor to see the same fish-leap intro before the sign-in
+ * pills, not just a returning user who's already authenticated and hit
+ * OnboardingGate's redirect — so `backgroundSrc`/`onDismiss` exist to let
+ * a second call site swap the backdrop photo and move on afterward.
  */
-export function IntroAnimation() {
+export function IntroAnimation({
+  backgroundSrc = "/onboarding/intro-bg.jpg",
+  onDismiss,
+}: {
+  /** Swap the backdrop photo — e.g. the sign-in page's own background, so the intro reads as one continuous scene rather than a hop to a different photo. */
+  backgroundSrc?: string;
+  /** Called once the animation fades out (completed or tapped away), after which this component renders nothing — use it to move on to the next screen. */
+  onDismiss?: () => void;
+}) {
   const [visible, setVisible] = useState(true);
   const [fading, setFading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Read via a ref inside the mount-once effect below so a caller passing
+  // an inline arrow function (the normal case) doesn't need to be a
+  // dependency — this effect must only ever run once per mount.
+  const onDismissRef = useRef(onDismiss);
+  useEffect(() => {
+    onDismissRef.current = onDismiss;
+  }, [onDismiss]);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,7 +50,10 @@ export function IntroAnimation() {
       if (cancelled) return;
       cancelled = true;
       setFading(true);
-      setTimeout(() => setVisible(false), 300);
+      setTimeout(() => {
+        setVisible(false);
+        onDismissRef.current?.();
+      }, 300);
     }
 
     import("lottie-web").then(({ default: lottie }) => {
@@ -60,7 +84,10 @@ export function IntroAnimation() {
       role="presentation"
       onClick={() => {
         setFading(true);
-        setTimeout(() => setVisible(false), 300);
+        setTimeout(() => {
+          setVisible(false);
+          onDismiss?.();
+        }, 300);
       }}
       style={{
         position: "fixed",
@@ -84,7 +111,7 @@ export function IntroAnimation() {
           already on screen before the fish starts jumping. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed full-bleed backdrop, not a Next/Image-optimizable content image */}
       <img
-        src="/onboarding/intro-bg.jpg"
+        src={backgroundSrc}
         alt=""
         fetchPriority="high"
         decoding="sync"

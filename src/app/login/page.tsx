@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { PrimaryButton } from "@/components/Button";
 import { APP_NAME } from "@/constants/app";
 import { AquaIcon } from "@/components/icons/AquaIcon";
+import { IntroAnimation } from "@/components/IntroAnimation";
 
 /** The standard four-colour Google "G" mark — Google's brand guidelines require the real logo (not a generic icon) on a "Continue/Sign in with Google" button. */
 function GoogleLogo() {
@@ -21,30 +22,106 @@ function GoogleLogo() {
   );
 }
 
-/**
- * Real accounts, added 2026-09-10 (Jaideep: "launch it to real users").
- * Two sign-in paths — Google OAuth, or a phone number + a self-chosen
- * 4-digit PIN (no SMS OTP, per Jaideep's explicit call to skip that cost).
- * The phone+PIN form doubles as sign-up: the server auto-registers a phone
- * number the first time it's seen (src/auth.ts) — there's no separate
- * "create account" screen, just a confirm-PIN step here so a typo at
- * signup doesn't lock someone out of the account they just created.
- */
-function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const from = searchParams.get("from") ?? "/";
+/** Shared full-bleed photo backdrop for every step of this page. */
+function Backdrop({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        minHeight: "100dvh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px 20px",
+        boxSizing: "border-box",
+        // Jaideep's reference image (a moonlit lake scene) as the sign-in
+        // backdrop, matching the onboarding welcome screen's treatment.
+        background: "#0b1620 url(/login-bg.jpg) center / cover no-repeat",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
+/** A full-width pill button floating directly on the backdrop photo (frosted glass, no card behind it) — the redesigned first sign-in screen. */
+function FloatingPillButton({
+  onClick,
+  children,
+  tone = "light",
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  tone?: "light" | "dark";
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
+        minHeight: 52,
+        padding: "12px 24px",
+        borderRadius: "var(--radius-pill)",
+        border: tone === "light" ? "1px solid rgba(255,255,255,0.4)" : "none",
+        background: tone === "light" ? "rgba(255,255,255,0.16)" : "var(--color-deep)",
+        backdropFilter: tone === "light" ? "blur(20px)" : undefined,
+        WebkitBackdropFilter: tone === "light" ? "blur(20px)" : undefined,
+        color: "#fff",
+        fontWeight: 700,
+        fontSize: "var(--font-body-size)",
+        boxShadow: "var(--shadow-lift)",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Step 1: two floating pills, nothing else — the actual entry point for a signed-out visitor. */
+function ChooseMethodStep({ onGoogle, onPhone }: { onGoogle: () => void; onPhone: () => void }) {
+  return (
+    <Backdrop>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 40 }}>
+        <AquaIcon name="tanks" size={40} />
+        <h1 style={{ fontSize: "var(--font-title-size)", marginTop: 12, color: "#fff", textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>{APP_NAME}</h1>
+        <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 4, textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>
+          Sign in to continue
+        </p>
+      </div>
+
+      <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 4 }}>
+        <FloatingPillButton onClick={onGoogle}>
+          <GoogleLogo />
+          Continue with Google
+        </FloatingPillButton>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0", color: "rgba(255,255,255,0.75)", fontSize: "var(--font-caption-size)" }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.3)" }} />
+          or
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.3)" }} />
+        </div>
+
+        <FloatingPillButton onClick={onPhone} tone="dark">
+          Continue with phone number
+        </FloatingPillButton>
+      </div>
+    </Backdrop>
+  );
+}
+
+/** Step 2 (phone path only): the same backdrop, a back arrow, and just the three fields. */
+function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
+  const router = useRouter();
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  async function handleGoogle() {
-    setError(null);
-    await signIn("google", { callbackUrl: from });
-  }
 
   async function handlePhoneSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,25 +149,34 @@ function LoginForm() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px 20px",
-        boxSizing: "border-box",
-        // Jaideep's reference image (a moonlit lake scene) as the sign-in
-        // backdrop, matching the onboarding welcome screen's treatment.
-        background: "#0b1620 url(/login-bg.jpg) center / cover no-repeat",
-      }}
-    >
+    <Backdrop>
+      <button
+        type="button"
+        onClick={onBack}
+        aria-label="Back"
+        style={{
+          position: "fixed",
+          top: "calc(20px + env(safe-area-inset-top, 0px))",
+          left: 20,
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          border: "1px solid rgba(255,255,255,0.4)",
+          background: "rgba(255,255,255,0.16)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          color: "#fff",
+          fontSize: 18,
+        }}
+      >
+        ←
+      </button>
+
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
         <AquaIcon name="tanks" size={40} />
         <h1 style={{ fontSize: "var(--font-title-size)", marginTop: 12, color: "#fff", textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>{APP_NAME}</h1>
         <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 4, textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>
-          Sign in to continue
+          Sign in with your phone number
         </p>
       </div>
 
@@ -107,17 +193,6 @@ function LoginForm() {
           boxShadow: "var(--shadow-lift, 0 12px 40px rgba(0,0,0,0.35))",
         }}
       >
-        <SecondaryButton onClick={handleGoogle} style={{ marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-          <GoogleLogo />
-          Continue with Google
-        </SecondaryButton>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "8px 0 20px", color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-          <div style={{ flex: 1, height: 1, background: "var(--color-line)" }} />
-          or
-          <div style={{ flex: 1, height: 1, background: "var(--color-line)" }} />
-        </div>
-
         <form onSubmit={handlePhoneSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
           <Field label="4-digit PIN" type="password" inputMode="numeric" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))} />
@@ -131,7 +206,7 @@ function LoginForm() {
             onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
           />
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
-            New number? This creates your account. Already have one? Just enter your existing PIN in both boxes.
+            If you know your PIN, put it in both boxes. New number? This will create an account.
           </p>
           {error && <Banner severity="fixNow">{error}</Banner>}
           <PrimaryButton type="submit" disabled={busy}>
@@ -139,14 +214,50 @@ function LoginForm() {
           </PrimaryButton>
         </form>
       </div>
-    </div>
+    </Backdrop>
   );
+}
+
+/**
+ * Real accounts, added 2026-09-10 (Jaideep: "launch it to real users").
+ * Two sign-in paths — Google OAuth, or a phone number + a self-chosen
+ * 4-digit PIN (no SMS OTP, per Jaideep's explicit call to skip that cost).
+ * The phone+PIN form doubles as sign-up: the server auto-registers a phone
+ * number the first time it's seen (src/auth.ts) — there's no separate
+ * "create account" screen, just a confirm-PIN step here so a typo at
+ * signup doesn't lock someone out of the account they just created.
+ *
+ * Redesigned 2026-09-13 into three steps (Jaideep): a fish-leap intro
+ * plays first for a brand-new signed-out visitor, then two floating pills
+ * ("Continue with Google" / "Continue with phone number") replace the old
+ * single screen that showed the Google button and all three phone fields
+ * at once — the phone path only reveals its three fields after that pill
+ * is tapped, on its own step with a back arrow.
+ */
+function LoginFlow() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") ?? "/";
+  const [step, setStep] = useState<"intro" | "choose" | "phone">("intro");
+
+  async function handleGoogle() {
+    await signIn("google", { callbackUrl: from });
+  }
+
+  if (step === "intro") {
+    return <IntroAnimation backgroundSrc="/login-bg.jpg" onDismiss={() => setStep("choose")} />;
+  }
+
+  if (step === "phone") {
+    return <PhoneStep onBack={() => setStep("choose")} from={from} />;
+  }
+
+  return <ChooseMethodStep onGoogle={handleGoogle} onPhone={() => setStep("phone")} />;
 }
 
 export default function LoginPage() {
   return (
     <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#0b1620" }} />}>
-      <LoginForm />
+      <LoginFlow />
     </Suspense>
   );
 }
