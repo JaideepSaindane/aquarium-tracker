@@ -439,56 +439,60 @@ export default function DexPage() {
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 6, marginBottom: 10, overflowX: "auto", paddingBottom: 2 }}>
-        {["all", ...categories].map((c) => (
-          <button
-            key={c}
-            onClick={() => setCategory(c)}
-            style={{
-              flexShrink: 0,
-              padding: "6px 14px",
-              minHeight: 32,
-              borderRadius: "var(--radius-pill)",
-              border: "1px solid var(--soft-card-border)",
-              background: category === c ? "var(--soft-accent)" : "var(--soft-card-bg)",
-              color: category === c ? "var(--color-surface)" : "var(--soft-ink)",
-              fontSize: "var(--font-caption-size)",
-              fontWeight: 600,
-              textTransform: "capitalize",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {c === "all" ? t.dexPage.allCategories : c}
-          </button>
-        ))}
-      </div>
-      {difficulties.length > 0 && (
-        <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 2 }}>
-          {["all", ...difficulties].map((d) => (
-            <button
-              key={d}
-              onClick={() => setDifficulty(d)}
-              style={{
-                flexShrink: 0,
-                padding: "6px 14px",
-                minHeight: 32,
-                borderRadius: "var(--radius-pill)",
-                border: "1px solid var(--soft-card-border)",
-                background: difficulty === d ? "var(--soft-accent-soft)" : "transparent",
-                color: difficulty === d ? "var(--soft-ink)" : "var(--soft-ink-muted)",
-                fontSize: "var(--font-caption-size)",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {d === "all" ? t.dexPage.allDifficulties : d}
-            </button>
-          ))}
-        </div>
+      {section === "all" && (
+        <>
+          <div style={{ display: "flex", gap: 6, marginBottom: 10, overflowX: "auto", paddingBottom: 2 }}>
+            {["all", ...categories].map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                style={{
+                  flexShrink: 0,
+                  padding: "6px 14px",
+                  minHeight: 32,
+                  borderRadius: "var(--radius-pill)",
+                  border: "1px solid var(--soft-card-border)",
+                  background: category === c ? "var(--soft-accent)" : "var(--soft-card-bg)",
+                  color: category === c ? "var(--color-surface)" : "var(--soft-ink)",
+                  fontSize: "var(--font-caption-size)",
+                  fontWeight: 600,
+                  textTransform: "capitalize",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {c === "all" ? t.dexPage.allCategories : c}
+              </button>
+            ))}
+          </div>
+          {difficulties.length > 0 && (
+            <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 2 }}>
+              {["all", ...difficulties].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDifficulty(d)}
+                  style={{
+                    flexShrink: 0,
+                    padding: "6px 14px",
+                    minHeight: 32,
+                    borderRadius: "var(--radius-pill)",
+                    border: "1px solid var(--soft-card-border)",
+                    background: difficulty === d ? "var(--soft-accent-soft)" : "transparent",
+                    color: difficulty === d ? "var(--soft-ink)" : "var(--soft-ink-muted)",
+                    fontSize: "var(--font-caption-size)",
+                    fontWeight: 600,
+                    textTransform: "capitalize",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {d === "all" ? t.dexPage.allDifficulties : d}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: section === "mine" ? 12 : 0 }}>
         {filtered.map((s) => {
           const added = cardsBySpecies.has(s.id);
           const name = firstName(s.commonNames, s.id);
