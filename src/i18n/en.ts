@@ -799,6 +799,7 @@ const en = {
     takePhotoOrVideo: "Take photo or video",
     chooseMediaFromGallery: "Choose from gallery",
     videoTooLarge: "That video is too large — please keep it under 100MB.",
+    compressingVideo: "Compressing video...",
     couldNotUploadVideo: "Couldn't upload that video — check your connection and try again.",
     uploadingVideo: "Uploading video...",
   },

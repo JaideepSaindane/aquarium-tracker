@@ -9,9 +9,12 @@ import { PrimaryButton } from "@/components/Button";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { createCommunityPost } from "@/db/queries/community";
 import { uploadPhoto, uploadVideo } from "@/lib/photo-upload";
+import { compressVideo } from "@/lib/video-compress";
 import { useTranslation } from "@/i18n/use-translation";
 
 const MAX_PHOTOS = 10;
+// Checked against the file as picked, before compression — the raw pick
+// still needs to fit in memory for ffmpeg.wasm to process it at all.
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 
 type PendingPhoto = { file: File; preview: string; isVideo: boolean };
@@ -22,16 +25,32 @@ export default function NewCommunityPostPage() {
   const [body, setBody] = useState("");
   const [photos, setPhotos] = useState<PendingPhoto[]>([]);
   const [posting, setPosting] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleAddPhoto(file: File) {
+  async function handleAddPhoto(file: File) {
     const isVideo = file.type.startsWith("video/");
     if (isVideo && file.size > MAX_VIDEO_BYTES) {
       setError(t.newCommunityPostPage.videoTooLarge);
       return;
     }
     setError(null);
-    setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file, preview: URL.createObjectURL(file), isVideo }]));
+    if (!isVideo) {
+      setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file, preview: URL.createObjectURL(file), isVideo }]));
+      return;
+    }
+    // Compress before it ever enters the pending list, so the preview
+    // already reflects the smaller file that will actually be uploaded
+    // (Jaideep: "I don't want to take up a lot of storage... I don't want
+    // it to [buffer] later also" — real ffmpeg.wasm re-encode, not just a
+    // size check, see src/lib/video-compress.ts for why).
+    setCompressing(true);
+    try {
+      const compressed = await compressVideo(file);
+      setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file: compressed, preview: URL.createObjectURL(compressed), isVideo: true }]));
+    } finally {
+      setCompressing(false);
+    }
   }
 
   function handleRemovePhoto(index: number) {
@@ -58,7 +77,7 @@ export default function NewCommunityPostPage() {
   return (
     <Screen
       footer={
-        <PrimaryButton onClick={handlePost} disabled={posting || !body.trim()}>
+        <PrimaryButton onClick={handlePost} disabled={posting || compressing || !body.trim()}>
           {posting ? t.newCommunityPostPage.posting : t.newCommunityPostPage.post}
         </PrimaryButton>
       }
@@ -136,7 +155,12 @@ export default function NewCommunityPostPage() {
       />
 
       <div style={{ height: 12 }} />
-      {photos.length < MAX_PHOTOS && (
+      {compressing && (
+        <div style={{ marginBottom: 12 }}>
+          <Banner severity="neutral">{t.newCommunityPostPage.compressingVideo}</Banner>
+        </div>
+      )}
+      {photos.length < MAX_PHOTOS && !compressing && (
         <PhotoPickerButton
           label={
             photos.length === 0

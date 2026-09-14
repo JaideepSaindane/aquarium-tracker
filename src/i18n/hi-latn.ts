@@ -804,6 +804,7 @@ const hiLatn: Dictionary = {
     takePhotoOrVideo: "Photo ya video lein",
     chooseMediaFromGallery: "Gallery se choose karein",
     videoTooLarge: "Ye video bahut bada hai — please 100MB se kam rakhein.",
+    compressingVideo: "Video compress ho raha hai...",
     couldNotUploadVideo: "Video upload nahi ho saka — apna connection check karke phir try karein.",
     uploadingVideo: "Video upload ho raha hai...",
   },
