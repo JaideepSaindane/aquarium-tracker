@@ -337,7 +337,12 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
 
       <div style={{ height: 16 }} />
 
-      {aliveLivestock.length === 0 && <p style={{ color: "var(--color-ink-muted)" }}>{t.livestockPage.noFishAddedYet}</p>}
+      {aliveLivestock.length === 0 && (
+        <div style={{ marginBottom: 4 }}>
+          <p style={{ color: "var(--color-ink)", fontWeight: 600 }}>{t.livestockPage.noFishAddedYet}</p>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginTop: 2 }}>{t.livestockPage.noFishAddedYetBody}</p>
+        </div>
+      )}
 
       {newRows.length > 0 && (
         <div style={{ marginBottom: 16 }}>

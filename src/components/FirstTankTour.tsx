@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { PrimaryButton, SecondaryButton } from "./Button";
 import { hasSeenFirstTankTour, markFirstTankTourShown } from "@/db/queries/settings";
 
+// Dropped the third "Log parameters" card (2026-09-14, Jaideep: "we are
+// not tracking anything, right? Just skip that card") — down to the two
+// cards that actually reflect what the app leads with today.
 const CARDS = [
-  { icon: "📈", title: "Log parameters", body: "Track ammonia, pH and more with graphs and per-tank target ranges — open any tank's Measure tab." },
   { icon: "📓", title: "Journal", body: "Every scan, check and treatment builds its own timeline automatically — open any tank's Journal tab to see it." },
   { icon: "💬", title: "Ask AquaAI", body: "Got a question about your tank? Ask anything — the answer already knows your setup." },
 ];

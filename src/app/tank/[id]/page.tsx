@@ -925,7 +925,7 @@ function AboutSection({
             {recommendedTempC ? formatTempRange(recommendedTempC.min, recommendedTempC.max, units) : "—"}
           </p>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", margin: "2px 0 0" }}>
-            {recommendedTempC ? t.dexDetailPage.temp : t.tankOverviewPage.addFishForRange}
+            {recommendedTempC ? t.tankOverviewPage.idealTemp : t.tankOverviewPage.addFishForRange}
           </p>
         </div>
       </div>

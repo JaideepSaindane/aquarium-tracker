@@ -168,7 +168,14 @@ export default function ScanCapturePage() {
       setCapture({ originalPhotoPath: originalPath, uploadBlob });
       setDimensions({ lengthCm, widthCm, heightCm, city: city.trim() });
       setStoreReport(report, result.data.meta.provider);
-      router.push("/onboarding/report");
+      // router.replace, not push — same reasoning as /tank/new's own save
+      // navigation: this whole onboarding flow (scan → report → livestock)
+      // should collapse in history once the tank is actually saved, so the
+      // phone/browser back button from the livestock page lands on Home,
+      // not back inside a half-finished setup screen (Jaideep, 2026-09-14:
+      // "once it's saved it's saved... back button should take me to the
+      // home screen").
+      router.replace("/onboarding/report");
     } catch {
       setScanError(t.scanPage.couldNotReachServer);
       setScanErrorOffline(true);

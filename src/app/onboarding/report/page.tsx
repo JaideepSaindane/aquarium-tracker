@@ -121,10 +121,18 @@ export default function ScanReportPage() {
 
       // Don't reset the store before navigating — clearing `report`
       // synchronously here would fire this page's own "no report, bounce
-      // to /onboarding/scan" guard effect before the push below lands,
-      // racing it back to the wrong screen. The scan page resets the
-      // session itself on next mount instead.
-      router.push(`/tank/${tankId}/livestock`);
+      // to /onboarding/scan" guard effect before the navigation below
+      // lands, racing it back to the wrong screen. The scan page resets
+      // the session itself on next mount instead.
+      //
+      // router.replace, not push — the tank is already saved at this
+      // point, so there's nothing left to "go back to" on this report
+      // screen. Paired with the same replace on the scan→report hop, the
+      // whole onboarding flow collapses out of history once save
+      // succeeds, so the phone/browser back button from here lands on
+      // Home (Jaideep, 2026-09-14: "once it's saved it's saved... back
+      // button should take me to the home screen").
+      router.replace(`/tank/${tankId}/livestock`);
     } catch (err) {
       setError(`${t.reportPage.somethingWentWrongSaving} ${String(err)}`);
       setSaving(false);
