@@ -337,6 +337,110 @@ export default function DexPage() {
         })}
       </div>
 
+      {/* "Find this fish" — promoted from a small icon next to search to
+          its own full-width hero card (2026-09-14, Jaideep: "I think 'Find
+          this fish' is a big enough offering on its own... they should be
+          more prominent"). Always full-size, never shrinks down after use
+          (explicit call: "Always full-size, don't shrink it"). Only makes
+          sense on All Species — My Fish already only holds species you've
+          identified/added, so there's nothing left to scan for. */}
+      {section === "all" && (
+        <div style={{ position: "relative", marginBottom: 12 }}>
+          <input
+            ref={scanCameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) handleScanPhoto(file);
+            }}
+          />
+          <input
+            ref={scanGalleryInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) handleScanPhoto(file);
+            }}
+          />
+          <button
+            onClick={() => setScanPickerOpen((v) => !v)}
+            disabled={scanning}
+            aria-label={t.dexPage.scanToFind}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              padding: "16px",
+              borderRadius: "var(--radius-lg)",
+              border: "1px solid var(--soft-card-border)",
+              background: "var(--soft-accent-soft)",
+              color: "var(--soft-accent)",
+              fontWeight: 700,
+              fontSize: "var(--font-body-size)",
+              opacity: scanning ? 0.6 : 1,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {scanning ? <span className="spinner" aria-label={t.dexPage.scanning} /> : <span aria-hidden style={{ fontSize: 22 }}>📷</span>}
+            {t.dexPage.findThisFish}
+          </button>
+          {scanPickerOpen && (
+            <>
+              <div onClick={() => setScanPickerOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  marginTop: 6,
+                  zIndex: 30,
+                  background: "var(--soft-card-bg)",
+                  border: "1px solid var(--soft-card-border)",
+                  borderRadius: "var(--radius-md)",
+                  boxShadow: "var(--shadow-lift)",
+                  overflow: "hidden",
+                  padding: 6,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScanPickerOpen(false);
+                    scanCameraInputRef.current?.click();
+                  }}
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
+                >
+                  📷 {t.dexPage.takePhoto}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScanPickerOpen(false);
+                    scanGalleryInputRef.current?.click();
+                  }}
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
+                >
+                  🖼️ {t.dexPage.chooseFromGallery}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: "flex", gap: 8 }}>
           <input
@@ -353,104 +457,6 @@ export default function DexPage() {
               color: "var(--soft-ink)",
             }}
           />
-          {/* Scan-to-find only makes sense when hunting through the full
-              catalog for an unknown fish — every species already listed
-              under My Fish has been identified and added, so there's
-              nothing left to scan for (2026-09-14, Jaideep: "there is no
-              need for a photo icon [under My Fish]"). */}
-          {section === "all" && (
-          <div style={{ position: "relative" }}>
-            <input
-              ref={scanCameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (file) handleScanPhoto(file);
-              }}
-            />
-            <input
-              ref={scanGalleryInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (file) handleScanPhoto(file);
-              }}
-            />
-            <button
-              onClick={() => setScanPickerOpen((v) => !v)}
-              disabled={scanning}
-              aria-label={t.dexPage.scanToFind}
-              style={{
-                width: 44,
-                height: 44,
-                flexShrink: 0,
-                borderRadius: "50%",
-                border: "1px solid var(--soft-card-border)",
-                background: "var(--soft-card-bg)",
-                color: "var(--soft-ink)",
-                fontSize: 18,
-                opacity: scanning ? 0.6 : 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {scanning ? <span className="spinner" aria-label={t.dexPage.scanning} /> : "📷"}
-            </button>
-            {scanPickerOpen && (
-              <>
-                <div onClick={() => setScanPickerOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 29 }} aria-hidden />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    right: 0,
-                    marginTop: 6,
-                    zIndex: 30,
-                    background: "var(--soft-card-bg)",
-                    border: "1px solid var(--soft-card-border)",
-                    borderRadius: "var(--radius-md)",
-                    boxShadow: "var(--shadow-lift)",
-                    overflow: "hidden",
-                    minWidth: 190,
-                    padding: 6,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setScanPickerOpen(false);
-                      scanCameraInputRef.current?.click();
-                    }}
-                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
-                  >
-                    📷 {t.dexPage.takePhoto}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setScanPickerOpen(false);
-                      scanGalleryInputRef.current?.click();
-                    }}
-                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
-                  >
-                    🖼️ {t.dexPage.chooseFromGallery}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-          )}
         </div>
 
         {scanError && (

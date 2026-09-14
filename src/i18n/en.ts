@@ -212,6 +212,7 @@ const en = {
     hardWater: "Hard Water",
     searchByName: "Search by name...",
     scanToFind: "Scan a photo to find a species",
+    findThisFish: "Take a photo to find",
     scanning: "Scanning...",
     takePhoto: "Take photo",
     chooseFromGallery: "Choose from gallery",

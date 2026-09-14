@@ -216,6 +216,7 @@ const hiLatn: Dictionary = {
     hardWater: "Hard Paani",
     searchByName: "Naam se search karein...",
     scanToFind: "Species dhoondhne ke liye photo scan karein",
+    findThisFish: "Dhoondhne ke liye photo lein",
     scanning: "Scan ho raha hai...",
     takePhoto: "Photo lein",
     chooseFromGallery: "Gallery se chunein",
