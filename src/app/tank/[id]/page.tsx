@@ -165,11 +165,11 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const setupType = tank.setupType ?? (tank.isPlanted ? "planted" : null);
   const setupBadge =
     setupType === "planted"
-      ? { label: t.plannerPage.plantedOption, icon: "🌿" }
+      ? { label: t.plannerPage.plantedOption }
       : setupType === "hardscape"
-        ? { label: t.plannerPage.hardscapeOption, icon: "🪨" }
+        ? { label: t.plannerPage.hardscapeOption }
         : setupType === "bare_bottom"
-          ? { label: t.plannerPage.bareBottomOption, icon: "🫙" }
+          ? { label: t.plannerPage.bareBottomOption }
           : null;
 
   const aliveSpeciesRows = aliveLivestock
@@ -341,7 +341,6 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
                 fontWeight: 600,
               }}
             >
-              <span aria-hidden>{setupBadge.icon}</span>
               {setupBadge.label}
             </span>
           )}

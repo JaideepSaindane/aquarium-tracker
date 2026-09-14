@@ -325,9 +325,9 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {(
               [
-                ["planted", "🌿", t.plannerPage.plantedOption, t.plannerPage.plantedHint],
-                ["hardscape", "🪨", t.plannerPage.hardscapeOption, t.plannerPage.hardscapeHint],
-                ["bare_bottom", "🫙", t.plannerPage.bareBottomOption, t.plannerPage.bareBottomHint],
+                ["planted", "", t.plannerPage.plantedOption, t.plannerPage.plantedHint],
+                ["hardscape", "", t.plannerPage.hardscapeOption, t.plannerPage.hardscapeHint],
+                ["bare_bottom", "", t.plannerPage.bareBottomOption, t.plannerPage.bareBottomHint],
               ] as [PlantedTier, string, string, string][]
             ).map(([value, icon, label, hint]) => (
               <ChoiceCard key={value} selected={setupType === value} onClick={() => setSetupType(value)} icon={icon} title={label} subtitle={hint} />
