@@ -61,8 +61,6 @@ async function loadDex() {
   return { species, cards, tanks, livestock };
 }
 
-type SectionTab = "mine" | "all";
-
 /** A small, self-contained pill chip that shows the current value of one filter and opens a dropdown of its options — replaces a full horizontally-scrolling row of every option with one compact control, per the reference image. */
 function FilterChip({
   label,
@@ -172,14 +170,23 @@ function FilterChip({
 // the name. The reference's "Freshwater" chip was dropped — every species
 // in this catalog already is freshwater (CLAUDE.md's scope), so a filter
 // that can never exclude anything isn't a real control, just a static
-// label; not worth adding for that. Search and filters now apply on both
-// tabs (the reference shows them under "My Fish" too), not just "All".
+// label; not worth adding for that.
+//
+// Restructured again 2026-09-14 (Jaideep, after discussing the layout
+// directly): the My Fish / All Species pill tabs are gone — there's just
+// one species list now. "Take a photo to find" moved to the very top,
+// above everything, since it's identification (a page-level feature), not
+// catalog browsing that belongs to either tab. Below it, a plain "Saved
+// Fish (N)" row toggles a filter on the same list instead of switching to
+// a separate tab/section — tap it once to show only what's already in My
+// Fish, tap again to go back to the full catalog. Search and the category/
+// difficulty filter chips apply on top of whichever set is showing.
 export default function DexPage() {
   const router = useRouter();
   const t = useTranslation();
   const { units } = useUnitsContext();
   const { data } = useLiveQuery(loadDex, []);
-  const [section, setSection] = useState<SectionTab>("mine");
+  const [savedOnly, setSavedOnly] = useState(false);
   const [category, setCategory] = useState("all");
   const [difficulty, setDifficulty] = useState("all");
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
@@ -216,7 +223,7 @@ export default function DexPage() {
   const q = searchQuery.trim().toLowerCase();
   const filtered = species.filter((s) => {
     const unlocked = cardsBySpecies.has(s.id);
-    if (section === "mine" && !unlocked) return false;
+    if (savedOnly && !unlocked) return false;
     if (category !== "all" && s.category !== category) return false;
     if (difficulty !== "all" && s.difficulty !== difficulty) return false;
     if (q) {
@@ -288,64 +295,14 @@ export default function DexPage() {
       <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 4, color: "var(--soft-ink)" }}>{t.dexPage.title}</h1>
       <p style={{ color: "var(--soft-ink-muted)", marginBottom: 16 }}>{t.dexPage.subtitle}</p>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {(
-          [
-            { value: "mine" as SectionTab, icon: "🐟", label: t.dexPage.myFish, count: unlockedCount },
-            { value: "all" as SectionTab, icon: "📖", label: t.dexPage.all, count: species.length },
-          ]
-        ).map((tab) => {
-          const active = section === tab.value;
-          return (
-            <button
-              key={tab.value}
-              onClick={() => {
-                setSection(tab.value);
-                setCategoryMenuOpen(false);
-                setDifficultyMenuOpen(false);
-              }}
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                padding: "12px 10px",
-                borderRadius: "var(--radius-pill)",
-                border: active ? "none" : "1px solid var(--soft-card-border)",
-                background: active ? "var(--soft-accent)" : "var(--soft-card-bg)",
-                color: active ? "var(--color-surface)" : "var(--soft-ink)",
-                fontWeight: 700,
-                fontSize: "var(--font-body-sm-size)",
-              }}
-            >
-              <span aria-hidden>{tab.icon}</span>
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tab.label}</span>
-              <span
-                style={{
-                  padding: "1px 8px",
-                  borderRadius: "var(--radius-pill)",
-                  background: active ? "rgba(255,255,255,0.25)" : "var(--soft-bg-alt)",
-                  fontSize: "var(--font-caption-size)",
-                  fontWeight: 700,
-                }}
-              >
-                {tab.count.toLocaleString()}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* "Find this fish" — promoted from a small icon next to search to
-          its own full-width hero card (2026-09-14, Jaideep: "I think 'Find
-          this fish' is a big enough offering on its own... they should be
-          more prominent"). Always full-size, never shrinks down after use
-          (explicit call: "Always full-size, don't shrink it"). Only makes
-          sense on All Species — My Fish already only holds species you've
-          identified/added, so there's nothing left to scan for. */}
-      {section === "all" && (
-        <div style={{ position: "relative", marginBottom: 12 }}>
+      {/* "Find this fish" — a page-level feature, not something scoped to
+          either tab (2026-09-14, Jaideep: "'Find this fish' is a big
+          enough offering on its own... this should sit outside of the
+          'My Fishes' or 'All Species' thingy"). Always full-size, never
+          shrinks down after use ("Always full-size, don't shrink it"),
+          always at the very top, always visible regardless of the Saved
+          Fish filter below. */}
+      <div style={{ position: "relative", marginBottom: 12 }}>
           <input
             ref={scanCameraInputRef}
             type="file"
@@ -439,7 +396,37 @@ export default function DexPage() {
             </>
           )}
         </div>
-      )}
+
+      {/* Plain shortcut row, not a tab — tap to filter the same list down
+          to what's already unlocked, tap again to go back to everything
+          (2026-09-14, Jaideep: "just one button to say 'Saved Fish'... a
+          plain 'Saved Fish (4)' row"). */}
+      <button
+        onClick={() => setSavedOnly((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          padding: "12px 14px",
+          marginBottom: 12,
+          borderRadius: "var(--radius-md)",
+          border: "1px solid var(--soft-card-border)",
+          background: savedOnly ? "var(--soft-accent-soft)" : "var(--soft-card-bg)",
+          color: savedOnly ? "var(--soft-accent)" : "var(--soft-ink)",
+        }}
+      >
+        <span style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "var(--font-body-sm-size)" }}>
+          <span aria-hidden>⭐</span>
+          {t.dexPage.savedFish} ({unlockedCount.toLocaleString()})
+        </span>
+        {savedOnly && (
+          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "var(--font-caption-size)", fontWeight: 600 }}>
+            {t.dexPage.showingSavedOnly}
+            <span aria-hidden>✕</span>
+          </span>
+        )}
+      </button>
 
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: "flex", gap: 8 }}>
@@ -787,7 +774,7 @@ export default function DexPage() {
 
         {filtered.length === 0 && (
           <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", marginTop: 32 }}>
-            {section === "mine" ? t.dexPage.noUnlockedMatch : t.dexPage.noSpeciesMatch}
+            {savedOnly ? t.dexPage.noUnlockedMatch : t.dexPage.noSpeciesMatch}
           </p>
         )}
       </div>

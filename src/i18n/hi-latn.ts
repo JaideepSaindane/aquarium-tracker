@@ -205,8 +205,8 @@ const hiLatn: Dictionary = {
   dexPage: {
     title: "Discover",
     subtitle: "Aquarium encyclopedia — species, care basics, aur jo already tumhare tanks mein hai.",
-    myFish: "Meri Fish",
-    all: "Saari Species",
+    savedFish: "Saved Fish",
+    showingSavedOnly: "Sirf saved dikha rahe hain",
     added: "Added",
     inTank: "Tank mein ({n})",
     categoriesLabel: "Categories",

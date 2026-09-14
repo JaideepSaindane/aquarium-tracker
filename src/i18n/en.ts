@@ -201,8 +201,8 @@ const en = {
   dexPage: {
     title: "Discover",
     subtitle: "The aquarium encyclopedia — species, care basics, and what's already in your tanks.",
-    myFish: "My Fish",
-    all: "All Species",
+    savedFish: "Saved Fish",
+    showingSavedOnly: "Showing saved only",
     added: "Added",
     inTank: "In Tank ({n})",
     categoriesLabel: "Categories",
