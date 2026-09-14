@@ -168,6 +168,10 @@ export function TankAvatar({
                   boxShadow: "var(--shadow-lift)",
                   overflow: "hidden",
                   minWidth: 160,
+                  padding: 6,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
                 }}
               >
                 <button
@@ -181,11 +185,12 @@ export function TankAvatar({
                     width: "100%",
                     textAlign: "left",
                     padding: "10px 14px",
-                    background: "none",
+                    background: "var(--color-deep-soft)",
                     border: "none",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "var(--font-body-sm-size)",
                     fontWeight: 600,
-                    color: "var(--color-ink)",
+                    color: "var(--color-deep)",
                     cursor: "pointer",
                   }}
                 >
@@ -202,12 +207,12 @@ export function TankAvatar({
                     width: "100%",
                     textAlign: "left",
                     padding: "10px 14px",
-                    background: "none",
+                    background: "var(--color-deep-soft)",
                     border: "none",
-                    borderTop: "1px solid var(--color-line-soft)",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "var(--font-body-sm-size)",
                     fontWeight: 600,
-                    color: "var(--color-ink)",
+                    color: "var(--color-deep)",
                     cursor: "pointer",
                   }}
                 >
