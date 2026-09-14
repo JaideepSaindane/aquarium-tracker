@@ -218,7 +218,6 @@ export default function DexPage() {
 
   const categories = Array.from(new Set(species.map((s) => s.category).filter(Boolean))) as string[];
   const difficulties = Array.from(new Set(species.map((s) => s.difficulty).filter(Boolean))) as string[];
-  const unlockedCount = species.filter((s) => cardsBySpecies.has(s.id)).length;
 
   const q = searchQuery.trim().toLowerCase();
   const filtered = species.filter((s) => {
@@ -396,37 +395,6 @@ export default function DexPage() {
             </>
           )}
         </div>
-
-      {/* Plain shortcut row, not a tab — tap to filter the same list down
-          to what's already unlocked, tap again to go back to everything
-          (2026-09-14, Jaideep: "just one button to say 'Saved Fish'... a
-          plain 'Saved Fish (4)' row"). */}
-      <button
-        onClick={() => setSavedOnly((v) => !v)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          padding: "12px 14px",
-          marginBottom: 12,
-          borderRadius: "var(--radius-md)",
-          border: "1px solid var(--soft-card-border)",
-          background: savedOnly ? "var(--soft-accent-soft)" : "var(--soft-card-bg)",
-          color: savedOnly ? "var(--soft-accent)" : "var(--soft-ink)",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "var(--font-body-sm-size)" }}>
-          <span aria-hidden>⭐</span>
-          {t.dexPage.savedFish} ({unlockedCount.toLocaleString()})
-        </span>
-        {savedOnly && (
-          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "var(--font-caption-size)", fontWeight: 600 }}>
-            {t.dexPage.showingSavedOnly}
-            <span aria-hidden>✕</span>
-          </span>
-        )}
-      </button>
 
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: "flex", gap: 8 }}>
@@ -638,6 +606,32 @@ export default function DexPage() {
             }}
           />
         )}
+        {/* Plain on/off toggle, not a dropdown — filters the same list down
+            to what's already unlocked (2026-09-14, Jaideep: "let's add a
+            toggle in the same line as category and difficulty... which
+            says 'Show saved fish'"). */}
+        <button
+          onClick={() => setSavedOnly((v) => !v)}
+          aria-pressed={savedOnly}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            flexShrink: 0,
+            padding: "8px 14px",
+            minHeight: 36,
+            borderRadius: "var(--radius-pill)",
+            border: "1px solid var(--soft-card-border)",
+            background: savedOnly ? "var(--soft-accent-soft)" : "var(--soft-card-bg)",
+            color: savedOnly ? "var(--soft-accent)" : "var(--soft-ink)",
+            fontSize: "var(--font-caption-size)",
+            fontWeight: 700,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {savedOnly && <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--soft-accent)" }} />}
+          {t.dexPage.showSavedFish}
+        </button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
