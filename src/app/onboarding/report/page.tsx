@@ -9,7 +9,7 @@ import { Confidence } from "@/components/Confidence";
 import { GroundingLink } from "@/components/GroundingLink";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
-import { AquaIcon } from "@/components/icons/AquaIcon";
+import { ChoiceCard } from "@/components/ChoiceCard";
 import { useScanSession } from "@/store/use-scan-session";
 import { useLocale } from "@/i18n/use-locale";
 import { createTank } from "@/db/queries/tanks";
@@ -17,6 +17,7 @@ import { createScan } from "@/db/queries/scans";
 import { addLogEntry } from "@/db/queries/log-entries";
 import { addPhoto } from "@/db/queries/photos";
 import { HEALTH_CHECK_CATEGORIES } from "@/server/ai/schemas/health-check";
+import type { PlantedTier } from "@/lib/setup-recommendations";
 import type { SeverityLevel } from "@/theme/tokens";
 import { useTranslation } from "@/i18n/use-translation";
 
@@ -71,7 +72,7 @@ export default function ScanReportPage() {
   // every scan and simply discarded before now — using it as a smart
   // default here, still editable, means the checkbox usually starts
   // right without asking the user to notice and fix it after the fact.
-  const [isPlanted, setIsPlanted] = useState(() => session.report?.tank_type_inferred === "planted");
+  const [setupType, setSetupType] = useState<PlantedTier>(() => (session.report?.tank_type_inferred === "planted" ? "planted" : "hardscape"));
   const [hasCo2, setHasCo2] = useState(false);
 
   useEffect(() => {
@@ -106,7 +107,8 @@ export default function ScanReportPage() {
         city: session.city || undefined,
         status: "active",
         photoUri: session.originalPhotoPath ?? undefined,
-        isPlanted,
+        setupType,
+        isPlanted: setupType === "planted",
         hasCo2,
       });
 
@@ -236,28 +238,36 @@ export default function ScanReportPage() {
         </Card>
       )}
 
-      {/* Planted/CO2 checklist (2026-09-14, Jaideep: "there is no
-          checkbox selection for planted and CO2 anywhere in the add tank
-          flow, in the AI analysis, or in the initial part... We should
-          add that") — Ask AquaAI reads tank.isPlanted/hasCo2 straight
-          into its prompt context, so a tank created without these ever
-          being asked produced confidently wrong answers later ("the tank
-          is unplanted") for tanks that clearly were. isPlanted defaults
-          from the scan's own tank_type_inferred field above; both stay
-          editable here before save. */}
+      {/* Setup type + CO2 (2026-09-14, Jaideep: "there is no checkbox
+          selection for planted and CO2 anywhere in the add tank flow...
+          We should add that" then "we should also have an identifier
+          for bare bottom, and hardscape only and only one of these
+          should be selected at a time") — Ask AquaAI reads
+          tank.isPlanted/setupType straight into its prompt context, so
+          a tank created without this ever being asked produced
+          confidently wrong answers later ("the tank is unplanted") for
+          tanks that clearly weren't bare. Same "planted / hardscape /
+          bare bottom" vocabulary the Planner already uses
+          (src/lib/setup-recommendations.ts's PlantedTier). Defaults from
+          the scan's own tank_type_inferred field above; stays editable
+          here before save. */}
       <Card style={{ marginBottom: 12 }}>
         <p style={{ fontWeight: 700, marginBottom: 8 }}>🌿 {t.reportPage.tankSetupChecklist}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
-            <AquaIcon name="planted" size={16} />
-            {t.editTankPage.plantedTank}
-          </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
-            {t.editTankPage.co2Injection}
-          </label>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
+          {(
+            [
+              ["planted", "🌿", t.plannerPage.plantedOption, t.plannerPage.plantedHint],
+              ["hardscape", "🪨", t.plannerPage.hardscapeOption, t.plannerPage.hardscapeHint],
+              ["bare_bottom", "🫙", t.plannerPage.bareBottomOption, t.plannerPage.bareBottomHint],
+            ] as [PlantedTier, string, string, string][]
+          ).map(([value, icon, label, hint]) => (
+            <ChoiceCard key={value} selected={setupType === value} onClick={() => setSetupType(value)} icon={icon} title={label} subtitle={hint} />
+          ))}
         </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
+          {t.editTankPage.co2Injection}
+        </label>
       </Card>
 
       {error && (

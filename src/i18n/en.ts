@@ -75,7 +75,7 @@ const en = {
     no: "No",
     deleting: "Deleting...",
     yesDelete: "Yes, delete",
-    needHelpTitle: "Need help?",
+    needHelpTitle: "Fish Doctor",
     needHelpBody: "Something doesn't look right?",
     getHelp: "Get help",
     fishCount: "{n} fish",
@@ -103,7 +103,7 @@ const en = {
     startOver: "Start over",
   },
   emergencyPage: {
-    title: "Emergency",
+    title: "Fish Doctor",
     resultTitle: "What to do",
     intro: "Free, always. Answer a few quick taps and we'll get you to the right first action.",
     doThisFirst: "DO THIS FIRST",
@@ -548,7 +548,6 @@ const en = {
   },
   editTankPage: {
     nameRequired: "Name is required.",
-    plantedTank: "Planted tank",
     co2Injection: "CO2 injection",
     saved: "Saved.",
     saveChanges: "Save changes",
@@ -574,6 +573,7 @@ const en = {
     freshwaterPlantedFocused: "{name} is freshwater and planted focused — no reef/marine tanks.",
     tankSavedOpening: "Tank saved — opening it now...",
     moreDetails: "More details",
+    setupTypeLabel: "Tank setup",
   },
   tankSizePage: {
     allThreeRequired: "All three dimensions are required.",

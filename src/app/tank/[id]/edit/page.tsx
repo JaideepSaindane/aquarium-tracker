@@ -7,6 +7,7 @@ import { AquaIcon } from "@/components/icons/AquaIcon";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
+import { ChoiceCard } from "@/components/ChoiceCard";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
@@ -20,6 +21,7 @@ import { addPhoto } from "@/db/queries/photos";
 import { convertDimension } from "@/lib/dimension-units";
 import { formatVolumeDual } from "@/lib/units";
 import { FILTER_SUBTYPES, COMMON_PLANTS, COMMON_CITIES } from "@/lib/common-options";
+import type { PlantedTier } from "@/lib/setup-recommendations";
 import { useTranslation } from "@/i18n/use-translation";
 
 /**
@@ -56,7 +58,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   const [city, setCity] = useState("");
   const [waterType, setWaterType] = useState<"fresh" | "brackish">("fresh");
   const [ageBand, setAgeBand] = useState<AgeBand>("not_sure");
-  const [isPlanted, setIsPlanted] = useState(false);
+  const [setupType, setSetupType] = useState<PlantedTier>("hardscape");
   const [hasCo2, setHasCo2] = useState(false);
   const [dimUnit, setDimUnit] = useState<"cm" | "ft">("cm");
   const [length, setLength] = useState("");
@@ -86,7 +88,10 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
     setCity(tank.city ?? "");
     setWaterType(tank.waterType === "brackish" ? "brackish" : "fresh");
     setAgeBand(ageBandFromStartedOn(tank.startedOn));
-    setIsPlanted(!!tank.isPlanted);
+    // Migrates an existing tank that predates this field: fall back to
+    // the old isPlanted boolean rather than defaulting every pre-existing
+    // tank to "hardscape" the first time someone opens Edit Tank on it.
+    setSetupType((tank.setupType as PlantedTier | null) ?? (tank.isPlanted ? "planted" : "hardscape"));
     setHasCo2(!!tank.hasCo2);
     setLength(String(tank.lengthCm));
     setWidth(String(tank.widthCm));
@@ -141,7 +146,8 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
         city: city.trim() || undefined,
         waterType,
         startedOn: startedOnFromAgeBand(ageBand),
-        isPlanted,
+        setupType,
+        isPlanted: setupType === "planted",
         hasCo2,
         lengthCm,
         widthCm,
@@ -314,11 +320,20 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
           )}
         </div>
 
-        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
-          <AquaIcon name="planted" size={16} />
-          {t.editTankPage.plantedTank}
-        </label>
+        <div>
+          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 8 }}>{t.newTankPage.setupTypeLabel}</label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {(
+              [
+                ["planted", "🌿", t.plannerPage.plantedOption, t.plannerPage.plantedHint],
+                ["hardscape", "🪨", t.plannerPage.hardscapeOption, t.plannerPage.hardscapeHint],
+                ["bare_bottom", "🫙", t.plannerPage.bareBottomOption, t.plannerPage.bareBottomHint],
+              ] as [PlantedTier, string, string, string][]
+            ).map(([value, icon, label, hint]) => (
+              <ChoiceCard key={value} selected={setupType === value} onClick={() => setSetupType(value)} icon={icon} title={label} subtitle={hint} />
+            ))}
+          </div>
+        </div>
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
           {t.editTankPage.co2Injection}

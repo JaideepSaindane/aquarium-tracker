@@ -79,7 +79,7 @@ const hiLatn: Dictionary = {
     no: "Nahi",
     deleting: "Delete ho raha hai...",
     yesDelete: "Haan, delete karein",
-    needHelpTitle: "Madad chahiye?",
+    needHelpTitle: "Fish Doctor",
     needHelpBody: "Kuch theek nahi lag raha?",
     getHelp: "Madad lein",
     fishCount: "{n} fish",
@@ -107,7 +107,7 @@ const hiLatn: Dictionary = {
     startOver: "Phir se shuru karein",
   },
   emergencyPage: {
-    title: "Emergency",
+    title: "Fish Doctor",
     resultTitle: "Kya karein",
     intro: "Hamesha free. Kuch jaldi se taps ka jawab dijiye aur hum aapko sahi pehla step batayenge.",
     doThisFirst: "SABSE PEHLE YE KAREIN",
@@ -552,7 +552,6 @@ const hiLatn: Dictionary = {
   },
   editTankPage: {
     nameRequired: "Naam zaroori hai.",
-    plantedTank: "Planted tank",
     co2Injection: "CO2 injection",
     saved: "Saved.",
     saveChanges: "Changes save karein",
@@ -578,6 +577,7 @@ const hiLatn: Dictionary = {
     freshwaterPlantedFocused: "{name} freshwater aur planted par focused hai — koi reef/marine tanks nahi.",
     tankSavedOpening: "Tank save ho gaya — abhi khola ja raha hai...",
     moreDetails: "Aur details",
+    setupTypeLabel: "Tank setup",
   },
   tankSizePage: {
     allThreeRequired: "Teeno dimensions zaroori hain.",

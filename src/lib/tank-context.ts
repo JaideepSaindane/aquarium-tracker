@@ -36,7 +36,20 @@ export async function buildTankContext(tankId: string): Promise<string> {
   lines.push(`Tank: ${tank.name}`);
   lines.push(`Dimensions: ${tank.lengthCm}x${tank.widthCm}x${tank.heightCm} cm, ${tank.volumeL} L`);
   lines.push(`Water type: ${tank.waterType ?? "unknown"}`);
-  lines.push(`Planted: ${tank.isPlanted ? "yes" : "no"}, CO2: ${tank.hasCo2 ? "yes" : "no"}`);
+  // setupType is the real source of truth (2026-09-14: "we should also
+  // have an identifier for bare bottom, and hardscape only") — isPlanted
+  // is just its "planted" case, computed at save time, not a second
+  // independently-set field. Older tanks saved before setupType existed
+  // fall back to the isPlanted boolean alone.
+  const setupLabel =
+    tank.setupType === "planted" || tank.isPlanted
+      ? "planted (live plants)"
+      : tank.setupType === "hardscape"
+        ? "hardscape only (rocks/driftwood, no live plants)"
+        : tank.setupType === "bare_bottom"
+          ? "bare bottom (no substrate)"
+          : "unknown";
+  lines.push(`Setup: ${setupLabel}, CO2 injection: ${tank.hasCo2 ? "yes" : "no"}`);
   if (tank.city) lines.push(`City: ${tank.city}`);
   // Deliberately labelled as unverified, not "Tank age" — `startedOn` is
   // derived from a rough age band the user tapped (2026-09-10: "Just set

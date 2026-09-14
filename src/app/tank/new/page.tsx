@@ -16,6 +16,7 @@ import { createTank, updateTank } from "@/db/queries/tanks";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
 import { COMMON_CITIES } from "@/lib/common-options";
+import type { PlantedTier } from "@/lib/setup-recommendations";
 import { convertDimension } from "@/lib/dimension-units";
 import { formatVolumeDual } from "@/lib/units";
 import { useTranslation } from "@/i18n/use-translation";
@@ -28,7 +29,7 @@ export default function NewTankPage() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [waterType, setWaterType] = useState<"fresh" | "brackish">("fresh");
-  const [isPlanted, setIsPlanted] = useState(false);
+  const [setupType, setSetupType] = useState<PlantedTier>("planted");
   const [hasCo2, setHasCo2] = useState(false);
   const [ageBand, setAgeBand] = useState<AgeBand>("just_set_up");
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
@@ -70,7 +71,8 @@ export default function NewTankPage() {
         heightCm,
         city: city.trim() || undefined,
         waterType,
-        isPlanted,
+        setupType,
+        isPlanted: setupType === "planted",
         hasCo2,
         startedOn: startedOnFromAgeBand(ageBand),
       });
@@ -184,21 +186,35 @@ export default function NewTankPage() {
           </div>
         </div>
 
-        {/* Planted/CO2 checklist (2026-09-14, Jaideep: "there is no
-            checkbox selection for planted and CO2 anywhere in the add
-            tank flow... make sure there's a checklist for CO2, planted
-            tank" whenever a tank is created) — Ask AquaAI reads
-            tank.isPlanted/hasCo2 straight into its prompt context
-            (src/lib/tank-context.ts), so leaving these unset on every new
+        {/* Setup type + CO2 (2026-09-14, Jaideep: "there is no checkbox
+            selection for planted and CO2 anywhere in the add tank
+            flow... We should add that" then "we should also have an
+            identifier for bare bottom, and hardscape only and only one
+            of these should be selected at a time") — Ask AquaAI reads
+            tank.isPlanted/setupType straight into its prompt context
+            (src/lib/tank-context.ts), so leaving this unset on every new
             tank was producing confidently wrong answers ("the tank is
-            unplanted") for tanks that clearly were. Same two checkboxes
-            Edit Tank already has, just available from the start instead
-            of only after the fact. */}
-        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
-          <AquaIcon name="planted" size={16} />
-          {t.editTankPage.plantedTank}
-        </label>
+            unplanted") for tanks that clearly weren't bare. Same
+            "planted / hardscape / bare bottom" vocabulary the Planner
+            already uses (src/lib/setup-recommendations.ts's
+            PlantedTier), not a separate one — one mental model app-wide.
+            isPlanted itself becomes computed from this (setupType ===
+            "planted") rather than a second, independently-editable
+            field that could drift out of sync with it. */}
+        <div>
+          <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, display: "block", marginBottom: 8 }}>{t.newTankPage.setupTypeLabel}</label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {(
+              [
+                ["planted", "🌿", t.plannerPage.plantedOption, t.plannerPage.plantedHint],
+                ["hardscape", "🪨", t.plannerPage.hardscapeOption, t.plannerPage.hardscapeHint],
+                ["bare_bottom", "🫙", t.plannerPage.bareBottomOption, t.plannerPage.bareBottomHint],
+              ] as [PlantedTier, string, string, string][]
+            ).map(([value, icon, label, hint]) => (
+              <ChoiceCard key={value} selected={setupType === value} onClick={() => setSetupType(value)} icon={icon} title={label} subtitle={hint} />
+            ))}
+          </div>
+        </div>
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
           {t.editTankPage.co2Injection}
