@@ -2,7 +2,6 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Screen } from "@/components/Screen";
 import { AquaIcon } from "@/components/icons/AquaIcon";
 import { BackHeader } from "@/components/BackHeader";
@@ -18,9 +17,33 @@ import { listPlantsForTank, addPlant, removePlant } from "@/db/queries/plants";
 import { listEquipmentForTank, addEquipment, removeEquipment } from "@/db/queries/equipment";
 import { uploadPhoto } from "@/lib/photo-upload";
 import { addPhoto } from "@/db/queries/photos";
+import { convertDimension } from "@/lib/dimension-units";
+import { formatVolumeDual } from "@/lib/units";
 import { FILTER_SUBTYPES, COMMON_PLANTS, COMMON_CITIES } from "@/lib/common-options";
 import { useTranslation } from "@/i18n/use-translation";
 
+/**
+ * Redesign 2026-09-14 (Jaideep, direct feedback on this exact screen):
+ *  - Tank size used to be a separate `/tank/[id]/size` page reached via a
+ *    row link — "if I click on that, all my progress from the other things
+ *    that I've updated on the edit tank page is actually lost." It's now
+ *    three plain fields right here, saved together with everything else in
+ *    one `updateTank` call. That size route is gone; nothing else linked to
+ *    it.
+ *  - "Save Changes" used to sit in the normal document flow, between the
+ *    fields and the Plants/Equipment sections — reachable only by scrolling
+ *    past everything below it, and visually buried mid-page rather than
+ *    reading as the screen's one primary action. It's now the `Screen`
+ *    footer, pinned at the bottom like every other form screen in the app
+ *    (onboarding, tank creation, Health Check).
+ *  - Plants/Equipment rows used to be a full `Card` per item with a
+ *    full-width red "Remove" `DangerButton` — "huge Remove buttons... make
+ *    this page a bit compact." Both lists are now one `Card` holding plain
+ *    rows, each with a small icon-only trash button — no confirmation
+ *    dialog, tapping it removes that row immediately (a plant/equipment
+ *    line is a low-stakes, easily-re-added edit, not a destructive action
+ *    on the level of deleting the whole tank, which still confirms below).
+ */
 export default function EditTankPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -35,6 +58,10 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   const [ageBand, setAgeBand] = useState<AgeBand>("not_sure");
   const [isPlanted, setIsPlanted] = useState(false);
   const [hasCo2, setHasCo2] = useState(false);
+  const [dimUnit, setDimUnit] = useState<"cm" | "ft">("cm");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -49,9 +76,9 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   const [equipRatedLph, setEquipRatedLph] = useState("");
   const [equipWattage, setEquipWattage] = useState("");
 
-  // Adjust state during render rather than an effect — see the Tank Size
-  // page's comment for why (avoids the extra render-then-setState pass,
-  // and satisfies the set-state-in-effect lint rule).
+  // Adjust state during render rather than an effect — avoids the extra
+  // render-then-setState pass, and satisfies the set-state-in-effect lint
+  // rule (same pattern the old standalone Tank Size page used).
   const [loadedId, setLoadedId] = useState<string | null>(null);
   if (tank && loadedId !== tank.id) {
     setLoadedId(tank.id);
@@ -61,7 +88,23 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
     setAgeBand(ageBandFromStartedOn(tank.startedOn));
     setIsPlanted(!!tank.isPlanted);
     setHasCo2(!!tank.hasCo2);
+    setLength(String(tank.lengthCm));
+    setWidth(String(tank.widthCm));
+    setHeight(String(tank.heightCm));
   }
+
+  function toggleDimUnit(next: "cm" | "ft") {
+    if (next === dimUnit) return;
+    setLength((v) => convertDimension(v, dimUnit, next));
+    setWidth((v) => convertDimension(v, dimUnit, next));
+    setHeight((v) => convertDimension(v, dimUnit, next));
+    setDimUnit(next);
+  }
+
+  const lengthCm = length ? Number(convertDimension(length, dimUnit, "cm")) : null;
+  const widthCm = width ? Number(convertDimension(width, dimUnit, "cm")) : null;
+  const heightCm = height ? Number(convertDimension(height, dimUnit, "cm")) : null;
+  const volumeL = lengthCm && widthCm && heightCm ? Math.round(((lengthCm * widthCm * heightCm) / 1000) * 10) / 10 : null;
 
   async function handlePhotoChange(file: File) {
     setError(null);
@@ -86,6 +129,10 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
       setError(t.editTankPage.nameRequired);
       return;
     }
+    if (!lengthCm || !widthCm || !heightCm) {
+      setError(t.tankSizePage.allThreeRequired);
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -96,6 +143,9 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
         startedOn: startedOnFromAgeBand(ageBand),
         isPlanted,
         hasCo2,
+        lengthCm,
+        widthCm,
+        heightCm,
       });
       setSaved(true);
       router.replace(`/tank/${id}`);
@@ -143,14 +193,24 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   if (!tank) return <Screen>{t.common.loading}</Screen>;
 
   return (
-    <Screen>
+    <Screen
+      footer={
+        <>
+          {error && <Banner severity="fixNow">{error}</Banner>}
+          {saved && <Banner severity="improve">{t.editTankPage.saved}</Banner>}
+          <PrimaryButton onClick={handleSave} disabled={saving}>
+            {saving ? t.settingsPage.saving : t.editTankPage.saveChanges}
+          </PrimaryButton>
+        </>
+      }
+    >
       <BackHeader title={tank.name} fallbackHref={`/tank/${id}`} />
 
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
         <TankAvatar photoUri={tank.photoUri} onPhotoChange={handlePhotoChange} />
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <Field label={t.settingsPage.name} value={name} onChange={(e) => setName(e.target.value)} />
 
         <div>
@@ -210,23 +270,49 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
 
         <AgeBandField value={ageBand} onChange={setAgeBand} />
 
-        <Link href={`/tank/${id}/size`}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "10px 12px",
-              border: "1px solid var(--color-line)",
-              borderRadius: 8,
-            }}
-          >
-            <span>{t.tankSizePage.title}</span>
-            <span style={{ color: "var(--color-ink-muted)" }}>
-              {tank.lengthCm}×{tank.widthCm}×{tank.heightCm}cm · {tank.volumeL}L ›
-            </span>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <label style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{t.tankSizePage.title}</label>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                type="button"
+                onClick={() => toggleDimUnit("cm")}
+                style={{
+                  padding: "2px 10px",
+                  borderRadius: 6,
+                  border: "1px solid var(--color-line)",
+                  background: dimUnit === "cm" ? "var(--color-deep)" : "transparent",
+                  color: dimUnit === "cm" ? "#fff" : "var(--color-ink)",
+                  fontSize: "var(--font-caption-size)",
+                }}
+              >
+                cm
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleDimUnit("ft")}
+                style={{
+                  padding: "2px 10px",
+                  borderRadius: 6,
+                  border: "1px solid var(--color-line)",
+                  background: dimUnit === "ft" ? "var(--color-deep)" : "transparent",
+                  color: dimUnit === "ft" ? "#fff" : "var(--color-ink)",
+                  fontSize: "var(--font-caption-size)",
+                }}
+              >
+                ft
+              </button>
+            </div>
           </div>
-        </Link>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            <Field label="" placeholder={t.scanPage.length} type="number" value={length} onChange={(e) => setLength(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.width} type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
+          </div>
+          {volumeL !== null && (
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 4 }}>≈ {formatVolumeDual(volumeL)}</p>
+          )}
+        </div>
 
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
@@ -237,18 +323,11 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
           <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
           {t.editTankPage.co2Injection}
         </label>
-
-        {error && <p style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)" }}>{error}</p>}
-        {saved && <Banner severity="improve">{t.editTankPage.saved}</Banner>}
-
-        <PrimaryButton onClick={handleSave} disabled={saving}>
-          {saving ? t.settingsPage.saving : t.editTankPage.saveChanges}
-        </PrimaryButton>
       </div>
 
-      <div style={{ height: 24 }} />
+      <div style={{ height: 20 }} />
 
-      <section style={{ marginBottom: 20 }}>
+      <section style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <h2 style={{ fontSize: "var(--font-heading-size)" }}>{t.editTankPage.plants}</h2>
           <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowAddPlant((v) => !v)}>
@@ -281,18 +360,37 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
             </PrimaryButton>
           </div>
         )}
-        {(plants ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.editTankPage.noneAddedYet}</p>}
-        {(plants ?? []).map((p) => (
-          <Card key={p.id} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>{p.commonName}</span>
-            <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removePlant(p.id)}>
-              {t.common.remove}
-            </DangerButton>
+        {(plants ?? []).length === 0 ? (
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.editTankPage.noneAddedYet}</p>
+        ) : (
+          <Card style={{ padding: "4px 14px" }}>
+            {(plants ?? []).map((p, i) => (
+              <div
+                key={p.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "8px 0",
+                  borderTop: i === 0 ? "none" : "1px solid var(--color-line-soft)",
+                }}
+              >
+                <span style={{ fontSize: "var(--font-body-sm-size)" }}>{p.commonName}</span>
+                <button
+                  type="button"
+                  aria-label={`${t.common.remove} ${p.commonName}`}
+                  onClick={() => removePlant(p.id)}
+                  style={{ width: 32, height: 32, flexShrink: 0, border: "none", background: "none", color: "var(--color-fix-now)", fontSize: 16, cursor: "pointer" }}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
           </Card>
-        ))}
+        )}
       </section>
 
-      <section style={{ marginBottom: 24 }}>
+      <section style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <h2 style={{ fontSize: "var(--font-heading-size)" }}>{t.editTankPage.equipment}</h2>
           <SecondaryButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => setShowAddEquipment((v) => !v)}>
@@ -332,19 +430,38 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
             <PrimaryButton onClick={handleAddEquipment}>{t.common.save}</PrimaryButton>
           </div>
         )}
-        {(equipmentList ?? []).length === 0 && <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.editTankPage.noneAddedYet}</p>}
-        {(equipmentList ?? []).map((eq) => (
-          <Card key={eq.id} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>
-              {eq.subtype ? FILTER_SUBTYPES.find((fs) => fs.value === eq.subtype)?.label ?? eq.subtype : eq.type}
-              {eq.ratedLph ? ` — ${eq.ratedLph} L/h` : ""}
-              {eq.wattage ? ` — ${eq.wattage}W` : ""}
-            </span>
-            <DangerButton style={{ width: "auto", padding: "4px 12px" }} onClick={() => removeEquipment(eq.id)}>
-              {t.common.remove}
-            </DangerButton>
+        {(equipmentList ?? []).length === 0 ? (
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{t.editTankPage.noneAddedYet}</p>
+        ) : (
+          <Card style={{ padding: "4px 14px" }}>
+            {(equipmentList ?? []).map((eq, i) => (
+              <div
+                key={eq.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "8px 0",
+                  borderTop: i === 0 ? "none" : "1px solid var(--color-line-soft)",
+                }}
+              >
+                <span style={{ fontSize: "var(--font-body-sm-size)" }}>
+                  {eq.subtype ? FILTER_SUBTYPES.find((fs) => fs.value === eq.subtype)?.label ?? eq.subtype : eq.type}
+                  {eq.ratedLph ? ` — ${eq.ratedLph} L/h` : ""}
+                  {eq.wattage ? ` — ${eq.wattage}W` : ""}
+                </span>
+                <button
+                  type="button"
+                  aria-label={`${t.common.remove} ${eq.type}`}
+                  onClick={() => removeEquipment(eq.id)}
+                  style={{ width: 32, height: 32, flexShrink: 0, border: "none", background: "none", color: "var(--color-fix-now)", fontSize: 16, cursor: "pointer" }}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
           </Card>
-        ))}
+        )}
       </section>
 
       <div style={{ display: "flex", gap: 8 }}>
