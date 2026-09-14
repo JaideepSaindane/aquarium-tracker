@@ -5,6 +5,7 @@ import { loadPrompt } from "@/server/ai/prompt-loader";
 import { callContract } from "@/server/ai/call-contract";
 import { SpeciesGenZod, SpeciesGenJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/species-gen";
 import { hashPrompt, getCached, setCached } from "@/server/ai/cache";
+import { capText } from "@/server/ai/text-limits";
 import type { z } from "zod";
 
 // Unlimited and uncounted, cached by query — Principle 03: a missing
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (!rate.allowed) return NextResponse.json({ error: "Too many requests. Please try again shortly." }, { status: 429, headers: { "Retry-After": String(rate.retryAfterSeconds) } });
 
   const body = await req.json();
-  const query = String(body.query ?? "").trim();
+  const query = capText(String(body.query ?? "").trim(), 200);
   if (!query) return NextResponse.json({ error: "No species name given." }, { status: 400 });
 
   const promptText = await loadPrompt("species-gen.v1.md", { QUERY: query });

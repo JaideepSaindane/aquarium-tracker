@@ -6,6 +6,7 @@ import { retrieveSpeciesForPlanner } from "@/server/ai/retrieval";
 import { callContract } from "@/server/ai/call-contract";
 import { PlannerZod, PlannerJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/planner";
 import { matchCityClimate } from "@/lib/setup-recommendations";
+import { capText } from "@/server/ai/text-limits";
 
 // T-027's AI-first planner (Jaideep, 2026-09-06: "the whole point is the
 // fish; think from a user lens"). One call per plan — metered like a scan
@@ -33,8 +34,10 @@ export async function POST(req: NextRequest) {
   // ("Small"/"Medium"/"Large") for the prompt — the number sent to the
   // model is always the tank's real volume, never a bucket average.
   const volumeL = Number(body.volumeL);
-  const city = String(body.city ?? "").trim();
-  const wishList: string[] = Array.isArray(body.wishList) ? body.wishList.map(String).slice(0, 20) : [];
+  const city = capText(String(body.city ?? "").trim(), 200);
+  const wishList: string[] = Array.isArray(body.wishList)
+    ? body.wishList.map((w: unknown) => capText(String(w), 100)).slice(0, 20)
+    : [];
   if (!volumeL || volumeL <= 0) {
     return NextResponse.json({ error: "Missing or invalid tank volume." }, { status: 400 });
   }

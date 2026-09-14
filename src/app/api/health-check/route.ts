@@ -4,6 +4,7 @@ import { checkIpRateLimit } from "@/server/ai/ip-rate-limit";
 import { loadPrompt } from "@/server/ai/prompt-loader";
 import { callContract } from "@/server/ai/call-contract";
 import { HealthCheckZod, HealthCheckJsonSchema, PROMPT_VERSION, deriveOverallStatus, type HealthCheckReport } from "@/server/ai/schemas/health-check";
+import { capText } from "@/server/ai/text-limits";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
@@ -28,8 +29,8 @@ export async function POST(req: NextRequest) {
   const widthCm = Number(form.get("width_cm") ?? 0);
   const heightCm = Number(form.get("height_cm") ?? 0);
   const volumeL = Math.round(((lengthCm * widthCm * heightCm) / 1000) * 10) / 10;
-  const tankType = String(form.get("tank_type") ?? "unclear");
-  const tankRecord = String(form.get("tank_record") ?? "(no existing record)");
+  const tankType = capText(String(form.get("tank_type") ?? "unclear"), 200);
+  const tankRecord = capText(String(form.get("tank_record") ?? "(no existing record)"), 8000);
   const locale = form.get("locale") === "hi-latn" ? "hi-latn" : "en";
   const replyLanguage = locale === "hi-latn" ? "Hinglish (Latin script)" : "English";
 

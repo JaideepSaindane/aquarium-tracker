@@ -6,6 +6,7 @@ import { loadPrompt } from "@/server/ai/prompt-loader";
 import { retrieveCorpus, retrieveRelevantSpecies, getSpeciesContextTextFor } from "@/server/ai/retrieval";
 import { callContract } from "@/server/ai/call-contract";
 import { AskZod, AskJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/ask";
+import { capText } from "@/server/ai/text-limits";
 
 // The server has no database in Phase 1 (docs/02-data-model.md) — the tank's
 // full context lives client-side, so the client assembles and sends it.
@@ -32,8 +33,8 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const question = String(body.question ?? "").trim();
-  const tankContext = String(body.tankContext ?? "(no tank context provided)");
+  const question = capText(String(body.question ?? "").trim(), 2000);
+  const tankContext = capText(String(body.tankContext ?? "(no tank context provided)"), 8000);
   const speciesIds: string[] = Array.isArray(body.speciesIds) ? body.speciesIds.map(String) : [];
   if (!question) return NextResponse.json({ error: "No question provided." }, { status: 400 });
 

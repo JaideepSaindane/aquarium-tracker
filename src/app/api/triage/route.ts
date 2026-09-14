@@ -5,6 +5,7 @@ import { loadPrompt } from "@/server/ai/prompt-loader";
 import { retrieveCorpus } from "@/server/ai/retrieval";
 import { callContract } from "@/server/ai/call-contract";
 import { TriageZod, TriageJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/triage";
+import { capText } from "@/server/ai/text-limits";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
@@ -19,11 +20,11 @@ export async function POST(req: NextRequest) {
 
   const form = await req.formData();
   const photo = form.get("photo");
-  const description = String(form.get("description") ?? "");
-  const affectedCount = String(form.get("affected_count") ?? "unknown");
-  const duration = String(form.get("duration") ?? "unknown");
-  const recentTest = String(form.get("recent_test") ?? "none provided");
-  const tankAgeDays = String(form.get("tank_age_days") ?? "unknown");
+  const description = capText(String(form.get("description") ?? ""), 3000);
+  const affectedCount = capText(String(form.get("affected_count") ?? "unknown"), 200);
+  const duration = capText(String(form.get("duration") ?? "unknown"), 200);
+  const recentTest = capText(String(form.get("recent_test") ?? "none provided"), 500);
+  const tankAgeDays = capText(String(form.get("tank_age_days") ?? "unknown"), 200);
   const locale = form.get("locale") === "hi-latn" ? "hi-latn" : "en";
   const replyLanguage = locale === "hi-latn" ? "Hinglish (Latin script)" : "English";
 

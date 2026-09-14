@@ -6,6 +6,7 @@ import { loadPrompt } from "@/server/ai/prompt-loader";
 import { retrieveCorpus } from "@/server/ai/retrieval";
 import { callContract } from "@/server/ai/call-contract";
 import { TankScanZod, TankScanJsonSchema, PROMPT_VERSION } from "@/server/ai/schemas/tank-scan";
+import { capText } from "@/server/ai/text-limits";
 
 // Client downscales to ~1024px before upload (specs/T-013) — this is a
 // sanity ceiling, not the resize step itself.
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
   const lengthCm = Number(form.get("length_cm"));
   const widthCm = Number(form.get("width_cm"));
   const heightCm = Number(form.get("height_cm"));
-  const city = String(form.get("city") ?? "");
+  const city = capText(String(form.get("city") ?? ""), 200);
   // Only present for a re-check of an existing tank (buildTankContext, sent
   // by the client — the server has no database of its own to look this up
   // in, per the app's local-first architecture). Absent for a first scan.
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
     HEIGHT_CM: String(heightCm),
     VOLUME_L: String(volumeL),
     CITY: city || "(not provided)",
-    TANK_RECORD: typeof tankRecord === "string" && tankRecord.trim() ? tankRecord : "(none — first scan for a new tank)",
+    TANK_RECORD: typeof tankRecord === "string" && tankRecord.trim() ? capText(tankRecord, 8000) : "(none — first scan for a new tank)",
     CORPUS_CONTEXT: corpus.length ? corpus.map((c) => `[${c.id}]\n${c.text}`).join("\n\n") : "(none retrieved yet)",
   });
 

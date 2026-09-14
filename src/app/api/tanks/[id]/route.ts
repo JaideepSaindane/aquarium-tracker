@@ -17,13 +17,40 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   return NextResponse.json(rows[0]);
 }
 
+// Fields a client is actually allowed to change via this route — everything
+// else (id, userId, createdAt, deletedAt) is identity/audit state the
+// server owns. A prior version spread the whole request body into the
+// update, which let a signed-in user PATCH their own tank's `userId` to
+// reassign it to a different account, or forge fields like `createdAt`.
+const PATCHABLE_FIELDS = [
+  "name",
+  "photoUri",
+  "lengthCm",
+  "widthCm",
+  "heightCm",
+  "shape",
+  "status",
+  "waterType",
+  "isPlanted",
+  "hasCo2",
+  "setupType",
+  "city",
+  "startedOn",
+  "substrate",
+  "notes",
+  "archivedAt",
+] as const;
+
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { id } = await params;
   const patch = await req.json();
   const now = nowIso();
-  const values: Record<string, unknown> = { ...patch, updatedAt: now };
+  const values: Record<string, unknown> = { updatedAt: now };
+  for (const field of PATCHABLE_FIELDS) {
+    if (field in patch) values[field] = patch[field];
+  }
   if (patch.lengthCm && patch.widthCm && patch.heightCm) {
     values.volumeL = Math.round(((patch.lengthCm * patch.widthCm * patch.heightCm) / 1000) * 10) / 10;
   }
