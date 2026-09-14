@@ -11,6 +11,7 @@ import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Butto
 import { ListRow } from "@/components/ListRow";
 import { FirstTankTour } from "@/components/FirstTankTour";
 import { FeedbackModal } from "@/components/FeedbackModal";
+import { HomeInstallPrompt } from "@/components/HomeInstallPrompt";
 import { useLiveQuery, notifyChanged } from "@/db/live";
 import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listAllAliveLivestock } from "@/db/queries/livestock";
@@ -625,6 +626,7 @@ export default function TanksPage() {
       <FirstTankTour hasTanks={(tanks?.length ?? 0) > 0} />
 
       {feedbackOpen && <FeedbackModal source="home" onClose={() => setFeedbackOpen(false)} />}
+      <HomeInstallPrompt />
     </Screen>
   );
 }

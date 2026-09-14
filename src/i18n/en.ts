@@ -46,6 +46,9 @@ const en = {
     gotIt: "Got it",
     installedTitle: "App installed!",
     installedBanner: "You can close this browser tab now — open {app} from your home screen instead.",
+    homePromptTitle: "Install this app on your phone",
+    homePromptBody: "Get one-tap access from your home screen, no browser bar, no need to find this link again.",
+    notNow: "Not now",
   },
   onboarding: {
     welcomeTitle: "Welcome to AquaAI",

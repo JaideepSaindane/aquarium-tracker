@@ -50,6 +50,9 @@ const hiLatn: Dictionary = {
     gotIt: "Samajh gaya",
     installedTitle: "App install ho gayi!",
     installedBanner: "Ab is browser tab ko band kar sakte hain — iske bajaye {app} ko apni home screen se kholein.",
+    homePromptTitle: "Is app ko apne phone par install karein",
+    homePromptBody: "Home screen se ek tap mein access paayein — koi browser bar nahi, ye link dobara dhoondhne ki zaroorat nahi.",
+    notNow: "Abhi nahi",
   },
   onboarding: {
     welcomeTitle: "AquaAI mein swagat hai",
