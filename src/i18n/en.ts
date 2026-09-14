@@ -203,6 +203,10 @@ const en = {
     emptyTitle: "No questions yet",
     emptyBody: "Everything you've ever asked Ask AquaAI, across every tank, will show up here.",
   },
+  photoPicker: {
+    openCamera: "Open Camera",
+    chooseFromGallery: "Choose from Gallery",
+  },
   dexPage: {
     title: "Discover",
     subtitle: "The aquarium encyclopedia — species, care basics, and what's already in your tanks.",
@@ -218,8 +222,6 @@ const en = {
     scanToFind: "Scan a photo to find a species",
     findThisFish: "Take a photo to find",
     scanning: "Scanning...",
-    takePhoto: "Take photo",
-    chooseFromGallery: "Choose from gallery",
     bestGuesses: "Our best guesses — may or may not be in our catalog",
     inCatalogViewCard: "In our catalog — view card",
     notInCatalogYet: "Not in our catalog yet",
@@ -817,8 +819,6 @@ const en = {
     bodyPlaceholder: "Just set this tank up — what fish is this? Ask a question or share your tank...",
     addPhoto: "Add photo or video (optional)",
     addAnotherPhoto: "Add another ({n}/{max})",
-    takePhotoOrVideo: "Take photo or video",
-    chooseMediaFromGallery: "Choose from gallery",
     videoTooLarge: "That video is too large — please keep it under 100MB.",
     compressingVideo: "Compressing video...",
     couldNotUploadVideo: "Couldn't upload that video — check your connection and try again.",

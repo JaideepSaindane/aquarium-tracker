@@ -207,6 +207,10 @@ const hiLatn: Dictionary = {
     emptyTitle: "Abhi tak koi sawaal nahi",
     emptyBody: "Aapne Ask AquaAI se jo bhi poocha hai, kisi bhi tank ke liye, wo sab yahan dikhega.",
   },
+  photoPicker: {
+    openCamera: "Camera Kholein",
+    chooseFromGallery: "Gallery Se Chunein",
+  },
   dexPage: {
     title: "Discover",
     subtitle: "Aquarium encyclopedia — species, care basics, aur jo already tumhare tanks mein hai.",
@@ -222,8 +226,6 @@ const hiLatn: Dictionary = {
     scanToFind: "Species dhoondhne ke liye photo scan karein",
     findThisFish: "Dhoondhne ke liye photo lein",
     scanning: "Scan ho raha hai...",
-    takePhoto: "Photo lein",
-    chooseFromGallery: "Gallery se chunein",
     bestGuesses: "Hamare best guesses — hamare catalog mein ho sakte hain ya nahi",
     inCatalogViewCard: "Hamare catalog mein hai — card dekhein",
     notInCatalogYet: "Abhi hamare catalog mein nahi hai",
@@ -822,8 +824,6 @@ const hiLatn: Dictionary = {
     bodyPlaceholder: "Abhi ye tank set up kiya — ye kaunsi fish hai? Sawaal poochein ya apna tank share karein...",
     addPhoto: "Photo ya video add karein (optional)",
     addAnotherPhoto: "Ek aur add karein ({n}/{max})",
-    takePhotoOrVideo: "Photo ya video lein",
-    chooseMediaFromGallery: "Gallery se choose karein",
     videoTooLarge: "Ye video bahut bada hai — please 100MB se kam rakhein.",
     compressingVideo: "Video compress ho raha hai...",
     couldNotUploadVideo: "Video upload nahi ho saka — apna connection check karke phir try karein.",

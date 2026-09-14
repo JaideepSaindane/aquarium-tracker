@@ -397,7 +397,7 @@ export default function DexPage() {
                   }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
                 >
-                  📷 {t.dexPage.takePhoto}
+                  📷 {t.photoPicker.openCamera}
                 </button>
                 <button
                   type="button"
@@ -407,7 +407,7 @@ export default function DexPage() {
                   }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
                 >
-                  🖼️ {t.dexPage.chooseFromGallery}
+                  🖼️ {t.photoPicker.chooseFromGallery}
                 </button>
               </div>
             </>

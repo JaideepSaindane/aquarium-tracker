@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { readPhotoFile } from "@/lib/opfs-files";
 import { isRemotePhotoUrl } from "@/lib/use-photo-src";
+import { useTranslation } from "@/i18n/use-translation";
 
 /**
  * Circular tank avatar: shows the tank's photo if it has one, otherwise a
@@ -26,6 +27,7 @@ export function TankAvatar({
   /** What to show when there's no photo yet — the fish icon fits a tank, but this component is also reused for the profile photo (Settings), which wants a person icon instead. */
   fallbackIcon?: string;
 }) {
+  const t = useTranslation();
   const [url, setUrl] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -194,7 +196,7 @@ export function TankAvatar({
                     cursor: "pointer",
                   }}
                 >
-                  📷 Take photo
+                  📷 {t.photoPicker.openCamera}
                 </button>
                 <button
                   type="button"
@@ -216,7 +218,7 @@ export function TankAvatar({
                     cursor: "pointer",
                   }}
                 >
-                  🖼️ Choose from gallery
+                  🖼️ {t.photoPicker.chooseFromGallery}
                 </button>
               </div>
             </>
