@@ -237,8 +237,8 @@ export async function identifySpecies(photo: File | Blob) {
   return result;
 }
 
-/** T-027 AI-first planner: one expert read on the user's tank-type + size-band + fish wish list. */
-export async function getPlannerAdvice(params: { tankType: string; band: string; city: string; wishList: string[] }) {
+/** T-027 AI-first planner: one expert read on the user's tank-type + real volume + fish wish list. */
+export async function getPlannerAdvice(params: { tankType: string; volumeL: number; city: string; wishList: string[] }) {
   const res = await fetch("/api/planner", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
@@ -250,7 +250,7 @@ export async function getPlannerAdvice(params: { tankType: string; band: string;
     await logAiInteraction({
       kind: "planner",
       promptVersion: String(result.data.plan.prompt_version),
-      userInput: `${params.tankType}/${params.band}: ${params.wishList.join(", ")}`,
+      userInput: `${params.tankType}/${params.volumeL}L: ${params.wishList.join(", ")}`,
       groundingRefs: extractRefs(result.data.plan),
       response: result.data.plan,
       inputTokens: result.data.meta.tokensIn,

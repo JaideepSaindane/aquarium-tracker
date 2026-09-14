@@ -21,16 +21,30 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const tankType = String(body.tankType ?? "planted");
-  const band = String(body.band ?? "medium");
+  // Bug fix (2026-09-14, Jaideep: "my tank size calculated... is 184.3L
+  // but actually, in the care and tips recommendation, it is saying your
+  // chosen medium tank is 75L"). This route used to receive `band` as a
+  // free-text descriptive string built client-side (e.g. "2ft long
+  // (~184.3L)"), then look it up against a small/medium/large keyed
+  // table — that lookup could never match anything real, so it silently
+  // fell back to BANDS.medium's fixed 75L every single time, regardless
+  // of the tank's actual size. Now takes the real computed volume
+  // directly and only uses the band table to pick a human label
+  // ("Small"/"Medium"/"Large") for the prompt — the number sent to the
+  // model is always the tank's real volume, never a bucket average.
+  const volumeL = Number(body.volumeL);
   const city = String(body.city ?? "").trim();
   const wishList: string[] = Array.isArray(body.wishList) ? body.wishList.map(String).slice(0, 20) : [];
+  if (!volumeL || volumeL <= 0) {
+    return NextResponse.json({ error: "Missing or invalid tank volume." }, { status: 400 });
+  }
 
-  const BANDS: Record<string, { label: string; minL: number; maxL: number; planL: number }> = {
-    small: { label: "Small", minL: 20, maxL: 45, planL: 35 },
-    medium: { label: "Medium", minL: 45, maxL: 120, planL: 75 },
-    large: { label: "Large", minL: 120, maxL: 400, planL: 180 },
-  };
-  const bandInfo = BANDS[band] ?? BANDS.medium;
+  const BANDS: { label: string; minL: number; maxL: number }[] = [
+    { label: "Small", minL: 0, maxL: 45 },
+    { label: "Medium", minL: 45, maxL: 120 },
+    { label: "Large", minL: 120, maxL: Infinity },
+  ];
+  const bandInfo = BANDS.find((b) => volumeL >= b.minL && volumeL < b.maxL) ?? BANDS[BANDS.length - 1];
   const climate = matchCityClimate(city);
   const winterLowC = climate?.winterLowC ?? 18;
 
@@ -59,8 +73,8 @@ export async function POST(req: NextRequest) {
     TANK_TYPE: tankType,
     TIER_DESCRIPTION: tierDescription,
     BAND_LABEL: bandInfo.label,
-    BAND_RANGE: `${bandInfo.minL}–${bandInfo.maxL}`,
-    PLAN_VOLUME_L: String(bandInfo.planL),
+    BAND_RANGE: `${bandInfo.minL}–${bandInfo.maxL === Infinity ? "400+" : bandInfo.maxL}`,
+    PLAN_VOLUME_L: String(Math.round(volumeL * 10) / 10),
     CITY: city || "(not given)",
     WINTER_LOW_C: String(winterLowC),
     WISH_LIST: wishList.length ? wishList.join(", ") : "(none given — suggest a good beginner community)",

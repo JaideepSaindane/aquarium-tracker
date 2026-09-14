@@ -94,7 +94,13 @@ export default function OnboardingPlannerPage() {
 
   // Step 2 — the fish they want (free text + instant catalog suggestions)
   const [wishInput, setWishInput] = useState("");
-  const [wishes, setWishes] = useState<string[]>([]);
+  // Each wish now carries its own count (2026-09-14, Jaideep: "once I add
+  // the fish... allow me to change the number, like we have in other
+  // places" — this used to be a flat list of names with the count
+  // hardcoded to 1 everywhere downstream, discarding whatever the user
+  // actually wanted). count is set here and carried straight through to
+  // the tank once the plan is built, not re-asked later.
+  const [wishes, setWishes] = useState<{ name: string; count: number }[]>([]);
 
   // Step 3 — tank size in feet + shape + city
   const [lengthFt, setLengthFt] = useState<number>(2);
@@ -156,14 +162,19 @@ export default function OnboardingPlannerPage() {
   function addWish(text?: string) {
     const w = (text ?? wishInput).trim();
     if (!w) return;
-    setWishes((prev) => (prev.some((x) => x.toLowerCase() === w.toLowerCase()) ? prev : [...prev, w]));
+    setWishes((prev) => (prev.some((x) => x.name.toLowerCase() === w.toLowerCase()) ? prev : [...prev, { name: w, count: 1 }]));
     setWishInput("");
   }
 
   function addSpeciesWish(s: SpeciesRow) {
     const name = firstName(s.commonNames) ?? s.id;
-    setWishes((prev) => (prev.some((x) => x.toLowerCase() === name.toLowerCase()) ? prev : [...prev, name]));
+    setWishes((prev) => (prev.some((x) => x.name.toLowerCase() === name.toLowerCase()) ? prev : [...prev, { name, count: 1 }]));
     setWishInput("");
+  }
+
+  function setWishCount(name: string, count: number) {
+    if (count < 1) return;
+    setWishes((prev) => prev.map((w) => (w.name === name ? { ...w, count } : w)));
   }
 
   async function handleBuildPlan() {
@@ -194,9 +205,9 @@ export default function OnboardingPlannerPage() {
     try {
       const result = await getPlannerAdvice({
         tankType: tier,
-        band: `${lengthFt}ft ${shape} (~${volumeL}L)`,
+        volumeL,
         city: city.trim(),
-        wishList: wishes,
+        wishList: wishes.map((w) => w.name),
       });
       if (!result.ok) {
         setAiError(result.error);
@@ -208,9 +219,9 @@ export default function OnboardingPlannerPage() {
         // recommends. Suggestions stay as "+ Add" offers so the user
         // chooses what goes in (Jaideep, 2026-09-06: "let me add recos
         // but don't remove the suggested fish field").
-        const wishIds = new Set<string>();
+        const wishCountById = new Map<string, number>();
         for (const w of wishes) {
-          const q = w.trim().toLowerCase().replace(/\s+/g, "-");
+          const q = w.name.trim().toLowerCase().replace(/\s+/g, "-");
           for (const s of allSpecies ?? []) {
             // The live-queried rows store commonNames as a JSON string;
             // handle both that and a plain array defensively.
@@ -224,16 +235,18 @@ export default function OnboardingPlannerPage() {
               s.category !== "plant" &&
               (s.id === q ||
                 (s.scientificName ?? "").toLowerCase().includes(q) ||
-                names.some((n) => n.toLowerCase().includes(w.trim().toLowerCase())))
+                names.some((n) => n.toLowerCase().includes(w.name.trim().toLowerCase())))
             ) {
-              wishIds.add(s.id);
+              // The count the user actually chose in step 2 — not a
+              // hardcoded 1 — carries straight through to the tank.
+              wishCountById.set(s.id, w.count);
               break;
             }
           }
         }
-        const ids = [...wishIds]
-          .filter((id) => speciesById.has(id))
-          .map((id) => ({ speciesId: id, count: 1 }));
+        const ids = [...wishCountById.entries()]
+          .filter(([id]) => speciesById.has(id))
+          .map(([speciesId, count]) => ({ speciesId, count }));
         setPicked(ids);
         const rows = ids.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
         setPlan(
@@ -421,17 +434,59 @@ export default function OnboardingPlannerPage() {
             </div>
           )}
 
+          {/* A real list, not a flat pill row — each fish gets its own
+              quantity stepper right here (2026-09-14, Jaideep: "once I
+              add the fish, let's say I type zebra pleco, what I want you
+              to do is list that as a list below it, but also allow me to
+              change the number, like we have in other places"). This
+              count is what actually gets added to the tank once the plan
+              is built, not silently reset to 1 later. */}
           {wishes.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12 }}>
               {wishes.map((w) => (
-                <button
-                  key={w}
-                  type="button"
-                  onClick={() => setWishes((prev) => prev.filter((x) => x !== w))}
-                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: "var(--radius-pill)", border: "1px solid var(--color-deep)", background: "var(--color-deep-soft, rgba(0,0,0,0.04))", fontSize: "var(--font-caption-size)", fontWeight: 600 }}
+                <div
+                  key={w.name}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 8,
+                    padding: "8px 10px",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--color-line)",
+                    background: "var(--color-surface)",
+                  }}
                 >
-                  {w} ✕
-                </button>
+                  <span style={{ fontSize: "var(--font-body-sm-size)", fontWeight: 600, flex: 1, minWidth: 0 }}>{w.name}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      aria-label={`${t.common.remove} 1`}
+                      onClick={() => setWishCount(w.name, w.count - 1)}
+                      disabled={w.count <= 1}
+                      style={{ width: 28, height: 28, borderRadius: "50%", border: "1px solid var(--color-line)", background: "var(--color-surface-alt)", fontSize: 16, lineHeight: 1, opacity: w.count <= 1 ? 0.4 : 1 }}
+                    >
+                      −
+                    </button>
+                    <span style={{ minWidth: 20, textAlign: "center", fontWeight: 700, fontSize: "var(--font-body-sm-size)" }}>{w.count}</span>
+                    <button
+                      type="button"
+                      aria-label={`${t.common.add} 1`}
+                      onClick={() => setWishCount(w.name, w.count + 1)}
+                      style={{ width: 28, height: 28, borderRadius: "50%", border: "1px solid var(--color-line)", background: "var(--color-surface-alt)", fontSize: 16, lineHeight: 1 }}
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`${t.common.remove} ${w.name}`}
+                      onClick={() => setWishes((prev) => prev.filter((x) => x.name !== w.name))}
+                      style={{ width: 28, height: 28, border: "none", background: "none", color: "var(--color-fix-now)", fontSize: 16 }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
           )}
