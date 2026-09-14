@@ -236,6 +236,24 @@ export default function DexPage() {
     return true;
   });
 
+  // Rank search matches by relevance instead of leaving them in whatever
+  // arbitrary order the catalog table happens to return them in (2026-09-14,
+  // Jaideep: typing "betta" should surface the plain common Betta first, not
+  // bury it among the catalog's 20+ other "___ Betta" variant species). An
+  // exact common-name match ranks above a name that merely starts with the
+  // query, which in turn ranks above every other substring match (id,
+  // scientific name, a secondary common name) — applies to every search,
+  // not just this one species.
+  if (q) {
+    const rank = (s: (typeof filtered)[number]) => {
+      const names = safeParseArray(s.commonNames).concat(safeParseArray(s.commonNamesIn)).map((n) => n.toLowerCase());
+      if (names.some((n) => n === q)) return 0;
+      if (names.some((n) => n.startsWith(q))) return 1;
+      return 2;
+    };
+    filtered.sort((a, b) => rank(a) - rank(b));
+  }
+
   async function handleScanPhoto(file: File) {
     setScanning(true);
     setScanError(null);
