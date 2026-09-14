@@ -9,6 +9,7 @@ import { Banner } from "@/components/Banner";
 import { GroundingLink } from "@/components/GroundingLink";
 import { SecondaryButton } from "@/components/Button";
 import { LottiePlayer } from "@/components/LottiePlayer";
+import { FeedbackModal } from "@/components/FeedbackModal";
 import { useLiveQuery } from "@/db/live";
 import { listTanks } from "@/db/queries/tanks";
 import { listAiInteractions, rateAiInteraction } from "@/db/queries/ai-interactions";
@@ -77,6 +78,7 @@ export default function AskPage() {
   const [identifying, setIdentifying] = useState(false);
   const [identifyCandidates, setIdentifyCandidates] = useState<{ species_id: string | null; common_name: string; scientific_name: string; confidence: number; why: string }[] | null>(null);
   const [identifyError, setIdentifyError] = useState<string | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const identifyInputRef = useRef<HTMLInputElement>(null);
 
@@ -279,14 +281,24 @@ export default function AskPage() {
       <BackHeader
         fallbackHref="/"
         right={
-          <button
-            type="button"
-            onClick={() => router.push("/ask/history")}
-            style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, padding: "6px 8px" }}
-            aria-label={t.askPage.history}
-          >
-            🕘 {t.askPage.history}
-          </button>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <button
+              type="button"
+              onClick={() => setFeedbackOpen(true)}
+              style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, padding: "6px 8px" }}
+              aria-label={t.feedback.giveFeedback}
+            >
+              💬
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/ask/history")}
+              style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, padding: "6px 8px" }}
+              aria-label={t.askPage.history}
+            >
+              🕘 {t.askPage.history}
+            </button>
+          </div>
         }
       />
       <div style={{ marginBottom: 16 }}>
@@ -416,6 +428,8 @@ export default function AskPage() {
         )}
         <div ref={bottomRef} />
       </div>
+
+      {feedbackOpen && <FeedbackModal source="ask" onClose={() => setFeedbackOpen(false)} />}
     </Screen>
   );
 }

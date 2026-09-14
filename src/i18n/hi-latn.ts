@@ -30,6 +30,16 @@ const hiLatn: Dictionary = {
   emergency: {
     title: "Emergency",
   },
+  feedback: {
+    giveFeedback: "Feedback dein",
+    title: "Feedback dein",
+    prompt: "Kya sahi chal raha hai, kya nahi, aage kya banayein — sidha team tak pahunchega.",
+    placeholder: "Jo bhi kehna hai likhein...",
+    send: "Bhejein",
+    sending: "Bhej rahe hain...",
+    sent: "Dhanyawaad — mil gaya!",
+    couldNotSend: "Bhej nahi paaye — apna connection check karke phir try karein.",
+  },
   onboarding: {
     welcomeTitle: "AquaAI mein swagat hai",
     welcomeSubtitle: "Apne tank ki photo lijiye, expert advice paaiye — pehli machli se lekar ek thriving planted tank tak.",

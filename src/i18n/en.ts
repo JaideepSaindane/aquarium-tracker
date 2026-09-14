@@ -26,6 +26,16 @@ const en = {
   emergency: {
     title: "Emergency",
   },
+  feedback: {
+    giveFeedback: "Give feedback",
+    title: "Give feedback",
+    prompt: "What's working, what's not, what should we build next — it goes straight to the team.",
+    placeholder: "Tell us what's on your mind...",
+    send: "Send",
+    sending: "Sending...",
+    sent: "Thanks — got it!",
+    couldNotSend: "Couldn't send that — check your connection and try again.",
+  },
   onboarding: {
     welcomeTitle: "Welcome to AquaAI",
     welcomeSubtitle: "Photograph your tank, get expert advice — from your first fish to a thriving planted tank.",

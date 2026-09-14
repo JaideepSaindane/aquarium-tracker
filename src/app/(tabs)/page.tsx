@@ -11,6 +11,7 @@ import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Butto
 import { Status } from "@/components/Status";
 import { ListRow } from "@/components/ListRow";
 import { FirstTankTour } from "@/components/FirstTankTour";
+import { FeedbackModal } from "@/components/FeedbackModal";
 import { useLiveQuery, notifyChanged } from "@/db/live";
 import { listTanks, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listAllAliveLivestock } from "@/db/queries/livestock";
@@ -57,6 +58,7 @@ export default function TanksPage() {
   const [openMenuTankId, setOpenMenuTankId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const filteredTanks = (tanks ?? [])
     .filter((tank) => tank.name.toLowerCase().includes(query.trim().toLowerCase()))
@@ -93,24 +95,43 @@ export default function TanksPage() {
             {data?.profileName ? data.profileName : t.home.aquarist} 👋
           </h1>
         </div>
-        <Link
-          href="/settings"
-          aria-label={t.tabs.settings}
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: "50%",
-            background: "var(--soft-card-bg)",
-            border: "1px solid var(--soft-card-border)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 18,
-            flexShrink: 0,
-          }}
-        >
-          ⚙️
-        </Link>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <button
+            type="button"
+            onClick={() => setFeedbackOpen(true)}
+            aria-label={t.feedback.giveFeedback}
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: "50%",
+              background: "var(--soft-card-bg)",
+              border: "1px solid var(--soft-card-border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 18,
+            }}
+          >
+            💬
+          </button>
+          <Link
+            href="/settings"
+            aria-label={t.tabs.settings}
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: "50%",
+              background: "var(--soft-card-bg)",
+              border: "1px solid var(--soft-card-border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 18,
+            }}
+          >
+            ⚙️
+          </Link>
+        </div>
       </div>
 
       {/* Real bug fix, 2026-09-13 (Jaideep: "I signed in... the page is
@@ -440,6 +461,8 @@ export default function TanksPage() {
       )}
 
       <FirstTankTour hasTanks={(tanks?.length ?? 0) > 0} />
+
+      {feedbackOpen && <FeedbackModal source="home" onClose={() => setFeedbackOpen(false)} />}
     </Screen>
   );
 }

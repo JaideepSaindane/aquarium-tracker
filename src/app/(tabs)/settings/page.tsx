@@ -13,6 +13,7 @@ import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
 import { ListRow } from "@/components/ListRow";
 import { SegmentedControl } from "@/components/SegmentedControl";
+import { FeedbackModal } from "@/components/FeedbackModal";
 import { APP_NAME } from "@/constants/app";
 import { ensureDb } from "@/db/client";
 import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob } from "@/lib/export";
@@ -41,6 +42,7 @@ export default function SettingsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -453,6 +455,7 @@ export default function SettingsPage() {
       {/* Share / Privacy / About */}
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <SecondaryButton onClick={() => setFeedbackOpen(true)}>💬 {t.feedback.giveFeedback}</SecondaryButton>
           <SecondaryButton onClick={handleShareApp}>📤 {t.settingsPage.shareThisApp}</SecondaryButton>
           <Link href="/privacy">
             <SecondaryButton>🔒 {t.settingsPage.privacyPolicy}</SecondaryButton>
@@ -553,6 +556,8 @@ export default function SettingsPage() {
           )}
         </Card>
       </details>
+
+      {feedbackOpen && <FeedbackModal source="settings" onClose={() => setFeedbackOpen(false)} />}
     </Screen>
   );
 }

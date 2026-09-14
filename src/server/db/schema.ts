@@ -344,3 +344,20 @@ export const communityLikes = pgTable("community_likes", {
 }, (table) => [
   uniqueIndex("community_likes_user_post_idx").on(table.userId, table.postId),
 ]);
+
+// General product feedback (2026-09-14, Jaideep: "Add a mechanism for
+// users to share feedback with us... send it to my master account").
+// No email delivery — nothing in the stack sends email today, and adding a
+// provider is its own decision. Instead this lands in the same
+// admin-allowlist pattern as `communityReports`: only requireAdminUserId()
+// (Jaideep's own account by default) can read it, via the hidden
+// /dev/feedback viewer.
+export const feedback = pgTable("feedback", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  // Where the "Give feedback" entry point was tapped from — home, ask, or
+  // settings — so the admin viewer shows what screen prompted it.
+  source: text("source").notNull(),
+  body: text("body").notNull(),
+  createdAt: text("created_at").notNull(),
+});
