@@ -85,6 +85,11 @@ const en = {
     statusNeedsAttention: "Needs attention",
     statusNeedsAttentionExplanation: "{n} equipment check needs a look",
     statusNeedsAttentionExplanationPlural: "{n} equipment checks need a look",
+    plannerCaption: "Guided setup planner",
+    addTankCaption: "I already have one",
+    emptySubtext: "Snap a photo of your tank and we'll help you set it up in a couple of minutes.",
+    statTanks: "{n} Tanks",
+    statFish: "{n} Fish",
   },
   settings: {
     title: "My Profile & Settings",

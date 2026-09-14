@@ -89,6 +89,11 @@ const hiLatn: Dictionary = {
     statusNeedsAttention: "Dhyan dein",
     statusNeedsAttentionExplanation: "{n} equipment check dekhne layak hai",
     statusNeedsAttentionExplanationPlural: "{n} equipment checks dekhne layak hain",
+    plannerCaption: "Guided setup planner",
+    addTankCaption: "Mere paas pehle se ek hai",
+    emptySubtext: "Apne tank ki ek photo lein aur hum kuch minute mein set up karne mein madad karenge.",
+    statTanks: "{n} Tanks",
+    statFish: "{n} Fish",
   },
   settings: {
     title: "My Profile & Settings",
