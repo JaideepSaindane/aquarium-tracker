@@ -31,6 +31,7 @@ export default function EditProfilePage() {
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -48,11 +49,20 @@ export default function EditProfilePage() {
 
   async function handlePhoto(file: File) {
     setMessage(null);
+    // Instant local preview (TankAvatar's own `previewFile` prop, already
+    // built for exactly this — tank creation already relies on it) while
+    // the real upload happens in the background. Jaideep: "the image does
+    // not appear immediately... in some cases, the My Photo section is
+    // just a blue-coloured blank" — this screen was waiting on the network
+    // round-trip to Vercel Blob before showing anything at all.
+    setPreviewFile(file);
     try {
       const url = await uploadPhoto(file);
       setPhotoUri(url);
     } catch {
       setMessage(t.settingsPage.couldNotUploadPhoto);
+    } finally {
+      setPreviewFile(null);
     }
   }
 
@@ -81,7 +91,7 @@ export default function EditProfilePage() {
 
       <Card>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-          <TankAvatar photoUri={photoUri} size={88} onPhotoChange={handlePhoto} fallbackIcon="👤" />
+          <TankAvatar photoUri={photoUri} previewFile={previewFile} size={88} onPhotoChange={handlePhoto} fallbackIcon="👤" />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <Field label={t.settingsPage.name} value={name} onChange={(e) => setName(e.target.value)} placeholder={t.settingsPage.optional} />
@@ -89,8 +99,8 @@ export default function EditProfilePage() {
           <Field label={t.settingsPage.city} value={city} onChange={(e) => setCity(e.target.value)} placeholder={t.settingsPage.optional} />
           <Field label={t.settingsPage.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t.settingsPage.optional} />
           <Field label={t.settingsPage.contact} type="tel" value={contact} onChange={(e) => setContact(e.target.value)} placeholder={t.settingsPage.optional} />
-          <PrimaryButton onClick={handleSave} disabled={busy}>
-            {busy ? t.settingsPage.saving : t.common.save}
+          <PrimaryButton onClick={handleSave} disabled={busy || previewFile !== null}>
+            {busy ? t.settingsPage.saving : previewFile ? t.settingsPage.uploadingPhoto : t.common.save}
           </PrimaryButton>
         </div>
         {message && (

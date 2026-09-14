@@ -268,6 +268,7 @@ const hiLatn: Dictionary = {
     couldNotAddPhone: "Wo phone number add nahi ho saka.",
     couldNotSave: "Save nahi ho saka:",
     couldNotUploadPhoto: "Wo photo upload nahi ho saki — apna connection check karke phir try karein.",
+    uploadingPhoto: "Photo upload ho rahi hai...",
     saved: "Saved.",
     linkCopied: "Link clipboard mein copy ho gaya.",
     couldNotDeleteAccount: "Aapka account delete nahi ho saka. Please phir try karein.",

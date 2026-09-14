@@ -264,6 +264,7 @@ const en = {
     couldNotAddPhone: "Couldn't add that phone number.",
     couldNotSave: "Couldn't save:",
     couldNotUploadPhoto: "Couldn't upload that photo — check your connection and try again.",
+    uploadingPhoto: "Uploading photo...",
     saved: "Saved.",
     linkCopied: "Link copied to clipboard.",
     couldNotDeleteAccount: "Could not delete your account. Please try again.",
