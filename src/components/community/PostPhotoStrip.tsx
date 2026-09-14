@@ -43,7 +43,18 @@ export function PostPhotoStrip({ photoUris }: { photoUris: string[] }) {
       {viewerSrc && <PhotoViewer src={viewerSrc} onClose={() => setViewerSrc(null)} />}
 
       {photoUris.length === 1 ? (
-        renderMedia(photoUris[0], { width: "100%", borderRadius: "var(--radius-md)", marginTop: 8, display: "block" })
+        // A tall/vertical photo used to render at its full native height —
+        // Jaideep: "if someone uploads a longer image... crop that view.
+        // Don't show the whole entire image." Same fixed aspect-ratio +
+        // cover crop the multi-photo strip below already used.
+        renderMedia(photoUris[0], {
+          width: "100%",
+          aspectRatio: "4 / 3",
+          objectFit: "cover",
+          borderRadius: "var(--radius-md)",
+          marginTop: 8,
+          display: "block",
+        })
       ) : (
         <div
           style={{
