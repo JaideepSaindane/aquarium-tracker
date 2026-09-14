@@ -9,6 +9,7 @@ import { Confidence } from "@/components/Confidence";
 import { GroundingLink } from "@/components/GroundingLink";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { AquaIcon } from "@/components/icons/AquaIcon";
 import { useScanSession } from "@/store/use-scan-session";
 import { useLocale } from "@/i18n/use-locale";
 import { createTank } from "@/db/queries/tanks";
@@ -63,6 +64,15 @@ export default function ScanReportPage() {
   const session = useScanSession();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Pre-filled from the scan's own tank_type_inferred field (2026-09-14,
+  // Jaideep: "there is no checkbox selection for planted and CO2
+  // anywhere in the add tank flow... make sure there's a checklist for
+  // CO2, planted tank"). That field was already computed by the AI on
+  // every scan and simply discarded before now — using it as a smart
+  // default here, still editable, means the checkbox usually starts
+  // right without asking the user to notice and fix it after the fact.
+  const [isPlanted, setIsPlanted] = useState(() => session.report?.tank_type_inferred === "planted");
+  const [hasCo2, setHasCo2] = useState(false);
 
   useEffect(() => {
     if (!session.report) router.replace("/onboarding/scan");
@@ -96,6 +106,8 @@ export default function ScanReportPage() {
         city: session.city || undefined,
         status: "active",
         photoUri: session.originalPhotoPath ?? undefined,
+        isPlanted,
+        hasCo2,
       });
 
       if (session.originalPhotoPath) {
@@ -223,6 +235,30 @@ export default function ScanReportPage() {
           })}
         </Card>
       )}
+
+      {/* Planted/CO2 checklist (2026-09-14, Jaideep: "there is no
+          checkbox selection for planted and CO2 anywhere in the add tank
+          flow, in the AI analysis, or in the initial part... We should
+          add that") — Ask AquaAI reads tank.isPlanted/hasCo2 straight
+          into its prompt context, so a tank created without these ever
+          being asked produced confidently wrong answers later ("the tank
+          is unplanted") for tanks that clearly were. isPlanted defaults
+          from the scan's own tank_type_inferred field above; both stay
+          editable here before save. */}
+      <Card style={{ marginBottom: 12 }}>
+        <p style={{ fontWeight: 700, marginBottom: 8 }}>🌿 {t.reportPage.tankSetupChecklist}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
+            <AquaIcon name="planted" size={16} />
+            {t.editTankPage.plantedTank}
+          </label>
+          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
+            {t.editTankPage.co2Injection}
+          </label>
+        </div>
+      </Card>
 
       {error && (
         <div style={{ marginBottom: 12 }}>

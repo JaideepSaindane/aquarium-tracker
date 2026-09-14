@@ -701,6 +701,7 @@ const hiLatn: Dictionary = {
     somethingWentWrongSaving: "Aapka tank save karte waqt kuch galat ho gaya:",
     savingEllipsis: "Save ho raha hai...",
     looksGoodAddLivestock: "Sahi lag raha hai — ab fish add karein",
+    tankSetupChecklist: "Tank setup",
     retakePhotoInstead: "Iske bajaye photo retake karein",
     tankReport: "Tank Report",
     setup: "setup",

@@ -28,6 +28,8 @@ export default function NewTankPage() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [waterType, setWaterType] = useState<"fresh" | "brackish">("fresh");
+  const [isPlanted, setIsPlanted] = useState(false);
+  const [hasCo2, setHasCo2] = useState(false);
   const [ageBand, setAgeBand] = useState<AgeBand>("just_set_up");
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
   const [length, setLength] = useState("");
@@ -68,6 +70,8 @@ export default function NewTankPage() {
         heightCm,
         city: city.trim() || undefined,
         waterType,
+        isPlanted,
+        hasCo2,
         startedOn: startedOnFromAgeBand(ageBand),
       });
 
@@ -179,6 +183,26 @@ export default function NewTankPage() {
             />
           </div>
         </div>
+
+        {/* Planted/CO2 checklist (2026-09-14, Jaideep: "there is no
+            checkbox selection for planted and CO2 anywhere in the add
+            tank flow... make sure there's a checklist for CO2, planted
+            tank" whenever a tank is created) — Ask AquaAI reads
+            tank.isPlanted/hasCo2 straight into its prompt context
+            (src/lib/tank-context.ts), so leaving these unset on every new
+            tank was producing confidently wrong answers ("the tank is
+            unplanted") for tanks that clearly were. Same two checkboxes
+            Edit Tank already has, just available from the start instead
+            of only after the fact. */}
+        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <input type="checkbox" checked={isPlanted} onChange={(e) => setIsPlanted(e.target.checked)} />
+          <AquaIcon name="planted" size={16} />
+          {t.editTankPage.plantedTank}
+        </label>
+        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <input type="checkbox" checked={hasCo2} onChange={(e) => setHasCo2(e.target.checked)} />
+          {t.editTankPage.co2Injection}
+        </label>
 
         {/* Brief Section 5: "city moved into More details" — name,
             dimensions and water type are the only things that block

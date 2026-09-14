@@ -697,6 +697,7 @@ const en = {
     somethingWentWrongSaving: "Something went wrong saving your tank:",
     savingEllipsis: "Saving...",
     looksGoodAddLivestock: "Looks good — now add fish",
+    tankSetupChecklist: "Tank setup",
     retakePhotoInstead: "Retake photo instead",
     tankReport: "Tank Report",
     setup: "setup",
