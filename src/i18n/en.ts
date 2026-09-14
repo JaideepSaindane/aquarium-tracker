@@ -671,6 +671,7 @@ const en = {
     planted: "Planted",
     hardscape: "Hardscape",
     bareBottom: "Bare-bottom",
+    thingsToWatch: "Things to watch",
     careTipsAndRecommendations: "Care tips & recommendations",
     suggestedForYourTank: "Suggested for your tank:",
     confirmedByAdvisor: "Confirmed by the advisor for this tank",

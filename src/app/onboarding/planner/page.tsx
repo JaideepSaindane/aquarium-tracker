@@ -46,14 +46,6 @@ type AiPlan = {
   stocking_notes: { severity: string; note: string }[];
 };
 
-/** Two-line clamp for advisor suggestion rows (Jaideep, 2026-09-06: "don't keep more than 2 lines"). */
-const twoLineClamp: React.CSSProperties = {
-  display: "-webkit-box",
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: "vertical",
-  overflow: "hidden",
-};
-
 /**
  * Always-recommended beginner plants by tank layer, shown in the Requirements
  * card for any planted tank (2026-09-12, Jaideep's ask) — separate from the
@@ -835,81 +827,34 @@ export default function OnboardingPlannerPage() {
               </div>
             )}
 
-            <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--color-line-soft)" }}>
-              {plan.heaterNote && (
-                <div style={{ marginTop: 6 }}>
-                  <Banner severity="watch">{plan.heaterNote}</Banner>
-                </div>
-              )}
-              <details style={{ marginTop: 8 }}>
-                <summary style={{ cursor: "pointer", fontSize: "var(--font-caption-size)", color: "var(--color-deep)", fontWeight: 600 }}>
-                  {t.plannerPage.adjustHeaterSizing}
-                </summary>
-                <div style={{ marginTop: 8 }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "var(--font-body-sm-size)" }}>
-                    <input
-                      type="checkbox"
-                      checked={useCustomRoomTemp}
-                      onChange={(e) => {
-                        setUseCustomRoomTemp(e.target.checked);
-                        const t = customRoomTemp ? Number(customRoomTemp) : null;
-                        const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
-                        setPlan(
-                          buildSetupPlan({
-                            volumeL,
-                            lengthCm: dims.lengthCm,
-                            widthCm: dims.widthCm,
-                            tier,
-                            hasCo2: false,
-                            speciesRows: rows,
-                            climate,
-                            customRoomTempC: e.target.checked ? t : null,
-                          })
-                        );
-                      }}
-                    />
-                    {t.plannerPage.iKnowMyRoomTemp}
-                  </label>
-                  {useCustomRoomTemp && (
-                    <div style={{ marginTop: 8 }}>
-                      <Field
-                        label={t.plannerPage.roomTempInWinter}
-                        type="number"
-                        value={customRoomTemp}
-                        onChange={(e) => setCustomRoomTemp(e.target.value)}
-                        placeholder={`e.g. ${tempRange.lowC}`}
-                      />
-                      <SecondaryButton
-                        style={{ width: "auto", padding: "6px 14px", marginTop: 4 }}
-                        onClick={() => {
-                          const t = customRoomTemp ? Number(customRoomTemp) : null;
-                          const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
-                          setPlan(
-                            buildSetupPlan({
-                              volumeL,
-                              lengthCm: dims.lengthCm,
-                              widthCm: dims.widthCm,
-                              tier,
-                              hasCo2: false,
-                              speciesRows: rows,
-                              climate,
-                              customRoomTempC: t,
-                            })
-                          );
-                        }}
-                      >
-                        {t.plannerPage.updateHeaterSize}
-                      </SecondaryButton>
-                    </div>
-                  )}
-                </div>
-              </details>
-            </div>
           </Card>
 
+          {/* Red-flag stocking warnings now come right after the advisor's requirement
+              table — Jaideep: after the advisor table he wants the actual red-flagged
+              care tips next, not equipment/suggestion clutter first. */}
+          {aiPlan && aiPlan.stocking_notes.length > 0 && (
+            <Card style={{ marginBottom: 12 }}>
+              <p style={{ fontWeight: 700, marginBottom: 6 }}>⚠️ {t.plannerPage.thingsToWatch}</p>
+              {aiPlan.stocking_notes.map((n, i) => (
+                <div key={i} style={{ marginBottom: 6 }}>
+                  <Banner severity={n.severity === "warning" ? "fixNow" : n.severity === "watch" ? "watch" : "neutral"}>{n.note}</Banner>
+                </div>
+              ))}
+            </Card>
+          )}
+
+          {/* Tank name pulled up above the suggestions clutter and made more
+              prominent (heading-size, bold) — Jaideep: "the tank name also
+              should probably be more prominent." */}
           <Card style={{ marginBottom: 12 }}>
-            <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.plannerPage.tankNameLabel}</p>
-            <Field label="" value={tankName} onChange={(e) => setTankName(e.target.value)} placeholder={t.plannerPage.ftTank.replace("{ft}", String(lengthFt))} />
+            <p style={{ fontWeight: 600, marginBottom: 4, fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)" }}>{t.plannerPage.tankNameLabel}</p>
+            <Field
+              label=""
+              value={tankName}
+              onChange={(e) => setTankName(e.target.value)}
+              placeholder={t.plannerPage.ftTank.replace("{ft}", String(lengthFt))}
+              style={{ fontSize: "var(--font-heading-size)", fontWeight: 700 }}
+            />
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
               {tier === "planted" ? t.plannerPage.planted : tier === "hardscape" ? t.plannerPage.hardscape : t.plannerPage.bareBottom} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
             </p>
@@ -918,12 +863,7 @@ export default function OnboardingPlannerPage() {
           {aiPlan && (
             <Card style={{ marginBottom: 12 }}>
               <p style={{ fontWeight: 600, marginBottom: 6 }}>💡 {t.plannerPage.careTipsAndRecommendations}</p>
-              <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8, ...twoLineClamp }}>{aiPlan.summary}</p>
-              {aiPlan.stocking_notes.map((n, i) => (
-                <div key={i} style={{ marginBottom: 6 }}>
-                  <Banner severity={n.severity === "warning" ? "fixNow" : n.severity === "watch" ? "watch" : "neutral"}>{n.note}</Banner>
-                </div>
-              ))}
+              <p style={{ fontSize: "var(--font-body-sm-size)", marginBottom: 8 }}>{aiPlan.summary}</p>
               {(aiPlan.suggested_fish.length > 0 || aiPlan.recommended_species_ids.some((id) => !picked.some((p) => p.speciesId === id) && speciesById.get(id)?.category !== "plant")) && (
                 <div style={{ marginTop: 8 }}>
                   <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>{t.plannerPage.suggestedForYourTank}</p>
@@ -942,7 +882,7 @@ export default function OnboardingPlannerPage() {
                           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>
                             {firstName(sp?.commonNames ?? null) ?? row.species_id}
                           </p>
-                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", ...twoLineClamp }}>{row.why}</p>
+                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{row.why}</p>
                         </div>
                         <SecondaryButton
                           style={{ width: "auto", padding: "5px 12px", flexShrink: 0, fontSize: "var(--font-caption-size)" }}
@@ -992,7 +932,7 @@ export default function OnboardingPlannerPage() {
                         <SpeciesThumb imageUri={sp?.imageUri} category={sp?.category} size={28} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ margin: 0, fontSize: "var(--font-body-sm-size)", fontWeight: 600 }}>{firstName(sp?.commonNames ?? null) ?? p.species_id}</p>
-                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", ...twoLineClamp }}>{p.why}</p>
+                          <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{p.why}</p>
                         </div>
                       </div>
                     );
@@ -1001,6 +941,80 @@ export default function OnboardingPlannerPage() {
               )}
             </Card>
           )}
+
+          {/* Moved to the bottom, below the care tips — Jaideep: this is a
+              fine-tuning tweak for the heater number already shown up top,
+              not something that needs to compete with the actual advice. */}
+          <Card style={{ marginBottom: 12 }}>
+            {plan.heaterNote && (
+              <div style={{ marginBottom: 6 }}>
+                <Banner severity="watch">{plan.heaterNote}</Banner>
+              </div>
+            )}
+            <details>
+              <summary style={{ cursor: "pointer", fontSize: "var(--font-caption-size)", color: "var(--color-deep)", fontWeight: 600 }}>
+                {t.plannerPage.adjustHeaterSizing}
+              </summary>
+              <div style={{ marginTop: 8 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "var(--font-body-sm-size)" }}>
+                  <input
+                    type="checkbox"
+                    checked={useCustomRoomTemp}
+                    onChange={(e) => {
+                      setUseCustomRoomTemp(e.target.checked);
+                      const t = customRoomTemp ? Number(customRoomTemp) : null;
+                      const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
+                      setPlan(
+                        buildSetupPlan({
+                          volumeL,
+                          lengthCm: dims.lengthCm,
+                          widthCm: dims.widthCm,
+                          tier,
+                          hasCo2: false,
+                          speciesRows: rows,
+                          climate,
+                          customRoomTempC: e.target.checked ? t : null,
+                        })
+                      );
+                    }}
+                  />
+                  {t.plannerPage.iKnowMyRoomTemp}
+                </label>
+                {useCustomRoomTemp && (
+                  <div style={{ marginTop: 8 }}>
+                    <Field
+                      label={t.plannerPage.roomTempInWinter}
+                      type="number"
+                      value={customRoomTemp}
+                      onChange={(e) => setCustomRoomTemp(e.target.value)}
+                      placeholder={`e.g. ${tempRange.lowC}`}
+                    />
+                    <SecondaryButton
+                      style={{ width: "auto", padding: "6px 14px", marginTop: 4 }}
+                      onClick={() => {
+                        const t = customRoomTemp ? Number(customRoomTemp) : null;
+                        const rows = picked.map((i) => speciesById.get(i.speciesId)).filter((s): s is SpeciesRow => !!s);
+                        setPlan(
+                          buildSetupPlan({
+                            volumeL,
+                            lengthCm: dims.lengthCm,
+                            widthCm: dims.widthCm,
+                            tier,
+                            hasCo2: false,
+                            speciesRows: rows,
+                            climate,
+                            customRoomTempC: t,
+                          })
+                        );
+                      }}
+                    >
+                      {t.plannerPage.updateHeaterSize}
+                    </SecondaryButton>
+                  </div>
+                )}
+              </div>
+            </details>
+          </Card>
 
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
             {t.plannerPage.editAnytimeNote}

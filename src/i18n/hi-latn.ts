@@ -675,6 +675,7 @@ const hiLatn: Dictionary = {
     planted: "Planted",
     hardscape: "Hardscape",
     bareBottom: "Bare-bottom",
+    thingsToWatch: "Dhyaan dene wali baatein",
     careTipsAndRecommendations: "Care tips & recommendations",
     suggestedForYourTank: "Aapke tank ke liye suggested:",
     confirmedByAdvisor: "Is tank ke liye advisor dwara confirm kiya gaya",
