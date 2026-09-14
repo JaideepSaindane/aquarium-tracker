@@ -569,6 +569,54 @@ export default function DexPage() {
         )}
       </div>
 
+      {/* Real on/off switch, its own row — filters the same list down to
+          what's already unlocked (2026-09-14: the pill-chip toggle in the
+          filter row read as ambiguous/cluttered next to two dropdowns that
+          look the same but behave differently; Jaideep picked this
+          unambiguous switch style instead). */}
+      <button
+        onClick={() => setSavedOnly((v) => !v)}
+        aria-pressed={savedOnly}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          padding: "10px 2px",
+          marginBottom: 12,
+          background: "none",
+          border: "none",
+        }}
+      >
+        <span style={{ color: "var(--soft-ink)", fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>{t.dexPage.showSavedFish}</span>
+        <span
+          aria-hidden
+          style={{
+            position: "relative",
+            width: 44,
+            height: 26,
+            borderRadius: "var(--radius-pill)",
+            background: savedOnly ? "var(--soft-accent)" : "var(--soft-card-border)",
+            transition: "background 150ms ease",
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              position: "absolute",
+              top: 3,
+              left: savedOnly ? 21 : 3,
+              width: 20,
+              height: 20,
+              borderRadius: "50%",
+              background: "#fff",
+              boxShadow: "var(--shadow-sm)",
+              transition: "left 150ms ease",
+            }}
+          />
+        </span>
+      </button>
+
       {/* flexWrap, not overflowX — a scrolling container clips an
           absolutely-positioned dropdown to its own bounds, which hid the
           FilterChip popovers entirely. Only two chips ever render here, so
@@ -606,32 +654,6 @@ export default function DexPage() {
             }}
           />
         )}
-        {/* Plain on/off toggle, not a dropdown — filters the same list down
-            to what's already unlocked (2026-09-14, Jaideep: "let's add a
-            toggle in the same line as category and difficulty... which
-            says 'Show saved fish'"). */}
-        <button
-          onClick={() => setSavedOnly((v) => !v)}
-          aria-pressed={savedOnly}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            flexShrink: 0,
-            padding: "8px 14px",
-            minHeight: 36,
-            borderRadius: "var(--radius-pill)",
-            border: "1px solid var(--soft-card-border)",
-            background: savedOnly ? "var(--soft-accent-soft)" : "var(--soft-card-bg)",
-            color: savedOnly ? "var(--soft-accent)" : "var(--soft-ink)",
-            fontSize: "var(--font-caption-size)",
-            fontWeight: 700,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {savedOnly && <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--soft-accent)" }} />}
-          {t.dexPage.showSavedFish}
-        </button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
