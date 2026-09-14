@@ -13,18 +13,28 @@ import { useTranslation } from "@/i18n/use-translation";
  * entry). Reused here so every "add a photo" spot in the app gets a real
  * camera option, not just the one screen that happened to get fixed first.
  */
-export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (file: File) => void }) {
+export function PhotoPickerButton({
+  label,
+  onPick,
+  acceptVideo = false,
+}: {
+  label: string;
+  onPick: (file: File) => void;
+  /** Also allow picking/recording a video, not just photos (community posts, 2026-09-14 "add vid support"). */
+  acceptVideo?: boolean;
+}) {
   const t = useTranslation();
   const [pickerOpen, setPickerOpen] = useState(false);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const accept = acceptVideo ? "image/*,video/*" : "image/*";
 
   return (
     <div style={{ position: "relative" }}>
       <input
         ref={cameraInputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         capture="environment"
         style={{ display: "none" }}
         onChange={(e) => {
@@ -36,7 +46,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
       <input
         ref={galleryInputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         style={{ display: "none" }}
         onChange={(e) => {
           const file = e.target.files?.[0];
@@ -82,7 +92,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
                 cursor: "pointer",
               }}
             >
-              📷 {t.dexPage.takePhoto}
+              📷 {acceptVideo ? t.newCommunityPostPage.takePhotoOrVideo : t.dexPage.takePhoto}
             </button>
             <button
               type="button"
@@ -104,7 +114,7 @@ export function PhotoPickerButton({ label, onPick }: { label: string; onPick: (f
                 cursor: "pointer",
               }}
             >
-              🖼️ {t.dexPage.chooseFromGallery}
+              🖼️ {acceptVideo ? t.newCommunityPostPage.chooseMediaFromGallery : t.dexPage.chooseFromGallery}
             </button>
           </div>
         </>

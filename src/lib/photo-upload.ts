@@ -1,5 +1,7 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
+
 // Uploads a photo to the real server-side photo store (Vercel Blob) instead
 // of writing it to the browser's local OPFS (src/lib/opfs-files.ts) —
 // 2026-09-11, so photos follow a user's account across devices instead of
@@ -19,4 +21,16 @@ export async function uploadPhoto(file: File): Promise<string> {
   }
   const { url } = (await res.json()) as { url: string };
   return url;
+}
+
+// Uploads a video straight from the browser to Vercel Blob (2026-09-14,
+// "add vid support"), bypassing our own server entirely — see
+// src/app/api/photos/blob-video-upload/route.ts for why: a real video is
+// too big for a normal serverless-function request body.
+export async function uploadVideo(file: File): Promise<string> {
+  const blob = await upload(file.name, file, {
+    access: "public",
+    handleUploadUrl: "/api/photos/blob-video-upload",
+  });
+  return blob.url;
 }

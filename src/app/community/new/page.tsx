@@ -8,12 +8,13 @@ import { Banner } from "@/components/Banner";
 import { PrimaryButton } from "@/components/Button";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { createCommunityPost } from "@/db/queries/community";
-import { uploadPhoto } from "@/lib/photo-upload";
+import { uploadPhoto, uploadVideo } from "@/lib/photo-upload";
 import { useTranslation } from "@/i18n/use-translation";
 
 const MAX_PHOTOS = 10;
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 
-type PendingPhoto = { file: File; preview: string };
+type PendingPhoto = { file: File; preview: string; isVideo: boolean };
 
 export default function NewCommunityPostPage() {
   const router = useRouter();
@@ -24,7 +25,13 @@ export default function NewCommunityPostPage() {
   const [error, setError] = useState<string | null>(null);
 
   function handleAddPhoto(file: File) {
-    setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file, preview: URL.createObjectURL(file) }]));
+    const isVideo = file.type.startsWith("video/");
+    if (isVideo && file.size > MAX_VIDEO_BYTES) {
+      setError(t.newCommunityPostPage.videoTooLarge);
+      return;
+    }
+    setError(null);
+    setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file, preview: URL.createObjectURL(file), isVideo }]));
   }
 
   function handleRemovePhoto(index: number) {
@@ -39,7 +46,7 @@ export default function NewCommunityPostPage() {
     setPosting(true);
     setError(null);
     try {
-      const photoUris = await Promise.all(photos.map((p) => uploadPhoto(p.file)));
+      const photoUris = await Promise.all(photos.map((p) => (p.isVideo ? uploadVideo(p.file) : uploadPhoto(p.file))));
       await createCommunityPost({ body: body.trim(), photoUris });
       router.replace("/community");
     } catch {
@@ -62,12 +69,33 @@ export default function NewCommunityPostPage() {
         <div style={{ display: "flex", gap: 8, overflowX: "auto", marginBottom: 12, WebkitOverflowScrolling: "touch" }}>
           {photos.map((p, i) => (
             <div key={p.preview} style={{ position: "relative", flexShrink: 0 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.preview} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "var(--radius-md)", display: "block" }} />
+              {p.isVideo ? (
+                <video src={p.preview} muted style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "var(--radius-md)", display: "block" }} />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.preview} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "var(--radius-md)", display: "block" }} />
+              )}
+              {p.isVideo && (
+                <div
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 24,
+                    pointerEvents: "none",
+                    textShadow: "0 1px 4px rgba(0,0,0,0.6)",
+                  }}
+                >
+                  ▶️
+                </div>
+              )}
               <button
                 type="button"
                 onClick={() => handleRemovePhoto(i)}
-                aria-label={t.newCommunityPostPage.removePhoto}
+                aria-label={p.isVideo ? t.newCommunityPostPage.removeVideo : t.newCommunityPostPage.removePhoto}
                 style={{
                   position: "absolute",
                   top: 4,
@@ -116,6 +144,7 @@ export default function NewCommunityPostPage() {
               : t.newCommunityPostPage.addAnotherPhoto.replace("{n}", String(photos.length)).replace("{max}", String(MAX_PHOTOS))
           }
           onPick={handleAddPhoto}
+          acceptVideo
         />
       )}
 
