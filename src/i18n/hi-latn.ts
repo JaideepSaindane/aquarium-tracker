@@ -41,6 +41,14 @@ const hiLatn: Dictionary = {
     sent: "Dhanyawaad — mil gaya!",
     couldNotSend: "Bhej nahi paaye — apna connection check karke phir try karein.",
   },
+  installApp: {
+    button: "App Install Karein",
+    iosTitle: "Is app ko apne phone par install karein",
+    iosStep1: "Safari ke toolbar mein Share button par tap karein",
+    iosStep2: "Neeche scroll karke \"Add to Home Screen\" par tap karein",
+    iosStep3: "\"Add\" par tap karein — {app} ab kisi bhi doosri app ki tarah aapki home screen par dikhega",
+    gotIt: "Samajh gaya",
+  },
   onboarding: {
     welcomeTitle: "AquaAI mein swagat hai",
     welcomeSubtitle: "Apne tank ki photo lijiye, expert advice paaiye — pehli machli se lekar ek thriving planted tank tak.",

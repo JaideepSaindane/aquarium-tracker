@@ -13,6 +13,20 @@ export function notifyChanged() {
   for (const listener of listeners) listener();
 }
 
+// Refetch every live query whenever the app comes back to the foreground —
+// Jaideep: "the app reloads on every app open... no leftover information."
+// Before this, a query only ever re-ran on its own mount or after a write
+// made from inside this same tab, so leaving the app backgrounded (switching
+// tabs/apps, locking the phone) and coming back without a real navigation
+// left stale data on screen — including changes made from another device,
+// the whole point of the server-backed accounts (CLAUDE.md Principle 5).
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") notifyChanged();
+  });
+  window.addEventListener("focus", () => notifyChanged());
+}
+
 /**
  * Re-runs `queryFn` on mount, and again after any write anywhere in the app
  * (via notifyChanged). Do not wrap this in TanStack Query — see CLAUDE.md.

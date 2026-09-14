@@ -9,7 +9,6 @@ import { PrimaryButton } from "@/components/Button";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { createCommunityPost } from "@/db/queries/community";
 import { uploadPhoto, uploadVideo } from "@/lib/photo-upload";
-import { compressVideo } from "@/lib/video-compress";
 import { useTranslation } from "@/i18n/use-translation";
 
 const MAX_PHOTOS = 10;
@@ -46,6 +45,10 @@ export default function NewCommunityPostPage() {
     // size check, see src/lib/video-compress.ts for why).
     setCompressing(true);
     try {
+      // Dynamically imported — ffmpeg.wasm's JS glue is real weight that
+      // every visitor to this page used to pay for even if they never
+      // attached a video; now it only loads once someone actually does.
+      const { compressVideo } = await import("@/lib/video-compress");
       const compressed = await compressVideo(file);
       setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, { file: compressed, preview: URL.createObjectURL(compressed), isVideo: true }]));
     } finally {

@@ -37,6 +37,14 @@ const en = {
     sent: "Thanks — got it!",
     couldNotSend: "Couldn't send that — check your connection and try again.",
   },
+  installApp: {
+    button: "Install App",
+    iosTitle: "Install this app on your phone",
+    iosStep1: "Tap the Share button in Safari's toolbar",
+    iosStep2: "Scroll down and tap \"Add to Home Screen\"",
+    iosStep3: "Tap \"Add\" — {app} will appear on your home screen like any other app",
+    gotIt: "Got it",
+  },
   onboarding: {
     welcomeTitle: "Welcome to AquaAI",
     welcomeSubtitle: "Photograph your tank, get expert advice — from your first fish to a thriving planted tank.",

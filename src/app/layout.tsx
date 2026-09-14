@@ -7,13 +7,16 @@ import { UnitsProvider } from "@/lib/UnitsProvider";
 import { DbBootProvider } from "@/db/DbBootProvider";
 import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
+import { InstallPromptListener } from "./InstallPromptListener";
 import { UpdateBanner } from "@/components/UpdateBanner";
 
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "From \"I think I want fish\" to a thriving planted tank.",
   manifest: "/manifest.json",
-  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  // apple-touch-icon needs a real raster image — iOS doesn't reliably
+  // rasterize SVG for the home-screen icon the way Chrome/Android does.
+  icons: { icon: "/icon.svg", apple: "/icon-192.png" },
 };
 
 // No maximumScale/userScalable:false — disabling pinch-zoom is an
@@ -41,6 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </ThemeProvider>
         </AuthSessionProvider>
         <ServiceWorkerRegister />
+        <InstallPromptListener />
         <UpdateBanner />
       </body>
     </html>

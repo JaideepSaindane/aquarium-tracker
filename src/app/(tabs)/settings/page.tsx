@@ -14,6 +14,7 @@ import { TankAvatar } from "@/components/TankAvatar";
 import { ListRow } from "@/components/ListRow";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { FeedbackModal } from "@/components/FeedbackModal";
+import { InstallAppButton } from "@/components/InstallAppButton";
 import { APP_NAME } from "@/constants/app";
 import { ensureDb } from "@/db/client";
 import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob } from "@/lib/export";
@@ -457,6 +458,7 @@ export default function SettingsPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <SecondaryButton onClick={() => setFeedbackOpen(true)}>💬 {t.feedback.giveFeedback}</SecondaryButton>
           <SecondaryButton onClick={handleShareApp}>📤 {t.settingsPage.shareThisApp}</SecondaryButton>
+          <InstallAppButton />
           <Link href="/privacy">
             <SecondaryButton>🔒 {t.settingsPage.privacyPolicy}</SecondaryButton>
           </Link>

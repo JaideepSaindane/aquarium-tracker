@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type CSSProperties } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
@@ -204,55 +204,64 @@ export default function DexPage() {
   const scanGalleryInputRef = useRef<HTMLInputElement>(null);
   const [scanPickerOpen, setScanPickerOpen] = useState(false);
 
-  const species = data?.species ?? [];
-  const cardsBySpecies = new Map((data?.cards ?? []).map((c) => [c.speciesId, c]));
-  const tankNameById = new Map((data?.tanks ?? []).map((tk) => [tk.id, tk.name]));
+  // Memoized — this used to rebuild the Maps and re-filter/re-sort the full
+  // 1,484-species catalog on every render, including every keystroke in
+  // search and any unrelated state change (e.g. a toast dismissing), a real
+  // source of jank on slower phones. Only recomputes when the underlying
+  // data or the actual filter/search inputs change.
+  const { cardsBySpecies, tankNameById, stockBySpecies, categories, difficulties, filtered } = useMemo(() => {
+    const species = data?.species ?? [];
+    const cardsBySpecies = new Map((data?.cards ?? []).map((c) => [c.speciesId, c]));
+    const tankNameById = new Map((data?.tanks ?? []).map((tk) => [tk.id, tk.name]));
 
-  const stockBySpecies = new Map<string, { total: number; tankCounts: Map<string, number> }>();
-  for (const row of data?.livestock ?? []) {
-    const entry = stockBySpecies.get(row.speciesId) ?? { total: 0, tankCounts: new Map<string, number>() };
-    entry.total += row.count;
-    entry.tankCounts.set(row.tankId, (entry.tankCounts.get(row.tankId) ?? 0) + row.count);
-    stockBySpecies.set(row.speciesId, entry);
-  }
-
-  const categories = Array.from(new Set(species.map((s) => s.category).filter(Boolean))) as string[];
-  const difficulties = Array.from(new Set(species.map((s) => s.difficulty).filter(Boolean))) as string[];
-
-  const q = searchQuery.trim().toLowerCase();
-  const filtered = species.filter((s) => {
-    const unlocked = cardsBySpecies.has(s.id);
-    if (savedOnly && !unlocked) return false;
-    if (category !== "all" && s.category !== category) return false;
-    if (difficulty !== "all" && s.difficulty !== difficulty) return false;
-    if (q) {
-      const names = safeParseArray(s.commonNames).concat(safeParseArray(s.commonNamesIn));
-      const matches =
-        s.id.toLowerCase().includes(q) ||
-        s.scientificName?.toLowerCase().includes(q) ||
-        names.some((n) => n.toLowerCase().includes(q));
-      if (!matches) return false;
+    const stockBySpecies = new Map<string, { total: number; tankCounts: Map<string, number> }>();
+    for (const row of data?.livestock ?? []) {
+      const entry = stockBySpecies.get(row.speciesId) ?? { total: 0, tankCounts: new Map<string, number>() };
+      entry.total += row.count;
+      entry.tankCounts.set(row.tankId, (entry.tankCounts.get(row.tankId) ?? 0) + row.count);
+      stockBySpecies.set(row.speciesId, entry);
     }
-    return true;
-  });
 
-  // Rank search matches by relevance instead of leaving them in whatever
-  // arbitrary order the catalog table happens to return them in (2026-09-14,
-  // Jaideep: typing "betta" should surface the plain common Betta first, not
-  // bury it among the catalog's 20+ other "___ Betta" variant species). An
-  // exact common-name match ranks above a name that merely starts with the
-  // query, which in turn ranks above every other substring match (id,
-  // scientific name, a secondary common name) — applies to every search,
-  // not just this one species.
-  if (q) {
-    const rank = (s: (typeof filtered)[number]) => {
-      const names = safeParseArray(s.commonNames).concat(safeParseArray(s.commonNamesIn)).map((n) => n.toLowerCase());
-      if (names.some((n) => n === q)) return 0;
-      if (names.some((n) => n.startsWith(q))) return 1;
-      return 2;
-    };
-    filtered.sort((a, b) => rank(a) - rank(b));
-  }
+    const categories = Array.from(new Set(species.map((s) => s.category).filter(Boolean))) as string[];
+    const difficulties = Array.from(new Set(species.map((s) => s.difficulty).filter(Boolean))) as string[];
+
+    const q = searchQuery.trim().toLowerCase();
+    const filtered = species.filter((s) => {
+      const unlocked = cardsBySpecies.has(s.id);
+      if (savedOnly && !unlocked) return false;
+      if (category !== "all" && s.category !== category) return false;
+      if (difficulty !== "all" && s.difficulty !== difficulty) return false;
+      if (q) {
+        const names = safeParseArray(s.commonNames).concat(safeParseArray(s.commonNamesIn));
+        const matches =
+          s.id.toLowerCase().includes(q) ||
+          s.scientificName?.toLowerCase().includes(q) ||
+          names.some((n) => n.toLowerCase().includes(q));
+        if (!matches) return false;
+      }
+      return true;
+    });
+
+    // Rank search matches by relevance instead of leaving them in whatever
+    // arbitrary order the catalog table happens to return them in (2026-09-14,
+    // Jaideep: typing "betta" should surface the plain common Betta first, not
+    // bury it among the catalog's 20+ other "___ Betta" variant species). An
+    // exact common-name match ranks above a name that merely starts with the
+    // query, which in turn ranks above every other substring match (id,
+    // scientific name, a secondary common name) — applies to every search,
+    // not just this one species.
+    if (q) {
+      const rank = (s: (typeof filtered)[number]) => {
+        const names = safeParseArray(s.commonNames).concat(safeParseArray(s.commonNamesIn)).map((n) => n.toLowerCase());
+        if (names.some((n) => n === q)) return 0;
+        if (names.some((n) => n.startsWith(q))) return 1;
+        return 2;
+      };
+      filtered.sort((a, b) => rank(a) - rank(b));
+    }
+
+    return { cardsBySpecies, tankNameById, stockBySpecies, categories, difficulties, filtered };
+  }, [data, savedOnly, category, difficulty, searchQuery]);
 
   async function handleScanPhoto(file: File) {
     setScanning(true);
