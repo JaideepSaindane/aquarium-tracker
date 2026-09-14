@@ -498,8 +498,18 @@ export function buildSetupPlan(input: SetupPlanInput): SetupPlan {
   const heaterWatts = recommendHeaterWattage(input.volumeL, roomTempUsed.value, targetTemp);
   let heaterNote: string | null = null;
   if (heaterWatts !== null && winterNeedsHigherRating(input.volumeL, roomTempUsed.value, targetTemp)) {
+    // "Winters here" is only honest when "here" is a real signal — a city
+    // the user actually picked, or a room temperature they actually typed
+    // in. Without either, this fell back to the generic India-wide band
+    // and still said "here" as if it knew the user's real location
+    // (2026-09-14, Jaideep: "I didn't give any location... there is a
+    // line that says 'Winters here can push a heater this size to its
+    // limit'... How?"). The generic-fallback case now says plainly that
+    // it's a guess, not a location-specific fact.
     heaterNote =
-      "Winters here can push a heater this size to its limit — if your room runs cold in winter, the next size up (or a second smaller heater) is the safer pick.";
+      roomTempUsed.source === "India-wide typical"
+        ? "This assumes a generic Indian room temperature since no city was given — if your winters run cold, the next size up (or a second smaller heater) is the safer pick. Add your city or room temperature for a real estimate."
+        : "Winters here can push a heater this size to its limit — if your room runs cold in winter, the next size up (or a second smaller heater) is the safer pick.";
   }
 
   return {

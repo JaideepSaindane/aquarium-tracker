@@ -158,6 +158,19 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const setupDate = tank.startedOn ? new Date(tank.startedOn) : new Date(tank.createdAt);
   const dateLabel = `${t.tankOverviewPage.created} ${formatDate(setupDate)}`;
   const waterBadge = tank.waterType === "brackish" ? { label: t.home.brackish, color: "var(--color-deep)" } : { label: t.home.freshwater, color: "var(--color-improve)" };
+  // Setup-type tag (2026-09-14, Jaideep: "just like we have the freshwater
+  // tank tag, we should also have a planted versus hardscape-only versus
+  // bare-bottom tag") — falls back to the old isPlanted boolean for a tank
+  // saved before setupType existed, same migration the Edit Tank page uses.
+  const setupType = tank.setupType ?? (tank.isPlanted ? "planted" : null);
+  const setupBadge =
+    setupType === "planted"
+      ? { label: t.plannerPage.plantedOption, icon: "🌿" }
+      : setupType === "hardscape"
+        ? { label: t.plannerPage.hardscapeOption, icon: "🪨" }
+        : setupType === "bare_bottom"
+          ? { label: t.plannerPage.bareBottomOption, icon: "🫙" }
+          : null;
 
   const aliveSpeciesRows = aliveLivestock
     .map((l) => (allSpecies ?? []).find((s) => s.id === l.speciesId))
@@ -314,6 +327,24 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
           >
             {waterBadge.label}
           </span>
+          {setupBadge && (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                border: "1px solid var(--color-line)",
+                color: "var(--color-ink)",
+                borderRadius: 999,
+                padding: "2px 10px",
+                fontSize: "var(--font-caption-size)",
+                fontWeight: 600,
+              }}
+            >
+              <span aria-hidden>{setupBadge.icon}</span>
+              {setupBadge.label}
+            </span>
+          )}
         </div>
         {/* Real, explained status (redesign brief High-priority finding:
             "'Healthy' lacks enough context") replaces the old hardcoded

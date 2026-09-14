@@ -676,9 +676,7 @@ const en = {
     confirmedByAdvisor: "Confirmed by the advisor for this tank",
     added: "Added",
     plantsThatWillThrive: "Plants that will thrive here:",
-    savingCreatesTankPrefix: "Saving creates the tank as",
-    plannedWord: "Planned",
-    savingCreatesTankSuffix: "You can adjust everything later.",
+    editAnytimeNote: "You can always edit your tank from My Tanks or the homepage.",
   },
   reportPage: {
     heater: "Heater",

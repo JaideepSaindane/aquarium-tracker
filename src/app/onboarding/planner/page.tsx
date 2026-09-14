@@ -1003,7 +1003,7 @@ export default function OnboardingPlannerPage() {
           )}
 
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 16 }}>
-            {t.plannerPage.savingCreatesTankPrefix} <strong>{t.plannerPage.plannedWord}</strong> {t.plannerPage.savingCreatesTankSuffix}
+            {t.plannerPage.editAnytimeNote}
           </p>
 
           {saveError && <Banner severity="fixNow">{saveError}</Banner>}

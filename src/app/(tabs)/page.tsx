@@ -314,6 +314,21 @@ export default function TanksPage() {
               const visibleThumbs = livestockThumbs.slice(0, 4);
               const overflowCount = livestockThumbs.length - visibleThumbs.length;
               const isBrackish = tank.waterType === "brackish";
+              // Setup-type label (2026-09-14, Jaideep: "just like we have
+              // the freshwater tank tag, we should also have a planted
+              // versus hardscape-only versus bare-bottom tag") — always
+              // shows one of the three now, not just "Planted" when true
+              // and silence otherwise. Falls back to the old isPlanted
+              // boolean for a tank saved before setupType existed.
+              const setupType = tank.setupType ?? (tank.isPlanted ? "planted" : null);
+              const setupLabel =
+                setupType === "planted"
+                  ? t.home.planted
+                  : setupType === "hardscape"
+                    ? t.plannerPage.hardscapeOption
+                    : setupType === "bare_bottom"
+                      ? t.plannerPage.bareBottomOption
+                      : null;
               // Real, honest count — not a deep health analysis (that's
               // Section 4/Tank Detail's job, computed from actual logged
               // parameters). Here it's just "does this tank have fish or
@@ -392,10 +407,10 @@ export default function TanksPage() {
                         }}
                       >
                         {isBrackish ? t.home.brackish : t.home.freshwater}
-                        {tank.isPlanted && (
+                        {setupLabel && (
                           <>
                             <span aria-hidden>·</span>
-                            {t.home.planted}
+                            {setupLabel}
                           </>
                         )}
                         {tank.hasCo2 ? " · CO₂" : ""}

@@ -680,9 +680,7 @@ const hiLatn: Dictionary = {
     confirmedByAdvisor: "Is tank ke liye advisor dwara confirm kiya gaya",
     added: "Add ho gaya",
     plantsThatWillThrive: "Plants jo yahan thrive karenge:",
-    savingCreatesTankPrefix: "Save karne se tank",
-    plannedWord: "Planned",
-    savingCreatesTankSuffix: "ban jaata hai. Aap baad mein sab kuch adjust kar sakte hain.",
+    editAnytimeNote: "Aap apna tank hamesha My Tanks ya homepage se edit kar sakte hain.",
   },
   reportPage: {
     heater: "Heater",
