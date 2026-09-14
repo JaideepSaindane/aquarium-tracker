@@ -10,7 +10,20 @@ import { NextResponse } from "next/server";
 // sign-in pills) can fetch fish-loader.json — without it, the same
 // redirect-instead-of-404 bug the login-bg.jpg fix caught would silently
 // swap the Lottie JSON for the /login page's own HTML.
-const PUBLIC_PATHS = ["/login", "/api/auth", "/manifest.json", "/icon.svg", "/icon-alternate.svg", "/sw.js", "/login-bg.jpg", "/animations"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/auth",
+  "/manifest.json",
+  "/icon.svg",
+  "/icon-alternate.svg",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/icon-alternate-192.png",
+  "/icon-alternate-512.png",
+  "/sw.js",
+  "/login-bg.jpg",
+  "/animations",
+];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
