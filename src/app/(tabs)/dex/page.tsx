@@ -716,19 +716,18 @@ export default function DexPage() {
                     {isAiGenerated(s) && <Chip variant="unverified">{t.dexPage.ai}</Chip>}
                   </div>
 
-                  <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", textTransform: "capitalize", margin: "2px 0 6px" }}>
-                    {s.category ?? t.dexPage.species}
-                    {s.difficulty ? ` · ${s.difficulty}` : ""}
-                    {stock && stock.total > 0 && (
-                      <>
-                        {" · "}
+                  {(s.difficulty || (stock && stock.total > 0)) && (
+                    <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", textTransform: "capitalize", margin: "2px 0 6px" }}>
+                      {s.difficulty ?? ""}
+                      {s.difficulty && stock && stock.total > 0 ? " · " : ""}
+                      {stock && stock.total > 0 && (
                         <span style={{ color: "var(--color-improve)", fontWeight: 700 }}>{t.dexPage.inTank.replace("{n}", String(stock.total))}</span>
-                      </>
-                    )}
-                  </p>
+                      )}
+                    </p>
+                  )}
 
                   {(hasTemp || hasHardness || s.temperament) && (
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 4, flexWrap: "nowrap", overflow: "hidden" }}>
                       {hasTemp && (
                         <span style={statChipStyle}>
                           🌡️ {formatTempRange(s.tempCMin!, s.tempCMax!, units)}
@@ -782,11 +781,15 @@ export default function DexPage() {
 const statChipStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
-  gap: 4,
-  padding: "3px 9px",
+  gap: 3,
+  padding: "2px 6px",
   borderRadius: "var(--radius-pill)",
   background: "var(--soft-bg-alt)",
   color: "var(--soft-ink-muted)",
-  fontSize: 11,
+  fontSize: 10,
   fontWeight: 600,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  minWidth: 0,
 };
