@@ -9,6 +9,7 @@ import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 import { InstallPromptListener } from "./InstallPromptListener";
 import { UpdateBanner } from "@/components/UpdateBanner";
+import { InstalledBanner } from "@/components/InstalledBanner";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ServiceWorkerRegister />
         <InstallPromptListener />
         <UpdateBanner />
+        <InstalledBanner />
       </body>
     </html>
   );

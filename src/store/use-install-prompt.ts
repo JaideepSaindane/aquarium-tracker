@@ -18,16 +18,24 @@ type BeforeInstallPromptEvent = Event & {
 type InstallPromptState = {
   deferredPrompt: BeforeInstallPromptEvent | null;
   installed: boolean;
+  // True right after the browser's `appinstalled` event fires this session
+  // — drives a one-time "you can close this tab now" banner. Not the same
+  // as `installed`, which stays true forever once set; this one is
+  // dismissed by the user and never re-shown.
+  justInstalled: boolean;
   setDeferredPrompt: (e: BeforeInstallPromptEvent | null) => void;
   markInstalled: () => void;
+  dismissJustInstalled: () => void;
   promptInstall: () => Promise<"accepted" | "dismissed" | "unavailable">;
 };
 
 export const useInstallPrompt = create<InstallPromptState>((set, get) => ({
   deferredPrompt: null,
   installed: false,
+  justInstalled: false,
   setDeferredPrompt: (deferredPrompt) => set({ deferredPrompt }),
-  markInstalled: () => set({ installed: true, deferredPrompt: null }),
+  markInstalled: () => set({ installed: true, justInstalled: true, deferredPrompt: null }),
+  dismissJustInstalled: () => set({ justInstalled: false }),
   promptInstall: async () => {
     const { deferredPrompt } = get();
     if (!deferredPrompt) return "unavailable";

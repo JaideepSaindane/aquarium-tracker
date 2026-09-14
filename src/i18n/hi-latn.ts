@@ -48,6 +48,8 @@ const hiLatn: Dictionary = {
     iosStep2: "Neeche scroll karke \"Add to Home Screen\" par tap karein",
     iosStep3: "\"Add\" par tap karein — {app} ab kisi bhi doosri app ki tarah aapki home screen par dikhega",
     gotIt: "Samajh gaya",
+    installedTitle: "App install ho gayi!",
+    installedBanner: "Ab is browser tab ko band kar sakte hain — iske bajaye {app} ko apni home screen se kholein.",
   },
   onboarding: {
     welcomeTitle: "AquaAI mein swagat hai",

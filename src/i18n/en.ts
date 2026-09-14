@@ -44,6 +44,8 @@ const en = {
     iosStep2: "Scroll down and tap \"Add to Home Screen\"",
     iosStep3: "Tap \"Add\" — {app} will appear on your home screen like any other app",
     gotIt: "Got it",
+    installedTitle: "App installed!",
+    installedBanner: "You can close this browser tab now — open {app} from your home screen instead.",
   },
   onboarding: {
     welcomeTitle: "Welcome to AquaAI",
