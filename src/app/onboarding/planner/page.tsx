@@ -19,13 +19,12 @@ import {
   buildSetupPlan,
   matchCityClimate,
   GENERIC_INDIA_CLIMATE,
-  TANK_LENGTHS_FT,
-  cubeAvailable,
-  tankDimensions,
   type PlantedTier,
   type SetupPlan,
-  type TankShape,
 } from "@/lib/setup-recommendations";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import { convertDimension } from "@/lib/dimension-units";
+import { formatVolumeDual } from "@/lib/units";
 import { COMMON_CITIES } from "@/lib/common-options";
 import { createTank } from "@/db/queries/tanks";
 import { addEquipment } from "@/db/queries/equipment";
@@ -94,9 +93,15 @@ export default function OnboardingPlannerPage() {
   // the tank once the plan is built, not re-asked later.
   const [wishes, setWishes] = useState<{ name: string; count: number }[]>([]);
 
-  // Step 3 — tank size in feet + shape + city
-  const [lengthFt, setLengthFt] = useState<number>(2);
-  const [shape, setShape] = useState<TankShape>("long");
+  // Step 3 — tank size, entered directly as length/width/height (same
+  // cm/ft toggle pattern as tank/new and Edit Tank) + city. Jaideep:
+  // guessing width/height from length alone (the old feet+long/cube picker)
+  // produced substrate-weight numbers that didn't match the user's real
+  // tank, so this now just asks for the real dimensions instead of inferring them.
+  const [dimUnit, setDimUnit] = useState<"cm" | "ft">("cm");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
   const [city, setCity] = useState("");
 
   // Step 4 — the plan
@@ -121,8 +126,26 @@ export default function OnboardingPlannerPage() {
 
   const speciesById = useMemo(() => new Map((allSpecies ?? []).map((s) => [s.id, s])), [allSpecies]);
 
-  const dims = useMemo(() => tankDimensions(lengthFt, shape), [lengthFt, shape]);
-  const volumeL = dims.volumeL;
+  function toggleDimUnit(next: "cm" | "ft") {
+    if (next === dimUnit) return;
+    setLength((v) => convertDimension(v, dimUnit, next));
+    setWidth((v) => convertDimension(v, dimUnit, next));
+    setHeight((v) => convertDimension(v, dimUnit, next));
+    setDimUnit(next);
+  }
+
+  const lengthCm = length ? Number(convertDimension(length, dimUnit, "cm")) : null;
+  const widthCm = width ? Number(convertDimension(width, dimUnit, "cm")) : null;
+  const heightCm = height ? Number(convertDimension(height, dimUnit, "cm")) : null;
+  const dimensionsComplete = lengthCm != null && widthCm != null && heightCm != null;
+  const dims = useMemo(
+    () => ({ lengthCm: lengthCm ?? 0, widthCm: widthCm ?? 0, heightCm: heightCm ?? 0 }),
+    [lengthCm, widthCm, heightCm]
+  );
+  const volumeL =
+    lengthCm != null && widthCm != null && heightCm != null
+      ? Math.round(((lengthCm * widthCm * heightCm) / 1000) * 10) / 10
+      : 0;
   const climate = matchCityClimate(city);
   const customTempNum = useCustomRoomTemp && customRoomTemp ? Number(customRoomTemp) : null;
 
@@ -188,10 +211,10 @@ export default function OnboardingPlannerPage() {
     });
     setPlan(basePlan);
     setTankName(
-      t.plannerPage.tankNameTemplate
-        .replace("{ft}", String(lengthFt))
-        .replace("{shape}", shape)
-        .replace("{tier}", tier === "planted" ? t.plannerPage.plantedLower : tier === "hardscape" ? t.plannerPage.hardscapeLower : t.plannerPage.bareBottomLower)
+      t.plannerPage.tankNameTemplate.replace(
+        "{tier}",
+        tier === "planted" ? t.plannerPage.plantedLower : tier === "hardscape" ? t.plannerPage.hardscapeLower : t.plannerPage.bareBottomLower
+      )
     );
 
     try {
@@ -267,7 +290,7 @@ export default function OnboardingPlannerPage() {
     setSaveError(null);
     try {
       const tankId = await createTank({
-        name: tankName.trim() || t.plannerPage.ftTank.replace("{ft}", String(lengthFt)),
+        name: tankName.trim() || t.plannerPage.ftTank,
         lengthCm: dims.lengthCm,
         widthCm: dims.widthCm,
         heightCm: dims.heightCm,
@@ -309,7 +332,7 @@ export default function OnboardingPlannerPage() {
       }
 
       const planLines = [
-        t.plannerPage.setupPlanLine.replace("{tier}", tier).replace("{ft}", String(lengthFt)).replace("{shape}", shape).replace("{v}", String(volumeL)),
+        t.plannerPage.setupPlanLine.replace("{tier}", tier).replace("{v}", String(volumeL)),
         plan.heaterWatts != null ? `${t.plannerPage.heaterLabel} ${plan.heaterWatts}W` : t.plannerPage.heaterNotNeeded,
         `${t.plannerPage.filterLabel} ${plan.filter.shopLabel}`,
         `${t.plannerPage.lightLabel} ~${plan.lighting.wattage}W (${plan.lighting.level})`,
@@ -507,13 +530,14 @@ export default function OnboardingPlannerPage() {
     );
   }
 
-  // ---- Step 3 — how big (feet + shape) + where ------------------------------
+  // ---- Step 3 — how big (real length/width/height, same cm/ft pattern used
+  // on tank/new and Edit Tank) + where ------------------------------
   if (step === 3) {
     return (
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={handleBuildPlan} disabled={aiLoading}>
+            <PrimaryButton onClick={handleBuildPlan} disabled={aiLoading || !dimensionsComplete}>
               {aiLoading ? t.plannerPage.planningEllipsis : t.plannerPage.buildMyPlan}
             </PrimaryButton>
             <SecondaryButton onClick={() => setStep(2)}>{t.plannerPage.backButton}</SecondaryButton>
@@ -527,52 +551,27 @@ export default function OnboardingPlannerPage() {
         </p>
 
         <Card style={{ marginBottom: 16 }}>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.plannerPage.tankLength}</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {TANK_LENGTHS_FT.map((ft) => (
-              <button
-                key={ft}
-                type="button"
-                onClick={() => {
-                  setLengthFt(ft);
-                  if (!cubeAvailable(ft)) setShape("long");
-                }}
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  border: `1px solid ${lengthFt === ft ? "var(--color-deep)" : "var(--color-line)"}`,
-                  background: lengthFt === ft ? "var(--color-deep)" : "transparent",
-                  color: lengthFt === ft ? "#fff" : "var(--color-ink)",
-                  fontWeight: 700,
-                  fontSize: "var(--font-body-sm-size)",
-                }}
-              >
-                {ft} ft
-              </button>
-            ))}
-          </div>
-
-          {cubeAvailable(lengthFt) && (
-            <div style={{ marginTop: 12 }}>
-              <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.plannerPage.shape}</p>
-              <div style={{ display: "flex", gap: 8 }}>
-                {(
-                  [
-                    ["long", "▭", t.plannerPage.longOption, t.plannerPage.longHint],
-                    ["cube", "⬜", t.plannerPage.cubeOption, t.plannerPage.cubeHint],
-                  ] as [TankShape, string, string, string][]
-                ).map(([value, icon, label, hint]) => (
-                  <div key={value} style={{ flex: 1 }}>
-                    <ChoiceCard selected={shape === value} onClick={() => setShape(value)} icon={icon} title={label} subtitle={hint} />
-                  </div>
-                ))}
-              </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <p style={{ fontWeight: 600 }}>{t.scanPage.dimensions}</p>
+            <div style={{ width: 120 }}>
+              <SegmentedControl
+                value={dimUnit}
+                onChange={(u) => toggleDimUnit(u as "cm" | "ft")}
+                options={[
+                  { value: "cm", label: "cm" },
+                  { value: "ft", label: "ft" },
+                ]}
+              />
             </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            <Field label="" placeholder={t.scanPage.length} type="number" value={length} onChange={(e) => setLength(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.width} type="number" value={width} onChange={(e) => setWidth(e.target.value)} />
+            <Field label="" placeholder={t.scanPage.height} type="number" value={height} onChange={(e) => setHeight(e.target.value)} />
+          </div>
+          {volumeL > 0 && (
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 8 }}>≈ {formatVolumeDual(volumeL)}</p>
           )}
-
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 12 }}>
-            {dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm · ≈ {volumeL} {t.scanPage.litres}
-          </p>
         </Card>
 
         <Card>
@@ -687,7 +686,7 @@ export default function OnboardingPlannerPage() {
               {
                 icon: "📐",
                 label: t.plannerPage.tankSize,
-                text: `${lengthFt}ft ${shape} — ${dims.lengthCm}×${dims.widthCm}×${dims.heightCm}cm, ≈${volumeL}L`,
+                text: `${dims.lengthCm}×${dims.widthCm}×${dims.heightCm}cm, ≈${volumeL}L`,
               },
               {
                 icon: "🌡️",
@@ -852,11 +851,11 @@ export default function OnboardingPlannerPage() {
               label=""
               value={tankName}
               onChange={(e) => setTankName(e.target.value)}
-              placeholder={t.plannerPage.ftTank.replace("{ft}", String(lengthFt))}
+              placeholder={t.plannerPage.ftTank}
               style={{ fontSize: "var(--font-heading-size)", fontWeight: 700 }}
             />
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: 6 }}>
-              {tier === "planted" ? t.plannerPage.planted : tier === "hardscape" ? t.plannerPage.hardscape : t.plannerPage.bareBottom} · {lengthFt}ft {shape} ({dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L)
+              {tier === "planted" ? t.plannerPage.planted : tier === "hardscape" ? t.plannerPage.hardscape : t.plannerPage.bareBottom} · {dims.lengthCm} × {dims.widthCm} × {dims.heightCm} cm, ≈{volumeL}L
             </p>
           </Card>
 
