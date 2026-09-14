@@ -36,6 +36,10 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(jsonResponse);
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 400 });
+    // A generic message to the client — the underlying error (a Blob SDK
+    // detail, a validation message with internal specifics) isn't meant
+    // for the browser console. Logged server-side so it's still debuggable.
+    console.error("blob-video-upload failed:", err);
+    return NextResponse.json({ error: "Video upload failed. Please try again." }, { status: 400 });
   }
 }
