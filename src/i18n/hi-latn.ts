@@ -387,6 +387,8 @@ const hiLatn: Dictionary = {
     confirmReport: "Report confirm karein",
     cancel: "Cancel",
     reported: "Report kar diya gaya.",
+    like: "Like",
+    unlike: "Unlike",
   },
   tabBar: {
     main: "Main",

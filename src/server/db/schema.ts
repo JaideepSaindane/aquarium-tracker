@@ -345,6 +345,19 @@ export const communityLikes = pgTable("community_likes", {
   uniqueIndex("community_likes_user_post_idx").on(table.userId, table.postId),
 ]);
 
+// Comment like button (2026-09-14, Jaideep: "People should be able to
+// like comments also"). Same shape/toggle logic as communityLikes, just
+// keyed by commentId instead of postId — see
+// /api/community/comments/[id]/like's toggle logic.
+export const communityCommentLikes = pgTable("community_comment_likes", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  commentId: text("comment_id").notNull(),
+  createdAt: text("created_at").notNull(),
+}, (table) => [
+  uniqueIndex("community_comment_likes_user_comment_idx").on(table.userId, table.commentId),
+]);
+
 // General product feedback (2026-09-14, Jaideep: "Add a mechanism for
 // users to share feedback with us... send it to my master account").
 // No email delivery — nothing in the stack sends email today, and adding a

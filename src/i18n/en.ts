@@ -383,6 +383,8 @@ const en = {
     confirmReport: "Confirm report",
     cancel: "Cancel",
     reported: "Reported.",
+    like: "Like",
+    unlike: "Unlike",
   },
   tabBar: {
     main: "Main",

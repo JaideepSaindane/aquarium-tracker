@@ -28,6 +28,8 @@ export type CommentRow = {
   createdAt: string;
   deletedAt: string | null;
   author: Author;
+  likeCount: number;
+  likedByMe: boolean;
 };
 
 export type ReportRow = {
@@ -65,6 +67,13 @@ export async function createCommunityPost(input: { body: string; photoUris?: str
 /** Toggles the current user's like on a post — returns the new state so the caller doesn't need a second fetch. */
 export async function toggleCommunityLike(postId: string): Promise<{ liked: boolean; likeCount: number }> {
   const result = await json<{ liked: boolean; likeCount: number }>(await fetch(`/api/community/posts/${postId}/like`, { method: "POST" }));
+  notifyChanged();
+  return result;
+}
+
+/** Toggles the current user's like on a comment — same shape as toggleCommunityLike, just for comments. */
+export async function toggleCommunityCommentLike(commentId: string): Promise<{ liked: boolean; likeCount: number }> {
+  const result = await json<{ liked: boolean; likeCount: number }>(await fetch(`/api/community/comments/${commentId}/like`, { method: "POST" }));
   notifyChanged();
   return result;
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { and, asc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
-import { communityComments, profile } from "@/server/db/schema";
+import { communityComments, communityCommentLikes, profile } from "@/server/db/schema";
 import { requireUserId } from "@/server/auth/require-user";
 import { newId, nowIso } from "@/db/id";
 
@@ -20,9 +20,29 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const userIds = [...new Set(rows.map((r) => r.userId))];
   const profiles = await serverDb.select().from(profile).where(inArray(profile.userId, userIds));
   const byUserId = new Map(profiles.map((p) => [p.userId, p]));
+
+  const commentIds = rows.map((r) => r.id);
+  const likeCounts = await serverDb
+    .select({ commentId: communityCommentLikes.commentId, count: sql<number>`count(*)`.mapWith(Number) })
+    .from(communityCommentLikes)
+    .where(inArray(communityCommentLikes.commentId, commentIds))
+    .groupBy(communityCommentLikes.commentId);
+  const likeCountByCommentId = new Map(likeCounts.map((c) => [c.commentId, c.count]));
+
+  const myLikes = await serverDb
+    .select({ commentId: communityCommentLikes.commentId })
+    .from(communityCommentLikes)
+    .where(and(eq(communityCommentLikes.userId, userId), inArray(communityCommentLikes.commentId, commentIds)));
+  const likedCommentIds = new Set(myLikes.map((l) => l.commentId));
+
   const withAuthors = rows.map((r) => {
     const p = byUserId.get(r.userId);
-    return { ...r, author: { name: p?.name ?? null, username: p?.username ?? null, photoUri: p?.photoUri ?? null } };
+    return {
+      ...r,
+      author: { name: p?.name ?? null, username: p?.username ?? null, photoUri: p?.photoUri ?? null },
+      likeCount: likeCountByCommentId.get(r.id) ?? 0,
+      likedByMe: likedCommentIds.has(r.id),
+    };
   });
   return NextResponse.json(withAuthors);
 }

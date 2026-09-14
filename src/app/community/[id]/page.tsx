@@ -10,7 +10,15 @@ import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { PostCard } from "@/components/community/PostCard";
 import { relativeTime } from "@/lib/relative-time";
 import { useLiveQuery } from "@/db/live";
-import { getCommunityPost, listCommunityComments, addCommunityComment, deleteCommunityComment, reportCommunityItem, type CommentRow } from "@/db/queries/community";
+import {
+  getCommunityPost,
+  listCommunityComments,
+  addCommunityComment,
+  deleteCommunityComment,
+  reportCommunityItem,
+  toggleCommunityCommentLike,
+  type CommentRow,
+} from "@/db/queries/community";
 import { useTranslation } from "@/i18n/use-translation";
 
 export default function CommunityPostPage({ params }: { params: Promise<{ id: string }> }) {
@@ -101,10 +109,32 @@ function CommentItem({ comment, currentUserId }: { comment: CommentRow; currentU
   const [reporting, setReporting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
+  const [liked, setLiked] = useState(comment.likedByMe);
+  const [likeCount, setLikeCount] = useState(comment.likeCount);
+  const [likeBusy, setLikeBusy] = useState(false);
   const isOwn = currentUserId === comment.userId;
   const author = comment.author.name?.trim() || comment.author.username?.trim() || t.communityPostPage.fellowHobbyist;
 
   if (deleted) return null;
+
+  async function handleLike() {
+    if (likeBusy) return;
+    setLikeBusy(true);
+    // Optimistic — the server call confirms/corrects a moment later, same pattern as PostCard's own handleLike.
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    setLikeCount((c) => c + (nextLiked ? 1 : -1));
+    try {
+      const result = await toggleCommunityCommentLike(comment.id);
+      setLiked(result.liked);
+      setLikeCount(result.likeCount);
+    } catch {
+      setLiked(!nextLiked);
+      setLikeCount((c) => c + (nextLiked ? -1 : 1));
+    } finally {
+      setLikeBusy(false);
+    }
+  }
 
   return (
     <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
@@ -115,7 +145,27 @@ function CommentItem({ comment, currentUserId }: { comment: CommentRow; currentU
           <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{relativeTime(comment.createdAt)}</p>
         </div>
         <p style={{ margin: "2px 0 0", fontSize: "var(--font-body-sm-size)", whiteSpace: "pre-wrap" }}>{comment.body}</p>
-        <div style={{ display: "flex", gap: 12, marginTop: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
+          <button
+            type="button"
+            onClick={handleLike}
+            aria-pressed={liked}
+            aria-label={liked ? t.communityPostPage.unlike : t.communityPostPage.like}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              background: "none",
+              border: "none",
+              padding: 0,
+              color: liked ? "var(--color-fix-now)" : "var(--color-ink-muted)",
+              fontSize: "var(--font-caption-size)",
+              fontWeight: liked ? 700 : 400,
+            }}
+          >
+            <span aria-hidden>{liked ? "❤️" : "🤍"}</span>
+            {likeCount > 0 ? likeCount : t.communityPostPage.like}
+          </button>
           {!reporting && !status && (
             <button
               type="button"
