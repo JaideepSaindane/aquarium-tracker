@@ -414,6 +414,10 @@ export default function DexPage() {
                     boxShadow: "var(--shadow-lift)",
                     overflow: "hidden",
                     minWidth: 190,
+                    padding: 6,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
                   }}
                 >
                   <button
@@ -422,7 +426,7 @@ export default function DexPage() {
                       setScanPickerOpen(false);
                       scanCameraInputRef.current?.click();
                     }}
-                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
                   >
                     📷 {t.dexPage.takePhoto}
                   </button>
@@ -432,7 +436,7 @@ export default function DexPage() {
                       setScanPickerOpen(false);
                       scanGalleryInputRef.current?.click();
                     }}
-                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "none", border: "none", borderTop: "1px solid var(--soft-card-border)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-ink)", cursor: "pointer" }}
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: "var(--soft-accent-soft)", border: "none", borderRadius: "var(--radius-sm)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, color: "var(--soft-accent)", cursor: "pointer" }}
                   >
                     🖼️ {t.dexPage.chooseFromGallery}
                   </button>
