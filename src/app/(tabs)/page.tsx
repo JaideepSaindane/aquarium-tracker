@@ -134,6 +134,20 @@ export default function TanksPage() {
         </div>
       </div>
 
+      {/* Pinned primary actions (2026-09-14, Jaideep: "move these buttons
+          to the top, and we'll pin them there so that these become primary
+          actions... put Help me build a tank as the first button, and
+          after that, Add a tank... remove the Ask Aqua option" — Ask lives
+          as its own bottom-nav tab already, so it was redundant here). */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <PrimaryButton fullWidth={false} style={{ flex: 1, padding: "16px 12px" }} onClick={() => router.push("/onboarding/planner")}>
+          🧭 {t.home.plannerCta}
+        </PrimaryButton>
+        <SecondaryButton fullWidth={false} style={{ flex: 1, padding: "16px 12px" }} onClick={() => router.push("/tank/new")}>
+          + {t.home.addTank}
+        </SecondaryButton>
+      </div>
+
       {/* Real bug fix, 2026-09-13 (Jaideep: "I signed in... the page is
           stuck and I dont see anything") — a failed load (most often a
           transient 401 right after sign-in, before the session cookie is
@@ -178,9 +192,13 @@ export default function TanksPage() {
           <p style={{ fontWeight: 700, fontSize: "var(--font-heading-size)", color: "var(--soft-ink)", textAlign: "center", marginBottom: 20 }}>
             {t.home.emptyHeading}
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+          {/* The "Help me build a tank" CTA now lives in the pinned action
+              row above, always visible — no need to repeat it here too.
+              Scan-a-tank stays as its own distinct entry point (a
+              different flow: onboarding via a real tank photo, not the
+              planner). */}
+          <div style={{ marginBottom: 20 }}>
             <PrimaryButton onClick={() => router.push("/onboarding/scan")}>🐟 {t.home.haveTankCta}</PrimaryButton>
-            <SecondaryButton onClick={() => router.push("/onboarding/planner")}>🧭 {t.home.plannerCta}</SecondaryButton>
           </div>
           <ListRow
             icon="🩺"
@@ -195,13 +213,30 @@ export default function TanksPage() {
 
       {tanks && tanks.length > 0 && (
         <>
+          {/* "My Tanks" as its own highlighted block (2026-09-14, Jaideep:
+              "the My Tanks section should be highlighted properly with its
+              own blocks") — a tinted, bordered section instead of the
+              heading + list just floating loose on the page background.
+              Uses --soft-bg-alt rather than the plain Card component
+              specifically so it reads as a distinct container behind the
+              tank cards, which already sit on --color-surface — same
+              background on both would make the section edge invisible. */}
+          <div
+            style={{
+              marginBottom: 20,
+              padding: 14,
+              borderRadius: "var(--radius-lg)",
+              background: "var(--soft-bg-alt)",
+              border: "1px solid var(--soft-card-border)",
+            }}
+          >
           <div style={{ marginBottom: 10 }}>
             <p style={{ fontWeight: 700, color: "var(--soft-ink)" }}>
               {t.home.myTanks} <span style={{ color: "var(--soft-ink-muted)", fontWeight: 600 }}>{tanks.length}</span>
             </p>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {filteredTanks.map((tank) => {
               const livestockThumbs = data?.livestockByTank.get(tank.id) ?? [];
               const visibleThumbs = livestockThumbs.slice(0, 4);
@@ -384,21 +419,6 @@ export default function TanksPage() {
               <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", padding: "16px 0" }}>{t.home.noTanksMatch}</p>
             )}
           </div>
-
-          {/* Brief Screen 1's "Actions" row — Add tank / Help me build a
-              tank / Ask Aqua, one simple row underneath the tank list
-              instead of a pill fighting for space next to the section
-              header above. */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/tank/new")}>
-              + {t.home.addTank}
-            </SecondaryButton>
-            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/onboarding/planner")}>
-              🧭 {t.home.plannerCta}
-            </SecondaryButton>
-            <SecondaryButton fullWidth={false} style={{ flex: 1 }} onClick={() => router.push("/ask")}>
-              💬 {t.home.askAquaAction}
-            </SecondaryButton>
           </div>
 
           {/* Brief Screen 1: "Emergency" no longer dominates the ordinary
