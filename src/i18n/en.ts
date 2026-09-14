@@ -22,6 +22,7 @@ const en = {
     back: "Back",
     loading: "Loading...",
     continue: "Continue",
+    view: "View",
   },
   emergency: {
     title: "Emergency",

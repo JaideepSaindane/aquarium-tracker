@@ -26,6 +26,7 @@ const hiLatn: Dictionary = {
     back: "Back",
     loading: "Load ho raha hai...",
     continue: "Continue karein",
+    view: "Dekhein",
   },
   emergency: {
     title: "Emergency",
