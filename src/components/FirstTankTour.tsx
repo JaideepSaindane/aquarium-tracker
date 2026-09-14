@@ -8,8 +8,8 @@ import { hasSeenFirstTankTour, markFirstTankTourShown } from "@/db/queries/setti
 // not tracking anything, right? Just skip that card") — down to the two
 // cards that actually reflect what the app leads with today.
 const CARDS = [
-  { icon: "📓", title: "Journal", body: "Every scan, check and treatment builds its own timeline automatically — open any tank's Journal tab to see it." },
   { icon: "💬", title: "Ask AquaAI", body: "Got a question about your tank? Ask anything — the answer already knows your setup." },
+  { icon: "📓", title: "Journal", body: "Every scan, check and treatment builds its own timeline automatically — open any tank's Journal tab to see it." },
 ];
 
 /**
