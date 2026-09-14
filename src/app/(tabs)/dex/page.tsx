@@ -353,6 +353,12 @@ export default function DexPage() {
               color: "var(--soft-ink)",
             }}
           />
+          {/* Scan-to-find only makes sense when hunting through the full
+              catalog for an unknown fish — every species already listed
+              under My Fish has been identified and added, so there's
+              nothing left to scan for (2026-09-14, Jaideep: "there is no
+              need for a photo icon [under My Fish]"). */}
+          {section === "all" && (
           <div style={{ position: "relative" }}>
             <input
               ref={scanCameraInputRef}
@@ -444,6 +450,7 @@ export default function DexPage() {
               </>
             )}
           </div>
+          )}
         </div>
 
         {scanError && (

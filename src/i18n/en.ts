@@ -268,6 +268,10 @@ const en = {
     addNameToTank: "Add {name} to a tank",
     addNameToTankName: "Add {name} to {tank}",
     noTanksYetCreateOne: "You don't have any tanks yet — create one first.",
+    saveToMyFish: "Save to My Fish",
+    savedToMyFish: "Saved to My Fish",
+    removeFromMyFish: "Remove from My Fish",
+    savedBecauseInTank: "Saved — it's in one of your tanks",
   },
   settingsPage: {
     pinsDontMatch: "PINs don't match.",

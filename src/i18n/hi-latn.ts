@@ -272,6 +272,10 @@ const hiLatn: Dictionary = {
     addNameToTank: "{name} ko ek tank mein add karein",
     addNameToTankName: "{name} ko {tank} mein add karein",
     noTanksYetCreateOne: "Aapke paas abhi koi tank nahi hai — pehle ek banayein.",
+    saveToMyFish: "My Fish mein save karein",
+    savedToMyFish: "My Fish mein saved",
+    removeFromMyFish: "My Fish se hatayein",
+    savedBecauseInTank: "Saved hai — ek tank mein hai",
   },
   settingsPage: {
     pinsDontMatch: "PINs match nahi karte.",

@@ -6,7 +6,7 @@ import { Screen } from "@/components/Screen";
 import { Chip } from "@/components/Chip";
 import { useLiveQuery } from "@/db/live";
 import { getSpecies } from "@/db/queries/species";
-import { getDexCard, unlockDexCard } from "@/db/queries/dex";
+import { getDexCard, unlockDexCard, removeDexCard } from "@/db/queries/dex";
 import { listTanks } from "@/db/queries/tanks";
 import { addLivestock, listAllAliveLivestock } from "@/db/queries/livestock";
 import { APP_NAME } from "@/constants/app";
@@ -118,6 +118,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
   const [sharing, setSharing] = useState(false);
   const [showTankPicker, setShowTankPicker] = useState(false);
   const [addingToTankId, setAddingToTankId] = useState<string | null>(null);
+  const [savingToMyFish, setSavingToMyFish] = useState(false);
 
   if (!species) return <Screen background="var(--soft-bg)">{t.common.loading}</Screen>;
 
@@ -145,6 +146,24 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
       setShowTankPicker(false);
     } finally {
       setAddingToTankId(null);
+    }
+  }
+
+  async function handleSaveToMyFish() {
+    setSavingToMyFish(true);
+    try {
+      await unlockDexCard({ speciesId: id, unlockSource: "saved_manually" });
+    } finally {
+      setSavingToMyFish(false);
+    }
+  }
+
+  async function handleRemoveFromMyFish() {
+    setSavingToMyFish(true);
+    try {
+      await removeDexCard(id);
+    } finally {
+      setSavingToMyFish(false);
     }
   }
 
@@ -455,6 +474,33 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
           }}
         >
           {t.dexDetailPage.addToTank}
+        </button>
+        {/* Save to My Fish without adding to a tank (2026-09-14, Jaideep:
+            "folks need not add these to tanks") — a plain bookmark toggle,
+            not a full-width button, so it doesn't compete with "Add to
+            tank" for primary-action weight. Disabled (not removable) while
+            the species is actually kept in a real tank, since that's a
+            real fact about the tank, not something this toggle should be
+            able to silently undo. */}
+        <button
+          onClick={card ? (keptIn.length > 0 ? undefined : handleRemoveFromMyFish) : handleSaveToMyFish}
+          disabled={savingToMyFish || (!!card && keptIn.length > 0)}
+          aria-label={card ? (keptIn.length > 0 ? t.dexDetailPage.savedBecauseInTank : t.dexDetailPage.removeFromMyFish) : t.dexDetailPage.saveToMyFish}
+          title={card ? (keptIn.length > 0 ? t.dexDetailPage.savedBecauseInTank : t.dexDetailPage.removeFromMyFish) : t.dexDetailPage.saveToMyFish}
+          style={{
+            flexShrink: 0,
+            width: 52,
+            padding: "14px 0",
+            borderRadius: "var(--radius-pill)",
+            border: "1px solid var(--soft-card-border)",
+            background: card ? "var(--soft-accent-soft)" : "var(--soft-card-bg)",
+            color: "var(--soft-accent)",
+            fontSize: 20,
+            opacity: savingToMyFish ? 0.6 : 1,
+            cursor: !!card && keptIn.length > 0 ? "default" : "pointer",
+          }}
+        >
+          {card ? "🔖" : "🏷️"}
         </button>
         <button
           onClick={handleShare}

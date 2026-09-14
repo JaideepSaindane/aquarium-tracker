@@ -29,16 +29,17 @@ export async function getDexCard(speciesId: string): Promise<DexCardRow | undefi
 }
 
 /**
- * Unlock triggers: adding a species to a tank, or (in principle) a scan
- * detecting it — though Tank Scan no longer identifies livestock, so in
- * practice this only fires from the livestock-add flow today (specs/T-021).
- * Idempotent: a species already unlocked just gets `timesKept` bumped and
- * keeps its original `unlockedAt`/`unlockSource` — never re-triggers the
- * unlock animation.
+ * Unlock triggers: adding a species to a tank, a manual "Save to My Fish"
+ * tap on the species detail page (2026-09-14 — Jaideep: "folks need not
+ * add these to tanks"), or (in principle) a scan detecting it — though Tank
+ * Scan no longer identifies livestock, so `scan_detected` doesn't fire in
+ * practice today. Idempotent: a species already unlocked just gets
+ * `timesKept` bumped and keeps its original `unlockedAt`/`unlockSource` —
+ * never re-triggers the unlock animation.
  */
 export async function unlockDexCard(input: {
   speciesId: string;
-  unlockSource: "added_to_tank" | "scan_detected" | "community";
+  unlockSource: "added_to_tank" | "scan_detected" | "community" | "saved_manually";
   firstPhotoUri?: string;
 }): Promise<{ isNewUnlock: boolean }> {
   const result = await json<{ isNewUnlock: boolean }>(
@@ -46,4 +47,16 @@ export async function unlockDexCard(input: {
   );
   notifyChanged();
   return result;
+}
+
+/**
+ * Un-saves a species from My Fish (2026-09-14, Jaideep: "there should be an
+ * option to save to my fish... folks need not add these to tanks"). Purely
+ * a "my collection" marker removal — never touches tanks/livestock, so it's
+ * safe even for a species that's also kept in a real tank (the UI guards
+ * against that case instead, see dex/[id]/page.tsx).
+ */
+export async function removeDexCard(speciesId: string): Promise<void> {
+  await fetch(`/api/dex-cards?speciesId=${encodeURIComponent(speciesId)}`, { method: "DELETE" });
+  notifyChanged();
 }

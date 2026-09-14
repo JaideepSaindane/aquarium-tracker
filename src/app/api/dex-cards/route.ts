@@ -50,3 +50,21 @@ export async function POST(req: Request) {
   });
   return NextResponse.json({ isNewUnlock: true });
 }
+
+// Un-save (2026-09-14, "save to My Fish" without adding to a tank — the
+// inverse action). Only ever removes this user's own card; the client
+// guards against un-saving a species still actually kept in a tank (see
+// dex/[id]/page.tsx), but this route doesn't re-check that itself — a
+// dex card is just a "this is in my collection" marker, not something
+// tank/livestock data depends on, so deleting it can't corrupt anything
+// even if called directly.
+export async function DELETE(req: Request) {
+  const userId = await requireUserId();
+  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { searchParams } = new URL(req.url);
+  const speciesId = searchParams.get("speciesId");
+  if (!speciesId) return NextResponse.json({ error: "speciesId is required" }, { status: 400 });
+
+  await serverDb.delete(dexCards).where(and(eq(dexCards.userId, userId), eq(dexCards.speciesId, speciesId)));
+  return NextResponse.json({ ok: true });
+}
