@@ -25,6 +25,11 @@ export async function getProfile(): Promise<ProfileRow | null> {
 }
 
 export async function saveProfile(input: { name?: string; username?: string; city?: string; email?: string; contact?: string; photoUri?: string; onboardingCompletedAt?: string | null }): Promise<void> {
-  await fetch("/api/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  const res = await fetch("/api/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  // A failed save used to be swallowed silently — the caller (Edit Profile)
+  // treated it as success and navigated back regardless, so a real save
+  // failure (expired session, transient error) looked identical to a
+  // working one. Throw so the caller can show a real error instead.
+  if (!res.ok) throw new Error(`Couldn't save profile (${res.status})`);
   notifyChanged();
 }

@@ -17,6 +17,7 @@ import { FeedbackModal } from "@/components/FeedbackModal";
 import { InstallAppButton } from "@/components/InstallAppButton";
 import { APP_NAME } from "@/constants/app";
 import { ensureDb } from "@/db/client";
+import { useLiveQuery } from "@/db/live";
 import { buildJsonExport, buildCsvZip, buildPhotosZip, downloadBlob } from "@/lib/export";
 import { importJsonExport } from "@/lib/import";
 import { getProfile, saveProfile } from "@/db/queries/profile";
@@ -47,9 +48,18 @@ export default function SettingsPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const [profileName, setProfileName] = useState("");
-  const [profileUsername, setProfileUsername] = useState("");
-  const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
+  // Real bug (Jaideep: "profile picture upload is completely broken...
+  // still a blue blank"): this used to be a one-shot `getProfile().then(...)`
+  // that only ever ran on this component's first mount. Next.js keeps this
+  // page instance alive when navigating to Edit Profile and back, so it
+  // never re-fetched the freshly-saved photo — the save genuinely worked,
+  // this screen just never looked again. `useLiveQuery` re-runs on every
+  // `notifyChanged()` (which `saveProfile()` already calls), the same
+  // reactive pattern every other screen in the app already uses.
+  const { data: profile } = useLiveQuery(getProfile, []);
+  const profileName = profile?.name ?? "";
+  const profileUsername = profile?.username ?? "";
+  const profilePhotoUri = profile?.photoUri ?? null;
   const [shareMessage, setShareMessage] = useState<string | null>(null);
 
   const [survivalPromptOff, setSurvivalPromptOff] = useState(false);
@@ -65,13 +75,6 @@ export default function SettingsPage() {
 
   useEffect(() => {
     ensureDb();
-    getProfile().then((p) => {
-      if (p) {
-        setProfileName(p.name ?? "");
-        setProfileUsername(p.username ?? "");
-        setProfilePhotoUri(p.photoUri ?? null);
-      }
-    });
     isSurvivalPromptDisabled().then(setSurvivalPromptOff);
     fetch("/api/account")
       .then((res) => (res.ok ? res.json() : null))
