@@ -40,8 +40,16 @@ async function loadHomeData() {
   return { tanks, livestockByTank, profileName: profile?.name };
 }
 
+// One shared, gently tinted look for the three primary entry points (Help me
+// build a tank, Add tank, Fish Doctor) — more prominent than a plain card,
+// less loud than a solid fill (Jaideep, 2026-09-15).
+const PRIMARY_TINT = {
+  background: "color-mix(in srgb, var(--soft-accent) 12%, var(--soft-card-bg))",
+  border: "1px solid color-mix(in srgb, var(--soft-accent) 35%, transparent)",
+} as const;
+
 /** A round icon in a tinted circle — the shared visual unit behind the action tiles, stat pills, and the Need Help card, so the whole page reads as one consistent icon language instead of ad hoc emoji sizes. */
-function IconBadge({ icon, size = 44, tone = "soft" }: { icon: ReactNode; size?: number; tone?: "soft" | "solid" }) {
+function IconBadge({ icon, size = 44, tone = "soft" }: { icon: ReactNode; size?: number; tone?: "soft" | "solid" | "accent" }) {
   return (
     <span
       aria-hidden
@@ -54,8 +62,8 @@ function IconBadge({ icon, size = 44, tone = "soft" }: { icon: ReactNode; size?:
         alignItems: "center",
         justifyContent: "center",
         fontSize: size * 0.45,
-        background: tone === "solid" ? "rgba(255,255,255,0.22)" : "var(--soft-accent-soft)",
-        color: tone === "solid" ? "#fff" : "var(--soft-accent)",
+        background: tone === "solid" ? "rgba(255,255,255,0.22)" : tone === "accent" ? "var(--soft-accent)" : "var(--soft-accent-soft)",
+        color: tone === "solid" || tone === "accent" ? "#fff" : "var(--soft-accent)",
       }}
     >
       {icon}
@@ -64,7 +72,7 @@ function IconBadge({ icon, size = 44, tone = "soft" }: { icon: ReactNode; size?:
 }
 
 /** A big, tappable primary-action tile — icon badge, bold label, short caption underneath. Replaces a plain pill button so the two top-level actions read as real destinations, not just buttons in a row. */
-function ActionTile({ icon, label, caption, accent, onClick }: { icon: string; label: string; caption: string; accent?: boolean; onClick: () => void }) {
+function ActionTile({ icon, label, caption, onClick }: { icon: string; label: string; caption: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
@@ -77,17 +85,16 @@ function ActionTile({ icon, label, caption, accent, onClick }: { icon: string; l
         padding: "16px 14px",
         textAlign: "left",
         borderRadius: "var(--radius-lg)",
-        border: accent ? "none" : "1px solid var(--soft-card-border)",
-        background: accent ? "var(--soft-accent)" : "var(--soft-card-bg)",
+        ...PRIMARY_TINT,
         boxShadow: "var(--shadow-sm)",
       }}
     >
-      <IconBadge icon={icon} tone={accent ? "solid" : "soft"} />
+      <IconBadge icon={icon} tone="accent" />
       <span>
-        <span style={{ display: "block", fontWeight: 700, fontSize: "var(--font-body-sm-size)", color: accent ? "#fff" : "var(--soft-ink)" }}>
+        <span style={{ display: "block", fontWeight: 700, fontSize: "var(--font-body-sm-size)", color: "var(--soft-ink)" }}>
           {label}
         </span>
-        <span style={{ display: "block", fontSize: "var(--font-caption-size)", marginTop: 2, color: accent ? "rgba(255,255,255,0.85)" : "var(--soft-ink-muted)" }}>
+        <span style={{ display: "block", fontSize: "var(--font-caption-size)", marginTop: 2, color: "var(--soft-ink-muted)" }}>
           {caption}
         </span>
       </span>
@@ -208,7 +215,6 @@ export default function TanksPage() {
           icon="🧭"
           label={t.home.plannerCta}
           caption={t.home.plannerCaption}
-          accent
           onClick={() => router.push("/onboarding/planner")}
         />
         <ActionTile icon="＋" label={t.home.addTank} caption={t.home.addTankCaption} onClick={() => router.push("/tank/new")} />
@@ -219,14 +225,14 @@ export default function TanksPage() {
       <div
         style={{
           borderRadius: "var(--radius-lg)",
-          border: "1px solid var(--soft-card-border)",
-          background: "var(--soft-card-bg)",
+          ...PRIMARY_TINT,
+          boxShadow: "var(--shadow-sm)",
           padding: "4px 14px",
           marginBottom: 24,
         }}
       >
         <ListRow
-          icon={<IconBadge icon="🩺" size={32} />}
+          icon={<IconBadge icon="🩺" size={32} tone="accent" />}
           label={t.home.needHelpTitle}
           meta={t.home.needHelpBody}
           trailing={t.home.getHelp}

@@ -93,7 +93,7 @@ const hiLatn: Dictionary = {
     deleting: "Delete ho raha hai...",
     yesDelete: "Haan, delete karein",
     needHelpTitle: "Fish Doctor",
-    needHelpBody: "Kuch theek nahi lag raha?",
+    needHelpBody: "Kuch gadbad hai? Yahan poochein",
     getHelp: "Madad lein",
     fishCount: "{n} fish",
     statusNoFish: "Abhi tak koi fish nahi",

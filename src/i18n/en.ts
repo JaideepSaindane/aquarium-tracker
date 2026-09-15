@@ -89,7 +89,7 @@ const en = {
     deleting: "Deleting...",
     yesDelete: "Yes, delete",
     needHelpTitle: "Fish Doctor",
-    needHelpBody: "Something doesn't look right?",
+    needHelpBody: "Something wrong, ask here",
     getHelp: "Get help",
     fishCount: "{n} fish",
     statusNoFish: "No fish yet",
