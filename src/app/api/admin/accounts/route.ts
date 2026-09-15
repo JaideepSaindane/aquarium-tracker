@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { sql, isNull } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
 import { users, tanks, aiInteractions, pageViews, appInstalls, scans } from "@/server/db/schema";
-import { requireAdminUserId } from "@/server/auth/require-admin";
+import { requireAdminDashSession } from "@/server/auth/require-admin-dash";
 
 /**
  * Per-account summary list for the admin dashboard's account-wise page
@@ -16,8 +16,7 @@ import { requireAdminUserId } from "@/server/auth/require-admin";
  * decision.
  */
 export async function GET() {
-  const adminId = await requireAdminUserId();
-  if (!adminId) return NextResponse.json({ error: "unauthorized" }, { status: 403 });
+  if (!(await requireAdminDashSession())) return NextResponse.json({ error: "unauthorized" }, { status: 403 });
 
   const allUsers = await serverDb
     .select({ id: users.id, email: users.email, phone: users.phone, name: users.name, createdAt: users.createdAt })

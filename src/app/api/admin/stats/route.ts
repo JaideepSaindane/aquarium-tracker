@@ -15,7 +15,7 @@ import {
   pageViews,
   appInstalls,
 } from "@/server/db/schema";
-import { requireAdminUserId } from "@/server/auth/require-admin";
+import { requireAdminDashSession } from "@/server/auth/require-admin-dash";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- a tiny generic count helper genuinely needs to accept any Drizzle table/condition; typing it precisely would need more ceremony than this internal aggregation helper is worth.
 async function count(table: any, whereClause?: any): Promise<number> {
@@ -47,8 +47,7 @@ async function perDayFromTextColumn(table: any, createdAtCol: any, days: number)
  * theirs"). Counts and small breakdowns only.
  */
 export async function GET() {
-  const adminId = await requireAdminUserId();
-  if (!adminId) return NextResponse.json({ error: "unauthorized" }, { status: 403 });
+  if (!(await requireAdminDashSession())) return NextResponse.json({ error: "unauthorized" }, { status: 403 });
 
   const [
     totalUsers,

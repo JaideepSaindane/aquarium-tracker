@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 
@@ -43,8 +44,14 @@ type Stats = {
  * view lives at /admin/accounts, a separate surface from this one.
  */
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleLogout() {
+    await fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
+    router.replace("/admin/login");
+  }
 
   useEffect(() => {
     fetch("/api/admin/stats")
@@ -78,9 +85,18 @@ export default function AdminDashboardPage() {
     <Screen>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h1 style={{ fontSize: "var(--font-title-size)" }}>Usage Dashboard</h1>
-        <Link href="/admin/accounts" style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-deep)" }}>
-          Accounts →
-        </Link>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <Link href="/admin/accounts" style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-deep)" }}>
+            Accounts →
+          </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", cursor: "pointer" }}
+          >
+            Log out
+          </button>
+        </div>
       </div>
 
       <StatGrid

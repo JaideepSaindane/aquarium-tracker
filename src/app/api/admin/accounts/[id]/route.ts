@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { eq, isNull, desc, and } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
 import { users, tanks, livestock, aiInteractions, scans, pageViews, appInstalls, logEntries } from "@/server/db/schema";
-import { requireAdminUserId } from "@/server/auth/require-admin";
+import { requireAdminDashSession } from "@/server/auth/require-admin-dash";
 
 /**
  * Full per-account detail — profile, every tank, every AI interaction
@@ -12,8 +12,7 @@ import { requireAdminUserId } from "@/server/auth/require-admin";
  * deliberately not linked from anywhere in the regular app.
  */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const adminId = await requireAdminUserId();
-  if (!adminId) return NextResponse.json({ error: "unauthorized" }, { status: 403 });
+  if (!(await requireAdminDashSession())) return NextResponse.json({ error: "unauthorized" }, { status: 403 });
   const { id } = await params;
 
   const userRow = (await serverDb.select().from(users).where(eq(users.id, id)))[0];
