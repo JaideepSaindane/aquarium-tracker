@@ -135,6 +135,8 @@ const en = {
     otherSymptomPlaceholder: "Describe what you're seeing",
     fishNameLabel: "Which fish? (optional)",
     fishNamePlaceholder: "e.g. Betta, Neon tetra",
+    moreQuestions: "Have more questions about this?",
+    continueInAqua: "Ask follow-up questions in Aqua AI",
     notSatisfied: "Didn't find a satisfactory answer?",
     postOnCommunity: "Post on community",
     communityDraft:
@@ -194,6 +196,8 @@ const en = {
     },
   },
   askPage: {
+    continuingFromFishDoctor: "Continuing from Fish Doctor",
+    askFollowUps: "ask your follow-up questions",
     starterQuestions: {
       identifyFish: "Identify this fish",
       beginnerFish: "Which fish should a beginner buy?",

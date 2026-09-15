@@ -21,6 +21,7 @@ import { useLocale } from "@/i18n/use-locale";
 import { useTranslation } from "@/i18n/use-translation";
 import { AskZod, type AskAnswer } from "@/server/ai/schemas/ask";
 import styles from "./ask.module.css";
+import { readAskHandoff, clearAskHandoff, type AskHandoff } from "@/store/use-ask-handoff";
 
 type Stage = "idle" | "loading";
 export type AiInteractionRow = NonNullable<Awaited<ReturnType<typeof listAiInteractions>>>[number];
@@ -86,6 +87,18 @@ export default function AskPage() {
     peekQuotaStatus("ask").then(setQuota);
   }, []);
 
+  // Continuing a Fish Doctor session: its compressed context rides along as
+  // hidden context on every question until dismissed.
+  const [handoff, setHandoff] = useState<AskHandoff | null>(null);
+  useEffect(() => {
+    const h = readAskHandoff();
+    if (!h) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time read from sessionStorage on mount */
+    setHandoff(h);
+    if (h.tankId) setTankId(h.tankId);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
+
   async function handleIdentifyPhoto(file: File) {
     setIdentifying(true);
     setIdentifyError(null);
@@ -117,7 +130,23 @@ export default function AskPage() {
     setError(null);
     setQuestion("");
     try {
-      const tankContext = tankId ? await buildTankContext(tankId) : "(no tank selected)";
+      const baseContext = tankId ? await buildTankContext(tankId) : "(no tank selected)";
+      // The API is stateless per question, so recent turns are included too —
+      // otherwise follow-ups like "what about the other fish?" lose the thread.
+      const recentTurns = sessionTurns
+        .slice(-3)
+        .map((turn) => {
+          let answer = "";
+          try {
+            const r = typeof turn.response === "string" ? JSON.parse(turn.response) : turn.response;
+            answer = String((r as { answer?: unknown })?.answer ?? "");
+          } catch {}
+          return `Q: ${turn.userInput}\nA: ${answer.slice(0, 600)}`;
+        })
+        .join("\n");
+      const tankContext = [handoff?.context, recentTurns && `EARLIER IN THIS CHAT:\n${recentTurns}`, baseContext]
+        .filter(Boolean)
+        .join("\n\n");
       const speciesIds = tankId
         ? (await listLivestockForTank(tankId)).filter((l) => l.status === "alive").map((l) => l.speciesId)
         : [];
@@ -306,6 +335,39 @@ export default function AskPage() {
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>{t.askPage.subheading}</p>
       </div>
 
+      {handoff && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 12px",
+            marginBottom: 12,
+            borderRadius: "var(--radius-md)",
+            background: "var(--color-surface-alt)",
+            borderLeft: "3px solid var(--color-deep)",
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: "var(--font-body-sm-size)" }}>🩺 {t.askPage.continuingFromFishDoctor}</p>
+            <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)" }}>
+              {handoff.title} · {t.askPage.askFollowUps}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              clearAskHandoff();
+              setHandoff(null);
+            }}
+            aria-label={t.common.cancel}
+            style={{ background: "none", border: "none", color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", padding: "4px 6px" }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <input
         ref={identifyInputRef}
         type="file"
@@ -319,7 +381,7 @@ export default function AskPage() {
         }}
       />
 
-      {askHistory.length === 0 && !pendingQuestion && !identifying && !identifyCandidates && !identifyError && (
+      {!handoff && askHistory.length === 0 && !pendingQuestion && !identifying && !identifyCandidates && !identifyError && (
         <div className={styles.emptyState}>
           <LottiePlayer name="listening" size={72} className={styles.emptyStateAnim} />
           <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.askPage.emptyTitle}</p>

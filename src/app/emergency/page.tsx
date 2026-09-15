@@ -18,6 +18,7 @@ import { useLocale } from "@/i18n/use-locale";
 import { useTranslation } from "@/i18n/use-translation";
 import { useRouter } from "next/navigation";
 import { useCommunityDraft } from "@/store/use-community-draft";
+import { setAskHandoff } from "@/store/use-ask-handoff";
 
 type Stage = "intake" | "loading" | "result" | "error";
 
@@ -61,12 +62,6 @@ export default function EmergencyPage() {
   const [report, setReport] = useState<TriageReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedIncident, setSavedIncident] = useState(false);
-  // Answers to the report's own clarifying_questions — Jaideep: "we ask
-  // followup questions, but no way to answer them." Kept as free text per
-  // question rather than one big box, so each answer stays attached to the
-  // question that asked for it.
-  const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
-  const [submittingFollowUp, setSubmittingFollowUp] = useState(false);
   const [baseDescription, setBaseDescription] = useState("");
 
   // Returning via Back from "Post on community" used to remount this page on
@@ -144,7 +139,6 @@ export default function EmergencyPage() {
         return;
       }
       setBaseDescription(description);
-      setFollowUpAnswers({});
       setReport(parsed.data);
       setStage("result");
 
@@ -162,46 +156,14 @@ export default function EmergencyPage() {
     }
   }
 
-  // Re-runs triage with the report's own clarifying_questions answered —
-  // previously there was no way to actually respond to "What I need to
-  // know," so the report was a dead end the moment it asked something.
-  async function handleFollowUpSubmit() {
-    const answered = Object.entries(followUpAnswers).filter(([, a]) => a.trim());
-    if (answered.length === 0) return;
-    const tankAgeDays = selectedTank?.startedOn
-      ? String(Math.max(0, Math.round((Date.now() - new Date(selectedTank.startedOn).getTime()) / 86400000)))
-      : "unknown";
-    setSubmittingFollowUp(true);
-    setError(null);
+  // Stash the report so Back from Ask/Community restores it instead of an empty form.
+  function stashForReturn() {
     try {
-      const description = `${baseDescription}\n\nFollow-up information:\n${answered.map(([q, a]) => `${q} ${a.trim()}`).join("\n")}`;
-      const result = await runTriage({
-        photo: photo ?? undefined,
-        description,
-        affectedCount: affected,
-        duration,
-        recentTest: waterTest,
-        tankAgeDays,
-        tankId: tankId || undefined,
-        locale,
-      });
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      const parsed = TriageZod.safeParse(result.data.triage);
-      if (!parsed.success) {
-        setError(t.emergencyPage.unexpectedShape);
-        return;
-      }
-      setBaseDescription(description);
-      setFollowUpAnswers({});
-      setReport(parsed.data);
-    } catch {
-      setError(t.emergencyPage.couldNotReachServer);
-    } finally {
-      setSubmittingFollowUp(false);
-    }
+      sessionStorage.setItem(
+        TRIAGE_RETURN_KEY,
+        JSON.stringify({ report, symptoms: Array.from(selectedSymptoms), affected, duration, waterTest, fishNames, otherSymptom, baseDescription })
+      );
+    } catch {}
   }
 
   if (stage === "result" && report) {
@@ -352,36 +314,42 @@ export default function EmergencyPage() {
           </Card>
         )}
 
-        {report.clarifying_questions.length > 0 && (
-          <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.emergencyPage.worthChecking}</p>
-            {report.clarifying_questions.map((q, i) => (
-              <div key={i} style={{ marginBottom: 12 }}>
-                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 4 }}>
-                  {q.question} <span style={{ fontStyle: "italic" }}>({q.why})</span>
-                </p>
-                <Field
-                  label=""
-                  value={followUpAnswers[q.question] ?? ""}
-                  onChange={(e) => setFollowUpAnswers((prev) => ({ ...prev, [q.question]: e.target.value }))}
-                  placeholder={t.emergencyPage.yourAnswer}
-                />
-              </div>
-            ))}
-            <SecondaryButton
-              onClick={handleFollowUpSubmit}
-              disabled={submittingFollowUp || Object.values(followUpAnswers).every((a) => !a.trim())}
-            >
-              {submittingFollowUp ? t.emergencyPage.gettingHelp : t.emergencyPage.getUpdatedAdvice}
-            </SecondaryButton>
-          </Card>
-        )}
-
         {savedIncident && (
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", textAlign: "center", marginBottom: 16 }}>
             {t.emergencyPage.savedToJournal}
           </p>
         )}
+
+        <Card style={{ marginBottom: 12, textAlign: "center" }}>
+          <p style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)", marginBottom: 8 }}>
+            {t.emergencyPage.moreQuestions}
+          </p>
+          <PrimaryButton
+            onClick={() => {
+              // Replaces the old inline follow-up fields: the whole session is
+              // compressed into hidden context for Ask AquaAI, where the user
+              // just keeps chatting. The report's own open questions go along
+              // so AquaAI can ask them.
+              const lines = [
+                "FISH DOCTOR SESSION (the user came from an emergency triage; continue helping with this case):",
+                fishNames.trim() && `Fish: ${fishNames.trim()}`,
+                `Symptoms: ${symptomsText}`,
+                `Affected: ${affected}; for: ${duration}; water test: ${waterTest}`,
+                `Assessment: ${report.headline} — ${report.summary} (urgency ${report.urgency})`,
+                report.immediate_actions.length && `Advised now: ${report.immediate_actions.slice(0, 5).map((a) => a.action).join(" | ")}`,
+                report.do_not.length && `Advised to avoid: ${report.do_not.slice(0, 5).join(" | ")}`,
+                report.hypotheses.length && `Possible causes: ${report.hypotheses.map((h) => `${h.name} (${h.likelihood})`).join(", ")}`,
+                report.clarifying_questions.length &&
+                  `Still unknown — ask the user if relevant: ${report.clarifying_questions.map((q) => q.question).join(" | ")}`,
+              ].filter(Boolean);
+              setAskHandoff({ title: report.headline, context: lines.join("\n"), tankId: tankId || null });
+              stashForReturn();
+              router.push("/ask");
+            }}
+          >
+            {t.emergencyPage.continueInAqua}
+          </PrimaryButton>
+        </Card>
 
         <Card style={{ marginBottom: 12, textAlign: "center" }}>
           <p style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)", marginBottom: 8 }}>
@@ -398,12 +366,7 @@ export default function EmergencyPage() {
                 .replace("{duration}", duration)
                 .replace("{waterTest}", waterTest);
               setCommunityDraft(body, photo);
-              try {
-                sessionStorage.setItem(
-                  TRIAGE_RETURN_KEY,
-                  JSON.stringify({ report, symptoms: Array.from(selectedSymptoms), affected, duration, waterTest, fishNames, otherSymptom, baseDescription })
-                );
-              } catch {}
+              stashForReturn();
               router.push("/community/new");
             }}
           >
@@ -411,17 +374,6 @@ export default function EmergencyPage() {
           </SecondaryButton>
         </Card>
 
-        <SecondaryButton
-          onClick={() => {
-            setStage("intake");
-            setReport(null);
-            setSelectedSymptoms(new Set());
-            setPhoto(null);
-            setSavedIncident(false);
-          }}
-        >
-          {t.emergencyPage.startNewTriage}
-        </SecondaryButton>
       </Screen>
     );
   }

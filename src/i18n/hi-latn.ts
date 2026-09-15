@@ -139,6 +139,8 @@ const hiLatn: Dictionary = {
     otherSymptomPlaceholder: "Batayein kya dikh raha hai",
     fishNameLabel: "Kaunsi fish? (optional)",
     fishNamePlaceholder: "jaise Betta, Neon tetra",
+    moreQuestions: "Is baare mein aur sawaal hain?",
+    continueInAqua: "Aqua AI se aage poochein",
     notSatisfied: "Sahi jawab nahi mila?",
     postOnCommunity: "Community par post karein",
     communityDraft:
@@ -198,6 +200,8 @@ const hiLatn: Dictionary = {
     },
   },
   askPage: {
+    continuingFromFishDoctor: "Fish Doctor se aage",
+    askFollowUps: "apne sawaal poochein",
     starterQuestions: {
       identifyFish: "Ye fish identify karein",
       beginnerFish: "Beginner ko kaunsi fish leni chahiye?",
