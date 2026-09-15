@@ -69,7 +69,6 @@ export default function SettingsPage() {
   const [googleLinkError, setGoogleLinkError] = useState<string | null>(null);
   const [linkPhone, setLinkPhone] = useState("");
   const [linkPin, setLinkPin] = useState("");
-  const [linkPinConfirm, setLinkPinConfirm] = useState("");
   const [linkBusy, setLinkBusy] = useState(false);
   const [linkMessage, setLinkMessage] = useState<string | null>(null);
 
@@ -106,10 +105,6 @@ export default function SettingsPage() {
 
   async function handleLinkPhone() {
     setLinkMessage(null);
-    if (linkPin !== linkPinConfirm) {
-      setLinkMessage(t.settingsPage.pinsDontMatch);
-      return;
-    }
     setLinkBusy(true);
     try {
       const res = await fetch("/api/account/link-phone", {
@@ -125,7 +120,6 @@ export default function SettingsPage() {
       setHasPhoneLinked(true);
       setLinkPhone("");
       setLinkPin("");
-      setLinkPinConfirm("");
       setLinkMessage(null);
     } catch (err) {
       setLinkMessage(`${t.settingsPage.couldNotSave} ${String(err)}`);
@@ -276,13 +270,6 @@ export default function SettingsPage() {
             <Field label={t.settingsPage.phoneNumber} type="tel" value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)} placeholder="9876543210" />
             <Field label={t.settingsPage.fourDigitPin} type="password" value={linkPin} onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="••••" />
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -6 }}>{t.settingsPage.pinNotOtp}</p>
-            <Field
-              label={t.settingsPage.confirmPin}
-              type="password"
-              value={linkPinConfirm}
-              onChange={(e) => setLinkPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
-              placeholder="••••"
-            />
             <PrimaryButton onClick={handleLinkPhone} disabled={linkBusy || linkPhone.trim().length < 10 || linkPin.length !== 4}>
               {linkBusy ? t.settingsPage.adding : t.settingsPage.addPhoneSignIn}
             </PrimaryButton>
