@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 import { MetricsGraphs } from "./MetricsGraphs";
+import { FeedbackTab } from "./FeedbackTab";
 
 type DayCount = { day: string; n: number };
 
@@ -48,6 +49,7 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [view, setView] = useState<"summary" | "feedback">("summary");
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
@@ -100,6 +102,39 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      <div role="tablist" style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+        {(
+          [
+            ["summary", "Summary"],
+            ["feedback", "Feedback"],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={view === value}
+            onClick={() => setView(value)}
+            style={{
+              padding: "6px 14px",
+              borderRadius: 999,
+              border: `1px solid ${view === value ? "var(--color-deep)" : "var(--color-line)"}`,
+              background: view === value ? "var(--color-deep)" : "transparent",
+              color: view === value ? "#fff" : "var(--color-ink)",
+              fontSize: "var(--font-body-sm-size)",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {view === "feedback" && <FeedbackTab />}
+
+      {view === "summary" && (
+      <>
       <StatGrid
         items={[
           { label: "Total accounts", value: stats.accounts.total },
@@ -157,6 +192,8 @@ export default function AdminDashboardPage() {
           noMargin
         />
       </Card>
+      </>
+      )}
     </Screen>
   );
 }
