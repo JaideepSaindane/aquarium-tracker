@@ -83,7 +83,7 @@ The full contracts are in `docs/03-ai-contracts.md`. The rules that matter most:
 - **Ids are exact.** Species ids are common-name kebab-case slugs (`neon-tetra`, `amano-shrimp`) — never scientific-name slugs. Corpus ids are the filenames in `content/corpus/`. A citation that does not resolve is a build error.
 - **Confidence gating.** Below threshold, ask a question instead of asserting. "Is the white patch fuzzy or grain-like?" is better product and better medicine than a confident guess.
 - **Never output a medication dose without confirmed tank volume and confirmed inhabitants.** Ask first, every time.
-- **Always recommend testing water before treating.** Most "disease" in beginner tanks is water quality.
+- **Always recommend testing water before treating.** Most "disease" in beginner tanks is water quality. **One narrow exception (Jaideep, 2026-09-15):** Fish Doctor may suggest a short aquarium salt bath as first aid before a test, always alongside "test the water", with dose, a scaleless-fish/invertebrate/plant caution, and `medical_disclaimer: true` (`prompts/triage.v3.md`). Salt only — never medication before a test.
 - **Downscale images to ~1024px longest edge before upload.** A 12MP photo costs enormously more and is no more accurate.
 - **Log token counts on every call** so unit economics are measured, not guessed.
 
