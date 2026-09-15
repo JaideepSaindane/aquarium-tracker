@@ -55,6 +55,7 @@ export default function EmergencyPage() {
   const [tankId, setTankId] = useState<string>("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [fishNames, setFishNames] = useState("");
+  const [otherSymptom, setOtherSymptom] = useState("");
   const [report, setReport] = useState<TriageReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedIncident, setSavedIncident] = useState(false);
@@ -76,6 +77,10 @@ export default function EmergencyPage() {
   }
 
   const selectedTank = tanks?.find((t) => t.id === tankId);
+  // "Other" is replaced by what the user typed, when they typed something.
+  const symptomsText = Array.from(selectedSymptoms)
+    .map((sym) => (sym === t.emergencyPage.symptoms.other && otherSymptom.trim() ? otherSymptom.trim() : sym))
+    .join(", ");
 
   async function handleSubmit() {
     const tankAgeDays = selectedTank?.startedOn
@@ -88,7 +93,7 @@ export default function EmergencyPage() {
     setStage("loading");
     setError(null);
     try {
-      const description = `Symptoms: ${Array.from(selectedSymptoms).join(", ")}.${fishNames.trim() ? ` Fish affected: ${fishNames.trim()}.` : ""}`;
+      const description = `Symptoms: ${symptomsText}.${fishNames.trim() ? ` Fish affected: ${fishNames.trim()}.` : ""}`;
       const result = await runTriage({
         photo: photo ?? undefined,
         description,
@@ -361,7 +366,7 @@ export default function EmergencyPage() {
               // New Post for review — not posted publicly without a tap.
               const body = t.emergencyPage.communityDraft
                 .replace("{fish}", fishNames.trim() || "-")
-                .replace("{symptoms}", Array.from(selectedSymptoms).join(", "))
+                .replace("{symptoms}", symptomsText)
                 .replace("{affected}", affected)
                 .replace("{duration}", duration)
                 .replace("{waterTest}", waterTest);
@@ -420,6 +425,17 @@ export default function EmergencyPage() {
             );
           })}
         </div>
+        {selectedSymptoms.has(t.emergencyPage.symptoms.other) && (
+          <div style={{ marginTop: 12 }}>
+            <Field
+              label=""
+              value={otherSymptom}
+              onChange={(e) => setOtherSymptom(e.target.value)}
+              placeholder={t.emergencyPage.otherSymptomPlaceholder}
+              autoFocus
+            />
+          </div>
+        )}
       </Card>
 
       <Card style={{ marginBottom: 16 }}>

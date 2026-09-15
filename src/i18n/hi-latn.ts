@@ -136,6 +136,7 @@ const hiLatn: Dictionary = {
     couldNotTell: "Pakka pata nahi chal saka",
     worthChecking: "Mujhe ye jaanna hai",
     yourAnswer: "Aapka jawab",
+    otherSymptomPlaceholder: "Batayein kya dikh raha hai",
     fishNameLabel: "Kaunsi fish? (optional)",
     fishNamePlaceholder: "jaise Betta, Neon tetra",
     notSatisfied: "Sahi jawab nahi mila?",

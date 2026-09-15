@@ -132,6 +132,7 @@ const en = {
     couldNotTell: "Couldn't tell for sure",
     worthChecking: "What I need to know",
     yourAnswer: "Your answer",
+    otherSymptomPlaceholder: "Describe what you're seeing",
     fishNameLabel: "Which fish? (optional)",
     fishNamePlaceholder: "e.g. Betta, Neon tetra",
     notSatisfied: "Didn't find a satisfactory answer?",
