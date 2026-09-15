@@ -275,6 +275,7 @@ export default function SettingsPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <Field label={t.settingsPage.phoneNumber} type="tel" value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)} placeholder="9876543210" />
             <Field label={t.settingsPage.fourDigitPin} type="password" value={linkPin} onChange={(e) => setLinkPin(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="••••" />
+            <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -6 }}>{t.settingsPage.pinNotOtp}</p>
             <Field
               label={t.settingsPage.confirmPin}
               type="password"

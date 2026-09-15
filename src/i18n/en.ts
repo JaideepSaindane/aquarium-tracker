@@ -338,6 +338,7 @@ const en = {
     addPhoneSignInBody:
       "Optional — link a phone number and PIN so you can also sign in this way on a new device, without creating a second, separate account.",
     phoneNumber: "Phone number",
+    pinNotOtp: "This is not an OTP. No code will be sent — make up your own 4-digit password.",
     fourDigitPin: "4-digit PIN",
     confirmPin: "Confirm PIN",
     adding: "Adding...",

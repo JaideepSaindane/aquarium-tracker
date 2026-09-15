@@ -197,6 +197,9 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
         <form onSubmit={handlePhoneSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
           <Field label="4-digit PIN" type="password" inputMode="numeric" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))} />
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -6 }}>
+            This is not an OTP. No code will be sent — make up your own 4-digit password.
+          </p>
           <Field
             label="Confirm PIN"
             type="password"

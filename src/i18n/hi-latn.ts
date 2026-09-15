@@ -342,6 +342,7 @@ const hiLatn: Dictionary = {
     addPhoneSignInBody:
       "Optional — ek phone number aur PIN link karein taaki aap ek naye device par is tarah se bhi sign in kar sakein, bina ek doosra alag account banaye.",
     phoneNumber: "Phone number",
+    pinNotOtp: "Ye OTP nahi hai. Koi code nahi aayega — apna khud ka 4-digit password banaiye.",
     fourDigitPin: "4-digit PIN",
     confirmPin: "PIN confirm karein",
     adding: "Add ho raha hai...",
