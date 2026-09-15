@@ -134,6 +134,7 @@ const en = {
     otherSymptomPlaceholder: "Describe what you're seeing",
     fishNameLabel: "Which fish? (optional)",
     fishNamePlaceholder: "e.g. Betta, Neon tetra",
+    moreTips: "More tips",
     moreQuestions: "Have more questions about this?",
     continueInAqua: "Ask follow-up questions in Aqua AI",
     notSatisfied: "Didn't find a satisfactory answer?",

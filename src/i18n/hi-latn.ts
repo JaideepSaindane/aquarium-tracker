@@ -138,6 +138,7 @@ const hiLatn: Dictionary = {
     otherSymptomPlaceholder: "Batayein kya dikh raha hai",
     fishNameLabel: "Kaunsi fish? (optional)",
     fishNamePlaceholder: "jaise Betta, Neon tetra",
+    moreTips: "Aur tips",
     moreQuestions: "Is baare mein aur sawaal hain?",
     continueInAqua: "Aqua AI se aage poochein",
     notSatisfied: "Sahi jawab nahi mila?",
