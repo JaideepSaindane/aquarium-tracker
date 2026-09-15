@@ -355,7 +355,7 @@ export default function EmergencyPage() {
           <p style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)", marginBottom: 8 }}>
             {t.emergencyPage.notSatisfied}
           </p>
-          <SecondaryButton
+          <PrimaryButton
             onClick={() => {
               // Prefill a draft (symptoms + intake answers + photo) and open
               // New Post for review — not posted publicly without a tap.
@@ -371,7 +371,7 @@ export default function EmergencyPage() {
             }}
           >
             {t.emergencyPage.postOnCommunity}
-          </SecondaryButton>
+          </PrimaryButton>
         </Card>
 
       </Screen>
