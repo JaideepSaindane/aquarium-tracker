@@ -146,7 +146,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
       setError(result.error === "CredentialsSignin" ? "Incorrect PIN, or too many attempts — try again shortly." : result.error);
       return;
     }
-    router.push(from);
+    router.replace(from); // replace, so Back never returns to the sign-in page
   }
 
   return (

@@ -47,6 +47,11 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/admin/login", req.nextUrl.origin));
   }
 
+  // Already signed in and landing on /login (e.g. the back button stepping
+  // back onto the sign-in page in history) — send home instead of showing a
+  // sign-in form that looks like you were logged out.
+  if (pathname === "/login" && req.auth) return NextResponse.redirect(new URL("/", req.nextUrl.origin));
+
   const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
   if (isPublic || req.auth) return NextResponse.next();
 

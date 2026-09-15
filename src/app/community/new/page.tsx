@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCommunityDraft } from "@/store/use-community-draft";
+import { useCommunityDraft, DRAFT_KEY } from "@/store/use-community-draft";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Banner } from "@/components/Banner";
@@ -24,8 +24,19 @@ export default function NewCommunityPostPage() {
   const t = useTranslation();
   // A draft handed over from elsewhere (Fish Doctor's "Post on community")
   // prefills once, via lazy initial state so it's read before first paint.
-  const takeDraft = useCommunityDraft((s) => s.takeDraft);
-  const [draft] = useState(() => takeDraft());
+  // Read without clearing during render (React may discard a render and
+  // re-run it — clearing here lost the draft); cleared after mount instead.
+  const [draft] = useState(() => {
+    const { body, photo } = useCommunityDraft.getState();
+    let stored: string | null = null;
+    try {
+      stored = sessionStorage.getItem(DRAFT_KEY);
+    } catch {}
+    return { body: body ?? stored, photo };
+  });
+  useEffect(() => {
+    useCommunityDraft.getState().clearDraft();
+  }, []);
   const [body, setBody] = useState(draft.body ?? "");
   const [photos, setPhotos] = useState<PendingPhoto[]>(() =>
     draft.photo ? [{ file: draft.photo, preview: URL.createObjectURL(draft.photo), isVideo: false }] : []
