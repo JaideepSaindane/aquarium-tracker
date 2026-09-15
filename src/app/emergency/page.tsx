@@ -6,7 +6,7 @@ import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import { PrimaryButton } from "@/components/Button";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
