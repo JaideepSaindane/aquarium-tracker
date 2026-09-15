@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   const corpus = await retrieveCorpus(description, 4, locale);
-  const promptText = await loadPrompt("triage.v2.md", {
+  const promptText = await loadPrompt("triage.v3.md", {
     DESCRIPTION: description,
     AFFECTED_COUNT: affectedCount,
     DURATION: duration,

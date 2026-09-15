@@ -12,6 +12,7 @@ import { addLivestock, listAllAliveLivestock } from "@/db/queries/livestock";
 import { APP_NAME } from "@/constants/app";
 import { isAiGenerated } from "@/lib/species-origin";
 import { useTranslation } from "@/i18n/use-translation";
+import { useLocale } from "@/i18n/use-locale";
 
 // Placeholder until there's a real install/landing page to link to.
 const APP_DOWNLOAD_LINK = "https://aquaai-web.vercel.app";
@@ -110,6 +111,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
   const { id } = use(params);
   const router = useRouter();
   const t = useTranslation();
+  const { locale } = useLocale();
   const { data: species } = useLiveQuery(() => getSpecies(id), [id]);
   const { data: card } = useLiveQuery(() => getDexCard(id), [id]);
   const { data: tanks } = useLiveQuery(() => listTanks(), []);
@@ -130,7 +132,14 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
   const temp = range(species.tempCMin, species.tempCMax, "°C");
   const hardness = hardnessLabel(t, species.hardnessDghMin, species.hardnessDghMax);
   const tankSize = tankSizeLabel(t, species);
-  const mistakes = parseArray(species.commonMistakes);
+  // Hinglish text when the app is set to Hindi and a translation actually
+  // exists for this species (batch-translated — see the schema comment on
+  // `careNotesHi`); falls back to English for anything untranslated (a
+  // user-submitted or AI-generated card, added after the batch ran).
+  const isHinglish = locale === "hi-latn";
+  const careNotesText = (isHinglish && species.careNotesHi) || species.careNotes;
+  const disputedText = (isHinglish && species.disputedHi) || species.disputed;
+  const mistakes = parseArray(isHinglish && species.commonMistakesHi ? species.commonMistakesHi : species.commonMistakes);
   const statusChip = species.difficulty ? difficultyChip(t, species.difficulty) : null;
   const visibleTanks = (tanks ?? []).filter((tk) => tk.status !== "archived");
   const tankById = new Map(visibleTanks.map((tk) => [tk.id, tk]));
@@ -375,12 +384,12 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
             </div>
           )}
         </div>
-        {species.disputed && (
-          <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", lineHeight: 1.5, marginTop: 12 }}>{species.disputed}</p>
+        {disputedText && (
+          <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-caption-size)", lineHeight: 1.5, marginTop: 12 }}>{disputedText}</p>
         )}
       </div>
 
-      {species.careNotes && (
+      {careNotesText && (
         <div
           style={{
             padding: 16,
@@ -399,7 +408,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
           </span>
           <div>
             <p style={{ fontWeight: 700, color: "var(--soft-ink)", marginBottom: 4 }}>{t.dexDetailPage.careTips}</p>
-            <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{species.careNotes}</p>
+            <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>{careNotesText}</p>
           </div>
         </div>
       )}

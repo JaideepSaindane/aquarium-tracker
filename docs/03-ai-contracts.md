@@ -281,17 +281,25 @@ always.
 
 ---
 
-## Contract 3 — Emergency triage
+## Contract 3 — Emergency triage ("Fish Doctor")
 
-**`triage/v1`.** The highest-emotion, highest-liability moment in the app. Someone's fish is dying at 11pm. **Free forever, unlimited, never behind a paywall** — Principle 02.
+**`triage/v3`** (2026-09-15 redesign — see `specs/PROGRESS.md`'s dated entry for the full brief this replaced v2 with). The highest-emotion, highest-liability moment in the app. Someone's fish is dying at 11pm. **Free forever, unlimited, never behind a paywall** — Principle 02.
 
 Input: optional photo, plus a short guided intake (what is happening, how many affected, how long, most recent water test, tank age).
+
+**v3's core change from v1/v2: optimize for decision usefulness, not diagnostic completeness.** A beginner must be able to read the report and answer five questions within 5 seconds: is this urgent, what do I do right now, what should I avoid, what should I watch for, what do I need to tell it next. Diagnosis (`hypotheses`) is secondary to action (`immediate_actions`) — the UI renders action before explanation.
+
+**Diagnostic confidence and action confidence are independent** (`confidence.diagnosis` vs `confidence.actionability`). A low-confidence diagnosis must never suppress a high-confidence safe action — "fish lying on the bottom" can have `diagnosis: "low"` (could be dozens of things) alongside `actionability: "high"` (test ammonia/nitrite/oxygenation regardless of which it turns out to be).
+
+`could_not_determine` (v1/v2) is gone — a bare list of unknowns wasn't decision-useful. What replaces it: `clarifying_questions` (max 3, only ones that would actually change the next step) and `conditional_guidance` (reframed as "what would change the next step" — an if-this-then-that map from possible new information to the action it implies).
 
 ### Additional rails for this contract
 
 ```
 Assume the user is panicking and will act on the first thing you say. Put the
-single most important action first and keep it to one sentence.
+single most important action first and keep it to one sentence — this must
+be identical to immediate_actions[0].action, never a second, different
+"first" action competing with the list.
 
 If the tank is under 8 weeks old, treat new tank syndrome as the leading
 hypothesis until water tests rule it out. It is by far the most common cause
@@ -300,23 +308,38 @@ and it is treated by water changes and patience, not medication.
 If no recent water test exists, testing is the first action. Not medication.
 Say plainly that treating blind usually makes things worse.
 
-Explicitly list what NOT to do. Panicking keepers dose three medications at
-once, do a 100% water change, or raise the temperature for a species that
-cannot tolerate it. Naming these prevents more deaths than the treatment
-advice does.
+Explicitly list what NOT to do (max 5). Panicking keepers dose three
+medications at once, do a 100% water change, or raise the temperature for a
+species that cannot tolerate it. Naming these prevents more deaths than the
+treatment advice does.
+
+Low diagnostic confidence does not mean low action confidence — never
+withhold a safe first-aid action merely because the underlying cause is
+uncertain.
 
 If the situation is beyond what this app should handle - suspected
 mycobacteriosis, mass sudden death, anything involving human skin lesions
 after tank contact - say so and recommend an aquatic vet. Mycobacteriosis is
 transmissible to humans; if it is suspected, say so directly.
+
+Enforce these maximums: 3-5 immediate_actions, 3-5 do_not, 2-3 hypotheses,
+4-5 monitor_for, 4-5 escalation_triggers, 3 clarifying_questions. Never
+repeat the same recommendation's wording across two sections.
 ```
 
 ### Output schema
 
 ```jsonc
 {
-  "prompt_version": "triage/v1",
-  "first_action": "Test ammonia and nitrite right now, before doing anything else.",
+  "prompt_version": "triage/v3",
+  "headline": "White spots need attention",
+  "summary": "The spots resemble Ich, but water quality problems can worsen similar symptoms.",
+  "urgency": "low | moderate | high | critical",
+  "first_action": "Test ammonia, nitrite, nitrate, pH, and temperature today.",
+  "confidence": {
+    "diagnosis": "low | moderate | high",
+    "actionability": "low | moderate | high"
+  },
   "hypotheses": [{
     "id": "new-tank-syndrome",
     "name": "New tank syndrome (ammonia poisoning)",
@@ -336,6 +359,8 @@ transmissible to humans; if it is suspected, say so directly.
     "Do not do a 100% water change - it will remove what beneficial bacteria you have.",
     "Do not add more fish."
   ],
+  "monitor_for": ["Rapid breathing or gasping", "Spots spreading to other fish"],
+  "escalation_triggers": ["Fish are gasping at the surface", "Multiple fish deteriorate quickly", "Sudden deaths"],
   "conditional_guidance": [{
     "if": "total ammonia is at or above 0.5 ppm AND pH is below 7.0",
     "then": "Do several small water changes (20-25%) with pH-matched water rather than one large one, and say why. At or above 5 ppm, move the fish to already-cycled matched water instead.",
@@ -346,8 +371,6 @@ transmissible to humans; if it is suspected, say so directly.
     "reason": null,
     "human_health_warning": null
   },
-  "confidence": "medium",
-  "could_not_determine": ["Whether the white patches are fungal or bacterial from this photo"],
   "clarifying_questions": [{
     "question": "Are the white patches fuzzy and cotton-like, or fine and grain-like?",
     "why": "Fuzzy suggests fungus or columnaris; grain-like suggests ich. The treatments are different."
@@ -356,7 +379,7 @@ transmissible to humans; if it is suspected, say so directly.
 }
 ```
 
-`do_not` is rendered as prominently as the actions, not hidden below them.
+`do_not` is rendered as prominently as the actions, not hidden below them. `escalate` is this case's own active escalation call (shown as an urgent banner right now); `escalation_triggers` is the forward-looking "get help urgently if X happens" list (shown as its own card, moved above the fold for `high`/`critical` urgency) — the two are deliberately separate concepts, not duplicates.
 
 ---
 

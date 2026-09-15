@@ -99,6 +99,20 @@ export const species = sqliteTable("species", {
   commonMistakes: text("common_mistakes"), // JSON array
   incompatibleWith: text("incompatible_with"), // JSON array
   disputed: text("disputed"),
+  // Hinglish (Hindi, Latin script) translations of the three prose fields
+  // above — 2026-09-15, Jaideep: "I want a genuine full app translation
+  // for hinglish," after noticing care tips/common mistakes/temp context
+  // stayed in English even with the app set to Hindi. Batch-translated
+  // once via scripts/translate-species-hinglish.mjs into
+  // data/species.seed.json, not translated live per-request (that would
+  // mean a real AI cost on every single species-card view). Null for a
+  // species with no English content to translate, or one added after the
+  // batch ran (a user-submitted or AI-generated card) — the Dex detail
+  // page falls back to the English text in that case rather than showing
+  // nothing.
+  careNotesHi: text("care_notes_hi"),
+  commonMistakesHi: text("common_mistakes_hi"), // JSON array
+  disputedHi: text("disputed_hi"),
   origin: text("origin").notNull(), // seed | user | ai_generated
   uncertaintyNote: text("uncertainty_note"),
   aiConfidence: text("ai_confidence"), // high | medium | low

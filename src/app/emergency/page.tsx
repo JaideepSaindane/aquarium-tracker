@@ -116,15 +116,20 @@ export default function EmergencyPage() {
   }
 
   if (stage === "result" && report) {
-    return (
-      <Screen>
-        <BackHeader title={t.emergencyPage.resultTitle} fallbackHref="/" />
-
-        <Card style={{ marginBottom: 16, borderLeft: "4px solid var(--color-fix-now)" }}>
-          <p style={{ fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)", marginBottom: 4 }}>{t.emergencyPage.doThisFirst}</p>
-          <p style={{ fontSize: "var(--font-heading-size)", fontWeight: 700 }}>{report.first_action}</p>
-        </Card>
-
+    // Redesigned 2026-09-15 around decision-usefulness (Jaideep's Fish
+    // Doctor brief): action before diagnosis, and escalation moved above
+    // the fold for high/critical urgency instead of sitting wherever it
+    // happened to fall. `first_action` is no longer its own card — the
+    // prompt requires it to equal immediate_actions[0].action, so showing
+    // both used to duplicate the same line.
+    const urgencyColor =
+      report.urgency === "critical" || report.urgency === "high"
+        ? "var(--color-fix-now)"
+        : report.urgency === "moderate"
+          ? "var(--color-watch)"
+          : "var(--color-improve)";
+    const escalationSection = (report.escalate.needed || report.escalation_triggers.length > 0) && (
+      <>
         {report.escalate.needed && (
           <div style={{ marginBottom: 16 }}>
             <Banner severity="fixNow">
@@ -133,33 +138,63 @@ export default function EmergencyPage() {
             </Banner>
           </div>
         )}
-
-        {report.medical_disclaimer && (
-          <div style={{ marginBottom: 16 }}>
-            <Banner severity="fixNow">
-              {t.emergencyPage.medicalDisclaimer}
-            </Banner>
-          </div>
-        )}
-
-        {report.do_not.length > 0 && (
+        {report.escalation_triggers.length > 0 && (
           <Card style={{ marginBottom: 16, borderLeft: "4px solid var(--color-fix-now)" }}>
-            <p style={{ fontWeight: 700, marginBottom: 8, color: "var(--color-fix-now)" }}>{t.emergencyPage.doNot}</p>
+            <p style={{ fontWeight: 700, marginBottom: 8, color: "var(--color-fix-now)" }}>{t.emergencyPage.getHelpUrgentlyIf}</p>
             <ul style={{ margin: 0, paddingLeft: 20 }}>
-              {report.do_not.map((d) => (
-                <li key={d} style={{ marginBottom: 4 }}>
-                  {d}
+              {report.escalation_triggers.map((trig) => (
+                <li key={trig} style={{ marginBottom: 4 }}>
+                  {trig}
                 </li>
               ))}
             </ul>
           </Card>
         )}
+      </>
+    );
+    const isUrgent = report.urgency === "high" || report.urgency === "critical";
+
+    return (
+      <Screen>
+        <BackHeader title={t.emergencyPage.resultTitle} fallbackHref="/" />
+
+        <Card style={{ marginBottom: 16, borderLeft: `4px solid ${urgencyColor}` }}>
+          <p style={{ fontSize: "var(--font-heading-size)", fontWeight: 700, marginBottom: 4 }}>{report.headline}</p>
+          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 10 }}>{report.summary}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, fontSize: "var(--font-caption-size)" }}>
+            <span>
+              <span style={{ color: "var(--color-ink-muted)" }}>{t.emergencyPage.urgencyLabel}: </span>
+              <strong style={{ color: urgencyColor }}>{t.emergencyPage.urgency[report.urgency]}</strong>
+            </span>
+            <span>
+              <span style={{ color: "var(--color-ink-muted)" }}>{t.emergencyPage.diagnosisConfidenceLabel}: </span>
+              <strong>{t.emergencyPage.confidenceLevel[report.confidence.diagnosis]}</strong>
+            </span>
+            <span>
+              <span style={{ color: "var(--color-ink-muted)" }}>{t.emergencyPage.actionConfidenceLabel}: </span>
+              <strong>{t.emergencyPage.confidenceLevel[report.confidence.actionability]}</strong>
+            </span>
+          </div>
+        </Card>
+
+        {isUrgent && escalationSection}
+
+        {/* A loud but visually distinct warning from real escalation above —
+            this used to share the exact same red "fixNow" banner as an
+            active emergency, so an ungrounded-medication disclaimer read as
+            equally alarming as "your fish may be dying." Amber instead. */}
+        {report.medical_disclaimer && (
+          <div style={{ marginBottom: 16 }}>
+            <Banner severity="watch">{t.emergencyPage.medicalDisclaimer}</Banner>
+          </div>
+        )}
 
         {report.immediate_actions.length > 0 && (
           <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.emergencyPage.immediateActions}</p>
+            <p style={{ fontWeight: 700, marginBottom: 8 }}>{t.emergencyPage.immediateActions}</p>
             <ol style={{ margin: 0, paddingLeft: 20 }}>
               {report.immediate_actions
+                .slice()
                 .sort((a, b) => a.order - b.order)
                 .map((a) => (
                   <li key={a.order} style={{ marginBottom: 8 }}>
@@ -171,6 +206,19 @@ export default function EmergencyPage() {
                   </li>
                 ))}
             </ol>
+          </Card>
+        )}
+
+        {report.do_not.length > 0 && (
+          <Card style={{ marginBottom: 16 }}>
+            <p style={{ fontWeight: 700, marginBottom: 8, color: "var(--color-fix-now)" }}>{t.emergencyPage.doNot}</p>
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              {report.do_not.map((d) => (
+                <li key={d} style={{ marginBottom: 4 }}>
+                  {d}
+                </li>
+              ))}
+            </ul>
           </Card>
         )}
 
@@ -189,25 +237,29 @@ export default function EmergencyPage() {
           </Card>
         )}
 
+        {report.monitor_for.length > 0 && (
+          <Card style={{ marginBottom: 16 }}>
+            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.emergencyPage.watchFor}</p>
+            <ul style={{ margin: 0, paddingLeft: 20, fontSize: "var(--font-body-sm-size)" }}>
+              {report.monitor_for.map((m) => (
+                <li key={m} style={{ marginBottom: 4 }}>
+                  {m}
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
+
+        {!isUrgent && escalationSection}
+
         {report.conditional_guidance.length > 0 && (
           <Card style={{ marginBottom: 16 }}>
             <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.emergencyPage.ifThen}</p>
             {report.conditional_guidance.map((c, i) => (
               <p key={i} style={{ marginBottom: 8, fontSize: "var(--font-body-sm-size)" }}>
-                <strong>{t.emergencyPage.if}</strong> {c.if} <strong>{t.emergencyPage.then}</strong> {c.then}
+                <strong>{t.emergencyPage.if}</strong> {c.if} → {c.then}
               </p>
             ))}
-          </Card>
-        )}
-
-        {report.could_not_determine.length > 0 && (
-          <Card style={{ marginBottom: 16 }}>
-            <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.emergencyPage.couldNotTell}</p>
-            <ul style={{ margin: 0, paddingLeft: 20, color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
-              {report.could_not_determine.map((d) => (
-                <li key={d}>{d}</li>
-              ))}
-            </ul>
           </Card>
         )}
 

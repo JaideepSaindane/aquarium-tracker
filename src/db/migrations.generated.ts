@@ -80,5 +80,14 @@ export const migrations: Migration[] = [
       "DROP TABLE `push_subscriptions`;",
       "DROP TABLE `tasks`;"
     ]
+  },
+  {
+    "tag": "0008_busy_warhawk",
+    "when": 1789442462537,
+    "statements": [
+      "ALTER TABLE `species` ADD `care_notes_hi` text;",
+      "ALTER TABLE `species` ADD `common_mistakes_hi` text;",
+      "ALTER TABLE `species` ADD `disputed_hi` text;"
+    ]
   }
 ];

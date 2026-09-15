@@ -1,19 +1,37 @@
 import { z } from "zod";
 import { str, strArr, num } from "./json-schema-helpers";
 
-// v2, 2026-09-11: added medical_disclaimer, matching ask/v4 — Jaideep
-// asked for ungrounded medication/dosing/treatment guidance to be allowed
-// (previously implicitly possible here too, since triage never had an
-// explicit refusal like ask.v3 did) as long as it's flagged with a loud
-// "not vet-reviewed" warning whenever no live corpus entry backs a
-// medication/dosing/treatment claim. See specs/PROGRESS.md 2026-09-11.
-export const PROMPT_VERSION = "triage/v2";
+// v3, 2026-09-15: redesigned around decision-usefulness rather than
+// diagnostic completeness (Jaideep's Fish Doctor brief). Key changes from
+// v2: `confidence` splits into `diagnosis`/`actionability` (a low-confidence
+// diagnosis must not suppress high-confidence first-aid actions — see
+// prompts/triage.v3.md's "Critical Principle"); added `headline`/`summary`
+// for a scannable status card; added `urgency` (independent of confidence);
+// added `monitor_for` ("Watch for") and `escalation_triggers` ("Get help
+// urgently if") as their own lists, distinct from `escalate` (THIS case's
+// own active escalation call); removed `could_not_determine` — a bare list
+// of unknowns wasn't useful, folded into `clarifying_questions` (max 3,
+// only the ones that would change the next step) and `conditional_guidance`
+// (reframed in the prompt/UI as "what would change the next step").
+// `first_action` is kept (many older logged incidents reference it) but
+// must now equal immediate_actions[0].action — the UI no longer shows it
+// as a separate card to avoid the old duplicate-action bug.
+export const PROMPT_VERSION = "triage/v3";
 
 const grounding = z.array(z.string()).default([]);
+const urgencyEnum = z.enum(["low", "moderate", "high", "critical"]);
+const confidenceEnum = z.enum(["low", "moderate", "high"]);
 
 export const TriageZod = z.object({
   prompt_version: z.string(),
+  headline: z.string(),
+  summary: z.string(),
+  urgency: urgencyEnum,
   first_action: z.string(),
+  confidence: z.object({
+    diagnosis: confidenceEnum,
+    actionability: confidenceEnum,
+  }),
   hypotheses: z
     .array(
       z.object({
@@ -30,14 +48,14 @@ export const TriageZod = z.object({
     .array(z.object({ order: z.number(), action: z.string(), why: z.string(), caution: z.string().nullable().default(null) }))
     .default([]),
   do_not: z.array(z.string()).default([]),
+  monitor_for: z.array(z.string()).default([]),
+  escalation_triggers: z.array(z.string()).default([]),
   conditional_guidance: z.array(z.object({ if: z.string(), then: z.string(), grounding_refs: grounding })).default([]),
   escalate: z.object({
     needed: z.boolean(),
     reason: z.string().nullable().default(null),
     human_health_warning: z.string().nullable().default(null),
   }),
-  confidence: z.string(),
-  could_not_determine: z.array(z.string()).default([]),
   clarifying_questions: z.array(z.object({ question: z.string(), why: z.string() })).default([]),
   grounding_refs: grounding,
   medical_disclaimer: z.boolean().default(false),
@@ -49,7 +67,18 @@ export const TriageJsonSchema = {
   type: "object",
   properties: {
     prompt_version: str,
+    headline: str,
+    summary: str,
+    urgency: { type: "string", enum: ["low", "moderate", "high", "critical"] },
     first_action: str,
+    confidence: {
+      type: "object",
+      properties: {
+        diagnosis: { type: "string", enum: ["low", "moderate", "high"] },
+        actionability: { type: "string", enum: ["low", "moderate", "high"] },
+      },
+      required: ["diagnosis", "actionability"],
+    },
     hypotheses: {
       type: "array",
       items: {
@@ -67,6 +96,8 @@ export const TriageJsonSchema = {
       },
     },
     do_not: strArr,
+    monitor_for: strArr,
+    escalation_triggers: strArr,
     conditional_guidance: {
       type: "array",
       items: { type: "object", properties: { if: str, then: str, grounding_refs: strArr }, required: ["if", "then"] },
@@ -80,8 +111,6 @@ export const TriageJsonSchema = {
       },
       required: ["needed"],
     },
-    confidence: str,
-    could_not_determine: strArr,
     clarifying_questions: {
       type: "array",
       items: { type: "object", properties: { question: str, why: str }, required: ["question", "why"] },
@@ -91,11 +120,13 @@ export const TriageJsonSchema = {
   },
   required: [
     "prompt_version",
+    "headline",
+    "summary",
+    "urgency",
     "first_action",
+    "confidence",
     "do_not",
     "escalate",
-    "confidence",
-    "could_not_determine",
     "grounding_refs",
     "medical_disclaimer",
   ],

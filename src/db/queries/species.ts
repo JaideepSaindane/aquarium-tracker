@@ -127,6 +127,10 @@ export type SeedSpecies = {
   common_mistakes?: string[];
   incompatible_with?: string[];
   disputed?: string;
+  /** Hinglish translations, batch-generated — see the schema comment on `careNotesHi`. */
+  care_notes_hi?: string;
+  common_mistakes_hi?: string[];
+  disputed_hi?: string;
   dex?: { rarity?: string; tier?: number };
   /** Bundled static reference photo, e.g. "/species/betta.jpg" — see the schema comment on `imageUri`. */
   image?: string;
@@ -181,6 +185,9 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
         commonMistakes: JSON.stringify(s.common_mistakes ?? []),
         incompatibleWith: JSON.stringify(s.incompatible_with ?? []),
         disputed: s.disputed,
+        careNotesHi: s.care_notes_hi,
+        commonMistakesHi: s.common_mistakes_hi ? JSON.stringify(s.common_mistakes_hi) : undefined,
+        disputedHi: s.disputed_hi,
         origin: "seed",
         uncertaintyNote: s.uncertainty_note,
         dexRarity: s.dex?.rarity,
@@ -230,6 +237,9 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
           commonMistakes: JSON.stringify(s.common_mistakes ?? []),
           incompatibleWith: JSON.stringify(s.incompatible_with ?? []),
           disputed: s.disputed,
+          careNotesHi: s.care_notes_hi,
+          commonMistakesHi: s.common_mistakes_hi ? JSON.stringify(s.common_mistakes_hi) : undefined,
+          disputedHi: s.disputed_hi,
           uncertaintyNote: s.uncertainty_note,
           dexRarity: s.dex?.rarity,
           dexTier: s.dex?.tier,
