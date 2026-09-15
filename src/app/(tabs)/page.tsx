@@ -203,7 +203,7 @@ export default function TanksPage() {
           actions... put Help me build a tank as the first button, and
           after that, Add a tank... remove the Ask Aqua option" — Ask lives
           as its own bottom-nav tab already, so it was redundant here). */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+      <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
         <ActionTile
           icon="🧭"
           label={t.home.plannerCta}
@@ -213,6 +213,28 @@ export default function TanksPage() {
         />
         <ActionTile icon="＋" label={t.home.addTank} caption={t.home.addTankCaption} onClick={() => router.push("/tank/new")} />
       </div>
+
+      {/* Fish Doctor sits right under the two primary action tiles (Jaideep,
+          2026-09-15) — always visible, not pushed below the tank list. */}
+      <div
+        style={{
+          borderRadius: "var(--radius-lg)",
+          border: "1px solid var(--soft-card-border)",
+          background: "var(--soft-card-bg)",
+          padding: "4px 14px",
+          marginBottom: 24,
+        }}
+      >
+        <ListRow
+          icon={<IconBadge icon="🩺" size={32} />}
+          label={t.home.needHelpTitle}
+          meta={t.home.needHelpBody}
+          trailing={t.home.getHelp}
+          showChevron
+          onClick={() => router.push("/emergency")}
+        />
+      </div>
+
 
       {/* Real bug fix, 2026-09-13 (Jaideep: "I signed in... the page is
           stuck and I dont see anything") — a failed load (most often a
@@ -551,31 +573,6 @@ export default function TanksPage() {
             )}
           </div>
         </>
-      )}
-
-      {/* Brief Screen 1: "Emergency" no longer dominates the ordinary home
-          experience — a quiet card, not a loud red full-width link. The
-          urgent treatment stays inside /emergency itself. Rendered once,
-          regardless of whether there are any tanks yet — it used to be
-          duplicated between the empty and populated states. */}
-      {!loading && (
-        <div
-          style={{
-            borderRadius: "var(--radius-lg)",
-            border: "1px solid var(--soft-card-border)",
-            background: "var(--soft-card-bg)",
-            padding: "4px 14px",
-          }}
-        >
-          <ListRow
-            icon={<IconBadge icon="🩺" size={32} />}
-            label={t.home.needHelpTitle}
-            meta={t.home.needHelpBody}
-            trailing={t.home.getHelp}
-            showChevron
-            onClick={() => router.push("/emergency")}
-          />
-        </div>
       )}
 
       {deleteTarget && (
