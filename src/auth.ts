@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -8,6 +8,16 @@ import { users, profile } from "@/server/db/schema";
 import { newId, nowIso } from "@/db/id";
 import { isLockedOut, recordFailedAttempt, clearAttempts } from "@/server/auth/login-rate-limit";
 import { consumeLinkIntent } from "@/server/auth/link-intent";
+
+// Throwing a plain Error from `authorize` surfaces to the client as the
+// generic "Configuration" error. CredentialsSignin subclasses carry a `code`
+// the sign-in screen can map to a real message instead.
+class WrongPin extends CredentialsSignin {
+  code = "wrong_pin";
+}
+class LockedOut extends CredentialsSignin {
+  code = "locked";
+}
 
 /**
  * Real user accounts, added 2026-09-10 — see CLAUDE.md's updated Principle 5
@@ -37,7 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!/^\d{10,15}$/.test(phone) || !/^\d{4}$/.test(pin)) return null;
 
         if (await isLockedOut(phone)) {
-          throw new Error("Too many attempts. Try again in 15 minutes.");
+          throw new LockedOut();
         }
 
         const existing = (await serverDb.select().from(users).where(eq(users.phone, phone)))[0];
@@ -55,7 +65,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = existing.pinHash ? await bcrypt.compare(pin, existing.pinHash) : false;
         if (!valid) {
           await recordFailedAttempt(phone);
-          throw new Error("Incorrect PIN.");
+          throw new WrongPin();
         }
         await clearAttempts(phone);
         return { id: existing.id, name: existing.name, email: existing.email };

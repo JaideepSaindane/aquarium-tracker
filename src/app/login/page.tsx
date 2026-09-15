@@ -163,12 +163,13 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
     const result = await signIn("credentials", { phone: phone.trim(), pin, redirect: false });
     setBusy(false);
     if (result?.error) {
+      // Never show the library's raw error name (e.g. "Configuration").
       setError(
-        result.error === "CredentialsSignin"
-          ? knownPhone
-            ? "Wrong PIN for this number. Try again, or tap \"Forgot PIN?\". Too many wrong tries locks it for 15 minutes."
-            : "Couldn't sign in. Check the number and PIN, or try again in a few minutes."
-          : result.error
+        result.code === "wrong_pin"
+          ? "Incorrect PIN. Please enter the correct PIN."
+          : result.code === "locked"
+            ? "Too many wrong tries. Please try again in 15 minutes, or tap \"Forgot PIN?\"."
+            : "Couldn't sign in. Please check your number and PIN and try again."
       );
       return;
     }
