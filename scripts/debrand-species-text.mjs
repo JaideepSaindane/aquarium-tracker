@@ -13,7 +13,7 @@ const SEED_PATH = path.join(process.cwd(), "data", "species.seed.json");
 const MODEL_NAME = "gemini-3.5-flash-lite";
 const REQUEST_SPACING_MS = 4500;
 const API_KEY = process.env.GEMINI_API_KEY;
-const BRAND_PATTERN = /Seriously Fish|Aquarium Co-Op|AquariumCoOp|Aquarium Coop/i;
+const BRAND_PATTERN = /Seriously Fish|Aquarium Co-Op|AquariumCoOp|Aquarium Coop|Practical Fishkeeping|Fishlore|PetSmart|Petco|Tropical Fish Hobbyist|Live ?Aquaria|Bettafish\.com|The Spruce Pets|Fishkeeping World|Aquarium Source/i;
 
 if (!API_KEY) {
   console.error("GEMINI_API_KEY not set — run with: node --env-file=.env.local scripts/debrand-species-text.mjs");

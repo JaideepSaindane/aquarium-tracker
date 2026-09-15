@@ -2334,7 +2334,7 @@
       "max": 8
     },
     "breeding": "bubble-nester",
-    "care_notes": "The most peaceful of the large gouramis and far more robust than dwarf gouramis, reaching 12 cm. They are labyrinth breathers and need access to a warm, humid air layer at the surface, so keep the lid on and the water gap small. Males display to each other but rarely do damage if there is space and cover; Practical Fishkeeping suggests two males to four females in a 120 cm tank. They are timid rather than aggressive and get bullied by boisterous tank mates - avoid tiger barbs and other nippers.",
+    "care_notes": "The most peaceful of the large gouramis and far more robust than dwarf gouramis, reaching 12 cm. They are labyrinth breathers and need access to a warm, humid air layer at the surface, so keep the lid on and the water gap small. Males display to each other but rarely do damage if there is space and cover; a ratio of two males to four females in a 120 cm tank is commonly recommended. They are timid rather than aggressive and get bullied by boisterous tank mates - avoid tiger barbs and other nippers.",
     "common_mistakes": [
       "Buying them for a 60 L community tank - they reach 12 cm",
       "Keeping the tank in a cold room with a draughty open top, chilling the labyrinth organ",
@@ -2422,7 +2422,7 @@
         "stored_height": 1536
       }
     ],
-    "care_notes_hi": "Large gouramis me sabse peaceful aur dwarf gouramis se kafi zyada hardy hote hain, yeh 12 cm tak grow karte hain. Yeh labyrinth breathers hain aur inko surface par warm, humid air layer ki zaroorat hoti hai, toh tank par lid zaroor rakhein aur water level aur lid ke beech gap kam rakhein. Males aapas me display karte hain par agar space aur hiding spots hon toh rarely koi nuksaan nahi hota; Practical Fishkeeping suggest karta hai ki 120 cm tank me 2 males aur 4 females rakhein. Yeh aggressive hone ke bajaye timid hote hain aur energetic tank mates inko bully kar sakte hain - tiger barbs aur fin-nippers ke sath bilkul mat rakhein.",
+    "care_notes_hi": "Large gouramis me sabse peaceful aur dwarf gouramis se kafi zyada hardy hote hain, yeh 12 cm tak grow karte hain. Yeh labyrinth breathers hain aur inko surface par warm, humid air layer ki zaroorat hoti hai, toh tank par lid zaroor rakhein aur water level aur lid ke beech gap kam rakhein. Males aapas me display karte hain par agar space aur hiding spots hon toh rarely koi nuksaan nahi hota; 120 cm tank me 2 males aur 4 females rakhna commonly suggest kiya jata hai. Yeh aggressive hone ke bajaye timid hote hain aur energetic tank mates inko bully kar sakte hain - tiger barbs aur fin-nippers ke sath bilkul mat rakhein.",
     "common_mistakes_hi": [
       "Inko 60 L community tank me buy karna - yeh 12 cm tak grow hote hain",
       "Tank ko cold room me draughty open top ke sath rakhna, jisse labyrinth organ chill ho jata hai",
@@ -4241,7 +4241,7 @@
       "max": 3
     },
     "breeding": "difficult-in-aquarium",
-    "care_notes": "The best algae-eating snail for a freshwater tank: they graze the algal film rather than plants, and will not eat healthy plants. They need hard, alkaline water with real calcium - in soft or acidic water the shell erodes and pits, which is irreversible. Practical Fishkeeping's rule of roughly one snail per 20 L keeps them fed; overstock them and they starve in a tank that looks clean to you. They lay hard white egg capsules on glass, wood and equipment that will not hatch in freshwater but are stubborn to remove. They climb out of open tanks and die on the floor.",
+    "care_notes": "The best algae-eating snail for a freshwater tank: they graze the algal film rather than plants, and will not eat healthy plants. They need hard, alkaline water with real calcium - in soft or acidic water the shell erodes and pits, which is irreversible. A rule of roughly one snail per 20 L keeps them fed; overstock them and they starve in a tank that looks clean to you. They lay hard white egg capsules on glass, wood and equipment that will not hatch in freshwater but are stubborn to remove. They climb out of open tanks and die on the floor.",
     "common_mistakes": [
       "Soft or acidic water, which erodes and eventually breaches the shell",
       "Buying six or more for a small clean tank, so they slowly starve",
@@ -4331,7 +4331,7 @@
       }
     ],
     "image": "/species/nerite-snail.jpg",
-    "care_notes_hi": "Freshwater tank ke liye sabse best algae-eating snail: ye plants ko khane ke bajay sirf algal film graze karte hain aur healthy plants ko nuksan nahi pahunchate. Inhe hard aur alkaline water chahiye jisme proper calcium ho - soft ya acidic water mein inka shell erode aur pit hone lagta hai jo wapas theek nahi ho sakta. Practical Fishkeeping ka rule hai ki lagbhag 20 L pani par ek snail rakho taaki inko sufficient khana mile; agar zaroorat se zyada daal diye toh wo aise tank mein bhi bhooke mar jayenge jo aapko saaf lag raha ho. Ye glass, wood aur equipment par hard white egg capsules dete hain jo freshwater mein hatch nahi hote aur inko hatana bhi kaafi mushkil hota hai. Ye open tanks se bahar nikal kar floor par mar bhi sakte hain.",
+    "care_notes_hi": "Freshwater tank ke liye sabse best algae-eating snail: ye plants ko khane ke bajay sirf algal film graze karte hain aur healthy plants ko nuksan nahi pahunchate. Inhe hard aur alkaline water chahiye jisme proper calcium ho - soft ya acidic water mein inka shell erode aur pit hone lagta hai jo wapas theek nahi ho sakta. Ek rule ke mutabiq lagbhag 20 L pani par ek snail rakho taaki inko sufficient khana mile; agar zaroorat se zyada daal diye toh wo aise tank mein bhi bhooke mar jayenge jo aapko saaf lag raha ho. Ye glass, wood aur equipment par hard white egg capsules dete hain jo freshwater mein hatch nahi hote aur inko hatana bhi kaafi mushkil hota hai. Ye open tanks se bahar nikal kar floor par mar bhi sakte hain.",
     "common_mistakes_hi": [
       "Soft ya acidic water use karna, jisse shell erode hokar kharab ho jata hai",
       "Chote aur saaf tank mein 6 ya usse zyada snails kharid lena, jisse wo dheere-dheere bhooke mar jate hain",
