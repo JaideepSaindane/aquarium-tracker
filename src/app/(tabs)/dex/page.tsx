@@ -185,7 +185,7 @@ export default function DexPage() {
   const router = useRouter();
   const t = useTranslation();
   const { units } = useUnitsContext();
-  const { data } = useLiveQuery(loadDex, []);
+  const { data, loading } = useLiveQuery(loadDex, []);
   const [savedOnly, setSavedOnly] = useState(false);
   const [category, setCategory] = useState("all");
   const [difficulty, setDifficulty] = useState("all");
@@ -815,7 +815,17 @@ export default function DexPage() {
           );
         })}
 
-        {filtered.length === 0 && (
+        {/* Before this, "No species match" flashed on every fresh open of
+            this page — `data` starts undefined, so `filtered` was an empty
+            array for one render before the real 1,484-species catalog (plus
+            server-fetched cards/tanks/livestock) finished loading, even
+            with zero filters applied. Now gated on `loading` too, so the
+            empty-state message only ever shows once there's actually
+            nothing to show. */}
+        {loading && !data && (
+          <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", marginTop: 32 }}>{t.common.loading}</p>
+        )}
+        {!loading && filtered.length === 0 && (
           <p style={{ color: "var(--soft-ink-muted)", textAlign: "center", marginTop: 32 }}>
             {savedOnly ? t.dexPage.noUnlockedMatch : t.dexPage.noSpeciesMatch}
           </p>
