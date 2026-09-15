@@ -374,3 +374,25 @@ export const feedback = pgTable("feedback", {
   body: text("body").notNull(),
   createdAt: text("created_at").notNull(),
 });
+
+// Lightweight product-analytics instrumentation (2026-09-15, Jaideep: "a
+// day-by-day time-bracketed view of... what pages they visited... how many
+// users installed the app"), added for the admin dashboard's per-account
+// drill-down (T-030's follow-up). Deliberately minimal — no session/device
+// fingerprinting, just "this signed-in account viewed this path at this
+// time," scoped by userId same as every other table.
+export const pageViews = pgTable("page_views", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  path: text("path").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+// One row per real browser `appinstalled` event (src/app/InstallPromptListener.tsx)
+// — not a guess from `display-mode: standalone` (that fires on every launch of
+// an already-installed app, not just the install itself).
+export const appInstalls = pgTable("app_installs", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  createdAt: text("created_at").notNull(),
+});

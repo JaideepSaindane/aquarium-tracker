@@ -1,12 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 
+type DayCount = { day: string; n: number };
+
 type Stats = {
   accounts: { total: number; phoneOnly: number; googleOnly: number; both: number };
-  signupsPerDay: { day: string; n: number }[];
+  signupsPerDay: DayCount[];
+  installsPerDay: DayCount[];
+  tanksPerDay: DayCount[];
+  pageViewsPerDay: DayCount[];
+  aiCallsPerDay: DayCount[];
+  totalInstalls: number;
+  totalPageViews: number;
   tanks: number;
   aliveLivestock: number;
   scans: number;
@@ -25,9 +34,13 @@ type Stats = {
  * separate URL, not linked from the app's own nav ("this can live outside
  * of the app") — gated to admin emails only (src/server/auth/require-admin.ts;
  * no real admin-role system exists yet, this is the minimal version).
- * Aggregate counts only — deliberately never shows an individual user's
- * own tank/fish/journal/chat content, per CLAUDE.md's "their data is
- * theirs" and T-030's own "reporting surface, not a support tool" scope.
+ *
+ * This summary page stays aggregate-only, as originally scoped. 2026-09-15:
+ * Jaideep explicitly asked for an account-wise drill-down too, including
+ * reading individual users' Ask AquaAI chat history — a deliberate reversal
+ * of this page's original "never shows individual content" rule, made at
+ * his direct request (see CLAUDE.md's Principle 4 note). That per-account
+ * view lives at /admin/accounts, a separate surface from this one.
  */
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -61,11 +74,14 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const maxSignups = Math.max(1, ...stats.signupsPerDay.map((d) => d.n));
-
   return (
     <Screen>
-      <h1 style={{ fontSize: "var(--font-title-size)", marginBottom: 16 }}>Usage Dashboard</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h1 style={{ fontSize: "var(--font-title-size)" }}>Usage Dashboard</h1>
+        <Link href="/admin/accounts" style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-deep)" }}>
+          Accounts →
+        </Link>
+      </div>
 
       <StatGrid
         items={[
@@ -76,24 +92,18 @@ export default function AdminDashboardPage() {
         ]}
       />
 
-      <Card style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 12 }}>Signups — last 14 days</h2>
-        {stats.signupsPerDay.length === 0 ? (
-          <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>No signups in this window.</p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {stats.signupsPerDay.map((d) => (
-              <div key={d.day} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 90, fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)" }}>{d.day}</span>
-                <div style={{ flex: 1, background: "var(--color-surface-alt)", borderRadius: 4, overflow: "hidden" }}>
-                  <div style={{ width: `${(d.n / maxSignups) * 100}%`, background: "var(--color-deep)", height: 14, minWidth: 4 }} />
-                </div>
-                <span style={{ width: 24, textAlign: "right", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>{d.n}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
+      <StatGrid
+        items={[
+          { label: "Total installs", value: stats.totalInstalls },
+          { label: "Total page views", value: stats.totalPageViews },
+        ]}
+      />
+
+      <DayChart title="Signups — last 14 days" data={stats.signupsPerDay} />
+      <DayChart title="App installs — last 14 days" data={stats.installsPerDay} />
+      <DayChart title="Tanks created — last 14 days" data={stats.tanksPerDay} />
+      <DayChart title="Page views — last 14 days" data={stats.pageViewsPerDay} />
+      <DayChart title="AI calls — last 14 days" data={stats.aiCallsPerDay} />
 
       <StatGrid
         items={[
@@ -135,6 +145,30 @@ export default function AdminDashboardPage() {
         />
       </Card>
     </Screen>
+  );
+}
+
+function DayChart({ title, data }: { title: string; data: DayCount[] }) {
+  const max = Math.max(1, ...data.map((d) => d.n));
+  return (
+    <Card style={{ marginBottom: 16 }}>
+      <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 12 }}>{title}</h2>
+      {data.length === 0 ? (
+        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>Nothing in this window.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {data.map((d) => (
+            <div key={d.day} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 90, fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)" }}>{d.day}</span>
+              <div style={{ flex: 1, background: "var(--color-surface-alt)", borderRadius: 4, overflow: "hidden" }}>
+                <div style={{ width: `${(d.n / max) * 100}%`, background: "var(--color-deep)", height: 14, minWidth: 4 }} />
+              </div>
+              <span style={{ width: 24, textAlign: "right", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>{d.n}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
   );
 }
 

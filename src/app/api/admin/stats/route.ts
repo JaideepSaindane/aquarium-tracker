@@ -12,6 +12,8 @@ import {
   communityComments,
   communityLikes,
   communityReports,
+  pageViews,
+  appInstalls,
 } from "@/server/db/schema";
 import { requireAdminUserId } from "@/server/auth/require-admin";
 
@@ -20,6 +22,20 @@ async function count(table: any, whereClause?: any): Promise<number> {
   const query = serverDb.select({ n: sql<number>`count(*)`.mapWith(Number) }).from(table);
   const rows = whereClause ? await query.where(whereClause) : await query;
   return rows[0]?.n ?? 0;
+}
+
+// Day-by-day counts for the last N days, for a table whose createdAt is a
+// plain `text` ISO column (every table except `users`, which has a real
+// `timestamp` column and casts for free) — 2026-09-15, Jaideep's "day-by-day
+// time-bracketed view" ask.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- same generic-table tradeoff as count() above.
+async function perDayFromTextColumn(table: any, createdAtCol: any, days: number): Promise<{ day: string; n: number }[]> {
+  return serverDb
+    .select({ day: sql<string>`to_char(${createdAtCol}::timestamp, 'YYYY-MM-DD')`, n: sql<number>`count(*)`.mapWith(Number) })
+    .from(table)
+    .where(sql`${createdAtCol}::timestamp > now() - interval '${sql.raw(String(days))} days'`)
+    .groupBy(sql`to_char(${createdAtCol}::timestamp, 'YYYY-MM-DD')`)
+    .orderBy(sql`to_char(${createdAtCol}::timestamp, 'YYYY-MM-DD')`);
 }
 
 /**
@@ -90,9 +106,28 @@ export async function GET() {
     .from(aiInteractions)
     .groupBy(aiInteractions.rating);
 
+  // Day-by-day, last 14 days — installs, tanks created, page views, AI
+  // calls, alongside the signups series above. This is the full
+  // "time-bracketed view" for the summary dashboard.
+  const [installsPerDay, tanksPerDay, pageViewsPerDay, aiCallsPerDay] = await Promise.all([
+    perDayFromTextColumn(appInstalls, appInstalls.createdAt, 14),
+    perDayFromTextColumn(tanks, tanks.createdAt, 14),
+    perDayFromTextColumn(pageViews, pageViews.createdAt, 14),
+    perDayFromTextColumn(aiInteractions, aiInteractions.createdAt, 14),
+  ]);
+
+  const totalInstalls = await count(appInstalls);
+  const totalPageViews = await count(pageViews);
+
   return NextResponse.json({
     accounts: { total: totalUsers, phoneOnly: phoneUsers, googleOnly: googleUsers, both: bothUsers },
     signupsPerDay: signupRows,
+    installsPerDay,
+    tanksPerDay,
+    pageViewsPerDay,
+    aiCallsPerDay,
+    totalInstalls,
+    totalPageViews,
     tanks: totalTanks,
     aliveLivestock,
     scans: totalScans,

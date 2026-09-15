@@ -22,6 +22,9 @@ export function InstallPromptListener() {
     }
     function onAppInstalled() {
       markInstalled();
+      // Beacon for the admin dashboard's real install counts (2026-09-15)
+      // — fire-and-forget, never blocks the install itself on this.
+      fetch("/api/track/install", { method: "POST" }).catch(() => {});
     }
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
     window.addEventListener("appinstalled", onAppInstalled);

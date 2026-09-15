@@ -8,6 +8,7 @@ import { DbBootProvider } from "@/db/DbBootProvider";
 import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 import { InstallPromptListener } from "./InstallPromptListener";
+import { PageViewTracker } from "./PageViewTracker";
 import { UpdateBanner } from "@/components/UpdateBanner";
 import { InstalledBanner } from "@/components/InstalledBanner";
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </AuthSessionProvider>
         <ServiceWorkerRegister />
         <InstallPromptListener />
+        <PageViewTracker />
         <UpdateBanner />
         <InstalledBanner />
       </body>
