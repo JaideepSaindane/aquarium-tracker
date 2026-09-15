@@ -9,6 +9,7 @@ import { AuthSessionProvider } from "./AuthSessionProvider";
 import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 import { InstallPromptListener } from "./InstallPromptListener";
 import { PageViewTracker } from "./PageViewTracker";
+import { KeyboardAware } from "./KeyboardAware";
 import { UpdateBanner } from "@/components/UpdateBanner";
 import { InstalledBanner } from "@/components/InstalledBanner";
 
@@ -26,6 +27,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Android Chrome resizes the page when the keyboard opens, so bottom-pinned
+  // inputs move above it (iOS handled by <KeyboardAware>).
+  interactiveWidget: "resizes-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f6f7f5" },
     { media: "(prefers-color-scheme: dark)", color: "#0b1112" },
@@ -48,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ServiceWorkerRegister />
         <InstallPromptListener />
         <PageViewTracker />
+        <KeyboardAware />
         <UpdateBanner />
         <InstalledBanner />
       </body>

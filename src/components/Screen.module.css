@@ -57,3 +57,12 @@
 .stickyFooterAboveDock {
   bottom: var(--dock-clearance);
 }
+
+/* While typing: sit directly on top of the keyboard (iOS publishes its height
+   as --keyboard-inset; Android already resized the page so it's 0), and drop
+   the dock clearance since the dock hides while typing. */
+:global(html[data-typing]) .stickyFooter,
+:global(html[data-typing]) .stickyFooterAboveDock {
+  bottom: var(--keyboard-inset, 0px);
+  padding-bottom: 12px;
+}

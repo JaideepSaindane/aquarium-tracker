@@ -78,3 +78,9 @@
 .tabActive .iconCenter {
   background: var(--color-deep);
 }
+
+/* Hidden while a text field has focus (see src/app/KeyboardAware.tsx) — the
+   keyboard needs the space and the dock would otherwise float over inputs. */
+:global(html[data-typing]) .bar {
+  display: none;
+}

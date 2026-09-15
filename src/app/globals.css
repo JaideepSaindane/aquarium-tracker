@@ -90,3 +90,12 @@ a {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
+/* Full-screen modal overlays (feedback, install sheets, etc.) shrink to the
+   area above the on-screen keyboard so a text box inside them stays visible.
+   --keyboard-inset is set by src/app/KeyboardAware.tsx (0 when no keyboard). */
+[role="dialog"][aria-modal="true"] {
+  bottom: var(--keyboard-inset, 0px) !important;
+  top: 0;
+  overflow-y: auto;
+}
