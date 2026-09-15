@@ -38,7 +38,14 @@ async function seedIfEmpty() {
   const existing = await countSpecies();
   const storedVersion = await getSpeciesSeedVersion();
   if (existing === 0 || storedVersion !== SPECIES_SEED_VERSION) {
-    const res = await fetch("/api/species-seed");
+    // Cache-busted by version, not just relying on the Cache-Control max-age
+    // window — /api/species-seed is cached `private, max-age=86400` (a
+    // deliberate fix for an unrelated auth-bypass risk), so a browser that
+    // already fetched this exact URL today would keep serving the stale
+    // response for up to a day even after a real content change (like the
+    // 2026-09-15 Hinglish translation batch) bumped SPECIES_SEED_VERSION.
+    // Appending the version makes each bump a genuinely new URL.
+    const res = await fetch(`/api/species-seed?v=${SPECIES_SEED_VERSION}`);
     const seedData = await res.json();
     await seedSpecies(seedData);
     await retireSeedSpecies(RETIRED_SPECIES_IDS);
