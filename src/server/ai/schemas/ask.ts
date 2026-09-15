@@ -18,13 +18,18 @@ import { str, strArr } from "./json-schema-helpers";
 // specs/PROGRESS.md's 2026-09-11 entry for the full decision record —
 // this is a deliberate reversal of CLAUDE.md's prior "no improvisation on
 // safety-critical questions" rule, not an oversight.
-export const PROMPT_VERSION = "ask/v4";
+// v5, 2026-09-15: answers were long AI-report paragraphs. Now a 1-2 sentence
+// "answer", 2-4 short labelled "steps", and an optional one-line "note" —
+// see prompts/ask.v5.md's writing rules.
+export const PROMPT_VERSION = "ask/v5";
 
 const grounding = z.array(z.string()).default([]);
 
 export const AskZod = z.object({
   prompt_version: z.string(),
   answer: z.string(),
+  steps: z.array(z.object({ label: z.string(), text: z.string() })).default([]),
+  note: z.string().default(""),
   detail: z.string().default(""),
   confidence: z.string(),
   based_on_your_tank: z.array(z.string()).default([]),
@@ -51,6 +56,11 @@ export const AskJsonSchema = {
   properties: {
     prompt_version: str,
     answer: str,
+    steps: {
+      type: "array",
+      items: { type: "object", properties: { label: str, text: str }, required: ["label", "text"] },
+    },
+    note: str,
     detail: str,
     confidence: str,
     based_on_your_tank: strArr,

@@ -124,8 +124,7 @@ const hiLatn: Dictionary = {
     resultTitle: "Kya karein",
     intro: "Hamesha free. Kuch jaldi se taps ka jawab dijiye aur hum aapko sahi pehla step batayenge.",
     doThisFirst: "SABSE PEHLE YE KAREIN",
-    medicalDisclaimer:
-      "Ye medication ya treatment ke baare mein AI-generated jawab hai — isko kisi vet ya aquaculture professional ne review nahi kiya hai. Try karne se pehle vet se confirm kar lijiye.",
+    medicalDisclaimer: "Ye general guidance hai, diagnosis ya vet-reviewed nahi. Agar haalat bigde ya theek na ho, aquatic vet ko dikhayein.",
     doNot: "Abhi ye na karein",
     immediateActions: "Abhi ye karein",
     whatThisMightBe: "Ho sakta hai ye ho",
@@ -227,9 +226,8 @@ const hiLatn: Dictionary = {
     corpusUnavailable: "Is version mein corpus browsing abhi available nahi hai.",
     couldNotRender: "Ye jawab render nahi ho saka.",
     basedOnYourTank: "Aapke tank ke hisaab se",
-    medicalDisclaimer:
-      "Ye medication ya treatment ke baare mein AI-generated jawab hai — isko kisi vet ya aquaculture professional ne review nahi kiya hai. Try karne se pehle vet se confirm kar lijiye.",
-    ungroundedNotice: "Ye ek LLM-generated response hai, hamara khud ka verified data nahi.",
+    medicalDisclaimer: "Ye general guidance hai, diagnosis ya vet-reviewed nahi. Agar haalat bigde ya theek na ho, aquatic vet ko dikhayein.",
+    ungroundedNotice: "Ye general knowledge hai, hamare verified data se nahi.",
     tellMeMore: "Aur bataiye",
     thanksForFeedback: "Feedback ke liye dhanyawad.",
     correctionPlaceholder: "Kya galat tha? (optional)",

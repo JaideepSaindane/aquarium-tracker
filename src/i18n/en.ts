@@ -120,8 +120,7 @@ const en = {
     resultTitle: "What to do",
     intro: "Free, always. Answer a few quick taps and we'll get you to the right first action.",
     doThisFirst: "DO THIS FIRST",
-    medicalDisclaimer:
-      "This is an AI-generated answer about medication or treatment — it has not been reviewed by a vet or aquaculture professional. Please confirm with a vet before trying it.",
+    medicalDisclaimer: "General guidance, not a diagnosis or vet-reviewed. If symptoms worsen or persist, see an aquatic vet.",
     doNot: "Avoid for now",
     immediateActions: "Do this now",
     whatThisMightBe: "Likely explanation",
@@ -223,9 +222,8 @@ const en = {
     corpusUnavailable: "Corpus browsing isn't available yet in this version.",
     couldNotRender: "Couldn't render this answer.",
     basedOnYourTank: "Based on your tank",
-    medicalDisclaimer:
-      "This is an AI-generated answer about medication or treatment — it has not been reviewed by a vet or aquaculture professional. Please confirm with a vet before trying it.",
-    ungroundedNotice: "This is an LLM-generated response, not our own verified data.",
+    medicalDisclaimer: "General guidance, not a diagnosis or vet-reviewed. If symptoms worsen or persist, see an aquatic vet.",
+    ungroundedNotice: "General knowledge, not from our verified data.",
     tellMeMore: "Tell me more",
     thanksForFeedback: "Thanks for the feedback.",
     correctionPlaceholder: "What was wrong? (optional)",

@@ -540,7 +540,21 @@ export function Turn({
             <p style={{ color: "var(--color-ink-muted)" }}>{t.askPage.couldNotRender}</p>
           ) : (
             <>
-              <p style={{ fontWeight: 600, marginBottom: 10 }}>{answer.answer}</p>
+              <p style={{ marginBottom: answer.steps.length || answer.note ? 10 : 12, lineHeight: 1.5 }}>{answer.answer}</p>
+
+              {answer.steps.length > 0 && (
+                <ol style={{ margin: "0 0 10px", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {answer.steps.map((step, i) => (
+                    <li key={i} style={{ lineHeight: 1.45 }}>
+                      <strong>{step.label}:</strong> {step.text}
+                    </li>
+                  ))}
+                </ol>
+              )}
+
+              {answer.note && (
+                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>{answer.note}</p>
+              )}
 
               {answer.based_on_your_tank.length > 0 && (
                 <div style={{ marginBottom: 10 }}>
@@ -561,9 +575,7 @@ export function Turn({
 
               {answer.medical_disclaimer && (
                 <div style={{ marginBottom: 8 }}>
-                  <Banner severity="fixNow">
-                    {t.askPage.medicalDisclaimer}
-                  </Banner>
+                  <Banner severity="watch">{t.askPage.medicalDisclaimer}</Banner>
                 </div>
               )}
 
