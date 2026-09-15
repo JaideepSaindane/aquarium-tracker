@@ -20,11 +20,18 @@ export function notifyChanged() {
 // tabs/apps, locking the phone) and coming back without a real navigation
 // left stale data on screen — including changes made from another device,
 // the whole point of the server-backed accounts (CLAUDE.md Principle 5).
+// Only `visibilitychange` (focus + visibility both fired, doubling every
+// refetch), and at most once per 30s — each refetch is a server round trip
+// per live query on screen, so rapid app-switching used to fire dozens.
+const FOREGROUND_REFETCH_MIN_MS = 30_000;
+let lastForegroundRefetch = Date.now();
 if (typeof document !== "undefined") {
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") notifyChanged();
+    if (document.visibilityState !== "visible") return;
+    if (Date.now() - lastForegroundRefetch < FOREGROUND_REFETCH_MIN_MS) return;
+    lastForegroundRefetch = Date.now();
+    notifyChanged();
   });
-  window.addEventListener("focus", () => notifyChanged());
 }
 
 /**

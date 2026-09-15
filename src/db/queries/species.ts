@@ -3,6 +3,7 @@ import { db } from "../client";
 import { species } from "../schema";
 import { nowIso } from "../id";
 import { notifyChanged } from "../live";
+import { runQuery } from "../sqlite-client";
 
 export async function listSpecies() {
   return db.select().from(species);
@@ -152,7 +153,22 @@ export type SeedSpecies = {
  */
 export async function seedSpecies(seedData: SeedSpecies[]) {
   const now = nowIso();
-  for (const s of seedData) {
+  // One transaction, all statements queued at once — previously ~1,486
+  // individually-awaited inserts, each its own OPFS commit, blocking the
+  // boot "Loading..." screen for many seconds on a phone.
+  await runQuery("BEGIN", []);
+  try {
+    await Promise.all(seedData.map((s) => upsertSeedRow(s, now)));
+    await runQuery("COMMIT", []);
+  } catch (err) {
+    await runQuery("ROLLBACK", []);
+    throw err;
+  }
+  notifyChanged();
+}
+
+async function upsertSeedRow(s: SeedSpecies, now: string) {
+  {
     await db
       .insert(species)
       .values({
@@ -249,7 +265,6 @@ export async function seedSpecies(seedData: SeedSpecies[]) {
         where: sql`${species.origin} = 'seed'`,
       });
   }
-  notifyChanged();
 }
 
 /**

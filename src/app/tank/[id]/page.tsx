@@ -65,19 +65,17 @@ const WATER_PARAM_ORDER = ["pH", "Ammonia", "Nitrite", "Nitrate"];
 async function loadWaterData(tankId: string): Promise<WaterRow[]> {
   const defs = await getEffectiveParameterDefs(tankId);
   const byName = new Map(defs.map((d) => [d.name, d]));
-  const rows: WaterRow[] = [];
-  for (const name of WATER_PARAM_ORDER) {
-    const def = byName.get(name);
-    if (!def) continue;
-    const last = await getLastMeasurement(tankId, def.id);
-    const value = last?.value ?? null;
+  const defsInOrder = WATER_PARAM_ORDER.map((name) => byName.get(name)).filter((d): d is NonNullable<typeof d> => !!d);
+  // Parallel, not one-after-another — each is a server round trip.
+  const lasts = await Promise.all(defsInOrder.map((def) => getLastMeasurement(tankId, def.id)));
+  return defsInOrder.map((def, i) => {
+    const value = lasts[i]?.value ?? null;
     const inRange =
       value == null
         ? null
         : (def.targetMin == null || value >= def.targetMin) && (def.targetMax == null || value <= def.targetMax);
-    rows.push({ name, unit: def.unit, value, decimals: def.decimals ?? 1, inRange });
-  }
-  return rows;
+    return { name: def.name, unit: def.unit, value, decimals: def.decimals ?? 1, inRange };
+  });
 }
 
 export default function TankOverviewPage({ params }: { params: Promise<{ id: string }> }) {
