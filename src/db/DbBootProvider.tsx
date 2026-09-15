@@ -163,7 +163,7 @@ export function DbBootProvider({ children }: { children: ReactNode }) {
           }}
         >
           {hasEverPersisted() ? (
-            <>Catching up on the species list — this can happen if AquaAI is open in another tab. Everything of yours is safely stored on your account either way.</>
+            <>Refresh this page to get the latest update.</>
           ) : (
             <>This browser doesn&apos;t support the local species cache — nothing of yours is affected, it just loads fresh from the server each visit.</>
           )}
