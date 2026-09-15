@@ -128728,7 +128728,12 @@
       "Leaving the tank uncovered — killifish are notorious jumpers",
       "Keeping multiple males together, causing constant fighting"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek chhota, colorful killifish hai, jise aksar ek male aur kuch females ke sath chhote, ghane planted tank mein rakha jata hai; yeh bahut achha jumper hai isliye tight lid ki zaroorat hoti hai, aur yeh zyadatar live ya frozen food khata hai.",
+    "common_mistakes_hi": [
+      "Tank ko bina cover ke chhod dena — killifish jump karne ke liye badnaam hain",
+      "Ek sath kai males ko rakhna, jisse lagataar ladai hoti hai"
+    ]
   },
   {
     "scientific_name": "Aphanius mento",
@@ -128802,7 +128807,11 @@
     "common_mistakes": [
       "Keeping multiple males in a small tank, causing fighting"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy killifish relative hai jo hard water aur halka sa brackish/saline pani bhi araam se seh leta hai; males aapas mein territorial ho sakte hain.",
+    "common_mistakes_hi": [
+      "Chote tank mein multiple males ko ek saath rakhna, jisse unke beech ladai hoti hai"
+    ]
   },
   {
     "scientific_name": "Aphanius fasciatus",
@@ -128910,7 +128919,11 @@
     "common_mistakes": [
       "Keeping multiple males in a small tank, causing fighting"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy killifish relative hai jo hard water aur thoda brackish ya saline water bhi easily tolerate kar leta hai; males aapas me territorial ho sakte hain.",
+    "common_mistakes_hi": [
+      "Chote tank me multiple males rakhna, jisse aapas me fight hoti hai"
+    ]
   },
   {
     "scientific_name": "Epiplatys chaperi",
@@ -129010,7 +129023,12 @@
       "Leaving the tank uncovered — killifish are notorious jumpers",
       "Keeping multiple males together, causing constant fighting"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek chhota sa colorful killifish hai, jise aksar ek male aur kuch females ke sath chhote, ghane planted tank mein rakhte hain. Yeh bahut achha jumper hai isliye tight lid zaroori hai, aur yeh mainly live ya frozen food khata hai.",
+    "common_mistakes_hi": [
+      "Tank ko bina cover ke chhod dena — killifish jump karne ke liye badnaam hain.",
+      "Multiple males ko ek sath rakhna, jisse lagataar fight hoti rehti hai."
+    ]
   },
   {
     "scientific_name": "Epiplatys lamottei",
@@ -129110,7 +129128,12 @@
       "Leaving the tank uncovered — killifish are notorious jumpers",
       "Keeping multiple males together, causing constant fighting"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek chhota, colourful killifish jo usually ek male aur kuch females ke sath ek chhote, ghane planted tank mein rakha jata hai; yeh bahut achha jump karta hai isliye tight lid ki zaroorat hai, aur mainly live ya frozen food khata hai.",
+    "common_mistakes_hi": [
+      "Tank ko bina cover ke rakhna — killifish jumpers ke roop mein jaane jaate hain",
+      "Multiple males ko ek sath rakhna, jisse lagataar fight hoti hai"
+    ]
   },
   {
     "scientific_name": "Poropanchax luxophthalmus",
@@ -129187,7 +129210,12 @@
       "Keeping a 1:1 or male-heavy ratio, leading to females being harassed",
       "Being surprised by rapid, ongoing overpopulation"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hardy livebearer fish hai jo mature hone ke baad easily aur continuously breed karti hai; females ko males se jyada number mein rakhein taaki harassment kam ho, aur agar dono sexes tank mein hain toh regular fry milne ki ummeed rakhein.",
+    "common_mistakes_hi": [
+      "1:1 ya male-heavy ratio rakhna, jisse females ko pareshan kiya jata hai",
+      "Rapid aur ongoing overpopulation se surprise ho jana"
+    ]
   },
   {
     "scientific_name": "Procatopus similis",
@@ -129287,7 +129315,12 @@
       "Keeping a 1:1 or male-heavy ratio, leading to females being harassed",
       "Being surprised by rapid, ongoing overpopulation"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy livebearer hai jo mature hone ke baad easily aur continuously breed karta hai; females ko males se zyada rakho taaki harassment kam ho, aur agar dono sexes hain toh regular fry ke broods ki ummeed rakho.",
+    "common_mistakes_hi": [
+      "1:1 ya male-heavy ratio rakhna, jisse females pareshan hoti hain",
+      "Rapid aur ongoing overpopulation se surprise ho jaana"
+    ]
   },
   {
     "scientific_name": "Xiphophorus alvarezi",
@@ -129871,7 +129904,12 @@
       "Keeping a 1:1 or male-heavy ratio, leading to females being harassed",
       "Being surprised by rapid, ongoing overpopulation"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy livebearer hai jo mature hone ke baad easily aur continuously breed karta hai; males ke harassment ko kam karne ke liye females ko males se zyada quantity mein rakho, aur agar dono sexes hain toh regular fry ke broods ki ummeed rakho.",
+    "common_mistakes_hi": [
+      "1:1 ya male-heavy ratio rakhna, jisse females ko pareshan kiya jata hai",
+      "Tezi se aur lagataar badhte overpopulation se surprise ho jana"
+    ]
   },
   {
     "scientific_name": "Limia vittata",
@@ -129969,7 +130007,12 @@
       "Keeping a 1:1 or male-heavy ratio, leading to females being harassed",
       "Being surprised by rapid, ongoing overpopulation"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy livebearer fish hai jo mature hone ke baad easily aur continuously breed karti hai. Harassment kam karne ke liye females ki quantity males se zyada rakho, aur agar dono sexes tank mein hain toh regular fry ke broods ki ummeed rakho.",
+    "common_mistakes_hi": [
+      "1:1 ya male-heavy ratio rakhna, jisse females par zyada stress aur harassment hota hai.",
+      "Rapid aur ongoing overpopulation se surprise ho jana."
+    ]
   },
   {
     "scientific_name": "Goodea atripinnis",
@@ -130076,7 +130119,11 @@
     "common_mistakes": [
       "Keeping at typical tropical temperatures when a cooler setup suits it better"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek cooler-water livebearer hai jisko zyada tropical heat ki zaroorat nahi padti, aur standard community tank ke muqable thoda cooler paani mein zyada acchi tarah thrive karta hai; baaki livebearers ki tarah ye bhi easily breed kar jaata hai.",
+    "common_mistakes_hi": [
+      "Isse normal tropical temperatures par rakhna jabki iske liye ek cooler setup zyada behtar rehta hai"
+    ]
   },
   {
     "scientific_name": "Skiffia multipunctata",
@@ -130183,7 +130230,11 @@
     "common_mistakes": [
       "Keeping at typical tropical temperatures when a cooler setup suits it better"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek cooler-water livebearer hai jisko zyada tropical heat ki zaroorat nahi padti aur standard community tank ke mukable thoda thoda cooler temperature mein zyada accha perform karta hai; baki livebearers ki tarah ye bhi aasaani se breed karta hai.",
+    "common_mistakes_hi": [
+      "Isse normal tropical temperatures par rakhna jabki ek cooler setup iske liye zyada behtar hota hai"
+    ]
   },
   {
     "scientific_name": "Zoogoneticus tequila",
@@ -130291,7 +130342,11 @@
     "common_mistakes": [
       "Keeping at typical tropical temperatures when a cooler setup suits it better"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek cooler-water livebearer hai jisko zyaada tropical heat ki zaroorat nahi padti, aur ye standard community tank ke mukable thande paani mein zyada accha perform karta hai; baaki livebearers ki tarah ye bhi jaldi breed karta hai.",
+    "common_mistakes_hi": [
+      "Isse normal tropical temperatures par rakhna, jabki iske liye thoda cooler setup zyada behtar hota hai"
+    ]
   },
   {
     "scientific_name": "Ilyodon whitei",
@@ -130398,7 +130453,11 @@
     "common_mistakes": [
       "Keeping at typical tropical temperatures when a cooler setup suits it better"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek cooler-water livebearer hai jisko zyada tropical garmi ki zaroorat nahi padti, aur ye standard community tank ke mukable thoda thande paani mein zyada accha rehta hai; baaki livebearers ki tarah ye bhi aasaani se breed ho jata hai.",
+    "common_mistakes_hi": [
+      "Isse typical tropical temperatures par rakhna jabki iske liye thoda cooler setup zyada behtar hota hai"
+    ]
   },
   {
     "scientific_name": "Girardinus falcatus",
@@ -130507,7 +130566,12 @@
       "Keeping a 1:1 or male-heavy ratio, leading to females being harassed",
       "Being surprised by rapid, ongoing overpopulation"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy livebearer hai jo mature hone ke baad easily aur continuously breed karta hai; males ke harassment ko kam karne ke liye females ko males se zyada rakho, aur agar dono sexes hain toh regular fry ke broods ki ummeed rakho.",
+    "common_mistakes_hi": [
+      "1:1 ya male-heavy ratio rakhna, jisse females pareshan hoti hain",
+      "Tezi se aur lagataar overpopulation hone par shock lagna"
+    ]
   },
   {
     "scientific_name": "Quintana atrizona",
@@ -130615,7 +130679,12 @@
       "Keeping a 1:1 or male-heavy ratio, leading to females being harassed",
       "Being surprised by rapid, ongoing overpopulation"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy livebearer hai jo mature hone ke baad easily aur continuously breed karta hai; males ke harassment ko kam karne ke liye females ko zyada numbers mein rakho, aur agar dono sexes tank mein hain toh regular fry ke broods ki ummeed rakho.",
+    "common_mistakes_hi": [
+      "1:1 ya male-heavy ratio rakhna, jisse females ko pareshan kiya jata hai",
+      "Tezi se aur lagataar badhte hue overpopulation se surprise ho jana"
+    ]
   },
   {
     "scientific_name": "Osteogaster aenea",
@@ -131551,7 +131620,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras ki family se hai. Isko hamesha group me rakhna chahiye aur soft sand wale tank me jahan ye apne barbels ko bina damage kiye araam se forrage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghiste hain",
+      "Isko akele rakhna instead of group ke"
+    ]
   },
   {
     "scientific_name": "Corydoras ehrhardti",
@@ -131800,7 +131874,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Ise hamesha group mein soft sand par rakhna chahiye jahan ye bina apne barbels ko damage kiye foraging kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghis jaate hain",
+      "Ise akela rakhna bajay ek group ke"
+    ]
   },
   {
     "scientific_name": "Corydoras prionotos",
@@ -131890,7 +131969,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras family se belong karti hai. Isko hamesha group me rakhna best hai aur soft sand setup me jaha ye bina apne barbels ko damage kiye aram se forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghis jate hain",
+      "Isko akele rakhna, jabki isko group me rehna pasand hai"
+    ]
   },
   {
     "scientific_name": "Corydoras difluviatilis",
@@ -135368,7 +135452,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Ise hamesha group me soft sand par rakhna chahiye jisse ye bina barbels ko damage kiye aaram se forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghis jaate hain",
+      "Ise akele rakhna bajaye ek group ke"
+    ]
   },
   {
     "scientific_name": "Aspidoras albater",
@@ -135468,7 +135557,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Isko hamesha group mein soft sand par rakhna chahiye jahan ye bina apne barbels ko damage kiye araam se food forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghiste hain",
+      "Isko akele rakhna bajaye ek group ke"
+    ]
   },
   {
     "scientific_name": "Aspidoras fuscoguttatus",
@@ -135577,7 +135671,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Isko hamesha group me soft sand par rakhna chahiye jahan ye bina apne barbels ko damage kiye araam se food forage kar sake.",
+    "common_mistakes_hi": [
+      "Tez ya khurdura (coarse) gravel use karna jisse inke sensitive barbels ghis ya damage ho jaate hain.",
+      "Isko akele rakhna, jabki isko group me rehna pasand hai."
+    ]
   },
   {
     "scientific_name": "Aspidoras poecilus",
@@ -135677,7 +135776,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Isko hamesha group mein soft sand par rakhna chahiye jahan ye bina apne barbels ko damage kiye araam se food forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya rough gravel use karna jisse iske sensitive barbels ghis ya damage ho jaate hain",
+      "Isko akele rakhna jabki isko group mein rehna pasand hai"
+    ]
   },
   {
     "scientific_name": "Scleromystax prionotos",
@@ -135767,7 +135871,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Isko soft sand wale tank mein group mein rakhna sabse best hai jahan yeh bina apne barbels ko damage kiye aram se forage kar sake.",
+    "common_mistakes_hi": [
+      "Teekhe ya coarse gravel ka use karna jisse iske sensitive barbels ghis ya damage ho sakte hain",
+      "Isko akele rakhna bajay ek group ke"
+    ]
   },
   {
     "scientific_name": "Scleromystax macropterus",
@@ -135857,7 +135966,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Isko soft sand ke group mein rakhna sabse best hai taaki ye bina apne barbels ko damage kiye araam se forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghiste hain",
+      "Isko akele rakhna bajaye group ke"
+    ]
   },
   {
     "scientific_name": "Scleromystax salmacis",
@@ -135942,7 +136056,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Ise hamesha group mein soft sand par rakhna chahiye jahan ye bina apne barbels ko damage kiye araam se forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse iske sensitive barbels ghiste hain",
+      "Ise akele rakhna bajaye group ke"
+    ]
   },
   {
     "scientific_name": "Hoplosternum littorale",
@@ -136051,7 +136170,11 @@
     "common_mistakes": [
       "Underestimating its adult size compared to typical Corydoras"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek bada armoured catfish hai, jo Corydoras se juda hua hai par kaafi bada hota hai; peaceful aur hardy hai, aur ye surface se air gulp karne wala air-breather hai.",
+    "common_mistakes_hi": [
+      "Typical Corydoras ke mukable iske adult size ko kam samajhna."
+    ]
   },
   {
     "scientific_name": "Dianema longibarbis",
@@ -136160,7 +136283,12 @@
       "Sharp/coarse gravel that wears down its sensitive barbels",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek peaceful aur social armoured catfish hai jo Corydoras se related hai. Isko hamesha group mein rakhna chahiye aur soft sand par taaki ye bina apne barbels ko damage kiye araam se food forage kar sake.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse gravel use karna jisse inke sensitive barbels ghiste hain",
+      "Isko group mein rakhne ki jagah akele rakhna"
+    ]
   },
   {
     "scientific_name": "Megalechis picta",
@@ -136267,7 +136395,11 @@
     "common_mistakes": [
       "Underestimating its adult size compared to typical Corydoras"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek bada armoured catfish hai, jo Corydoras se juda hua hai lekin kaafi bada hota hai; peaceful aur hardy hai, air-breather hai jo surface par jaakar air gulp kar sakta hai.",
+    "common_mistakes_hi": [
+      "Typical Corydoras ke mukable iske adult size ko kam आंकna (underestimate karna)"
+    ]
   },
   {
     "scientific_name": "Ancistrus temminckii",
@@ -136975,7 +137107,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (\"L-number\") pleco jisko warm, well-oxygenated water strong current ke sath chahiye, driftwood/rockwork grazing ke liye, aur high water quality; poor water conditions ke liye sensitive hota hai. Apni species ke sath caves ko lekar territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Hypancistrus furunculus",
@@ -137088,7 +137226,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur achhi tarah oxygenated pani chahiye jisme strong current ho, saath hi grazing ke liye driftwood/rockwork aur high water quality honi chahiye; yeh poor water conditions ke liye sensitive hote hain. Yeh caves ke liye apni hi species ke saath thode territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Hypancistrus lunaorum",
@@ -137175,7 +137319,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated water strong current ke sath chahiye, sath mein graze karne ke liye driftwood/rockwork aur high water quality honi chahiye; ye poor water conditions ke prati kaafi sensitive hote hain. Caves ke mamle mein ye apni hi species ke liye territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Panaque cochliodon",
@@ -137283,7 +137433,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek wood-eating pleco (Panaque-type) hai jisko thik se digest karne ke liye diet mein soft driftwood ka constant supply chahiye hota hai, vegetables ke sath-sath; ye kafi bada hota hai isliye long-term mein bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Driftwood na dena — ye plecos digestion ke liye wood fiber par depend karte hain",
+      "Future mein bade aur lambe hone wale fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Panaque armbrusteri",
@@ -137395,7 +137550,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek wood-eating pleco (Panaque-type) hai jisko properly digest karne ke liye diet mein soft driftwood ka constant supply chahiye, sath mein vegetable matter bhi; ye bada hota hai isliye long-term ke liye bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Driftwood nahi dena — ye plecos digestion ke liye wood fiber par depend karte hain",
+      "Eventually ek bade aur lambe fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Panaque schaeferi",
@@ -137504,7 +137664,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek wood-eating pleco (Panaque-type) hai jisko properly digest karne ke liye diet me soft driftwood ka constant supply chahiye, sath me vegetable matter bhi; ye bada hota hai isliye long-term ke liye bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Driftwood na dena — ye plecos digestion ke liye wood fiber par depend karte hain",
+      "Ek eventual large, long fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Panaque bathyphilus",
@@ -137613,7 +137778,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek wood-eating pleco (Panaque-type) hai jisko properly digest karne ke liye diet me soft driftwood ka constant supply chahiye, sath me vegetable matter bhi; ye bada hota hai isliye long-term ke liye bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Woodfish provide na karna — ye plecos digestion ke liye wood fiber pe rely karte hain",
+      "Ek eventual large aur long fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Panaqolus albomaculatus",
@@ -137724,7 +137894,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek wood-eating pleco (Panaque-type) hai jisko properly digest karne ke liye diet mein soft driftwood ka constant supply chahiye, saath mein vegetables bhi; ye bada hota hai isliye long-term ke liye bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Driftwood na dena — ye plecos digestion ke liye wood fiber par depend karte hain",
+      "Eventually bade aur lambe hone wale fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Panaqolus changae",
@@ -137833,7 +138008,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek wood-eating pleco (Panaque-type) hai jisko properly digest karne ke liye diet mein soft driftwood ka constant supply chahiye hota hai, veg matter ke sath; ye bada hota hai isliye long-term ke liye bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Koi driftwood na dena — ye plecos digestion ke liye wood fiber par depend karte hain",
+      "Eventually ek bade aur lambe fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Panaqolus claustellifer",
@@ -137919,7 +138099,12 @@
       "No driftwood provided — these plecos rely on wood fiber for digestion",
       "Undersized tank for an eventual large, long fish"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh wood-eating pleco (Panaque-type) hai jise digest karne ke liye diet mein soft driftwood ka constant supply chahiye hota hai, saath hi vegetable matter bhi; yeh kafi bada hota hai isliye long-term ke liye bada tank chahiye.",
+    "common_mistakes_hi": [
+      "Driftwood nahi dena — yeh plecos digestion ke liye wood fiber par depend karte hain",
+      "Bade aur lambe hone wale fish ke liye chhota tank rakhna"
+    ]
   },
   {
     "scientific_name": "Peckoltia oligospila",
@@ -138006,7 +138191,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Amazon ka rheophilic (\"L-number\") pleco hai jisko warm, well-oxygenated water strong current ke sath chahiye, graze karne ke liye driftwood/rockwork aur high water quality; yeh poor water conditions ke liye sensitive hota hai. Apni species ke doosre plecos ke sath caves ke liye territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress hota hai"
+    ]
   },
   {
     "scientific_name": "Peckoltia brevis",
@@ -138116,7 +138307,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water strong current ke sath chahiye, sath mein graze karne ke liye driftwood ya rockwork aur high water quality honi chahiye; ye poor water conditions ke liye sensitive hote hain. Caves ke liye ye apni hi species ke towards territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jisse chronic stress hota hai"
+    ]
   },
   {
     "scientific_name": "Peckoltia cavatica",
@@ -138203,7 +138400,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazonian rheophilic (\"L-number\") pleco hai jisko warm, well-oxygenated water strong current ke sath chahiye, graze karne ke liye driftwood/rockwork aur high water quality honi chahiye; ye poor water conditions ke prati kaafi sensitive hote hain. Caves ko lekar ye apni hi species ke prati thode territorial ho sakte hain.",
+    "common_mistakes_hi": [
+      "Low flow/oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Peckoltia lineola",
@@ -138290,7 +138493,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water chahiye jisme strong current ho, saath hi grazing ke liye driftwood/rockwork aur high water quality honi chahiye; ye poor water conditions ke prati kaafi sensitive hote hain. Caves ke mamle mein ye apni hi species ke liye territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood ko skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Ancistomus snethlageae",
@@ -138379,7 +138588,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (\"L-number\") pleco hai jisko garam, acche se oxygenated paani, strong current, graze karne ke liye driftwood/rockwork, aur high water quality chahiye hoti hai; ye poor water conditions ke prati kaafi sensitive hota hai. Apni species ke doosre fish ke saath caves ko lekar ye territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Kam flow ya oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress hota hai"
+    ]
   },
   {
     "scientific_name": "Ancistomus spilomma",
@@ -138468,7 +138683,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated water strong current ke sath, graze karne ke liye driftwood/rockwork, aur high water quality chahiye hoti hai; ye poor water conditions ke liye sensitive hote hain. Caves ke liye apne hi species ke towards territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen rakhna, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Baryancistrus chrysolomus",
@@ -138582,7 +138803,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated paani strong current ke saath chahiye hota hai. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat padti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber chahiye hota hai",
+      "Poor water quality jo chronic stress paida karti hai"
+    ]
   },
   {
     "scientific_name": "Baryancistrus niveatus",
@@ -138692,7 +138919,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh Amazon ka rheophilic (L-number) pleco hai jisko garam, achhe oxygen wala pani, tez current, graze karne ke liye driftwood/rockwork, aur high water quality chahiye; yeh kharab pani ke conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Kam flow ya oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Kharab water quality jo chronic stress paida karti hai"
+    ]
   },
   {
     "scientific_name": "Lasiancistrus schomburgkii",
@@ -138802,7 +139035,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (\"L-number\") pleco hai jisko garam, acche oxygen wala pani strong current ke sath chahiye hota hai. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat padti hai; yeh kharab pani ke conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke sath territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Kam flow ya oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood miss karna — bohot saari species ko diet mein wood fiber chahiye hota hai",
+      "Kharab water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Lasiancistrus tentaculatus",
@@ -138889,7 +139128,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated water strong current ke saath, graze karne ke liye driftwood ya rockwork, aur high water quality chahiye hoti hai. Yeh poor water conditions ke liye sensitive hota hai. Caves ke mamle mein yeh apni hi species ke liye territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye yeh rheophilic species kaafi sensitive hoti hain",
+      "Driftwood miss karna, kyunki bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Lasiancistrus heteracanthus",
@@ -138999,7 +139244,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated water aur strong current chahiye hota hai. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat padti hai; ye poor water conditions ke liye sensitive hota hai. Caves ke liye apne hi species ke doosre fish ke saath thoda territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen rakhna, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bhot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Lasiancistrus saetiger",
@@ -139085,7 +139336,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (L-number) pleco jisko warm, well-oxygenated paani strong current ke saath, graze karne ke liye driftwood/rockwork, aur high water quality chahiye hoti hai; ye poor water conditions ke liye kaafi sensitive hote hain. Caves ke mamle mein yeh apni hi species ke liye territorial hote hain.",
+    "common_mistakes_hi": [
+      "Kam flow ya oxygen, jiske liye yeh rheophilic species kaafi sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Leporacanthicus heterodon",
@@ -139195,7 +139452,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (\"L-number\") pleco jisko warm, well-oxygenated water strong current ke saath chahiye, driftwood/rockwork grazing ke liye, aur high water quality; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye apne hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow/oxygen, jiske liye yeh rheophilic species sensitive hote hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber chahiye hota hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Pseudacanthicus serratus",
@@ -139305,7 +139568,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur achhi oxygen wali pani ki zaroorat hoti hai jisme strong current ho, saath hi grazing ke liye driftwood/rockwork aur high water quality chahiye hoti hai; yeh kharab water conditions ke prati kaafi sensitive hote hain. Caves ko lekar apni hi species ke prati yeh territorial hote hain.",
+    "common_mistakes_hi": [
+      "Kam flow ya oxygen, jiske prati yeh rheophilic species sensitive hoti hain",
+      "Driftwood ko skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Kharab water quality jo chronic stress ka kaaran banti hai"
+    ]
   },
   {
     "scientific_name": "Pseudacanthicus spinosus",
@@ -139415,7 +139684,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazon ka rheophilic (L-number) pleco hai jisko warm aur achhi oxygen wali pani chahiye jisme strong current ho, graze karne ke liye driftwood/rockwork ho, aur high water quality ho; ye kharab water conditions ke liye bahut sensitive hota hai. Caves ke liye ye apni species ke doosre fish ke sath territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye ye rheophilic species sensitive hoti hai",
+      "Driftwood skip karna — bohot sari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Kharab water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Pseudacanthicus pirarara",
@@ -139528,7 +139803,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water chahiye jisme strong current ho. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke saath territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen rakhna, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood ko skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality ki wajah se chronic stress hona"
+    ]
   },
   {
     "scientific_name": "Pseudacanthicus pitanga",
@@ -139641,7 +139922,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (\"L-number\") pleco hai jisko warm, acchi tarah oxygenated water strong current ke sath chahiye hota hai. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat padti hai; yeh poor water conditions ke liye kaafi sensitive hote hain. Caves ko lekar yeh apni hi species ke towards territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye yeh rheophilic species kaafi sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Pseudacanthicus histrix",
@@ -139728,7 +140015,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (L-number) pleco jisko warm, acchi tarah oxygenated water strong current ke sath chahiye. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke prati kaafi sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske prati yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Scobinancistrus pariolispos",
@@ -139841,7 +140134,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (L-number) pleco jisko warm, well-oxygenated water strong current ke sath chahiye. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye apne hi species ke towards yeh territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bohot saari species ko diet mein wood fiber chahiye hota hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Spectracanthicus murinus",
@@ -139954,7 +140253,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water strong current ke sath chahiye, sath hi graze karne ke liye driftwood/rockwork aur high water quality bhi honi chahiye; ye poor water conditions ke liye sensitive hota hai. Apni species ke doosre fish ke sath caves ke liye territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Spectracanthicus punctatissimus",
@@ -140066,7 +140371,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (\"L-number\") pleco jisko warm, well-oxygenated water strong current ke sath chahiye. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial ho jata hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bohot saari species ko diet mein wood fiber chahiye hota hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Spectracanthicus zuanoni",
@@ -140179,7 +140490,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek Amazonian rheophilic (\"L-number\") pleco jisko warm, well-oxygenated water strong current ke sath chahiye, graze karne ke liye driftwood/rockwork aur high water quality; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye apne hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye ye rheophilic species sensitive hote hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Spectracanthicus immaculatus",
@@ -140266,7 +140583,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated water strong current ke saath, graze karne ke liye driftwood/rockwork, aur high water quality chahiye hoti hai; yeh poor water conditions ke liye sensitive hote hain. Caves ke liye apne hi species ke towards territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye yeh rheophilic species sensitive hote hain",
+      "Driftwood ko skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Hemiancistrus macrops",
@@ -140334,7 +140657,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (\"L-number\") pleco hai jisko warm, well-oxygenated water strong current ke sath chahiye, graze karne ke liye driftwood/rockwork aur high water quality honi chahiye; ye poor water conditions ke liye kaafi sensitive hote hain. Caves ke liye apne hi species ke towards ye territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye ye rheophilic species kaafi sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Hemiancistrus landoni",
@@ -140444,7 +140773,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazonian rheophilic (\"L-number\") pleco hai jisko garam, well-oxygenated paani strong current ke saath chahiye hota hai. Isko graze karne ke liye driftwood/rockwork aur acchi water quality chahiye; ye poor water conditions ke liye sensitive hota hai. Caves ke liye ye apni species ke towards territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Kam flow ya oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jisse chronic stress hota hai"
+    ]
   },
   {
     "scientific_name": "Acanthicus hystrix",
@@ -140552,7 +140887,11 @@
     "common_mistakes": [
       "Buying as a cute juvenile without planning for a fish that can exceed half a metre"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye pleco bahut bada adult size tak grow karta hai, jo zyadatar home aquariums ke liye long-term suitable nahi hai; jaise-jaise ye bada hota hai, isko ek bahut bada aur heavy filtration wala tank chahiye hota hai.",
+    "common_mistakes_hi": [
+      "Isse ek cute juvenile samajh kar kharid lena bina ye soche ki ye fish aadhe meter se zyada lambi ho sakti hai"
+    ]
   },
   {
     "scientific_name": "Dekeyseria brachyura",
@@ -140632,7 +140971,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated paani strong current ke saath chahiye, saath hi graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen rakhna, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality ki wajah se chronic stress hona"
+    ]
   },
   {
     "scientific_name": "Dekeyseria picta",
@@ -140745,7 +141090,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (\"L-number\") pleco hai jisko garam, achhe oxygen wala pani, strong current, graze karne ke liye driftwood/rockwork, aur high water quality chahiye hoti hai; kharab water conditions ke prati yeh sensitive hote hain. Caves ke mamle mein yeh apni hi species ke prati thode territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske prati yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Kharab water quality ki wajah se chronic stress hona"
+    ]
   },
   {
     "scientific_name": "Dekeyseria pulchra",
@@ -140821,7 +141172,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh Amazonian rheophilic (L-number) pleco hai jisko warm, achhi tarah oxygenated water strong current ke sath chahiye, sath mein grazing ke liye driftwood/rockwork aur high water quality honi chahiye; ye poor water conditions ke liye sensitive hote hain. Caves ke liye apne hi species ke towards territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow/oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Dekeyseria scaphirhyncha",
@@ -140920,7 +141277,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh Amazon ka rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water chahiye jisme strong current ho. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Chaetostoma formosae",
@@ -141029,7 +141392,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm khata hai aur vegetables aur sinking foods bhi easily le leta hai; yeh kaafi bada hota hai, isliye kuch saalon mein chhote community tanks ke liye yeh bohot bada ho jayega.",
+    "common_mistakes_hi": [
+      "Isko ek chhota juvenile samajh kar khareed lena bina iske adult size ka plan kiye",
+      "Ek bade tank mein algae control ke liye sirf is par hi depend rehna"
+    ]
   },
   {
     "scientific_name": "Chaetostoma thomsoni",
@@ -141138,7 +141506,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm graze karta hai aur vegetables aur sinking foods easily accept kar leta hai; yeh kaafi bada hota hai, isliye kuch saalon mein chhote community tanks ke liye yeh bahut bada ho jata hai.",
+    "common_mistakes_hi": [
+      "Isko ek chhota juvenile samajh kar khareed lena bina yeh soche ki yeh bada ho kar kitna size le lega",
+      "Ek bade tank mein algae control ke liye sirf ishi par depend rehna"
+    ]
   },
   {
     "scientific_name": "Chaetostoma dorsale",
@@ -141224,7 +141597,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm graze karta hai aur veggies aur sinking foods bhi easily kha leta hai; yeh kaafi bada hota hai, toh kuch saalon mein chhote community tanks ke liye yeh bohot bada ho jayega.",
+    "common_mistakes_hi": [
+      "Iske adult size ka plan kiye bina ek chhote juvenile ke roop mein khareedna",
+      "Ek bade tank mein algae control ke liye sirf is par hi depend rehna"
+    ]
   },
   {
     "scientific_name": "Chaetostoma vasquezi",
@@ -141310,7 +141688,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm khata hai, aur vegetables aur sinking foods bhi easily le leta hai; yeh kaafi bada hota hai, isliye kuch saalon mein chote community tanks ke liye yeh bada pad jata hai.",
+    "common_mistakes_hi": [
+      "Isko ek chote juvenile ke roop mein khareed lena bina iske adult size ke baare mein plan kiye",
+      "Ek bade tank mein sirf iske upar algae control ke liye depend rehna"
+    ]
   },
   {
     "scientific_name": "Hypostomus cochliodon",
@@ -141419,7 +141802,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm khata hai aur vegetables aur sinking foods bhi easily le leta hai; kaafi bada hota hai, isliye kuch saalon mein chhote community tanks ke liye yeh bada pad jata hai.",
+    "common_mistakes_hi": [
+      "Isko ek chhota juvenile samajhkar khareed lena bina iske adult size ke baare mein soche",
+      "Bade tank mein algae control ke liye sirf ishi par depend rehna"
+    ]
   },
   {
     "scientific_name": "Hypostomus soniae",
@@ -141528,7 +141916,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm graze karta hai aur easily vegetables aur sinking foods kha leta hai; yeh kaafi bada hota hai, isliye kuch saalon mein chote community tanks ke liye bahut bada ho jayega.",
+    "common_mistakes_hi": [
+      "Isko ek chote juvenile ke taur par khareed lena bina iske adult size ke baare mein soche",
+      "Bade tank mein sirf isi par algae control ke liye depend rehna"
+    ]
   },
   {
     "scientific_name": "Hypostomus hemicochliodon",
@@ -141637,7 +142030,12 @@
       "Buying as a small juvenile without planning for its adult size",
       "Relying on it alone for algae control in a large tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hardy aur adaptable pleco hai jo algae aur biofilm khata hai aur aasaani se vegetables aur sinking foods bhi accept kar leta hai; yeh kaafi bada hota hai, isliye kuch saalon mein chote community tanks ke liye yeh bohot bada ho jayega.",
+    "common_mistakes_hi": [
+      "Isko ek chote juvenile ke taur par kharidna bina iske adult size ka plan kiye",
+      "Ek bade tank mein sirf iske bharose algae control chhod dena"
+    ]
   },
   {
     "scientific_name": "Pterygoplichthys anisitsi",
@@ -141923,7 +142321,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazonian rheophilic (\"L-number\") pleco hai jisko garam, achhe se oxygenated paani aur strong current ki zaroorat hoti hai, saath hi graze karne ke liye driftwood/rockwork aur high water quality chahiye hoti hai; kharab paani ke conditions ke prati sensitive hota hai. Apni hi species ke saath caves ko lekar territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Kharab water quality ki wajah se chronic stress hona"
+    ]
   },
   {
     "scientific_name": "Parancistrus nudiventris",
@@ -142036,7 +142440,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazon ka rheophilic pleco hai jisko warm, well-oxygenated water strong current ke sath chahiye, sath hi graze karne ke liye driftwood/rockwork aur high water quality bhi zaroori hai; yeh poor water conditions ke prati bahut sensitive hota hai. Caves ke liye yeh apni hi species ke prati thoda territorial ho jata hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske prati yeh rheophilic species bahut sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Hopliancistrus tricornis",
@@ -142148,7 +142558,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (\"L-number\") pleco hai jisko warm, well-oxygenated water strong current ke saath, graze karne ke liye driftwood/rockwork, aur high water quality chahiye hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jisse chronic stress ho jata hai"
+    ]
   },
   {
     "scientific_name": "Pseudolithoxus anthrax",
@@ -142259,7 +142675,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated paani chahiye strong current ke saath, graze karne ke liye driftwood/rockwork, aur high water quality. Yeh poor water conditions ke liye sensitive hota hai. Caves ke liye ye apni species ke towards territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Pseudolithoxus tigris",
@@ -142346,7 +142768,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated paani strong current ke saath chahiye, sath hi graze karne ke liye driftwood/rockwork aur high water quality ki zaroorat hoti hai; ye poor water conditions ke prati sensitive hota hai. Caves ke liye ye apni hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna—bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Pseudolithoxus dumus",
@@ -142433,7 +142861,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm aur achhi tarah oxygen-wali paani chahiye jisme strong current ho. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh kharab water conditions ke prati sensitive hote hain. Caves ke liye yeh apni hi species ke towards territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske prati yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna - bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Kharab water quality jiski wajah se chronic stress ho sakta hai"
+    ]
   },
   {
     "scientific_name": "Lithoxus lithoides",
@@ -142519,7 +142953,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye Amazon ka rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water chahiye jisme strong current ho, graze karne ke liye driftwood ya rockwork ho, aur water quality high honi chahiye; ye poor water conditions ke prati kaafi sensitive hota hai. Caves ke liye ye apni hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow ya low oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood ko skip karna — bohot saari species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jisse chronic stress hota hai"
+    ]
   },
   {
     "scientific_name": "Exastilithoxus fimbriatus",
@@ -142629,7 +143069,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh Amazon ka rheophilic (\"L-number\") pleco hai jisko garam, achhe oxygen wala pani, strong current, graze karne ke liye driftwood/rockwork, aur high water quality chahiye; yeh kharab pani ke conditions ke prati sensitive hota hai. Caves ko lekar yeh apni hi species ke prati thoda territorial ho jata hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske prati yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Kharab water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Megalancistrus parananus",
@@ -142737,7 +143183,11 @@
     "common_mistakes": [
       "Buying as a cute juvenile without planning for a fish that can exceed half a metre"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisa pleco hai jo adult hokar bohot bada ho jata hai, aur zyada-tar home aquariums ke liye long-term mein theek nahi hai; jaise-jaise ye bada hota hai, ise ek bohot bade aur heavy filtration wale tank ki zaroorat hoti hai.",
+    "common_mistakes_hi": [
+      "Ise cute sa chhota bacha samajh kar khareed lena bina ye soche ki ye machli aadhi metre se bhi zyada lambi ho sakti hai"
+    ]
   },
   {
     "scientific_name": "Guyanancistrus brevispinis",
@@ -142847,7 +143297,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek Amazonian rheophilic (L-number) pleco hai jisko warm, well-oxygenated water aur strong current chahiye hota hai. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; yeh poor water conditions ke liye sensitive hota hai. Caves ke liye yeh apni hi species ke towards territorial ho sakta hai.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen rakhna, jiske liye yeh rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Neblinichthys pilosus",
@@ -142934,7 +143390,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Amazonian rheophilic (\"L-number\") pleco hai jisko warm, well-oxygenated water strong current ke sath chahiye, graze karne ke liye driftwood/rockwork aur high water quality honi chahiye; poor water conditions ke liye sensitive hota hai. Caves ke liye apne hi species ke towards territorial hota hai.",
+    "common_mistakes_hi": [
+      "Low flow/oxygen, jiske liye ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot si species ko diet mein wood fiber ki zarurat hoti hai",
+      "Poor water quality jisse chronic stress hota hai"
+    ]
   },
   {
     "scientific_name": "Pseudancistrus barbatus",
@@ -143044,7 +143506,13 @@
       "Skipping driftwood — many species need wood fiber in the diet",
       "Poor water quality causing chronic stress"
     ],
-    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for Amazonian L-number plecos; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek Amazonian rheophilic (L-number) pleco hai jisko warm aur well-oxygenated water chahiye jisme strong current ho. Isko graze karne ke liye driftwood ya rockwork aur high water quality ki zaroorat hoti hai; ye poor water conditions ke prati sensitive hote hain. Caves ke mamle mein ye apni hi species ke liye territorial hote hain.",
+    "common_mistakes_hi": [
+      "Low flow ya oxygen, jiske prati ye rheophilic species sensitive hoti hain",
+      "Driftwood skip karna — bohot saari species ko diet mein wood fiber ki zaroorat hoti hai",
+      "Poor water quality jo chronic stress ka karan banti hai"
+    ]
   },
   {
     "scientific_name": "Rineloricaria parva",
@@ -143153,7 +143621,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; yeh bohot peaceful aur dheere chalne wali hoti hai, isliye fast khane wali machliyan iska khana cheen leti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi fast aur aggressive machliyon ke sath rakhna jo iska khana pehle kha jayein",
+      "Grazing ke liye biofilm/algae ki kami hona, jiske chalte isko alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Rineloricaria eigenmanni",
@@ -143239,7 +143712,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli aur lambi whiptail/twig catfish hai jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; ye peaceful aur slow-moving hoti hai, isliye fast eating machliyan ise khane mein easily outcompete kar deti hain.",
+    "common_mistakes_hi": [
+      "Aisi fast aur aggressive machliyon ke sath rakhna jo khane ke liye ise outcompete kar dein",
+      "Grazing ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zaroorat padti hai"
+    ]
   },
   {
     "scientific_name": "Rineloricaria fallax",
@@ -143348,7 +143826,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli aur lambi whiptail/twig catfish hai jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; ye peaceful aur slow-moving hoti hai, isliye fast eating machliyan ise khane mein peechhe chhod deti hain.",
+    "common_mistakes_hi": [
+      "Isse aisi fast aur aggressive machliyon ke sath rakhna jo khane ke mamle mein ise peechhe chhod deti hain",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye phir alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Rineloricaria heteroptera",
@@ -143434,7 +143917,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek patli aur lambi whiptail/twig catfish hai jo flat surfaces aur driftwood se algae aur biofilm khati hai; ye bohot peaceful aur dheere chalne wali hoti hai, isliye tez khane wali machliyan iska khana cheen leti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi tez aur aggressive machliyon ke sath rakhna jo khane ke mamle mein isko peechhe chhod deti hain",
+      "Tank mein biofilm ya algae ki kami hona, jiski wajah se isko alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Hemiloricaria melini",
@@ -143543,7 +144031,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; yeh bohot shant aur slow-moving hoti hai, isliye fast khane wali machliyan iska khana cheen leti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi fast aur aggressive machliyon ke sath rakhna jo isse khana pehle cheen lein",
+      "Tank mein biofilm ya algae ki kami hona, jiske liye phir alag se supplemental feeding karni padti hai"
+    ]
   },
   {
     "scientific_name": "Loricaria cataphracta",
@@ -143652,7 +144145,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; ye peaceful aur dheere chalne wali hoti hai, aur tezi se khana khane wali machliyan isko khane ke mamle mein peeche chhod sakti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi fast aur aggressive machliyon ke sath rakhna jo khane mein isko outcompete kar dein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zarurat padti hai"
+    ]
   },
   {
     "scientific_name": "Pseudohemiodon apithanos",
@@ -143761,7 +144259,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patla, lamba whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karta hai; ye shant aur dheere chalne wala hota hai, jise fast khana khane wale fishes food ke liye easily outcompete kar dete hain.",
+    "common_mistakes_hi": [
+      "Isko aisi fast aur aggressive fishes ke sath rakhna jo food ke liye isko outcompete kar dein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zarurat padti hai"
+    ]
   },
   {
     "scientific_name": "Pseudohemiodon lamina",
@@ -143870,7 +144373,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli aur lambi whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; peaceful aur slow-moving hoti hai, aur fast khane wale ishe khane me easily peeche chhod dete hain.",
+    "common_mistakes_hi": [
+      "Ishe aise fast aur aggressive machliyon ke sath rakhna jo khane ke liye ishe outcompete kar dein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zaroorat padti hai"
+    ]
   },
   {
     "scientific_name": "Planiloricaria cryptodon",
@@ -143979,7 +144487,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; peaceful aur slow-moving hai, isliye fast khane wale fish isko khane mein easily peeche chhod dete hain.",
+    "common_mistakes_hi": [
+      "Aise fast aur aggressive feeders ke sath rakhna jo khane ke mamle mein isko outcompete kar dein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zaroorat padti hai"
+    ]
   },
   {
     "scientific_name": "Dasyloricaria filamentosa",
@@ -144088,7 +144601,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; yeh peaceful aur dheere chalne wali hoti hai, aur tezi se khana khane wali machliyan ise khane ke mamle mein easily peeche chhod deti hain.",
+    "common_mistakes_hi": [
+      "Ise aisi fast aur aggressive fish ke sath rakhna jo khane ke liye isse compete karke ise peeche chhod dein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske chalte extra feeding ki zarurat padti hai"
+    ]
   },
   {
     "scientific_name": "Crossoloricaria venezuelae",
@@ -144174,7 +144692,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood par se algae aur biofilm graze karti hai; yeh peaceful aur slow-moving hoti hai, isliye fast khane wali machliyan iska khana asani se chhin leti hain.",
+    "common_mistakes_hi": [
+      "Aisi fast aur aggressive machliyon ke sath rakhna jo khane ke mamle mein ise peeche chhod deti hain",
+      "Grazing ke liye biofilm/algae ki kami hona, jiske chalte ise alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Limatulichthys griseus",
@@ -144283,7 +144806,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish hai jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; ye peaceful aur slow-moving hoti hai, isliye fast eating machliyan ise khane mein easily outcompete kar deti hain.",
+    "common_mistakes_hi": [
+      "Ise aisi fast aur aggressive feeders ke sath rakhna jo iska khana chheen lein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zaroorat padti hai"
+    ]
   },
   {
     "scientific_name": "Farlowella vittata",
@@ -144392,7 +144920,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli aur lambi whiptail/twig catfish hai jo flat surfaces aur driftwood se algae aur biofilm graze karti hai; yeh peaceful aur slow-moving hoti hai, isliye fast-eating fish isko khane ke mamle mein easily peeche chhod sakti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi fast aur aggressive fishes ke sath rakhna jo khane ke liye isko outcompete kar dein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zaroorat padti hai"
+    ]
   },
   {
     "scientific_name": "Farlowella platorynchus",
@@ -144468,7 +145001,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek patla, lamba whiptail ya twig catfish hai jo flat surfaces aur driftwood par se algae aur biofilm graze karta hai; ye shant (peaceful) aur dheere chalne wala (slow-moving) hai, aur tezi se khana khane wali machliyan isko khane ke mamle mein easily pichhe chhod deti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi aggressive aur tez machliyon ke sath rakhna jo khane ke mamle mein isse aage nikal jayein",
+      "Tank mein biofilm ya algae ki kami hona, jiske chalte ise alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Sturisomatichthys leightoni",
@@ -144577,7 +145115,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli aur lambi whiptail/twig catfish jo flat surfaces aur driftwood par se algae aur biofilm graze karti hai; ye peaceful aur dheere chalne wali hoti hai, aur fast khane wali machliyan isko khane mein easily peeche chhod deti hain.",
+    "common_mistakes_hi": [
+      "Aisi fast aur aggressive machliyon ke sath rakhna jo khane mein isko peeche chhod deti hain",
+      "Grazing ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zarurat padti hai"
+    ]
   },
   {
     "scientific_name": "Sturisomatichthys aureus",
@@ -144691,7 +145234,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patli, lambi whiptail/twig catfish jo flat surfaces aur driftwood par se algae aur biofilm graze karti hai; ye peaceful aur slow-moving hoti hai, aur fast khane wali machliyan ise khane mein easily outcompete kar deti hain.",
+    "common_mistakes_hi": [
+      "Ise aisi fast aur aggressive feeders ke sath rakhna jo khane ke liye isse aage nikal jayein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye supplemental feeding ki zaroorat padti hai"
+    ]
   },
   {
     "scientific_name": "Sturisoma panamense",
@@ -144766,7 +145314,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek patla aur lamba whiptail/twig catfish jo flat surfaces aur driftwood par se algae aur biofilm graze karta hai; yeh peaceful aur dheere chalne wala hota hai, isliye tez khane wali machliyan isko khane mein peeche chhod deti hain.",
+    "common_mistakes_hi": [
+      "Isse aisi tez aur aggressive machliyon ke sath rakhna jo khane mein isse aage nikal jayein",
+      "Grazing ke liye biofilm/algae ki kami hona, jiske liye phir alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Lamontichthys filamentosus",
@@ -144875,7 +145428,12 @@
       "Housing with fast, aggressive feeders that outcompete it for food",
       "Lack of biofilm/algae to graze, requiring supplemental feeding"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek patli aur lambi whiptail/twig catfish hai jo flat surfaces aur driftwood par se algae aur biofilm graze karti hai; yeh bohot peaceful aur dheere chalne wali hai, isliye fast khane wali machliyan iska khana cheen leti hain.",
+    "common_mistakes_hi": [
+      "Isko aisi fast aur aggressive machliyon ke sath rakhna jo iska khana cheen lein",
+      "Graze karne ke liye biofilm/algae ki kami hona, jiske liye phir alag se khana dena padta hai"
+    ]
   },
   {
     "scientific_name": "Otocinclus affinis",
@@ -144985,7 +145543,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek chhota algae-grazing catfish jo mature, algae-rich tank mein group mein rakhne ke liye best hai; naye tank mein daalne par jahan khane ke liye biofilm nahi hota, ye bahut sensitive hote hain.",
+    "common_mistakes_hi": [
+      "Naye tank mein daalna jahan algae ya biofilm bahut kam ho, jisse wo bhookh se mar sakte hain",
+      "Group mein rakhne ki jagah akele rakhna"
+    ]
   },
   {
     "scientific_name": "Otocinclus mariae",
@@ -145357,7 +145920,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota algae-grazing catfish hai jisko mature aur algae-rich tank mein group mein rakhna sabse best hota hai. Agar ise ekdam naye tank mein daal diya jaye jahankhane ke liye sufficient biofilm nahi hai, toh ye sensitive hote hain.",
+    "common_mistakes_hi": [
+      "Ise ekdam naye tank mein daal dena jahan bahut kam algae ya biofilm ho, jisse ye bhookhe mar sakte hain",
+      "Ise akele rakhna bajaye group ke"
+    ]
   },
   {
     "scientific_name": "Hypoptopoma inexspectatum",
@@ -145466,7 +146034,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota algae-grazing catfish hai jo mature, algae-rich tank mein group ke andar sabse achha rehta hai; naye tank mein daalne par jahan khane ke liye biofilm na ho, ye bahut sensitive hote hain.",
+    "common_mistakes_hi": [
+      "Isse ek naye tank mein daalna jahan bahut kam algae ya biofilm ho, jisse ye bhookh se mar sakte hain",
+      "Group mein rakhne ki jagah akela rakhna"
+    ]
   },
   {
     "scientific_name": "Parotocinclus jumbo",
@@ -145575,7 +146148,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek chhota algae-grazing catfish hai jisko mature aur algae-rich tank mein group mein rakhna sabse best hota hai; naye tank mein daalne par yeh sensitive ho sakta hai kyunki wahan khane ke liye sufficient biofilm nahi hota.",
+    "common_mistakes_hi": [
+      "Aise naye tank mein daal dena jahan algae ya biofilm bahut kam ho, jisse fish starve ho jaye",
+      "Akela rakhna bajay ek group ke"
+    ]
   },
   {
     "scientific_name": "Parotocinclus haroldoi",
@@ -145684,7 +146262,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek chhota algae-grazing catfish hai jisko mature aur algae se bhare tank mein group mein rakhna sabse best hota hai; yeh naye tank mein daalne ke liye sensitive hota hai jahan khane ke liye sufficient biofilm nahi hota.",
+    "common_mistakes_hi": [
+      "Ek naye tank mein daalna jahan bahut kam algae/biofilm ho, jisse bhookh se marne ki naubat aa jaye",
+      "Group mein rakhne ke bajaye akele rakhna"
+    ]
   },
   {
     "scientific_name": "Acestridium discus",
@@ -145770,7 +146353,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Twig Oto ek chhota algae-grazing catfish hai jo mature aur algae-rich tank mein group ke sath best rehta hai. Yeh naye tank mein bina sufficient biofilm ke jaldi add karne par sensitive hota hai.",
+    "common_mistakes_hi": [
+      "Naye tank mein jahan algae ya biofilm bahut kam ho, wahan add karna jisse yeh bhookhe mar sakte hain",
+      "Group ki jagah akela rakhna"
+    ]
   },
   {
     "scientific_name": "Pseudotocinclus tietensis",
@@ -145856,7 +146444,12 @@
       "Adding to a new tank with too little algae/biofilm, causing starvation",
       "Keeping singly instead of in a group"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek chhota algae-grazing catfish hai jisko mature aur algae-rich tank mein group ke sath rakhna sabse best hota hai. Naye tank mein, jahan khane ke liye biofilm nahi hai, isko dalne se yeh sensitive ho sakta hai.",
+    "common_mistakes_hi": [
+      "Aise naye tank mein dalna jahan bohot kam algae ya biofilm ho, jisse yeh bhookhe mar sakte hain",
+      "Group mein rakhne ki jagah akela rakhna"
+    ]
   },
   {
     "scientific_name": "Pangio anguillaris",
@@ -146726,7 +147319,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare ya stress mein na aaye; iske liye tank mein caves aur tunnels zaroori hain aur yeh snails ko bhi kha lega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chhote group mein rakhna, jisse yeh stressed ho jata hai ya doosri machliyon par aggressive hota hai",
+      "Hiding spots ya tunnels provide na karna"
+    ]
   },
   {
     "scientific_name": "Yasuhikotakia eos",
@@ -146803,7 +147401,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh baaki tankmates ko bully na kare ya stress mein na aaye; isko caves aur tunnels do aur umeed rakho ki yeh snails khaayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chote group mein rakhna, jisse stress ho ya doosri machliyon ke prati aggression badhe",
+      "Hiding spots ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Yasuhikotakia splendida",
@@ -146880,7 +147483,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare ya stress mein na aaye; iske liye tank mein caves/tunnels zaroor rakhein aur umeed karein ki yeh snails ko kha jaayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chote group mein rakhna, jisse stress hota hai ya doosri fish par aggression dikhati hai",
+      "Hiding spots ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Yasuhikotakia caudipunctata",
@@ -146957,7 +147565,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare ya stress mein na aaye; iske liye tank mein caves ya tunnels zaroor set karein aur ummeed karein ki yeh snails ko kha jaayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chote group mein rakhna, jisse yeh stress mein aa jaata hai ya doosri machliyon par aggressive ho jaata hai.",
+      "Hiding spots ya tunnels provide na karna."
+    ]
   },
   {
     "scientific_name": "Yasuhikotakia nigrolineata",
@@ -147070,7 +147683,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare ya stress mein na aaye. Tank mein caves aur tunnels zaroor set karein aur expect karein ki yeh snails ko kha jaayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chhote group mein rakhna, jisse stress badhta hai ya doosri machliyon par aggression dikhaata hai",
+      "Hiding spots ya tunnels provide na karna"
+    ]
   },
   {
     "scientific_name": "Ambastaia nigrolineata",
@@ -147160,7 +147778,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group me rakhna zaroori hai taaki yeh baaki tankmates ko bully na kare ya stress me na aaye; iske liye tank me caves/tunnels zaroor do aur yeh snails bhi khayega.",
+    "common_mistakes_hi": [
+      "Akela rakhna ya bohot chote group me rakhna, jisse stress hota hai ya baaki fish ke prati aggression badhta hai",
+      "Hiding spots ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Syncrossus helodes",
@@ -147269,7 +147892,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh baaki machliyon ko bully na kare aur stress mein na aaye. Tank mein caves aur tunnels zaroor provide karein aur yeh snails ko bhi khaayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya chote group mein rakhna, jisse yeh stressed ho jata hai ya doosri machliyon par aggressive hota hai",
+      "Hiding spots ya tunnels provide na karna"
+    ]
   },
   {
     "scientific_name": "Syncrossus beauforti",
@@ -147378,7 +148006,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare aur stress mein na aaye. Tank mein caves aur tunnels zaroor provide karein aur yeh snails ko bhi khayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya chote group mein rakhna, jisse yeh stressed ho jata hai ya doosri machliyon par aggressive hota hai",
+      "Hiding spots ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Syncrossus reversa",
@@ -147445,7 +148078,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek social aur smart loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki ye doosri machliyon ko bully na kare ya stress mein na aaye; iske liye tank mein caves ya tunnels zaroor rakhein aur ye snails ko bhi khaayega.",
+    "common_mistakes_hi": [
+      "Isko akele rakhna ya chote group mein rakhna, jisse ye stress mein aa jata hai ya doosri fish par aggressive ho jata hai",
+      "Hiding spots ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Sinibotia pulchra",
@@ -147545,7 +148183,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek social aur smart loach hai jisko kam se kam 5 ya usse zyada ke group me rakhna zaroori hai, taaki ye doosri machliyon ko bully na kare ya stress me na aaye. Iske liye tank me caves ya tunnels zaroor set karein aur umeed rakhein ki ye snails ko kha jayega.",
+    "common_mistakes_hi": [
+      "Akela rakhna ya bahut chote group me rakhna, jisse yeh stress me aa jata hai ya doosri machliyon par aggressive hota hai",
+      "Chhupne ki jagah ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Sinibotia superciliaris",
@@ -147645,7 +148288,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare ya stress mein na aaye; iske liye tank mein caves aur tunnels zaroor rakhein aur umeed karein ki yeh snails ko kha jayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chote group mein rakhna, jisse stress ya doosri machliyon ke prati aggression ho jata hai",
+      "Hiding spots ya tunnels na dena"
+    ]
   },
   {
     "scientific_name": "Sinibotia robusta",
@@ -147749,7 +148397,12 @@
       "Keeping alone or in too small a group, causing stress or aggression toward other fish",
       "Not providing hiding spots/tunnels"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek social aur intelligent loach hai jisko kam se kam 5 ya usse zyada ke group mein rakhna zaroori hai taaki yeh doosri machliyon ko bully na kare ya stress mein na aaye; iske liye tank mein caves aur tunnels zaroori hain aur yeh snails ko bhi khaayega.",
+    "common_mistakes_hi": [
+      "Akele rakhna ya bahut chhote group mein rakhna, jisse yeh stressed ho jata hai ya doosri machliyon par aggressive hota hai",
+      "Hiding spots ya tunnels provide na karna"
+    ]
   },
   {
     "scientific_name": "Leptobotia elongata",
@@ -147858,7 +148511,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jisko soft substrate pasand hai jisme yeh sift ya burrow kar sake. Isko group me rakhna best hai aur tank me hiding spots hone chahiye.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels ko nuksan ho sakta hai",
+      "Isko akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Leptobotia micra",
@@ -147935,7 +148593,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jise sift ya burrow karne ke liye soft substrate pasand hai, aur ye group mein hiding spots ke sath sabse achha rehta hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels ko nuksan ho sakta hai",
+      "Isse akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Parabotia fasciata",
@@ -148002,7 +148665,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek choti bottom-dwelling loach hai jisko sift ya burrow karne ke liye soft substrate chahiye hota hai, aur ye hiding spots ke sath group me rehna sabse zyada pasand karti hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iski barbels damage ho sakti hain",
+      "Isse akele rakhna"
+    ]
   },
   {
     "scientific_name": "Acantopsis dialuzona",
@@ -148115,7 +148783,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jo soft substrate pasand karta hai jisme ye sift aur burrow kar sake. Isko hiding spots ke sath group me rakhna sabse best hota hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels damage ho sakte hain",
+      "Isko akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Acantopsis octoactinotos",
@@ -148201,7 +148874,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek chhota bottom-dwelling loach hai jise sift ya burrow karne ke liye soft substrate pasand hai, aur yeh hiding spots ke sath group mein sabse accha rehta hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels damage ho sakte hain",
+      "Ise akele rakhna"
+    ]
   },
   {
     "scientific_name": "Lepidocephalichthys berdmorei",
@@ -148301,7 +148979,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jisko soft substrate bohot pasand hai jisme yeh sift ya burrow kar sake. Isko hiding spots ke sath group mein rakhna sabse best hota hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels damage ho sakte hain",
+      "Isko akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Lepidocephalichthys hasselti",
@@ -148410,7 +149093,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jo soft substrate pasand karta hai jisme ye sift ya burrow kar sake. Ise group mein rakhna best hota hai aur tank mein hiding spots hone chahiye.",
+    "common_mistakes_hi": [
+      "Aisa sharp ya coarse substrate use karna jo iske barbels ko damage kar sake",
+      "Ise akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Somileptes gongota",
@@ -148518,7 +149206,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek chota bottom-dwelling loach hai jo soft substrate mein sift ya burrow karna pasand karta hai aur isko hiding spots ke sath group mein rakhna sabse best hota hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels damage ho sakte hain",
+      "Isse akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Cobitis sinensis",
@@ -148617,7 +149310,11 @@
     "common_mistakes": [
       "Keeping at typical tropical temperatures, which stresses it long-term"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek cool-water tolerant loach hai jo warm tropical community tanks ke liye bilkul theek nahi hai. Ye unheated ya cooler setups mein bahut achhi tarah rehti hai aur soft substrate mein burrow karna isko pasand hai.",
+    "common_mistakes_hi": [
+      "Isse typical tropical temperatures par rakhna, jisse isko long-term stress hota hai."
+    ]
   },
   {
     "scientific_name": "Misgurnus mizolepis",
@@ -148683,7 +149380,11 @@
     "common_mistakes": [
       "Keeping at typical tropical temperatures, which stresses it long-term"
     ],
-    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the genus; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek cool-water tolerant loach hai jo warm tropical community tanks ke liye bilkul theek nahi hai. Ye unheated ya cooler setups mein bahut achhi tarah rehti hai aur soft substrate mein burrow karna pasand karti hai.",
+    "common_mistakes_hi": [
+      "Isko typical tropical temperatures par rakhna, jisse isko long-term stress hota hai."
+    ]
   },
   {
     "scientific_name": "Kottelatlimia pristes",
@@ -148783,7 +149484,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jisko sift ya burrow karne ke liye soft substrate chahiye hota hai, aur ye hiding spots ke sath group mein sabse accha rehta hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jisse iske barbels damage ho sakte hain",
+      "Isse akele rakhna"
+    ]
   },
   {
     "scientific_name": "Acanthopsoides gracilentus",
@@ -148860,7 +149566,12 @@
       "Sharp/coarse substrate that can damage its barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota bottom-dwelling loach hai jisko sift ya burrow karne ke liye soft substrate bohot pasand hai aur ye hiding spots ke sath group mein rehna sabse zyada pasand karta hai.",
+    "common_mistakes_hi": [
+      "Sharp ya coarse substrate use karna jo iske barbels ko damage kar sakta hai",
+      "Isse akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Vaillantella maassi",
@@ -148968,7 +149679,12 @@
       "Coarse substrate that can damage barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "This is an uncommon aquarium species with limited documented care information; ranges are a family-level estimate, not individually researched."
+    "uncertainty_note": "This is an uncommon aquarium species with limited documented care information; ranges are a family-level estimate, not individually researched.",
+    "care_notes_hi": "Yeh ek choti aur uncommon loach hai jise hamesha group mein rakhna chahiye. Iske liye soft substrate zaroori hai jisme yeh bakk sake aur chupne ke liye hiding spots hone chahiye; iski care hobby mein zyada achhi tarah documented nahi hai.",
+    "common_mistakes_hi": [
+      "Coarse substrate use karna jisse iski barbels damage ho sakti hain",
+      "Ise akela (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Serpenticobitis cingulata",
@@ -149068,7 +149784,12 @@
       "Coarse substrate that can damage barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "This is an uncommon aquarium species with limited documented care information; ranges are a family-level estimate, not individually researched."
+    "uncertainty_note": "This is an uncommon aquarium species with limited documented care information; ranges are a family-level estimate, not individually researched.",
+    "care_notes_hi": "Ek chhota sa, uncommon loach hai jisko hamesha group mein rakhna chahiye. Iske liye soft substrate jisme yeh sift kar sakein aur hiding spots hona zaroori hai; aquarium hobby mein iske baare mein zyada information available nahi hai.",
+    "common_mistakes_hi": [
+      "Coarse substrate use karna jisse iske barbels ko nuksaan pahunch sakta hai",
+      "Isse akele (single) rakhna"
+    ]
   },
   {
     "scientific_name": "Barbucca diabolica",
@@ -149176,7 +149897,12 @@
       "Coarse substrate that can damage barbels",
       "Keeping singly"
     ],
-    "uncertainty_note": "This is an uncommon aquarium species with limited documented care information; ranges are a family-level estimate, not individually researched."
+    "uncertainty_note": "This is an uncommon aquarium species with limited documented care information; ranges are a family-level estimate, not individually researched.",
+    "care_notes_hi": "Yeh ek chhota aur rare loach hai jisko hamesha group mein rakhna chahiye. Iske liye soft substrate best hota hai taaki ye usko sift kar sake aur isko hiding spots ki bhi zaroorat hoti hai. Hobby mein iske baare mein zyada information documented nahi hai.",
+    "common_mistakes_hi": [
+      "Coarse substrate use karna jisse iske barbels ko nuksaan pahunch sakta hai",
+      "Isko akele (singly) rakhna"
+    ]
   },
   {
     "scientific_name": "Schistura pridii",
@@ -149250,7 +149976,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur achhi oxygen wale streams se aata hai. Isko achha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai. Yeh garam aur stagnant paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko bahut garam paani mein ya low-flow wale tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Schistura mahnerti",
@@ -149357,7 +150087,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek choti stone loach hai jo thande aur well-oxygenated streams se aati hai; ise achhi flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ye warm, stagnant paani bilkul pasand nahi karti.",
+    "common_mistakes_hi": [
+      "Ise bahut garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Schistura vinciguerrae",
@@ -149464,7 +150198,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye cool aur well-oxygenated streams ki ek chhoti si stone loach hai; ise achha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ye warm, stagnant water bilkul pasand nahi karti.",
+    "common_mistakes_hi": [
+      "Ise bahut warm temperature mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Schistura kohchangensis",
@@ -149536,7 +150274,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai; ise achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur ye garam ya stagnant paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Ise bahut zyada garam paani mein rakhna ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Schistura spiloptera",
@@ -149620,7 +150362,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai. Yeh warm aur stagnant paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko zyada garam paani mein rakhna ya low-flow wale tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Schistura robertsi",
@@ -149727,7 +150473,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ise garam ya stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Ise bahut garam paani mein ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Nemacheilus binotatus",
@@ -149834,7 +150584,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ise garam ya stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Isko bahut zyada garam paani mein rakhna ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Nemacheilus masyae",
@@ -149941,7 +150695,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai; isko achhi flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur isko garam ya stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "IsmenuCategory ko zyada garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Nemacheilus pallidus",
@@ -150025,7 +150783,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur isko warm ya stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Isko bahut warm paani mein ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Nemacheilus selangoricus",
@@ -150132,7 +150894,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur acchhe oxygen wale streams se aata hai. Isko acchha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai. Yeh garam aur stagnant (rukha hua) paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko zyada garam paani mein rakhna ya low-flow wale tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Mesonoemacheilus guentheri",
@@ -150233,7 +150999,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye cool aur well-oxygenated streams ki ek chhoti si stone loach hai. Isko achhi water flow aur oxygenation ke saath-saath burrow karne ke liye fine substrate chahiye hota hai. Yeh warm aur stagnant paani bilkul pasand nahi karti.",
+    "common_mistakes_hi": [
+      "Isko bahut warm paani mein ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Mesonoemacheilus triangularis",
@@ -150346,7 +151116,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai. Yeh warm aur stagnant water bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko bahut zyada garam paani mein ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Mesonoemacheilus herrei",
@@ -150453,7 +151227,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek choti stone loach hai jo thande aur well-oxygenated streams se aati hai; isko achha flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ye warm, stagnant paani bilkul pasand nahi karti.",
+    "common_mistakes_hi": [
+      "Isko bahut warm paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Traccatichthys pulcher",
@@ -150552,7 +151330,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai; isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur ye garam ya stagnant water bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko bahut garam paani mein rakhna ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Traccatichthys taeniatus",
@@ -150651,7 +151433,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye thande aur well-oxygenated streams se ek chhota stone loach hai; isko achha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur ye garam ya stagnant water bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko zyada garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Aborichthys elongatus",
@@ -150758,7 +151544,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur yeh warm, stagnant paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko bahut garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Aborichthys kempi",
@@ -150857,7 +151647,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai; isko achhi flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur ye garam ya stagnant water bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko zyada garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Aborichthys garoensis",
@@ -150942,7 +151736,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur achhe oxygen wale streams se aata hai. Isko achha water flow aur oxygenation chahiye, burrow karne ke liye fine substrate chahiye, aur isko warm ya stagnant water bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Isko bahut zyada garam paani mein rakhna ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Aborichthys rosammai",
@@ -151016,7 +151814,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai; ise achhi flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ise garam ya stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Ise bahut garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Aborichthys tikaderi",
@@ -151101,7 +151903,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye thande aur well-oxygenated streams se aane wali ek choti stone loach hai; ise accha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ye warm, stagnant water bilkul pasand nahi karti.",
+    "common_mistakes_hi": [
+      "Ise bahut zyada garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Acanthocobitis pavonacea",
@@ -151185,7 +151991,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aate hain; ise achhi current/flow/oxygenation aur burrowing ke liye fine substrate chahiye, aur ise warm, stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Ise bahut garam paani mein ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Paracanthocobitis zonalternans",
@@ -151294,7 +152104,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek choti stone loach hai jo thande aur well-oxygenated streams se aati hai; isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ise warm, stagnant pani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Ise zyada garam pani me rakhna ya low-flow tank me rakhna"
+    ]
   },
   {
     "scientific_name": "Paracanthocobitis rubidipinnis",
@@ -151403,7 +152217,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye thande aur well-oxygenated streams ka ek chhota stone loach hai; isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur ye garam ya stagnant paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isse bahut zyada garam paani mein rakhna ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Paracanthocobitis urophthalma",
@@ -151512,7 +152330,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai; isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ye warm, stagnant water bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Tank ko zyada warm rakhna ya low-flow tank me rakhna"
+    ]
   },
   {
     "scientific_name": "Physoschistura rivulicola",
@@ -151611,7 +152433,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek chhota stone loach hai jo thande aur acchi oxygen wale streams se aata hai. Isko achha water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai. Yeh garam aur stagnant paani bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko bahut garam paani mein ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Nemachilichthys ruppelli",
@@ -151720,7 +152546,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur oxygen se bharpoor streams se aata hai. Ise accha water flow, high oxygenation aur andar burrow karne ke liye fine substrate chahiye hota hai. Ise garam aur stagnant paani bilkul pasand nahi hai.",
+    "common_mistakes_hi": [
+      "Ise bahut zyada garam paani mein rakhna ya low-flow tank mein rakhna"
+    ]
   },
   {
     "scientific_name": "Indoreonectes evezardi",
@@ -151827,7 +152657,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek chhota stone loach hai jo thande aur well-oxygenated streams se aata hai. Isko achhi water flow/oxygenation aur burrow karne ke liye fine substrate chahiye hota hai, aur ye garam ya stagnant water bilkul pasand nahi karta.",
+    "common_mistakes_hi": [
+      "Isko bahut zyada garam paani mein rakhna ya low-flow tank mein rakhna."
+    ]
   },
   {
     "scientific_name": "Yunnanilus brevis",
@@ -151901,7 +152735,11 @@
     "common_mistakes": [
       "Keeping too warm or in a low-flow tank"
     ],
-    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye cool aur well-oxygenated streams ki ek chhoti stone loach hai; ise achha flow/oxygenation aur burrow karne ke liye fine substrate chahiye, aur ye warm, stagnant water bilkul pasand nahi karti.",
+    "common_mistakes_hi": [
+      "Ise bahut warm water me rakhna ya low-flow tank me rakhna"
+    ]
   },
   {
     "scientific_name": "Sewellia speciosa",
@@ -151987,7 +152825,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ki aadi hai; isko ek powerful filter ya extra water movement ki zaroorat padti hai. Ye aam tropical community tanks ke garam aur thahere hue paani mein zinda nahi reh paati.",
+    "common_mistakes_hi": [
+      "Isse bina extra water flow aur oxygen ke standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams ki aadi is species ke liye tank ko zaroorat se zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Sewellia albisuera",
@@ -152073,7 +152916,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hillstream loach jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; isko powerful filter ya extra water movement chahiye hota hai aur yeh garam, shant tanks mein nahi jee paati jo aam taur par tropical community setups mein hote hain.",
+    "common_mistakes_hi": [
+      "Isko bina extra flow ya oxygen ke ek standard low-flow tropical community tank mein rakhna",
+      "Thandi nadiyon ki is species ke liye tank ko zaroorat se zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Sewellia breviventralis",
@@ -152159,7 +153007,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye hillstream loach thande, fast-flowing aur high oxygen wale paani ke liye adapt hote hain; inhe powerful filter ya extra water circulation ki zaroorat hoti hai aur agar aap inhe warm, still tank mein rakhoge jaisa ki aam taur par tropical community tanks mein hota hai, toh yeh survive nahi kar paenge.",
+    "common_mistakes_hi": [
+      "Inhe bina extra flow ya oxygen ke standard low-flow tropical community tank mein rakhna",
+      "Thande streams ke liye adapt hui is species ke tank ko zyada warm chalana"
+    ]
   },
   {
     "scientific_name": "Sewellia elongata",
@@ -152245,7 +153098,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisi hillstream loach hai jo thande, tezi se behne wale aur high-oxygen wale paani ki aadi hoti hai. Isko powerful filter ya extra water flow ki zaroorat hoti hai aur agar ise garam ya sthir (still) paani mein rakha jaye jaisa ki aam tropical tanks mein hota hai, toh ye zinda nahi reh paati.",
+    "common_mistakes_hi": [
+      "Ise bina kisi extra water flow ya oxygen ke standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko bahut zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Gastromyzon punctulatus",
@@ -152353,7 +153211,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai. Isko ek powerful filter ya extra water circulation ki zaroorat hoti hai aur yeh aam garam aur slow tropical community tanks mein zinda nahi reh pati.",
+    "common_mistakes_hi": [
+      "IsEspecially ise bina extra water flow ya oxygen ke kisi standard low-flow tropical community tank mein rakhna.",
+      "Tank ko bahut zyada garam chalana jabki yeh species thande streams ke paani ke liye bani hai."
+    ]
   },
   {
     "scientific_name": "Gastromyzon ctenocephalus",
@@ -152461,7 +153324,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ke liye bani hai. Ise ek tagde filter ya extra water flow ki zaroorat padti hai aur ye garam ya ruke hue paani wale tanks mein survive nahi kar pati, jo aam taur par tropical community tanks mein milte hain.",
+    "common_mistakes_hi": [
+      "Ise bina kisi extra flow ya oxygen ke ek standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko zyaada garam chalana"
+    ]
   },
   {
     "scientific_name": "Gastromyzon scitulus",
@@ -152569,7 +153437,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ke liye adabted hai; ise ek powerful filter ya extra water flow ki zaroorat hoti hai aur yeh un warm, stagnant tanks mein bilkul nahi chal pata jo aam taur par tropical community setups mein hote hain.",
+    "common_mistakes_hi": [
+      "Ise extra flow ya oxygen ke bina kisi standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams ke liye bane is species ke tank ko zyada warm chalana"
+    ]
   },
   {
     "scientific_name": "Gastromyzon viriosus",
@@ -152677,7 +153550,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hillstream loach jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; isko ek powerful filter ya extra water movement ki zaroorat hoti hai aur ye garam, thehre hue paani mein achhe se nahi reh paati jo aamtor par tropical community tanks mein hota hai.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow aur oxygen wale standard low-flow tropical community tank mein rakhna.",
+      "Thandi nadiyon ki is species ke liye tank ko zaroorat se zyada garam chalana."
+    ]
   },
   {
     "scientific_name": "Gastromyzon ridens",
@@ -152762,7 +153640,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ke liye bani hai; ise ek powerful filter ya extra water circulation ki zarurat hoti hai aur yeh un garam, shant tanks me survive nahi kar paati jo aam taur par tropical community setups me hote hain.",
+    "common_mistakes_hi": [
+      "Ise extra flow ya oxygen ke bina kisi standard low-flow tropical community tank me rakhna",
+      "Thande jharne (streams) ke liye bani is species ke tank ko zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Gastromyzon ocellatus",
@@ -152870,7 +153753,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hillstream loach hai jo thande, tez bahte hue aur high oxygen wale paani ke liye adapted hai; ise ek powerful filter ya extra water circulation ki zarurat hoti hai aur yeh un warm, stagnant tanks mein survive nahi kar pata jo aam taur par tropical community setups mein hote hain.",
+    "common_mistakes_hi": [
+      "Ise extra flow ya oxygen ke bina standard low-flow tropical community tank mein rakhna",
+      "Thande streams ke liye bani is species ke tank ko zyada warm chalana"
+    ]
   },
   {
     "scientific_name": "Gastromyzon farragus",
@@ -152978,7 +153866,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ki aadi hoti hai. Isko ek powerful filter ya extra water flow ki zaroorat hoti hai aur yeh aam tropical community tanks ki tarah garam aur sthir paani mein nahi jee paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow ya oxygen ke ek standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko zyaada garam chalana"
+    ]
   },
   {
     "scientific_name": "Beaufortia leveretti",
@@ -153086,7 +153979,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai. Isko ek powerful filter ya extra water flow ki zaroorat hoti hai aur ye garam ya thandhe paani wale aam tropical community tanks mein achhi tarah survive nahi kar paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow aur oxygen wale standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko zyada garam rakhna"
+    ]
   },
   {
     "scientific_name": "Beaufortia pingi",
@@ -153195,7 +154093,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye hillstream loach thande, tezi se behne wale aur oxygen se bharpoor paani ke liye adapt hote hain; inhe powerful filter ya extra water flow ki zaroorat hoti hai aur yeh aam tropical community tanks ki tarah garam ya stagnant paani mein survive nahi kar paate.",
+    "common_mistakes_hi": [
+      "Inhe bina extra flow aur oxygen ke standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams ke liye adapt hui species ke tank ko zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Pseudogastromyzon myersi",
@@ -153295,7 +154198,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisi hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; ise ek tagde filter ya extra water flow ki zaroorat hoti hai aur yeh aam tropical community tanks ki tarah garam, thhehre hue paani mein zinda nahi reh paati.",
+    "common_mistakes_hi": [
+      "Ise bina extra flow ya oxygen ke kisi standard low-flow tropical community tank mein rakhna",
+      "Thande jharon ki is species ke liye tank ko zyaada garam chalana"
+    ]
   },
   {
     "scientific_name": "Pseudogastromyzon fangi",
@@ -153362,7 +154270,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ke liye adapt hota hai; isko ek powerful filter ya extra water flow ki zaroorat hoti hai aur yeh aam tropical community tanks ke garam aur thahere hue paani mein zinda nahi reh paata.",
+    "common_mistakes_hi": [
+      "Isko bina extra flow ya oxygen ke ek standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams ke liye bane is species ke tank ko zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Homaloptera parclitella",
@@ -153470,7 +154383,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hillstream loach hai jo thande, tez bahte aur high oxygen wale paani ke liye bani hai; isko ek powerful filter ya extra water flow chahiye hota hai, aur ye aam tropical tanks ki tarah garam aur still paani me zinda nahi reh paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow aur oxygen ke standard low-flow tropical community tank me rakhna",
+      "Tank ko thande paani ki streams me rehne wali species ke liye zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Homaloptera confuzona",
@@ -153579,7 +154497,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; isko ek powerful filter ya extra water flow ki zaroorat padti hai aur ye garam, ruke hue paani wale aam tropical tanks mein survive nahi kar paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra flow aur oxygen ke standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko zyaada garam chalana"
+    ]
   },
   {
     "scientific_name": "Balitora burmanica",
@@ -153665,7 +154588,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; ise ek powerful filter ya extra water flow ki zaroorat padti hai aur ye garam, thehre hue paani mein bilkul nahi chal pati jo aam tor par tropical community tanks mein hota hai.",
+    "common_mistakes_hi": [
+      "Ise bina kisi extra water flow ya oxygen ke ek standard low-flow tropical community tank mein rakhna.",
+      "Tank ko bahut zyada garam chalana jabki ye species thande jharon ke liye bani hai."
+    ]
   },
   {
     "scientific_name": "Vanmanenia pingchowensis",
@@ -153765,7 +154693,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek aisi hillstream loach hai jo thande, tezi se behne wale aur high-oxygen wale paani ki aadi hoti hai. Isko ek powerful filter ya extra water circulation ki zarurat padti hai, aur yeh aam tropical community tanks ki tarah garam ya khade paani mein nahi jee paati.",
+    "common_mistakes_hi": [
+      "Isko extra flow ya oxygen ke bina kisi standard low-flow tropical community tank mein rakhna.",
+      "Thande jharon ki is species ke liye tank ko zaroorat se zyada garam chalana."
+    ]
   },
   {
     "scientific_name": "Vanmanenia stenosoma",
@@ -153865,7 +154798,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ek aisi hillstream loach jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; isko ek powerful filter ya extra water flow ki zaroorat hoti hai aur ye garam, bina flow wale aam tropical tanks mein nahi jee paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra flow ya oxygen ke kisi standard low-flow tropical community tank mein rakhna",
+      "Thande jharon ke liye bani is species ke tank ko bahut zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Annamia normani",
@@ -153965,7 +154903,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisi hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani ki aadi hoti hai. Isko ek powerful filter ya extra water circulation ki zaroorat padti hai aur ye garam, thahare hue paani wale tanks mein bilkul nahi chal pati jo ki zyada-tar tropical community setups mein hote hain.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow ya oxygen ke kisi standard low-flow tropical community tank mein rakhna.",
+      "Aise species ke liye tank ko zaroorat se zyada garam chalana jo thande streams ke liye adapt hui hai."
+    ]
   },
   {
     "scientific_name": "Erromyzon sinensis",
@@ -154042,7 +154985,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye hillstream loach thande, tezi se behne wale aur high oxygen wale paani ke liye adapt hote hain; inhe powerful filter ya extra water flow ki zaroorat hoti hai aur yeh garam, thahere hue tanks mein bilkul achha nahi karte jo ki aam taur par tropical community setups mein hote hain.",
+    "common_mistakes_hi": [
+      "Inhe standard low-flow tropical community tank mein rakhna bina extra flow ya oxygen ke",
+      "Tank ko zyada garam chalana ek aisi species ke liye jo thande streams ki adi hoti hai"
+    ]
   },
   {
     "scientific_name": "Erromyzon compactus",
@@ -154142,7 +155090,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai. Isko ek powerful filter ya extra water circulation ki zarurat hoti hai, aur ye garam ya thahraye hue paani mein bilkul nahi jee paati jo aamtor par tropical community tanks mein hota hai.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow ya oxygen ke kisi standard low-flow tropical community tank mein rakhna",
+      "Thande jharon (cool streams) ke liye bani is species ke tank ko zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Hemimyzon formosanus",
@@ -154250,7 +155203,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek aisi hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai. Isko ek powerful filter ya extra water circulation ki zaroorat hoti hai aur yeh aam garam aur stagnant (static) tropical community tanks mein zyaada din nahi jee paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow aur oxygen wale standard low-flow tropical community tank mein rakhna.",
+      "Aise species ke liye tank ko zyaada garam chalana jo thande dharon (streams) mein rehne ke liye bani hai."
+    ]
   },
   {
     "scientific_name": "Liniparhomaloptera disparis",
@@ -154350,7 +155308,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisi hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai. Isko ek powerful filter ya extra water flow ki zaroorat hoti hai aur yeh aam garam aur shant tropical tanks mein bilkul bhi achhi tarah nahi jee pati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow aur oxygen wale standard low-flow tropical community tank mein rakhna.",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko zyaada garam chalana."
+    ]
   },
   {
     "scientific_name": "Sinogastromyzon wui",
@@ -154459,7 +155422,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur high oxygen wale paani ke liye adivasi hai; isko ek powerful filter ya extra water flow ki zarurat hoti hai aur yeh aam tropical community tanks ki tarah garam aur thahere hue paani me nahi jee paata.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow aur oxygen ke ek standard low-flow tropical community tank me rakhna",
+      "Thande jharano me rehne wali is species ke tank ko zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Formosania lacustre",
@@ -154526,7 +155494,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisi hillstream loach hai jo thande, tezi se behne wale aur high oxygen wale paani ki aadi hoti hai. Isko powerful filter ya extra water circulation ki zaroorat hoti hai aur yeh aam tropical community tanks ki tarah garam aur thhehre hue paani mein zinda nahi reh pati.",
+    "common_mistakes_hi": [
+      "Isko extra flow ya oxygen ke bina kisi standard low-flow tropical community tank mein rakhna",
+      "Thande dharon (cool streams) ke liye bani is species ke tank ko bahut zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Protomyzon pachychilus",
@@ -154634,7 +155607,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; isko ek powerful filter ya extra water flow ki zaroorat hoti hai aur ye garam ya ruke hue paani mein bilkul achhi tarah nahi reh paati jo aamtor par tropical community tanks mein hota hai.",
+    "common_mistakes_hi": [
+      "Isse bina extra water flow ya oxygen ke ek standard low-flow tropical community tank mein rakhna",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko bahut zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Bhavania australis",
@@ -154743,7 +155721,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek aisi hillstream loach hai jo thande, tez bahte hue aur oxygen se bharpoor paani ki aadi hoti hai. Isko ek powerful filter ya extra water circulation ki zaroorat padti hai aur ye garam ya ruke hue paani wale aam tropical community tanks mein nahi jee paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow ya oxygen ke standard low-flow tropical community tank mein rakhna.",
+      "Thande paani ki streams mein rehne wali is species ke liye tank ko zaroorat se zyada garam chalana."
+    ]
   },
   {
     "scientific_name": "Travancoria jonesi",
@@ -154851,7 +155834,12 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Yeh ek aisi hillstream loach hai jo thande, tez bahte aur high oxygen wale paani ki adi hoti hai. Isko powerful filter ya extra water circulation ki zarurat padti hai aur ye garam, thahraye huye tanks mein bilkul achhi tarah nahi reh paati jo ki aam taur par kai tropical community setups mein hote hain.",
+    "common_mistakes_hi": [
+      "Isko extra flow ya oxygen ke bina kisi standard low-flow tropical community tank mein rakhna",
+      "Thande streams ke liye bani is species ke tank ko bahut zyada garam chalana"
+    ]
   },
   {
     "scientific_name": "Balitoropsis zollingeri",
@@ -154959,6 +155947,11 @@
       "Keeping in a standard low-flow tropical community tank without extra flow/oxygen",
       "Running the tank too warm for a species adapted to cool streams"
     ],
-    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched."
+    "uncertainty_note": "Care ranges are typical for hillstream loaches; this specific species hasn't been individually researched.",
+    "care_notes_hi": "Ye ek hillstream loach hai jo thande, tezi se behne wale aur oxygen se bharpoor paani mein rehne ke liye bani hai; isko ek powerful filter ya extra water circulation ki zaroorat padti hai aur ye garam, thehre hue paani wale aam tropical tanks mein bilkul nahi reh paati.",
+    "common_mistakes_hi": [
+      "Isko bina extra water flow ya oxygen wale standard low-flow tropical community tank mein rakhna.",
+      "Tank ko thandi dharayein (streams) pasand karne wali species ke liye zyada garam chalana."
+    ]
   }
 ]
