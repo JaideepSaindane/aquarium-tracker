@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
+import { MetricsGraphs } from "./MetricsGraphs";
 
 type DayCount = { day: string; n: number };
 
@@ -115,11 +116,7 @@ export default function AdminDashboardPage() {
         ]}
       />
 
-      <DayChart title="Signups — last 14 days" data={stats.signupsPerDay} />
-      <DayChart title="App installs — last 14 days" data={stats.installsPerDay} />
-      <DayChart title="Tanks created — last 14 days" data={stats.tanksPerDay} />
-      <DayChart title="Page views — last 14 days" data={stats.pageViewsPerDay} />
-      <DayChart title="AI calls — last 14 days" data={stats.aiCallsPerDay} />
+      <MetricsGraphs />
 
       <StatGrid
         items={[
@@ -161,30 +158,6 @@ export default function AdminDashboardPage() {
         />
       </Card>
     </Screen>
-  );
-}
-
-function DayChart({ title, data }: { title: string; data: DayCount[] }) {
-  const max = Math.max(1, ...data.map((d) => d.n));
-  return (
-    <Card style={{ marginBottom: 16 }}>
-      <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 12 }}>{title}</h2>
-      {data.length === 0 ? (
-        <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>Nothing in this window.</p>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          {data.map((d) => (
-            <div key={d.day} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 90, fontSize: "var(--font-caption-size)", color: "var(--color-ink-muted)" }}>{d.day}</span>
-              <div style={{ flex: 1, background: "var(--color-surface-alt)", borderRadius: 4, overflow: "hidden" }}>
-                <div style={{ width: `${(d.n / max) * 100}%`, background: "var(--color-deep)", height: 14, minWidth: 4 }} />
-              </div>
-              <span style={{ width: 24, textAlign: "right", fontSize: "var(--font-caption-size)", fontWeight: 600 }}>{d.n}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </Card>
   );
 }
 
