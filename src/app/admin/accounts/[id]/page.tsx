@@ -144,6 +144,8 @@ export default function AdminAccountDetailPage() {
         ))}
       </div>
 
+      {data.account.phone && <ResetPinCard accountId={data.account.id} phone={data.account.phone} />}
+
       {tab === "actions" && (
         <Card>
           {data.actions.length === 0 ? (
@@ -215,5 +217,60 @@ export default function AdminAccountDetailPage() {
         </Card>
       )}
     </Screen>
+  );
+}
+
+/** Forgot-PIN reset: the admin verifies the user out of band, then sets a new 4-digit PIN here (also clears any lockout). */
+function ResetPinCard({ accountId, phone }: { accountId: string; phone: string }) {
+  const [pin, setPin] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleReset() {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/accounts/${accountId}/reset-pin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+      const body = await res.json().catch(() => ({}));
+      setMessage(res.ok ? `PIN for ${phone} is now ${pin}. Share it with the user.` : body.error ?? "Couldn't reset the PIN.");
+      if (res.ok) setPin("");
+    } catch {
+      setMessage("Couldn't reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card style={{ marginBottom: 16 }}>
+      <p style={{ fontWeight: 700, marginBottom: 4 }}>Reset PIN</p>
+      <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 8 }}>
+        Only after confirming it&apos;s really them (e.g. they can describe their tanks). Also unlocks the number if it was locked.
+      </p>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={4}
+          placeholder="New 4-digit PIN"
+          value={pin}
+          onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          style={{ flex: 1, padding: "8px 10px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-line)", background: "var(--color-surface-alt)", color: "var(--color-ink)" }}
+        />
+        <button
+          type="button"
+          onClick={handleReset}
+          disabled={busy || pin.length !== 4}
+          style={{ padding: "8px 14px", borderRadius: "var(--radius-md)", border: "none", background: "var(--color-deep)", color: "#fff", fontWeight: 600, opacity: busy || pin.length !== 4 ? 0.5 : 1 }}
+        >
+          {busy ? "Saving..." : "Set PIN"}
+        </button>
+      </div>
+      {message && <p style={{ marginTop: 8, fontSize: "var(--font-body-sm-size)" }}>{message}</p>}
+    </Card>
   );
 }

@@ -13,6 +13,7 @@ import { NextResponse } from "next/server";
 const PUBLIC_PATHS = [
   "/login",
   "/api/auth",
+  "/api/phone-status",
   "/manifest.json",
   "/icon.svg",
   "/icon-alternate.svg",

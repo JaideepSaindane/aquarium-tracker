@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton } from "@/components/Button";
-import { APP_NAME } from "@/constants/app";
+import { APP_NAME, CONTACT_EMAIL } from "@/constants/app";
 import { AquaIcon } from "@/components/icons/AquaIcon";
 import { IntroAnimation } from "@/components/IntroAnimation";
 import { markIntroPlayed } from "@/lib/intro-session";
@@ -122,6 +122,31 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
   const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Whether this number already has an account: switches the password copy
+  // between "enter yours" and "set one". An existing number's password is
+  // never replaced by what's typed — a wrong one is just rejected.
+  const [phoneExists, setPhoneExists] = useState<boolean | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
+
+  useEffect(() => {
+    const digits = phone.trim();
+    if (!/^\d{10,15}$/.test(digits)) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      fetch("/api/phone-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: digits }) })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!cancelled && data) setPhoneExists(!!data.exists);
+        })
+        .catch(() => {});
+    }, 400);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [phone]);
+
+  const knownPhone = /^\d{10,15}$/.test(phone.trim()) ? phoneExists : null;
 
   async function handlePhoneSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -138,7 +163,13 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
     const result = await signIn("credentials", { phone: phone.trim(), pin, redirect: false });
     setBusy(false);
     if (result?.error) {
-      setError(result.error === "CredentialsSignin" ? "Incorrect PIN, or too many attempts — try again shortly." : result.error);
+      setError(
+        result.error === "CredentialsSignin"
+          ? knownPhone
+            ? "Wrong PIN for this number. Try again, or tap \"Forgot PIN?\". Too many wrong tries locks it for 15 minutes."
+            : "Couldn't sign in. Check the number and PIN, or try again in a few minutes."
+          : result.error
+      );
       return;
     }
     router.replace(from); // replace, so Back never returns to the sign-in page
@@ -191,14 +222,49 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
       >
         <form onSubmit={handlePhoneSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          <Field label="Your 4-digit password" type="password" inputMode="numeric" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))} />
+          <Field
+            label={knownPhone === true ? "Enter your 4-digit PIN" : knownPhone === false ? "Set a 4-digit PIN" : "Your 4-digit PIN"}
+            type="password"
+            inputMode="numeric"
+            maxLength={4}
+            placeholder="••••"
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          />
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -6 }}>
-            This is not an OTP — no code will be sent. New here? Set your own 4-digit password and remember it. Already signed up? Enter the one you set.
+            {knownPhone === true
+              ? "This number already has an account. Enter the PIN you set — it can't be changed here."
+              : knownPhone === false
+                ? "New number. This is not an OTP — no code will be sent. Choose your own 4-digit PIN and remember it."
+                : "This is not an OTP — no code will be sent. New here? Set your own 4-digit PIN. Already signed up? Enter the one you set."}
           </p>
           {error && <Banner severity="fixNow">{error}</Banner>}
           <PrimaryButton type="submit" disabled={busy}>
             {busy ? "Checking..." : "Continue"}
           </PrimaryButton>
+          {knownPhone !== false && (
+            <button
+              type="button"
+              onClick={() => setShowForgot((v) => !v)}
+              style={{ background: "none", border: "none", color: "var(--color-deep)", fontSize: "var(--font-body-sm-size)", fontWeight: 600, padding: 4 }}
+            >
+              Forgot PIN?
+            </button>
+          )}
+          {showForgot && (
+            <div style={{ padding: 12, borderRadius: "var(--radius-md)", background: "var(--color-surface-alt)", fontSize: "var(--font-body-sm-size)", lineHeight: 1.5 }}>
+              <p style={{ margin: "0 0 6px", fontWeight: 600 }}>We&apos;ll reset it for you</p>
+              <p style={{ margin: "0 0 8px", color: "var(--color-ink-muted)" }}>
+                Email us from any account with your phone number and a few details about your tanks, so we can confirm it&apos;s you. We&apos;ll set a new PIN and send it back, usually within a day.
+              </p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${APP_NAME}: forgot PIN`)}&body=${encodeURIComponent(`Hi, I forgot my ${APP_NAME} PIN.\n\nPhone number: ${phone.trim()}\nMy tanks / fish: \n`)}`}
+                style={{ color: "var(--color-deep)", fontWeight: 600 }}
+              >
+                Email {CONTACT_EMAIL}
+              </a>
+            </div>
+          )}
         </form>
       </div>
     </Backdrop>

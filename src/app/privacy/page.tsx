@@ -5,11 +5,10 @@ import { goBack } from "@/lib/nav-history";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 import { Banner } from "@/components/Banner";
-import { APP_NAME } from "@/constants/app";
+import { APP_NAME, CONTACT_EMAIL } from "@/constants/app";
 import { useTranslation } from "@/i18n/use-translation";
 
 const LAST_UPDATED = "12 September 2026";
-const CONTACT_EMAIL = "jaideep.saindane@gmail.com";
 
 export default function PrivacyPage() {
   const router = useRouter();
