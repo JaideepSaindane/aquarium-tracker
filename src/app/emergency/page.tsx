@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import { useCommunityDraft } from "@/store/use-community-draft";
 
 type Stage = "intake" | "loading" | "result" | "error";
+
+const TRIAGE_RETURN_KEY = "aquaai-triage-return";
 
 export default function EmergencyPage() {
   const { locale } = useLocale();
@@ -66,6 +68,31 @@ export default function EmergencyPage() {
   const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
   const [submittingFollowUp, setSubmittingFollowUp] = useState(false);
   const [baseDescription, setBaseDescription] = useState("");
+
+  // Returning via Back from "Post on community" used to remount this page on
+  // an empty form, losing the report. The report is stashed right before that
+  // hand-off and restored once on return.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(TRIAGE_RETURN_KEY);
+      if (!raw) return;
+      sessionStorage.removeItem(TRIAGE_RETURN_KEY);
+      const saved = JSON.parse(raw);
+      const parsed = TriageZod.safeParse(saved.report);
+      if (!parsed.success) return;
+      /* eslint-disable react-hooks/set-state-in-effect -- one-time restore from sessionStorage on mount */
+      setSelectedSymptoms(new Set(saved.symptoms ?? []));
+      setAffected(saved.affected);
+      setDuration(saved.duration);
+      setWaterTest(saved.waterTest);
+      setFishNames(saved.fishNames ?? "");
+      setOtherSymptom(saved.otherSymptom ?? "");
+      setBaseDescription(saved.baseDescription ?? "");
+      setReport(parsed.data);
+      setStage("result");
+      /* eslint-enable react-hooks/set-state-in-effect */
+    } catch {}
+  }, []);
 
   function toggleSymptom(s: string) {
     setSelectedSymptoms((prev) => {
@@ -371,6 +398,12 @@ export default function EmergencyPage() {
                 .replace("{duration}", duration)
                 .replace("{waterTest}", waterTest);
               setCommunityDraft(body, photo);
+              try {
+                sessionStorage.setItem(
+                  TRIAGE_RETURN_KEY,
+                  JSON.stringify({ report, symptoms: Array.from(selectedSymptoms), affected, duration, waterTest, fishNames, otherSymptom, baseDescription })
+                );
+              } catch {}
               router.push("/community/new");
             }}
           >

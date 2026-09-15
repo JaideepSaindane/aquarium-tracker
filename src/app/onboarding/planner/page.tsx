@@ -351,8 +351,7 @@ export default function OnboardingPlannerPage() {
         setSaving(false);
         return;
       }
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- deliberate full-page nav, not an SPA transition: it must survive aeroplane mode.
-      window.location.assign(`/tank/${tankId}`);
+      window.location.replace(`/tank/${tankId}`);
     } catch (err) {
       setSaveError(`${t.plannerPage.somethingWentWrongSavingPlan} ${String(err)}`);
       setSaving(false);

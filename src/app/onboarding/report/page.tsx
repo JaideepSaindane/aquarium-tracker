@@ -162,8 +162,9 @@ export default function ScanReportPage() {
           </PrimaryButton>
           <SecondaryButton
             onClick={() => {
-              session.reset();
-              router.push("/onboarding/scan");
+              // No reset here — the scan page resets on entry; resetting first
+              // raced this page's own "no report → back to scan" redirect.
+              router.replace("/onboarding/scan");
             }}
             disabled={saving}
           >

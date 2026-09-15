@@ -3,6 +3,7 @@
 import { use, useState, type ReactNode, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/nav-history";
 import { Screen } from "@/components/Screen";
 import { TabBar } from "@/components/TabBar";
 import { Banner } from "@/components/Banner";
@@ -222,7 +223,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => goBack(router, "/")}
           aria-label={t.common.back}
           style={{
             width: 36,

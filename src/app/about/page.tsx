@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/nav-history";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 import { APP_NAME } from "@/constants/app";
@@ -15,7 +16,7 @@ export default function AboutPage() {
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => goBack(router, "/settings")}
           aria-label={t.aboutPage.back}
           style={{
             width: 36,

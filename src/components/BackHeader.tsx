@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useTranslation } from "@/i18n/use-translation";
+import { goBack } from "@/lib/nav-history";
 
 /**
  * Standard top-left back button + optional title, used on every screen
@@ -27,11 +28,7 @@ export function BackHeader({ title, fallbackHref, right }: { title?: ReactNode; 
   const t = useTranslation();
 
   function handleBack() {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push(fallbackHref ?? "/");
-    }
+    goBack(router, fallbackHref ?? "/");
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { use, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/nav-history";
 import { Screen } from "@/components/Screen";
 import { Chip } from "@/components/Chip";
 import { useLiveQuery } from "@/db/live";
@@ -230,7 +231,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
   return (
     <Screen background="var(--soft-bg)">
       <button
-        onClick={() => router.back()}
+        onClick={() => goBack(router, "/dex")}
         aria-label={t.common.back}
         style={{
           width: 40,

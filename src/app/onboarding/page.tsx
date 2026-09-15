@@ -84,7 +84,7 @@ export default function OnboardingPage() {
       name: name.trim() || undefined,
       onboardingCompletedAt: new Date().toISOString(),
     });
-    router.push("/");
+    router.replace("/");
   }
 
   return (

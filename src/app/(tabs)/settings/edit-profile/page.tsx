@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/nav-history";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
@@ -78,7 +79,7 @@ export default function EditProfilePage() {
         contact: contact.trim() || undefined,
         photoUri: photoUri ?? undefined,
       });
-      router.back();
+      goBack(router, "/settings");
     } catch (err) {
       setMessage(`${t.settingsPage.couldNotSave} ${String(err)}`);
       setBusy(false);

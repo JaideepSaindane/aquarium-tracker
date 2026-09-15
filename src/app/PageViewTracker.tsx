@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { recordNavigation } from "@/lib/nav-history";
 
 /**
  * Fires a lightweight "this account viewed this page" beacon on every
@@ -16,6 +17,7 @@ export function PageViewTracker() {
 
   useEffect(() => {
     if (!pathname) return;
+    recordNavigation(pathname);
     fetch("/api/track/pageview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
