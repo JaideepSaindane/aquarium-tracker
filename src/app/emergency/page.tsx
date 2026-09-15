@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Card } from "@/components/Card";
+import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { PhotoPickerButton } from "@/components/PhotoPickerButton";
@@ -52,6 +53,13 @@ export default function EmergencyPage() {
   const [report, setReport] = useState<TriageReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedIncident, setSavedIncident] = useState(false);
+  // Answers to the report's own clarifying_questions — Jaideep: "we ask
+  // followup questions, but no way to answer them." Kept as free text per
+  // question rather than one big box, so each answer stays attached to the
+  // question that asked for it.
+  const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
+  const [submittingFollowUp, setSubmittingFollowUp] = useState(false);
+  const [baseDescription, setBaseDescription] = useState("");
 
   function toggleSymptom(s: string) {
     setSelectedSymptoms((prev) => {
@@ -98,6 +106,8 @@ export default function EmergencyPage() {
         setStage("error");
         return;
       }
+      setBaseDescription(description);
+      setFollowUpAnswers({});
       setReport(parsed.data);
       setStage("result");
 
@@ -112,6 +122,48 @@ export default function EmergencyPage() {
     } catch {
       setError(t.emergencyPage.couldNotReachServer);
       setStage("error");
+    }
+  }
+
+  // Re-runs triage with the report's own clarifying_questions answered —
+  // previously there was no way to actually respond to "What I need to
+  // know," so the report was a dead end the moment it asked something.
+  async function handleFollowUpSubmit() {
+    const answered = Object.entries(followUpAnswers).filter(([, a]) => a.trim());
+    if (answered.length === 0) return;
+    const tankAgeDays = selectedTank?.startedOn
+      ? String(Math.max(0, Math.round((Date.now() - new Date(selectedTank.startedOn).getTime()) / 86400000)))
+      : "unknown";
+    setSubmittingFollowUp(true);
+    setError(null);
+    try {
+      const description = `${baseDescription}\n\nFollow-up information:\n${answered.map(([q, a]) => `${q} ${a.trim()}`).join("\n")}`;
+      const result = await runTriage({
+        photo: photo ?? undefined,
+        description,
+        affectedCount: affected,
+        duration,
+        recentTest: waterTest,
+        tankAgeDays,
+        tankId: tankId || undefined,
+        locale,
+      });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      const parsed = TriageZod.safeParse(result.data.triage);
+      if (!parsed.success) {
+        setError(t.emergencyPage.unexpectedShape);
+        return;
+      }
+      setBaseDescription(description);
+      setFollowUpAnswers({});
+      setReport(parsed.data);
+    } catch {
+      setError(t.emergencyPage.couldNotReachServer);
+    } finally {
+      setSubmittingFollowUp(false);
     }
   }
 
@@ -267,10 +319,24 @@ export default function EmergencyPage() {
           <Card style={{ marginBottom: 16 }}>
             <p style={{ fontWeight: 600, marginBottom: 8 }}>{t.emergencyPage.worthChecking}</p>
             {report.clarifying_questions.map((q, i) => (
-              <p key={i} style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 4 }}>
-                {q.question} <span style={{ fontStyle: "italic" }}>({q.why})</span>
-              </p>
+              <div key={i} style={{ marginBottom: 12 }}>
+                <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 4 }}>
+                  {q.question} <span style={{ fontStyle: "italic" }}>({q.why})</span>
+                </p>
+                <Field
+                  label=""
+                  value={followUpAnswers[q.question] ?? ""}
+                  onChange={(e) => setFollowUpAnswers((prev) => ({ ...prev, [q.question]: e.target.value }))}
+                  placeholder={t.emergencyPage.yourAnswer}
+                />
+              </div>
             ))}
+            <SecondaryButton
+              onClick={handleFollowUpSubmit}
+              disabled={submittingFollowUp || Object.values(followUpAnswers).every((a) => !a.trim())}
+            >
+              {submittingFollowUp ? t.emergencyPage.gettingHelp : t.emergencyPage.getUpdatedAdvice}
+            </SecondaryButton>
           </Card>
         )}
 

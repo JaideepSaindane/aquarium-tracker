@@ -135,6 +135,8 @@ const hiLatn: Dictionary = {
     then: "toh",
     couldNotTell: "Pakka pata nahi chal saka",
     worthChecking: "Mujhe ye jaanna hai",
+    yourAnswer: "Aapka jawab",
+    getUpdatedAdvice: "Updated advice paayein",
     watchFor: "Ye dekhte rahein",
     getHelpUrgentlyIf: "Turant madad lein agar",
     urgencyLabel: "Urgency",

@@ -131,6 +131,8 @@ const en = {
     then: "then",
     couldNotTell: "Couldn't tell for sure",
     worthChecking: "What I need to know",
+    yourAnswer: "Your answer",
+    getUpdatedAdvice: "Get updated advice",
     watchFor: "Watch for",
     getHelpUrgentlyIf: "Get help urgently if",
     urgencyLabel: "Urgency",
