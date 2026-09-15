@@ -45,7 +45,7 @@
       "max": 4
     },
     "breeding": "bubble-nester",
-    "care_notes": "A single male needs a heated, filtered, lidded tank with a footprint of at least 45x30 cm; bettas breathe air at the surface, so surface area matters more than depth. They need a heater — Seriously Fish gives 22-30 C and Aquarium Co-Op targets around 27 C, and unheated rooms below 22 C cause lethargy and infection. Feed a betta-specific pellet once daily, only as much as it eats in about a minute. Never house two males together, and add tank mates only in tanks of 38 L or more with heavy planting and escape routes.",
+    "care_notes": "A single male needs a heated, filtered, lidded tank with a footprint of at least 45x30 cm; bettas breathe air at the surface, so surface area matters more than depth. They need a heater — the tolerated range is commonly cited as 22-30 C and around 27 C is commonly recommended, and unheated rooms below 22 C cause lethargy and infection. Feed a betta-specific pellet once daily, only as much as it eats in about a minute. Never house two males together, and add tank mates only in tanks of 38 L or more with heavy planting and escape routes.",
     "common_mistakes": [
       "Keeping them in unheated, unfiltered bowls or vases",
       "Assuming the labyrinth organ means they do not need clean water or filtration",
@@ -60,7 +60,7 @@
       "fin-nipper",
       "long-finned"
     ],
-    "disputed": "Minimum volume is commonly cited between 19 L and 40 L. Aquarium Co-Op accepts 5 gal (19 L) as workable and prefers 10 gal (38 L); Seriously Fish specifies a 45x30 cm base, which is about 38-40 L at normal tank heights. We list the larger figure. Temperature also disputed: Seriously Fish gives a wide 22-30 C tolerance, Aquarium Co-Op recommends around 27 C.",
+    "disputed": "Minimum volume is commonly cited between 19 L and 40 L. 5 gal (19 L) is accepted as workable while 10 gal (38 L) is preferred; a 45x30 cm base is specified, which is about 38-40 L at normal tank heights. We list the larger figure. Temperature also disputed: a wide 22-30 C tolerance is given, versus around 27 C being recommended.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -134,7 +134,7 @@
         "stored_height": 1693
       }
     ],
-    "care_notes_hi": "Ek akela male betta ko heated, filtered, aur dhakana (lidded) hua tank chahiye jiska base area kam se kam 45x30 cm ho; betta surface par air breathe karte hain, isliye depth se zyada surface area zaroori hai. Inhe heater ki zaroorat hoti hai — Seriously Fish 22-30 C kehta hai aur Aquarium Co-Op lagbhag 27 C target karta hai, aur 22 C se kam unheated rooms me rakhne par machli lethargic ho jaati hai aur use infection ho sakta hai. Betta-specific pellets din me ek baar dein, sirf utna jitna wo lagbhag ek minute me kha sakein. Do males ko kabhi bhi ek saath mat rakhein, aur tank mates sirf tabhi add karein jab tank 38 L ya usse bada ho, jisme ghane paudhe aur chhupne/bhagne ki jagah ho.",
+    "care_notes_hi": "Ek akela male betta ko heated, filtered, aur dhakana (lidded) hua tank chahiye jiska base area kam se kam 45x30 cm ho; betta surface par air breathe karte hain, isliye depth se zyada surface area zaroori hai. Inhe heater ki zaroorat hoti hai — 22-30 C aur lagbhag 27 C range commonly cited hain, aur 22 C se kam unheated rooms me rakhne par machli lethargic ho jaati hai aur use infection ho sakta hai. Betta-specific pellets din me ek baar dein, sirf utna jitna wo lagbhag ek minute me kha sakein. Do males ko kabhi bhi ek saath mat rakhein, aur tank mates sirf tabhi add karein jab tank 38 L ya usse bada ho, jisme ghane paudhe aur chhupne/bhagne ki jagah ho.",
     "common_mistakes_hi": [
       "Inhe bina heater aur bina filter wale bowls ya vases me rakhna",
       "Ye sochna ki labyrinth organ hone ki wajah se inhe saaf paani ya filtration ki zaroorat nahi hai",
@@ -142,7 +142,7 @@
       "Fin-nippers ya doosri long-finned, bright rang wali machliyon ke sath rakhna",
       "Ek tank me do males, ya ek male aur female (breeding ke alawa) ko ek sath rakhna"
     ],
-    "disputed_hi": "Minimum volume aam taur par 19 L aur 40 L ke beech bataya jata hai. Aquarium Co-Op 5 gal (19 L) ko workable maanta hai par 10 gal (38 L) prefer karta hai; Seriously Fish 45x30 cm base specify karta hai, jo ki normal tank height ke hisaab se lagbhag 38-40 L hota hai. Hum bada figure list kar rahe hain. Temperature par bhi debate hai: Seriously Fish 22-30 C ki wide tolerance deta hai, jabki Aquarium Co-Op lagbhag 27 C recommend karta hai."
+    "disputed_hi": "Minimum volume aam taur par 19 L aur 40 L ke beech bataya jata hai. 5 gal (19 L) ko workable maana jata hai par 10 gal (38 L) prefer kiya jata hai; 45x30 cm base specify kiya gaya hai, jo ki normal tank height ke hisaab se lagbhag 38-40 L hota hai. Hum bada figure list kar rahe hain. Temperature par bhi debate hai: 22-30 C ki wide tolerance di gayi hai, jabki lagbhag 27 C recommend kiya jata hai."
   },
   {
     "id": "guppy",
@@ -203,7 +203,7 @@
       "betta",
       "angelfish"
     ],
-    "disputed": "Aquarium Co-Op allows a trio in a 5 gal (19 L) tank but recommends 38-76 L long term; Seriously Fish specifies 45x30x30 cm (about 40 L). We list 40 L. Temperature ranges also differ: Seriously Fish gives 17-28 C tolerance, Aquarium Co-Op recommends 24-26 C.",
+    "disputed": "A trio is allowed in a 5 gal (19 L) tank but 38-76 L is recommended long term; another specification is 45x30x30 cm (about 40 L), and 40 L is listed. Temperature ranges also differ: 17-28 C tolerance is given versus 24-26 C recommended.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -285,7 +285,7 @@
       "Tiger barbs ya serpae tetras jaise fin-nippers ke sath rakhna.",
       "Heavily inbred fancy strains khareedna aur yeh expect karna ki woh purani hardy stock jaisi hi strong hongi."
     ],
-    "disputed_hi": "Aquarium Co-Op 5 gal (19 L) tank mein trio allow karta hai lekin long-term ke liye 38-76 L recommend karta hai; Seriously Fish 45x30x30 cm (lagbhag 40 L) specify karta hai. Hum 40 L list karte hain. Temperature ranges bhi alag-alag hain: Seriously Fish 17-28 C tolerance deta hai, jabki Aquarium Co-Op 24-26 C recommend karta hai."
+    "disputed_hi": "5 gal (19 L) tank mein trio allow kiya jata hai lekin long-term ke liye 38-76 L recommend kiya jata hai; 45x30x30 cm (lagbhag 40 L) bhi specify kiya jata hai, aur 40 L list kiya jata hai. Temperature ranges bhi alag-alag hain: 17-28 C tolerance di gayi hai jabki 24-26 C recommend kiya jata hai."
   },
   {
     "id": "endler",
@@ -345,7 +345,7 @@
       "large-cichlid",
       "fin-nipper"
     ],
-    "disputed": "Aquarium Co-Op gives a 5-10 gal (19-38 L) minimum and says room temperature is fine; Seriously Fish specifies 45x30x30 cm (about 40 L) and a warmer 24-30 C. We list 38 L and a range spanning both temperature positions.",
+    "disputed": "Sources suggest a 5-10 gal (19-38 L) minimum while others specify 45x30x30 cm (about 40 L); room temperature is considered fine by some, whereas a warmer 24-30 C is specified elsewhere. 38 L and a range spanning both temperature positions are listed here.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -426,7 +426,7 @@
       "Chhote tank mein exponential colony growth ko dhyan mein na rakhna",
       "Yeh sochna ki inhein har jagah heated tropical temperatures chahiye - India ke zyada tar parts mein heater ki zaroorat nahi padti"
     ],
-    "disputed_hi": "Aquarium Co-Op 5-10 gal (19-38 L) minimum recommend karta hai aur kehta hai ki room temperature theek hai; jabki Seriously Fish 45x30x30 cm (lagbhag 40 L) aur thoda garam 24-30 C specify karta hai. Hum 38 L aur dono temperature positions ko cover karne wali range list karte hain."
+    "disputed_hi": "Sources 5-10 gal (19-38 L) minimum suggest karte hain jabki doosre 45x30x30 cm (lagbhag 40 L) specify karte hain; room temperature theek hai aisa maana jata hai, jabki doosri jagah thoda garam 24-30 C specify kiya gaya hai. Yahan 38 L aur dono temperature positions ko cover karne wali range list ki gayi hai."
   },
   {
     "id": "platy",
@@ -486,7 +486,7 @@
       "large-cichlid",
       "angelfish"
     ],
-    "disputed": "Aquarium Co-Op suggests 10-20 gal (38-76 L); Seriously Fish specifies 60x30x30 cm (about 54 L). We list 54 L as the floor.",
+    "disputed": "Sources suggest 10-20 gal (38-76 L) vs 60x30x30 cm (about 54 L). We list 54 L as the floor.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -567,7 +567,7 @@
       "Bina mineral supplementation ke inhe soft water mein rakhna",
       "Uncovered filter intakes jisse fry andar khinch jaate hain"
     ],
-    "disputed_hi": "Aquarium Co-Op 10-20 gal (38-76 L) suggest karta hai; Seriously Fish 60x30x30 cm (lagbhag 54 L) specify karta hai. Hum 54 L ko minimum limit maante hain."
+    "disputed_hi": "Sources 10-20 gal (38-76 L) aur 60x30x30 cm (lagbhag 54 L) suggest karte hain. Hum 54 L ko minimum limit maante hain."
   },
   {
     "id": "molly",
@@ -634,7 +634,7 @@
       "electric-blue-ram",
       "cardinal-tetra"
     ],
-    "disputed": "Minimum volume is commonly cited between 76 L and 208 L. Seriously Fish specifies 90x30x30 cm (about 81 L) for the short-finned molly; Aquarium Co-Op says 20 gal (76 L) minimum but 29-55 gal (110-208 L) for larger sailfin types. We list 80 L for P. sphenops and flag that sailfin mollies need substantially more. Some published guides listing 40 gal (151 L) as the minimum for all mollies are conflating sailfin and short-finned types.",
+    "disputed": "Minimum volume is commonly cited between 76 L and 208 L. One source specifies 90x30x30 cm (about 81 L) for the short-finned molly; another source says 20 gal (76 L) minimum but 29-55 gal (110-208 L) for larger sailfin types. We list 80 L for P. sphenops and flag that sailfin mollies need substantially more. Some published guides listing 40 gal (151 L) as the minimum for all mollies are conflating sailfin and short-finned types.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -716,7 +716,7 @@
       "Sirf protein flake dena bina kisi vegetable matter ke",
       "Balloon-body strains ko normal ones ke sath mix karke same lifespan expect karna"
     ],
-    "disputed_hi": "Minimum tank volume aamtaur par 76 L aur 208 L ke beech bataya jata hai. Seriously Fish short-finned molly ke liye 90x30x30 cm (lagbhag 81 L) suggest karta hai; Aquarium Co-Op kehta hai ki minimum 20 gal (76 L) chahiye lekin bade sailfin types ke liye 29-55 gal (110-208 L) behtar hai. Hum P. sphenops ke liye 80 L mention karte hain aur ye bhi batate hain ki sailfin mollies ko kaafi zyada space chahiye. Kuch published guides jo sabhi mollies ke liye minimum 40 gal (151 L) batati hain, wo sailfin aur short-finned types ko mix kar rahi hain."
+    "disputed_hi": "Minimum tank volume aamtaur par 76 L aur 208 L ke beech bataya jata hai. Ek source short-finned molly ke liye 90x30x30 cm (lagbhag 81 L) suggest karta hai; dusra source kehta hai ki minimum 20 gal (76 L) chahiye lekin bade sailfin types ke liye 29-55 gal (110-208 L) behtar hai. Hum P. sphenops ke liye 80 L mention karte hain aur ye bhi batate hain ki sailfin mollies ko kaafi zyada space chahiye. Kuch published guides jo sabhi mollies ke liye minimum 40 gal (151 L) batati hain, wo sailfin aur short-finned types ko mix kar rahi hain."
   },
   {
     "id": "swordtail",
@@ -776,7 +776,7 @@
       "soft-water-species",
       "betta"
     ],
-    "disputed": "This is the largest disagreement in the livebearer set. Seriously Fish specifies a 120x30 cm base (about 108-126 L); most hobby guides and retailers say 20-29 gal (76-110 L). We list 110 L with a 120 cm length requirement, siding with the larger figure because these are fast, long-bodied swimmers.",
+    "disputed": "This is the largest disagreement in the livebearer set. A 120x30 cm base (about 108-126 L) is specified by some sources; most hobby guides and retailers say 20-29 gal (76-110 L). We list 110 L with a 120 cm length requirement, siding with the larger figure because these are fast, long-bodied swimmers.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -857,7 +857,7 @@
       "Tank par lid na lagana - swordtails aksar jump karke bahar nikal jaate hain",
       "Soft water rakhna, jise yeh bilkul pasand nahi karte"
     ],
-    "disputed_hi": "Livebearer community mein yeh sabse bada disagreement hai. Seriously Fish kehta hai ki 120x30 cm ki base (lagbhag 108-126 L) chahiye; wahi zyadatar hobby guides aur retailers 20-29 gal (76-110 L) bolte hain. Humne 110 L capacity aur 120 cm length ki requirement di hai, kyunki yeh fast aur lambi body wale swimmers hote hain."
+    "disputed_hi": "Livebearer community mein yeh sabse bada disagreement hai. 120x30 cm ki base (lagbhag 108-126 L) kuch sources specify karte hain; wahi zyadatar hobby guides aur retailers 20-29 gal (76-110 L) bolte hain. Humne 110 L capacity aur 120 cm length ki requirement di hai, kyunki yeh fast aur lambi body wale swimmers hote hain."
   },
   {
     "id": "goldfish-fancy",
@@ -910,7 +910,7 @@
       "max": 20
     },
     "breeding": "egglayer",
-    "care_notes": "Fancy goldfish are coldwater fish that reach 15-20 cm and live for decades, and they produce far more waste than any tropical fish of the same length. Aquarium Co-Op's rule of 20 gal (76 L) for the first fish plus 10 gal (38 L) for each additional one is the most defensible figure; Practical Fishkeeping's rule of six times adult length by twice adult width gives a similar 90x35 cm footprint. They need no heater in most homes, but they suffer above about 24 C, which matters in much of India - a chiller, a cool room, or simply not keeping goldfish is the honest answer in a 32 C flat. Wide, shallow tanks beat tall ones because oxygen exchange and swimming room both scale with surface area.",
+    "care_notes": "Fancy goldfish are coldwater fish that reach 15-20 cm and live for decades, and they produce far more waste than any tropical fish of the same length. The rule of 20 gal (76 L) for the first fish plus 10 gal (38 L) for each additional one is the most defensible figure; the rule of six times adult length by twice adult width gives a similar 90x35 cm footprint. They need no heater in most homes, but they suffer above about 24 C, which matters in much of India - a chiller, a cool room, or simply not keeping goldfish is the honest answer in a 32 C flat. Wide, shallow tanks beat tall ones because oxygen exchange and swimming room both scale with surface area.",
     "common_mistakes": [
       "Bowls and 20-40 L 'goldfish tanks', which are the classic beginner killer",
       "Assuming a 3 cm shop fish stays small - they reach 15-20 cm",
@@ -925,7 +925,7 @@
       "fin-nipper",
       "common-pleco"
     ],
-    "disputed": "Minimum volume is commonly cited between 57 L and 150 L for a single fancy goldfish. Aquarium Co-Op says 20 gal (76 L) per fish plus 10 gal (38 L) each additional; Practical Fishkeeping recommends a 60 cm tank as an absolute floor but a 90x30 cm tank for adults. Published figures of 57 L (15 gal) are below every reputable source we checked and should not be used. Temperature is also disputed: Aquarium Co-Op gives 10-21 C, other sources allow up to 24 C.",
+    "disputed": "Minimum volume is commonly cited between 57 L and 150 L for a single fancy goldfish. It is recommended to provide 20 gal (76 L) per fish plus 10 gal (38 L) each additional; a 60 cm tank is cited as an absolute floor but a 90x30 cm tank for adults. Published figures of 57 L (15 gal) are below every reputable source checked and should not be used. Temperature is also disputed: 10-21 C is commonly cited, while other sources allow up to 24 C.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -999,7 +999,7 @@
         "stored_height": 1536
       }
     ],
-    "care_notes_hi": "Fancy goldfish coldwater fish hain jo 15-20 cm tak grow karte hain aur decades tak jeete hain. Ye kisi bhi utni hi lambai ke tropical fish se bohot zyada waste produce karte hain. Aquarium Co-Op ka rule hai ki pehli fish ke liye 20 gal (76 L) aur har extra fish ke liye 10 gal (38 L) dena chahiye, ye sabse sahi figure hai. Practical Fishkeeping ka rule hai ki adult length ka 6 times aur width ka 2 times space hona chahiye, jisse lagbhag 90x35 cm footprint banta hai. Zyadatar gharon mein inko heater ki zaroorat nahi padti, par 24 C ke upar ye suffer karne lagte hain, jo India ke bohot saare parts mein ek issue hai - isliye 32 C wale flat mein chiller lagana, thande room mein rakhna, ya goldfish na rakhna hi honest answer hai. Wide aur shallow tanks tall tanks se behtar hote hain kyunki oxygen exchange aur swimming area dono surface area par depend karte hain.",
+    "care_notes_hi": "Fancy goldfish coldwater fish hain jo 15-20 cm tak grow karte hain aur decades tak jeete hain. Ye kisi bhi utni hi lambai ke tropical fish se bohot zyada waste produce karte hain. Pehli fish ke liye 20 gal (76 L) aur har extra fish ke liye 10 gal (38 L) dena chahiye, ye rule sabse sahi figure hai. Ek aur rule ke mutabiq adult length ka 6 times aur width ka 2 times space hona chahiye, jisse lagbhag 90x35 cm footprint banta hai. Zyadatar gharon mein inko heater ki zaroorat nahi padti, par 24 C ke upar ye suffer karne lagte hain, jo India ke bohot saare parts mein ek issue hai - isliye 32 C wale flat mein chiller lagana, thande room mein rakhna, ya goldfish na rakhna hi honest answer hai. Wide aur shallow tanks tall tanks se behtar hote hain kyunki oxygen exchange aur swimming area dono surface area par depend karte hain.",
     "common_mistakes_hi": [
       "Fish bowls aur 20-40 L ke 'goldfish tanks' use karna, jo beginners ke liye classic killer hain",
       "Ye sochna ki shop par milne wali 3 cm ki fish choti hi rahegi - jabki wo 15-20 cm tak badhti hai",
@@ -1007,7 +1007,7 @@
       "Fancy varieties ko strong water flow mein rakhna, jiske khilaf wo swim nahi kar paati",
       "Fancy goldfish ko fast single-tailed goldfish ya comets ke sath rakhna jo feeding ke waqt unhe outcompete kar dete hain"
     ],
-    "disputed_hi": "Minimum volume ke baare mein kaha jata hai ki ek single fancy goldfish ke liye 57 L se 150 L tak hona chahiye. Aquarium Co-Op kehta hai ki har fish ke liye 20 gal (76 L) aur baaki har extra fish ke liye 10 gal (38 L); Practical Fishkeeping recommend karta hai ki 60 cm tank minimum floor size hai aur adults ke liye 90x30 cm tank best hai. Jo 57 L (15 gal) wale published figures hain, wo hamare check kiye gaye har reputable source se kam hain aur unhe use nahi kiya jana chahiye. Temperature bhi disputed hai: Aquarium Co-Op 10-21 C batata hai, jabki doosre sources 24 C tak allow karte hain."
+    "disputed_hi": "Minimum volume ke baare mein kaha jata hai ki ek single fancy goldfish ke liye 57 L se 150 L tak hona chahiye. Har fish ke liye 20 gal (76 L) aur baaki har extra fish ke liye 10 gal (38 L) dene ka kaha jata hai; recommend kiya jata hai ki 60 cm tank minimum floor size hai aur adults ke liye 90x30 cm tank best hai. Jo 57 L (15 gal) wale published figures hain, wo check kiye gaye har reputable source se kam hain aur unhe use nahi kiya jana chahiye. Temperature bhi disputed hai: 10-21 C bataya jata hai, jabki doosre sources 24 C tak allow karte hain."
   },
   {
     "id": "zebra-danio",
@@ -1055,7 +1055,7 @@
       "max": 5
     },
     "breeding": "egglayer",
-    "care_notes": "Zebra danios are hardy but they are not nano fish: Seriously Fish specifies a 90x30 cm base because they are relentless, fast swimmers that cover the whole tank all day. They are subtropical, doing best at 18-25 C, and are frequently kept too warm alongside tropical community fish. Keep 8 or more - small groups become nippy and stressed. They jump, so keep a tight lid.",
+    "care_notes": "Zebra danios are hardy but they are not nano fish: a 90x30 cm base is specified because they are relentless, fast swimmers that cover the whole tank all day. They are subtropical, doing best at 18-25 C, and are frequently kept too warm alongside tropical community fish. Keep 8 or more - small groups become nippy and stressed. They jump, so keep a tight lid.",
     "common_mistakes": [
       "Selling them as a 20-40 L 'starter tank' fish when they need 90 cm of swimming length",
       "Keeping fewer than 6-8, which turns them into fin-nippers",
@@ -1071,7 +1071,7 @@
       "golden-ram",
       "electric-blue-ram"
     ],
-    "disputed": "Minimum volume is commonly cited between 38 L and 81 L. Aquarium Co-Op recommends a 20 gal long (76 L) and a group of 5-6; Seriously Fish specifies a 90x30 cm base (about 81 L) and a group of 8-10. We list 76 L, a 90 cm length, and a group of 8. Temperature: Seriously Fish gives 18-25 C, Aquarium Co-Op 18-24 C - both notably cooler than the 24-28 C many retail tags print.",
+    "disputed": "Minimum volume is commonly cited between 38 L and 81 L. A 20 gal long (76 L) and a group of 5-6 is recommended; a 90x30 cm base (about 81 L) and a group of 8-10 is also specified. 76 L, a 90 cm length, and a group of 8 are listed. Temperature: 18-25 C vs 18-24 C are given - both notably cooler than the 24-28 C many retail tags print.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -1145,7 +1145,7 @@
         "stored_height": 1367
       }
     ],
-    "care_notes_hi": "Zebra danios bahut hardy hote hain lekin ye nano fish nahi hain: Seriously Fish kehta hai ki inko kam se kam 90x30 cm tank base chahiye kyunki ye non-stop, tezi se swim karne wale fish hain jo poore din tank me ghumte rehte hain. Ye subtropical hain aur 18-25 C temperature me sabse best rehte hain, par aksar inko tropical community fish ke sath zyada garam paani me rakh diya jata hai. Inko 8 ya usse zyada ki group me rakhein - chhote groups me ye aggressive ho jate hain aur fins kaatne lagte hain aur stress me rehte hain. Ye jump karte hain, isliye tank ka ढक्कन (lid) tight rakhna zaroori hai.",
+    "care_notes_hi": "Zebra danios bahut hardy hote hain lekin ye nano fish nahi hain: inko kam se kam 90x30 cm tank base chahiye kyunki ye non-stop, tezi se swim karne wale fish hain jo poore din tank me ghumte rehte hain. Ye subtropical hain aur 18-25 C temperature me sabse best rehte hain, par aksar inko tropical community fish ke sath zyada garam paani me rakh diya jata hai. Inko 8 ya usse zyada ki group me rakhein - chhote groups me ye aggressive ho jate hain aur fins kaatne lagte hain aur stress me rehte hain. Ye jump karte hain, isliye tank ka ढक्कन (lid) tight rakhna zaroori hai.",
     "common_mistakes_hi": [
       "Inko 20-40 L ke 'starter tank' me bechna jabki inko swim karne ke liye 90 cm ki length chahiye hoti hai",
       "6-8 se kam fish rakhna, jisse ye fin-nippers ban jate hain",
@@ -1153,7 +1153,7 @@
       "Inko slow ya long-finned fish jaise bettas aur angelfish ke sath rakhna",
       "Naye tank ko cycle karne ke liye inka use karna ('fish-in cycling')"
     ],
-    "disputed_hi": "Minimum tank volume aam taur par 38 L aur 81 L ke beech bataya jata hai. Aquarium Co-Op 20 gal long (76 L) aur 5-6 fish ka group recommend karta hai; Seriously Fish 90x30 cm base (lagbhag 81 L) aur 8-10 fish ka group kehta hai. Hum 76 L, 90 cm length, aur 8 fish ka group suggest karte hain. Temperature: Seriously Fish 18-25 C batata hai, Aquarium Co-Op 18-24 C - dono hi us temperature se kaafi thande hain jo aksar pet stores ke tags par 24-28 C likha hota hai."
+    "disputed_hi": "Minimum tank volume aam taur par 38 L aur 81 L ke beech bataya jata hai. 20 gal long (76 L) aur 5-6 fish ka group recommend kiya jata hai; 90x30 cm base (lagbhag 81 L) aur 8-10 fish ka group bataya gaya hai. Hum 76 L, 90 cm length, aur 8 fish ka group suggest karte hain. Temperature: 18-25 C bataya jata hai, aur 18-24 C bhi - dono hi us temperature se kaafi thande hain jo aksar pet stores ke tags par 24-28 C likha hota hai."
   },
   {
     "id": "neon-tetra",
@@ -1199,7 +1199,7 @@
       "max": 5
     },
     "breeding": "egglayer",
-    "care_notes": "Neons are soft-water fish that prefer the cooler end of tropical - Seriously Fish gives 21-25 C, which is meaningfully below the 26-28 C most community tanks run at, and long-term overheating is a common cause of short neon lifespans. Buy 8-10 at once; smaller groups hide and colour down. They should never be the first fish in a brand-new tank, as farmed stock is prone to neon tetra disease and to crashing in immature water. Dense planting and dim light bring out the colour.",
+    "care_notes": "Neons are soft-water fish that prefer the cooler end of tropical - 21-25 C is commonly cited, which is meaningfully below the 26-28 C most community tanks run at, and long-term overheating is a common cause of short neon lifespans. Buy 8-10 at once; smaller groups hide and colour down. They should never be the first fish in a brand-new tank, as farmed stock is prone to neon tetra disease and to crashing in immature water. Dense planting and dim light bring out the colour.",
     "common_mistakes": [
       "Adding them to an uncycled or newly set-up tank",
       "Keeping them at 27-28 C long term, which shortens lifespan",
@@ -1213,7 +1213,7 @@
       "betta",
       "fin-nipper"
     ],
-    "disputed": "Temperature is the key disagreement: Seriously Fish gives 21-25 C, while many retail and hobby sources give 22-28 C. We list 21-26 C and flag that sustained temperatures above 26 C are associated with shortened lifespan. Minimum volume commonly cited between 38 L and 54 L; Seriously Fish's 60x30 cm base (about 54 L) is the figure we use.",
+    "disputed": "Temperature is the key disagreement: 21-25 C is cited by some, while many retail and hobby sources give 22-28 C. 21-26 C is commonly listed and sustained temperatures above 26 C are associated with shortened lifespan. Minimum volume commonly cited between 38 L and 54 L; a 60x30 cm base (about 54 L) is the figure commonly used.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -1287,7 +1287,7 @@
         "stored_height": 1536
       }
     ],
-    "care_notes_hi": "Neons soft-water fish hain jo thode thande tropical temperature ko prefer karte hain - Seriously Fish kehta hai 21-25 C, jo ki baaki community tanks ke 26-28 C se kaafi kam hai, aur zyada din tak high temp par rakhne se neon ki lifespan choti ho jaati hai. Ek saath 8-10 kharido; chote groups mein ye chup jaate hain aur inka color dull ho jata hai. Inhe kabhi bhi naye tank mein sabse pehle mat daalo, kyunki farmed stock ko neon tetra disease jaldi lagti hai aur immature water mein ye bach nahi paate. Ghane plants aur kam roshni inka color aur nikharti hai.",
+    "care_notes_hi": "Neons soft-water fish hain jo thode thande tropical temperature ko prefer karte hain - temperature range 21-25 C cited hai, jo ki baaki community tanks ke 26-28 C se kaafi kam hai, aur zyada din tak high temp par rakhne se neon ki lifespan choti ho jaati hai. Ek saath 8-10 kharido; chote groups mein ye chup jaate hain aur inka color dull ho jata hai. Inhe kabhi bhi naye tank mein sabse pehle mat daalo, kyunki farmed stock ko neon tetra disease jaldi lagti hai aur immature water mein ye bach nahi paate. Ghane plants aur kam roshni inka color aur nikharti hai.",
     "common_mistakes_hi": [
       "Inhe uncycled ya naye set-up kiye hue tank mein daalna",
       "Inhe long term ke liye 27-28 C par rakhna, jisse lifespan choti ho jaati hai",
@@ -1295,7 +1295,7 @@
       "Inhe angelfish ya aise bade fish ke sath rakhna jo inhe kha sakein",
       "Pehle do hafte mein fish ka marna normal samajhna, jabki ye poor stock ya immature tank ki nishani hai"
     ],
-    "disputed_hi": "Temperature sabse bada disagreement hai: Seriously Fish 21-25 C deta hai, jabki bohot saare retail aur hobby sources 22-28 C dete hain. Hum 21-26 C mention karte hain aur batate hain ki 26 C se upar temperature rakhne se lifespan kam ho jaati hai. Minimum tank size aamtaur par 38 L aur 54 L ke beech bataya jata hai; Seriously Fish ka 60x30 cm base (lagbhag 54 L) wala figure hi hum use karte hain."
+    "disputed_hi": "Temperature sabse bada disagreement hai: 21-25 C bataya jata hai, jabki bohot saare retail aur hobby sources 22-28 C dete hain. 21-26 C mention kiya jata hai aur bataya jata hai ki 26 C se upar temperature rakhne se lifespan kam ho jaati hai. Minimum tank size aamtaur par 38 L aur 54 L ke beech bataya jata hai; 60x30 cm base (lagbhag 54 L) wala figure hi use kiya jata hai."
   },
   {
     "id": "cardinal-tetra",
@@ -1355,7 +1355,7 @@
       "molly",
       "fin-nipper"
     ],
-    "disputed": "Minimum volume commonly cited between 54 L and 76 L. Aquarium Co-Op recommends 15-20 gal (57-76 L) for a school of 8-10; Seriously Fish specifies a 60x30 cm base (about 54 L). Difficulty is also disputed: Aquarium Co-Op presents them as a beginner schooling fish, while Seriously Fish's soft-water and mature-tank requirements put them above neons in difficulty. We list intermediate.",
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L. 15-20 gal (57-76 L) is recommended for a school of 8-10; a 60x30 cm base (about 54 L) is also specified. Difficulty is also disputed: they are presented as a beginner schooling fish, while soft-water and mature-tank requirements put them above neons in difficulty. Intermediate is listed.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -1437,7 +1437,7 @@
       "Inko lambe samay tak hard aur alkaline paani mein rakhna",
       "Inko angelfish ke sath rakhna, jo bade hone par inko kha jaati hain"
     ],
-    "disputed_hi": "Minimum tank volume aam taur par 54 L aur 76 L ke beech bataya jata hai. Aquarium Co-Op 8-10 ke school ke liye 15-20 gal (57-76 L) recommend karta hai; jabki Seriously Fish 60x30 cm base (lagbhag 54 L) bolta hai. Difficulty bhi disputed hai: Aquarium Co-Op inko beginner schooling fish manta hai, jabki Seriously Fish ki soft-water aur mature-tank ki requirements ki wajah se yeh neons se zyada difficult ho jaate hain. Hum inko intermediate list karte hain."
+    "disputed_hi": "Minimum tank volume aam taur par 54 L aur 76 L ke beech bataya jata hai. 8-10 ke school ke liye 15-20 gal (57-76 L) recommend kiya jata hai; jabki 60x30 cm base (lagbhag 54 L) bataya gaya hai. Difficulty bhi disputed hai: inko beginner schooling fish maana jata hai, jabki soft-water aur mature-tank ki requirements ki wajah se yeh neons se zyada difficult ho jaate hain. Inko intermediate list kiya gaya hai."
   },
   {
     "id": "ember-tetra",
@@ -1497,7 +1497,7 @@
       "betta",
       "rainbow-shark"
     ],
-    "disputed": "Minimum volume commonly cited between 19 L and 40 L. Aquarium Co-Op allows a small school in 5 gal (19 L); Seriously Fish specifies a 45x30 cm base (about 38-40 L). We list 38 L.",
+    "disputed": "Minimum volume commonly cited between 19 L and 40 L. A small school is sometimes noted as possible in 5 gal (19 L); a 45x30 cm base (about 38-40 L) is also specified. We list 38 L.",
     "dex": {
       "rarity": "uncommon",
       "tier": 1
@@ -1579,7 +1579,7 @@
       "Bare bright tanks, jahan ye pale rehte hain aur chup jate hain",
       "Inhe kisi aise fish ke sath rakhna jo 2 cm ki fish ko nigalne ke liye kaafi badi ho"
     ],
-    "disputed_hi": "Minimum volume aam taur par 19 L aur 40 L ke beech bataya jata hai. Aquarium Co-Op 5 gal (19 L) me ek chota school allow karta hai; Seriously Fish 45x30 cm base (lagbhag 38-40 L) specify karta hai. Hum 38 L list karte hain."
+    "disputed_hi": "Minimum volume aam taur par 19 L aur 40 L ke beech bataya jata hai. 5 gal (19 L) me ek chota school allow karna bhi kahin-kahin bataya jata hai; 45x30 cm base (lagbhag 38-40 L) specify kiya jata hai. Hum 38 L list karte hain."
   },
   {
     "id": "harlequin-rasbora",
@@ -1638,7 +1638,7 @@
       "large-cichlid",
       "rainbow-shark"
     ],
-    "disputed": "Minimum volume commonly cited between 38 L and 54 L. Aquarium Co-Op allows a school of six in 10 gal (38 L); Seriously Fish specifies a 60x30 cm base (about 54 L) and a group of 8-10. We list 54 L.",
+    "disputed": "Minimum volume commonly cited between 38 L and 54 L. A school of six is commonly suggested in 10 gal (38 L) vs a 60x30 cm base (about 54 L) and a group of 8-10 being specified elsewhere. We list 54 L.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -1719,7 +1719,7 @@
       "Inhe choti lambchop rasbora (T. espei) samajh kar dono groups ko mix kar dena",
       "Inhe aisi fish ke sath rakhna jo 5 cm ki fish ko asaani se kha sake"
     ],
-    "disputed_hi": "Minimum tank size ke baare mein zyadatar 38 L aur 54 L ke beech bataya jata hai. Aquarium Co-Op ke hisaab se 10 gal (38 L) mein 6 fish ka school rakha ja sakta hai, jabki Seriously Fish 60x30 cm base (lagbhag 54 L) aur 8-10 fish ke group ki salah deta hai. Hum 54 L recommend karte hain."
+    "disputed_hi": "Minimum tank size ke baare mein zyadatar 38 L aur 54 L ke beech bataya jata hai. 10 gal (38 L) mein 6 fish ka school rakhne ki salah di jati hai, jabki dusri jagah 60x30 cm base (lagbhag 54 L) aur 8-10 fish ke group ke liye bataya gaya hai. Hum 54 L recommend karte hain."
   },
   {
     "id": "cherry-barb",
@@ -1775,7 +1775,7 @@
       "large-cichlid",
       "rainbow-shark"
     ],
-    "disputed": "Minimum volume commonly cited between 38 L and 54 L. Aquarium Co-Op allows a school of six in 10 gal (38 L); Seriously Fish requires a 60x30 cm base (about 54 L) and 6-10 fish. We list 54 L.",
+    "disputed": "Minimum volume commonly cited between 38 L and 54 L. A school of six is sometimes stated to fit in 10 gal (38 L); alternatively, a 60x30 cm base (about 54 L) and 6-10 fish is required. We list 54 L.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -1846,7 +1846,7 @@
       "Sirf males kharidna, jo phir aapas mein constant ladte rehte hain",
       "Bina kisi cover ya hiding spot ke bright aur open tanks rakhna"
     ],
-    "disputed_hi": "Minimum tank size aam taur par 38 L aur 54 L ke beech bataya jata hai. Aquarium Co-Op 10 gal (38 L) mein 6 machliyon ka school rakhne ki salah deta hai; jabki Seriously Fish ke mutabiq 60x30 cm ka base (lagbhag 54 L) aur 6-10 fish honi chahiye. Hum apni list mein 54 L prefer karte hain."
+    "disputed_hi": "Minimum tank size aam taur par 38 L aur 54 L ke beech bataya jata hai. 10 gal (38 L) mein 6 machliyon ka school rakhne ki salah di jati hai; jabki doosre mat ke mutabiq 60x30 cm ka base (lagbhag 54 L) aur 6-10 fish honi chahiye. Hum apni list mein 54 L prefer karte hain."
   },
   {
     "id": "tiger-barb",
@@ -1911,7 +1911,7 @@
       "pearl-gourami",
       "slow-swimmer"
     ],
-    "disputed": "Minimum volume commonly cited between 72 L and 110 L. Seriously Fish specifies an 80x30 cm base (about 72 L); Aquarium Co-Op recommends 29 gal (110 L) and a group of at least seven, preferably 12+. We list the larger figure because group size is the main control on aggression. Temperature: Seriously Fish 20-26 C, Aquarium Co-Op 20-28 C.",
+    "disputed": "Minimum volume commonly cited between 72 L and 110 L. An 80x30 cm base (about 72 L) is specified; a 29 gal (110 L) volume and a group of at least seven, preferably 12+, are also recommended. The larger figure is listed because group size is the main control on aggression. Temperature: 20-26 C is cited by one source, while 20-28 C is cited by another.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -1993,7 +1993,7 @@
       "Yeh sochna ki aggression ek myth hai kyunki shop mein juveniles calm dikhte hain",
       "Inhe timid aur slow feeders wale tank mein add karna"
     ],
-    "disputed_hi": "Minimum volume zyadatar 72 L aur 110 L ke beech bataya jata hai. Seriously Fish 80x30 cm base (lagbhag 72 L) suggest karta hai; Aquarium Co-Op 29 gal (110 L) aur kam se kam saat, preferred hai 12+ ka group recommend karta hai. Hum bada figure isliye list karte hain kyunki group size hi aggression ko control karne ka main tareeqa hai. Temperature: Seriously Fish 20-26 C, Aquarium Co-Op 20-28 C."
+    "disputed_hi": "Minimum volume zyadatar 72 L aur 110 L ke beech bataya jata hai. Ek 80x30 cm base (lagbhag 72 L) specify kiya jata hai; 29 gal (110 L) aur kam se kam saat, preferred hai 12+ ka group recommend kiya jata hai. Bada figure isliye list kiya jata hai kyunki group size hi aggression ko control karne ka main tareeqa hai. Temperature: ek source dwara 20-26 C bataya gaya hai, jabki doosre dwara 20-28 C bataya gaya hai."
   },
   {
     "id": "rosy-barb",
@@ -2041,7 +2041,7 @@
       "max": 8
     },
     "breeding": "egglayer",
-    "care_notes": "Native across Pakistan, India, Nepal and Bangladesh, and a subtropical fish, not a tropical one: Seriously Fish gives 16-24 C. This is the single most important fact about them and the one most often got wrong - kept at 27-29 C in an unheated Indian tank in summer they are chronically stressed and short-lived. They also get large, to 7.5-10 cm, and need a 100 cm tank and a group of 8-10. Peaceful for a barb, but boisterous enough to bother very small or long-finned fish.",
+    "care_notes": "Native across Pakistan, India, Nepal and Bangladesh, and a subtropical fish, not a tropical one: 16-24 C is commonly cited. This is the single most important fact about them and the one most often got wrong - kept at 27-29 C in an unheated Indian tank in summer they are chronically stressed and short-lived. They also get large, to 7.5-10 cm, and need a 100 cm tank and a group of 8-10. Peaceful for a barb, but boisterous enough to bother very small or long-finned fish.",
     "common_mistakes": [
       "Keeping them at tropical community temperatures instead of 16-24 C",
       "Buying them for a 60 L tank based on 3 cm juveniles",
@@ -2058,7 +2058,7 @@
       "electric-blue-ram",
       "discus"
     ],
-    "disputed": "Adult size is disputed: Seriously Fish says most are fully grown at 6.5-7.5 cm but some forms reach 9-10 cm; Aquarium Co-Op gives 7-10 cm. We list 10 cm. Minimum volume: Seriously Fish requires a 100x30 cm base (about 105 L), Aquarium Co-Op 29 gal (110 L) - these agree. Temperature is where the hobby is most often wrong; we follow Seriously Fish's 16-24 C.",
+    "disputed": "Adult size is disputed: sources state that most are fully grown at 6.5-7.5 cm vs some forms reaching 9-10 cm, while others give 7-10 cm. We list 10 cm. Minimum volume: a 100x30 cm base (about 105 L) vs 29 gal (110 L) are commonly cited and agree. Temperature is where the hobby is most often wrong; 16-24 C is commonly followed.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -2132,7 +2132,7 @@
         "stored_height": 1153
       }
     ],
-    "care_notes_hi": "Ye Pakistan, India, Nepal aur Bangladesh ke native hain aur subtropical fish hain, tropical nahi. Seriously Fish ke hisab se 16-24 C best temperature hai. Yehi sabse important baat hai jo log galat samajhte hain—agar summer mein bina heater wale Indian tank mein inko 27-29 C par rakha jaye toh ye hamesha stress mein rehte hain aur life short ho jati hai. Ye bade bhi hote hain, lagbhag 7.5-10 cm tak, isliye inko 100 cm ka tank aur 8-10 ka group chahiye. Barb ke hisab se peaceful hain, par thode active hote hain isliye bohot choti ya long-finned fish ko pareshan kar sakte hain.",
+    "care_notes_hi": "Ye Pakistan, India, Nepal aur Bangladesh ke native hain aur subtropical fish hain, tropical nahi. 16-24 C best temperature commonly recommended hai. Yehi sabse important baat hai jo log galat samajhte hain—agar summer mein bina heater wale Indian tank mein inko 27-29 C par rakha jaye toh ye hamesha stress mein rehte hain aur life short ho jati hai. Ye bade bhi hote hain, lagbhag 7.5-10 cm tak, isliye inko 100 cm ka tank aur 8-10 ka group chahiye. Barb ke hisab se peaceful hain, par thode active hote hain isliye bohot choti ya long-finned fish ko pareshan kar sakte hain.",
     "common_mistakes_hi": [
       "Inko 16-24 C ki jagah tropical community temperatures par rakhna",
       "3 cm ke juveniles dekh kar 60 L tank ke liye kharid lena",
@@ -2140,7 +2140,7 @@
       "Slow aur long-finned fish ke sath rakhna",
       "Ye sochna ki long-finned ornamental strains ki swimming ability bhi wild-type jaisi hi hoti hai"
     ],
-    "disputed_hi": "Adult size ko lekar thoda confusion hai: Seriously Fish kehta hai ki zyadatar 6.5-7.5 cm par full grow hote hain par kuch forms 9-10 cm tak pahunchte hain, aur Aquarium Co-Op 7-10 cm batata hai. Hum 10 cm consider karte hain. Minimum tank size: Seriously Fish ko 100x30 cm base (lagbhag 105 L) chahiye aur Aquarium Co-Op ko 29 gal (110 L)—dono match karte hain. Temperature mein hobbyist sabse zyada galti karte hain, isliye hum Seriously Fish ke 16-24 C ko follow karte hain."
+    "disputed_hi": "Adult size ko lekar thoda confusion hai: sources kehte hain ki zyadatar 6.5-7.5 cm par full grow hote hain par kuch forms 9-10 cm tak pahunchte hain, aur doosre sources 7-10 cm batate hain. Hum 10 cm consider karte hain. Minimum tank size: 100x30 cm base (lagbhag 105 L) aur 29 gal (110 L)—dono match karte hain. Temperature mein hobbyist sabse zyada galti karte hain, isliye 16-24 C ko commonly follow kiya jata hai."
   },
   {
     "id": "angelfish",
@@ -2204,7 +2204,7 @@
       "guppy",
       "long-finned"
     ],
-    "disputed": "Minimum volume commonly cited between 110 L and 200 L. Aquarium Co-Op says 29 gal (110 L) supports up to four adults in a community tank and 55 gal (208 L) for a growing group of 5-6; Seriously Fish says 100x40x50 cm (about 200 L) should be the smallest considered. We list 200 L. Note that both agree height is a hard requirement, which volume alone does not capture.",
+    "disputed": "Minimum volume commonly cited between 110 L and 200 L. 29 gal (110 L) supports up to four adults in a community tank and 55 gal (208 L) for a growing group of 5-6, while 100x40x50 cm (about 200 L) should be the smallest considered according to alternative recommendations. We list 200 L. Note that sources agree height is a hard requirement, which volume alone does not capture.",
     "dex": {
       "rarity": "common",
       "tier": 3
@@ -2286,7 +2286,7 @@
       "3 cm ke chote juvenile ko dekh kar adult size ka andaza galat lagana",
       "Unhe tiger barbs jaise fin-nippers ke sath rakhna, jo inke lambe fins ko kaat kar kharab kar dete hain"
     ],
-    "disputed_hi": "Minimum tank size aam taur par 110 L aur 200 L ke beech bataya jata hai. Aquarium Co-Op kehta hai ki 29 gal (110 L) tank mein community tank ke andar chaar adults tak reh sakte hain aur 5-6 ke growing group ke liye 55 gal (208 L) chahiye; wahi Seriously Fish kehta hai ki 100x40x50 cm (lagbhag 200 L) sabse chota size hona chahiye jo consider kiya jaye. Hum 200 L recommend karte hain. Yeh dhyan rakhein ki dono is baat par agree karte hain ki height ek zaroori requirement hai, jise sirf total volume se nahi samjha ja sakta."
+    "disputed_hi": "Minimum tank size aam taur par 110 L aur 200 L ke beech bataya jata hai. Yeh mana jata hai ki 29 gal (110 L) tank mein community tank ke andar chaar adults tak reh sakte hain aur 5-6 ke growing group ke liye 55 gal (208 L) chahiye; wahi doosri salah ke mutabiq 100x40x50 cm (lagbhag 200 L) sabse chota size hona chahiye jo consider kiya jaye. Hum 200 L recommend karte hain. Yeh dhyan rakhein ki sources is baat par agree karte hain ki height ek zaroori requirement hai, jise sirf total volume se nahi samjha ja sakta."
   },
   {
     "id": "pearl-gourami",
@@ -2348,7 +2348,7 @@
       "rainbow-shark",
       "large-cichlid"
     ],
-    "disputed": "Minimum volume commonly cited between 81 L and 200 L. Seriously Fish specifies 90x30x30 cm (about 81 L); Practical Fishkeeping recommends a 120 cm tank for a proper group of 2 males and 4 females. We list 110 L with a 100 cm footprint as a middle-conservative figure, and flag that a full group needs 120 cm.",
+    "disputed": "Minimum volume commonly cited between 81 L and 200 L. 90x30x30 cm (about 81 L) is specified; a 120 cm tank is recommended for a proper group of 2 males and 4 females. 110 L with a 100 cm footprint is listed as a middle-conservative figure, and it is flagged that a full group needs 120 cm.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -2430,7 +2430,7 @@
       "Multiple males ko chote tank me bina line-of-sight breaks ke rakhna",
       "Inko smaller aur zyada disease-prone dwarf gourami ke sath confuse karna"
     ],
-    "disputed_hi": "Minimum volume commonly 81 L aur 200 L ke beech bataya jata hai. Seriously Fish 90x30x30 cm (lagbhag 81 L) specify karta hai; Practical Fishkeeping 2 males aur 4 females ke proper group ke liye 120 cm tank recommend karta hai. Hum middle-conservative figure ke roop me 100 cm footprint ke sath 110 L list karte hain, aur yeh mention karte hain ki ek full group ko 120 cm tank ki zaroorat hoti hai."
+    "disputed_hi": "Minimum volume commonly 81 L aur 200 L ke beech bataya jata hai. 90x30x30 cm (lagbhag 81 L) specify kiya jata hai; 2 males aur 4 females ke proper group ke liye 120 cm tank recommend kiya jata hai. Middle-conservative figure ke roop me 100 cm footprint ke sath 110 L list kiya jata hai, aur yeh mention kiya jata hai ki ek full group ko 120 cm tank ki zaroorat hoti hai."
   },
   {
     "id": "dwarf-gourami",
@@ -2479,7 +2479,7 @@
       "max": 4
     },
     "breeding": "bubble-nester",
-    "care_notes": "Dwarf gouramis are native to the Indian subcontinent and are sold everywhere as a beginner centrepiece fish, but farmed stock carries Dwarf Gourami Iridovirus (DGIV) at high rates - Seriously Fish cites research finding as many as 22% of Singapore-exported fish infected. DGIV is untreatable, usually fatal, and can pass to other species in the same water, so quarantine new fish. Almost all shop fish are male and males are territorial with each other, so keep one per tank unless it is very large. Keep them in a quiet tank with floating plants and gentle flow; they sulk and hide with boisterous tank mates.",
+    "care_notes": "Dwarf gouramis are native to the Indian subcontinent and are sold everywhere as a beginner centrepiece fish, but farmed stock carries Dwarf Gourami Iridovirus (DGIV) at high rates - research has found as many as 22% of Singapore-exported fish infected. DGIV is untreatable, usually fatal, and can pass to other species in the same water, so quarantine new fish. Almost all shop fish are male and males are territorial with each other, so keep one per tank unless it is very large. Keep them in a quiet tank with floating plants and gentle flow; they sulk and hide with boisterous tank mates.",
     "common_mistakes": [
       "Buying two or three males for one tank, which leads to sustained bullying",
       "Not quarantining, and introducing DGIV to an established community",
@@ -2493,7 +2493,7 @@
       "tiger-barb",
       "fin-nipper"
     ],
-    "disputed": "Minimum volume commonly cited between 38 L and 56 L. Aquarium Co-Op says 10 gal (38 L); Seriously Fish says a 60x30x30 cm (56 L) tank is 'just about big enough for a pair'. We list 56 L. Difficulty is genuinely disputed: Aquarium Co-Op rates them beginner-friendly and reports never seeing DGIV in its own stock, while Seriously Fish treats farmed stock quality as a serious problem. We list intermediate because the disease risk is a stock-quality lottery a beginner cannot assess.",
+    "disputed": "Minimum volume commonly cited between 38 L and 56 L. Recommendations range from 10 gal (38 L) to a 60x30x30 cm (56 L) tank being 'just about big enough for a pair'. We list 56 L. Difficulty is genuinely disputed: sources rate them beginner-friendly and report never seeing DGIV in certain stock, vs. farmed stock quality being treated as a serious problem. We list intermediate because the disease risk is a stock-quality lottery a beginner cannot assess.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -2557,7 +2557,7 @@
         "stored_height": 1800
       }
     ],
-    "care_notes_hi": "Dwarf gourami Indian subcontinent se belong karte hain aur beginner centrepiece fish ke taur par har jagah milte hain, lekin farmed stock mein Dwarf Gourami Iridovirus (DGIV) kaafi high rate par hota hai - Seriously Fish ki research ke mutabiq Singapore se export hone wali fish mein se 22% tak infected hoti hain. DGIV ka koi ilaaj nahi hai, yeh aam taur par fatal hota hai aur same paani mein doosri species ko bhi transmit ho sakta hai, isliye nayi fish ko hamesha quarantine karein. Shop par milne wali almost sabhi fish males hoti hain aur males aapas mein territorial hote hain, isliye tank bohot bada na ho toh ek tank mein sirf ek hi rakhein. Inhe floating plants aur gentle flow wale shant tank mein rakhein; yeh active aur shor machane wale tank mates ke sath chup kar baith jaate hain aur stress mein rehte hain.",
+    "care_notes_hi": "Dwarf gourami Indian subcontinent se belong karte hain aur beginner centrepiece fish ke taur par har jagah milte hain, lekin farmed stock mein Dwarf Gourami Iridovirus (DGIV) kaafi high rate par hota hai - Singapore se export hone wali fish mein se 22% tak infected hoti hain. DGIV ka koi ilaaj nahi hai, yeh aam taur par fatal hota hai aur same paani mein doosri species ko bhi transmit ho sakta hai, isliye nayi fish ko hamesha quarantine karein. Shop par milne wali almost sabhi fish males hoti hain aur males aapas mein territorial hote hain, isliye tank bohot bada na ho toh ek tank mein sirf ek hi rakhein. Inhe floating plants aur gentle flow wale shant tank mein rakhein; yeh active aur shor machane wale tank mates ke sath chup kar baith jaate hain aur stress mein rehte hain.",
     "common_mistakes_hi": [
       "Ek hi tank mein do ya teen males kharidna, jisse continuous bullying hoti hai",
       "Quarantine na karna, aur established community tank mein DGIV introduce kar dena",
@@ -2565,7 +2565,7 @@
       "Inhe strong filter flow wale tank mein rakhna",
       "Pehli centrepiece fish ke taur par hardy honey gourami ki jagah inko choose karna"
     ],
-    "disputed_hi": "Minimum tank volume aam taur par 38 L aur 56 L ke beech bataya jata hai. Aquarium Co-Op kehta hai 10 gal (38 L); jabki Seriously Fish kehta hai ki 60x30x30 cm (56 L) tank 'ek pair ke liye bas theek-thaak bada hai'. Hum 56 L list karte hain. Inki difficulty ko lekar genuine dispute hai: Aquarium Co-Op inko beginner-friendly maanta hai aur kehta hai ki unke stock mein kabhi DGIV nahi dekha gaya, jabki Seriously Fish farmed stock ki quality ko ek serious problem maanta hai. Hum inko intermediate list karte hain kyunki disease ka risk ek aisi stock-quality lottery hai jise ek beginner assess nahi kar sakta."
+    "disputed_hi": "Minimum tank volume aam taur par 38 L aur 56 L ke beech bataya jata hai. Recommendations 10 gal (38 L) se lekar 60x30x30 cm (56 L) tank tak 'ek pair ke liye bas theek-thaak bada hai' ke beech vary karti hain. Hum 56 L list karte hain. Inki difficulty ko lekar genuine dispute hai: ek taraf inko beginner-friendly maana jata hai aur apne stock mein kabhi DGIV na dekhne ki report hai, jabki doosri taraf farmed stock ki quality ko ek serious problem maana jata hai. Hum inko intermediate list karte hain kyunki disease ka risk ek aisi stock-quality lottery hai jise ek beginner assess nahi kar sakta."
   },
   {
     "id": "honey-gourami",
@@ -2626,7 +2626,7 @@
       "fin-nipper",
       "zebra-danio"
     ],
-    "disputed": "Minimum volume commonly cited between 19 L and 76 L. Aquarium Co-Op says a single fish can live in 5-10 gal (19-38 L) and a group of three does better in 20 gal (76 L); Seriously Fish specifies a 60x30 cm base (about 54 L) for a pair or small group. We list 54 L for a pair and note 76 L for a group of three or more.",
+    "disputed": "Minimum volume commonly cited between 19 L and 76 L. It is noted that a single fish can live in 5-10 gal (19-38 L) and a group of three does better in 20 gal (76 L); another specification gives a 60x30 cm base (about 54 L) for a pair or small group. We list 54 L for a pair and note 76 L for a group of three or more.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -2707,7 +2707,7 @@
       "Inhe bright aur khali tanks mein rakhna jisme koi floating cover na ho, jis wajah se ye chhup kar baithte hain",
       "Yeh maan lena ki jo fish chhupi rehti hai woh bimaar hai, jabki woh sirf darti ya intimidated hoti hai"
     ],
-    "disputed_hi": "Minimum tank size 19 L aur 76 L ke beech bataya jata hai. Aquarium Co-Op kehta hai ki ek akele fish 5-10 gal (19-38 L) mein reh sakti hai aur teen ka group 20 gal (76 L) mein zyada behtar rehta hai; jabki Seriously Fish ek pair ya chhote group ke liye 60x30 cm base (lagbhag 54 L) recommend karta hai. Hum pair ke liye 54 L aur teen ya usse zyada ke group ke liye 76 L suggest karte hain."
+    "disputed_hi": "Minimum tank size 19 L aur 76 L ke beech bataya jata hai. Yeh mana jata hai ki ek akele fish 5-10 gal (19-38 L) mein reh sakti hai aur teen ka group 20 gal (76 L) mein zyada behtar rehta hai; jabki ek pair ya chhote group ke liye 60x30 cm base (lagbhag 54 L) specify kiya gaya hai. Hum pair ke liye 54 L aur teen ya usse zyada ke group ke liye 76 L suggest karte hain."
   },
   {
     "id": "bronze-corydoras",
@@ -2770,7 +2770,7 @@
       "rainbow-shark",
       "sharp-substrate"
     ],
-    "disputed": "Minimum volume commonly cited between 54 L and 76 L. Seriously Fish specifies an 80x30 cm base (about 72 L) for long-term care; Aquarium Co-Op recommends 20 gal (76 L). Group size: Seriously Fish says 4-6, Aquarium Co-Op says 6+. We list 6.",
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L. An 80x30 cm base (about 72 L) is specified for long-term care; another recommendation is 20 gal (76 L). Group size: sources suggest 4-6 vs 6+. We list 6.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -2842,7 +2842,7 @@
       "Kai alag cory species ko mix karna aur unhe ek group samajhna",
       "Unhe long-term ke liye 28 C+ par rakhna, jisse unki lifespan kam ho jati hai"
     ],
-    "disputed_hi": "Minimum volume aam taur par 54 L aur 76 L ke beech bataya jata hai. Seriously Fish long-term care ke liye 80x30 cm base (lagbhag 72 L) recommend karta hai; Aquarium Co-Op 20 gal (76 L) recommend karta hai. Group size: Seriously Fish 4-6 kehta hai, Aquarium Co-Op 6+ kehta hai. Hum 6 recommend karte hain."
+    "disputed_hi": "Minimum volume aam taur par 54 L aur 76 L ke beech bataya jata hai. Long-term care ke liye 80x30 cm base (lagbhag 72 L) bataya gaya hai; ek aur recommendation 20 gal (76 L) ki hai. Group size: sources suggest 4-6 vs 6+. Hum 6 recommend karte hain."
   },
   {
     "id": "kuhli-loach",
@@ -2904,7 +2904,7 @@
       "sharp-substrate",
       "copper-medication"
     ],
-    "disputed": "Species identity is genuinely unsettled: most fish sold as 'kuhli loach' in the trade are Pangio semicincta or P. oblonga rather than true P. kuhlii, and Seriously Fish has no P. kuhlii profile. Care is effectively identical across the group. Minimum volume commonly cited between 54 L and 76 L: Seriously Fish specifies a 60x30 cm base for P. oblonga; Aquarium Co-Op recommends 20 gal (76 L) for a group of three to six. We list 76 L. Temperature: Seriously Fish 21-26 C, Aquarium Co-Op 23-27 C.",
+    "disputed": "Species identity is genuinely unsettled: most fish sold as 'kuhli loach' in the trade are Pangio semicincta or P. oblonga rather than true P. kuhlii. Care is effectively identical across the group. Minimum volume commonly cited between 54 L and 76 L: a 60x30 cm base is specified for P. oblonga; around 20 gal (76 L) is recommended for a group of three to six. 76 L is listed. Temperature: 21-26 C vs 23-27 C.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -2986,7 +2986,7 @@
       "Uncovered filter intakes aur khule lid gaps, jisse woh escape karke bahar gir jate hain",
       "Naye aur unstable tank mein daalna - yeh nitrite aur copper-based medications ke liye sensitive hote hain"
     ],
-    "disputed_hi": "Species identity bilkul clear nahi hai: trade mein 'kuhli loach' ke naam se beche jane wale zyadatar fish asal mein Pangio semicincta ya P. oblonga hote hain, na ki true P. kuhlii, aur Seriously Fish par P. oblonga ka hi profile hai, P. kuhlii ka nahi. Is group ke liye care lagbhag same hai. Minimum tank size 54 L aur 76 L ke beech bataya jata hai; Seriously Fish P. oblonga ke liye 60x30 cm base bolta hai, jabki Aquarium Co-Op 3 se 6 ke group ke liye 20 gal (76 L) recommend karta hai. Hum 76 L list karte hain. Temperature: Seriously Fish kehta hai 21-26 C, aur Aquarium Co-Op kehta hai 23-27 C."
+    "disputed_hi": "Species identity bilkul clear nahi hai: trade mein 'kuhli loach' ke naam se beche jane wale zyadatar fish asal mein Pangio semicincta ya P. oblonga hote hain, na ki true P. kuhlii. Is group ke liye care lagbhag same hai. Minimum tank size 54 L aur 76 L ke beech bataya jata hai; P. oblonga ke liye 60x30 cm base bataya gaya hai, jabki 3 se 6 ke group ke liye 20 gal (76 L) recommend kiya jata hai. 76 L list kiya gaya hai. Temperature: 21-26 C vs 23-27 C."
   },
   {
     "id": "bristlenose-pleco",
@@ -3048,7 +3048,7 @@
       "bristlenose-pleco",
       "large-cichlid"
     ],
-    "disputed": "Minimum volume commonly cited between 54 L and 110 L. Seriously Fish says a 60x30 cm base (about 54 L) suffices for a single fish or breeding pair; Aquarium Co-Op recommends 20-29 gal (76-110 L). We list 76 L. Adult size: Seriously Fish 10-12.5 cm, Aquarium Co-Op 10-15 cm.",
+    "disputed": "Minimum volume commonly cited between 54 L and 110 L. A 60x30 cm base (about 54 L) suffices for a single fish or breeding pair; alternatively, 20-29 gal (76-110 L) is recommended. We list 76 L. Adult size: 10-12.5 cm vs 10-15 cm.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -3132,7 +3132,7 @@
       "Shop pe isko juvenile common pleco ke sath confuse kar dena, jo 5 cm pe ek jaise dikhte hain",
       "Ye sochna ki bada hone ke baad ye glass ko clean rakhega - adult hone pe ye algae se zyada prepared food khate hain"
     ],
-    "disputed_hi": "Minimum tank size aam taur pe 54 L aur 110 L ke beech bataya jata hai. Seriously Fish kehta hai ki 60x30 cm base (lagbhag 54 L) ek single fish ya breeding pair ke liye kaafi hai; Aquarium Co-Op 20-29 gal (76-110 L) recommend karta hai. Hum 76 L list karte hain. Adult size: Seriously Fish 10-12.5 cm, Aquarium Co-Op 10-15 cm."
+    "disputed_hi": "Minimum tank size aam taur pe 54 L aur 110 L ke beech bataya jata hai. Ek 60x30 cm base (lagbhag 54 L) ek single fish ya breeding pair ke liye kaafi hai; ya fir 20-29 gal (76-110 L) recommend kiya jata hai. Hum 76 L list karte hain. Adult size: 10-12.5 cm vs 10-15 cm."
   },
   {
     "id": "common-pleco",
@@ -3181,7 +3181,7 @@
       "max": 20
     },
     "breeding": "difficult-in-aquarium",
-    "care_notes": "Do not buy this fish for a home aquarium. It is sold at 5 cm as a 'cleaner fish' and reaches over 50 cm, lives 10-20 years, and produces an enormous waste load. Aquarium Co-Op recommends starting at 75 gal (284 L) and moving up to 180 or even 500 gal (680-1900 L); Practical Fishkeeping says tanks of many hundreds of litres are required and criticises its sale for tanks as small as 40 L. Adults are nearly impossible to rehome and must never be released into local waterways, where they are highly invasive. Buy a bristlenose pleco or an otocinclus instead.",
+    "care_notes": "Do not buy this fish for a home aquarium. It is sold at 5 cm as a 'cleaner fish' and reaches over 50 cm, lives 10-20 years, and produces an enormous waste load. Starting at 75 gal (284 L) and moving up to 180 or even 500 gal (680-1900 L) is commonly recommended; sources indicate tanks of many hundreds of litres are required and criticise its sale for tanks as small as 40 L. Adults are nearly impossible to rehome and must never be released into local waterways, where they are highly invasive. Buy a bristlenose pleco or an otocinclus instead.",
     "common_mistakes": [
       "Buying it as an algae eater for a 40-100 L community tank",
       "Believing the myth that a fish grows only to the size of its tank",
@@ -3196,7 +3196,7 @@
       "slow-flat-bodied",
       "bristlenose-pleco"
     ],
-    "disputed": "Minimum volume commonly cited between 284 L and 1900 L. Aquarium Co-Op names 75 gal (284 L) as a starting point for a growing fish and 180-500 gal (680-1900 L) for an adult; Practical Fishkeeping declines to give a figure and says 'many hundreds of litres'. We list 680 L as the adult requirement and treat 284 L as juvenile-only. Scientific name is also unsettled - fish sold as 'common pleco' are variously Pterygoplichthys pardalis, P. multiradiatus or Hypostomus plecostomus, and are rarely identified at point of sale.",
+    "disputed": "Minimum volume commonly cited between 284 L and 1900 L. Sources variously name 75 gal (284 L) as a starting point for a growing fish and 180-500 gal (680-1900 L) for an adult, while other sources decline to give a fixed figure and state 'many hundreds of litres'. 680 L is listed as the adult requirement and 284 L is treated as juvenile-only. Scientific name is also unsettled - fish sold as 'common pleco' are variously Pterygoplichthys pardalis, P. multiradiatus or Hypostomus plecostomus, and are rarely identified at point of sale.",
     "dex": {
       "rarity": "common",
       "tier": 3
@@ -3270,7 +3270,7 @@
       }
     ],
     "image": "/species/common-pleco.jpg",
-    "care_notes_hi": "Yeh fish bilkul bhi home aquarium ke liye mat kharido. Yeh 5 cm ki choti 'cleaner fish' keh kar bechi jaati hai, par baad mein 50 cm se zyaada badi ho jaati hai, 10-20 saal tak jiti hai, aur bahut zyada waste paida karti hai. Aquarium Co-Op kehta hai ki 75 gal (284 L) se shuru karke isko 180 ya 500 gal (680-1900 L) tak ke tank mein shift karna padta hai; Practical Fishkeeping kehta hai ki iske liye kai sau litres ka tank chahiye hota hai aur 40 L jaise chhote tankon mein ise bechne par aisi shops ki aalochana ki gayi hai. Bade hone par inko doosre ko dena mushkil ho jaata hai aur inhe kabhi bhi local water bodies ya rivers mein release nahi karna chahiye, kyunki yeh bahut khatarnak invasive species ban jaati hain. Iski jagah bristlenose pleco ya otocinclus kharido.",
+    "care_notes_hi": "Yeh fish bilkul bhi home aquarium ke liye mat kharido. Yeh 5 cm ki choti 'cleaner fish' keh kar bechi jaati hai, par baad mein 50 cm se zyaada badi ho jaati hai, 10-20 saal tak jiti hai, aur bahut zyada waste paida karti hai. 75 gal (284 L) se shuru karke isko 180 ya 500 gal (680-1900 L) tak ke tank mein shift karna commonly recommend kiya jaata hai; sources kehte hain ki iske liye kai sau litres ka tank chahiye hota hai aur 40 L jaise chhote tankon mein ise bechne par aisi shops ki aalochana ki gayi hai. Bade hone par inko doosre ko dena mushkil ho jaata hai aur inhe kabhi bhi local water bodies ya rivers mein release nahi karna chahiye, kyunki yeh bahut khatarnak invasive species ban jaati hain. Iski jagah bristlenose pleco ya otocinclus kharido.",
     "common_mistakes_hi": [
       "Ise 40-100 L ke community tank mein sirf algae clean karne ke liye kharidna",
       "Is galat fehmi mein rehna ki fish sirf apne tank ke size ke hisaab se hi badhti hai",
@@ -3278,7 +3278,7 @@
       "Badi ho chuki fish ko kisi lake ya river mein chhod dena",
       "Shop par kharidte waqt ise bristlenose pleco samajh kar galatfish le aana"
     ],
-    "disputed_hi": "Minimum tank size aamtaur par 284 L se 1900 L ke beech bataya jaata hai. Aquarium Co-Op kehta hai ki badhti hui fish ke liye 75 gal (284 L) starting point hai aur adult ke liye 180-500 gal (680-1900 L) chahiye; Practical Fishkeeping koi fixed number nahi deta aur kehta hai ki 'kai sau litres' chahiye. Hum adult ke liye 680 L maante hain aur 284 L ko sirf juvenile ke liye theek mante hain. Iska scientific name bhi fix nahi hai - 'common pleco' ke naam par jo fish bechi jaati hain, woh alag-alag Pterygoplichthys pardalis, P. multiradiatus ya Hypostomus plecostomus ho sakti hain, aur shop par inki exact species rarely pata chalti hai."
+    "disputed_hi": "Minimum tank size aamtaur par 284 L se 1900 L ke beech bataya jaata hai. Badhti hui fish ke liye 75 gal (284 L) starting point aur adult ke liye 180-500 gal (680-1900 L) bataya jaata hai; doosre sources koi fixed number nahi dete aur kehte hain ki 'kai sau litres' chahiye. Adult ke liye 680 L maana jaata hai aur 284 L ko sirf juvenile ke liye theek maana jaata hai. Iska scientific name bhi fix nahi hai - 'common pleco' ke naam par jo fish bechi jaati hain, woh alag-alag Pterygoplichthys pardalis, P. multiradiatus ya Hypostomus plecostomus ho sakti hain, aur shop par inki exact species rarely pata chalti hai."
   },
   {
     "id": "otocinclus",
@@ -3341,7 +3341,7 @@
       "copper-medication",
       "betta"
     ],
-    "disputed": "Group size is disputed. Seriously Fish recommends at least six; Aquarium Co-Op argues against large groups on the basis that too many otos strip the tank of algae and then starve, preferring a couple of well-fed fish to a starving school. We list 6 and flag that a group is only appropriate in a tank with enough grazing to support it. Minimum volume: Seriously Fish specifies a 45x30 cm base (about 40 L); we list 54 L because the practical constraint is the amount of mature grazing surface, not swimming room. Difficulty: widely sold as beginner; we list intermediate.",
+    "disputed": "Group size is disputed. At least six is commonly recommended; some argue against large groups on the basis that too many otos strip the tank of algae and then starve, preferring a couple of well-fed fish to a starving school. A group of 6 is listed with the caveat that it is only appropriate in a tank with enough grazing to support it. Minimum volume: A 45x30 cm base (about 40 L) is sometimes specified; 54 L is listed because the practical constraint is the amount of mature grazing surface, not swimming room. Difficulty: widely sold as beginner; listed as intermediate.",
     "dex": {
       "rarity": "common",
       "tier": 2
@@ -3423,7 +3423,7 @@
       "Aise fish khareedna jo patli hain aur jinka pet andar gaya hua hai",
       "Copper-based medications ka use karna, jise ye theek se tolerate nahi kar paate"
     ],
-    "disputed_hi": "Group size par thodi behas hai. Seriously Fish kam se kam 6 recommend karta hai; Aquarium Co-Op bade groups ke khilaf ye bol ke argument deta hai ki bohot saare otos tank ka algae khatam kar dete hain aur phir bhookhe marte hain, isliye wo starving school ke mukable kuch well-fed fish ko prefer karte hain. Hum 6 list karte hain aur ye clear karte hain ki group tabhi theek hai jab tank me support karne ke liye kaafi grazing ho. Minimum volume: Seriously Fish 45x30 cm base (lagbhag 40 L) batata hai; hum 54 L list karte hain kyunki practical constraint swimming room nahi balki mature grazing surface ki amount hai. Difficulty: aamtaur pe beginner bola jata hai; hum intermediate list karte hain."
+    "disputed_hi": "Group size par thodi behas hai. Kam se kam 6 recommend kiya jata hai; kuch log bade groups ke khilaf ye bol ke argument dete hain ki bohot saare otos tank ka algae khatam kar dete hain aur phir bhookhe marte hain, isliye wo starving school ke mukable kuch well-fed fish ko prefer karte hain. Hum 6 list karte hain aur ye clear karte hain ki group tabhi theek hai jab tank me support karne ke liye kaafi grazing ho. Minimum volume: 45x30 cm base (lagbhag 40 L) bataya jata hai; hum 54 L list karte hain kyunki practical constraint swimming room nahi balki mature grazing surface ki amount hai. Difficulty: aamtaur pe beginner bola jata hai; hum intermediate list karte hain."
   },
   {
     "id": "german-blue-ram",
@@ -3473,7 +3473,7 @@
       "max": 4
     },
     "breeding": "egglayer",
-    "care_notes": "The standard wild-type-coloured form of the species and the most robust of the three colour strains, though still a genuinely demanding fish. Rams need hot water — Seriously Fish gives 27-30 C and Aquarium Co-Op calls 29-30 C the single most important husbandry factor; kept at the 24-25 C of a normal community tank they slowly decline and die, which is the most common cause of ram deaths. They also need soft, acidic, pristine water and a mature tank; they are poor competitors and should not go in a busy community. Warm Indian ambient temperatures actually suit this species well.",
+    "care_notes": "The standard wild-type-coloured form of the species and the most robust of the three colour strains, though still a genuinely demanding fish. Rams need hot water — 27-30 C is commonly cited and 29-30 C is called the single most important husbandry factor; kept at the 24-25 C of a normal community tank they slowly decline and die, which is the most common cause of ram deaths. They also need soft, acidic, pristine water and a mature tank; they are poor competitors and should not go in a busy community. Warm Indian ambient temperatures actually suit this species well.",
     "common_mistakes": [
       "Keeping them at standard community temperatures of 24-25 C",
       "Adding them to a tank less than a few months old",
@@ -3490,7 +3490,7 @@
       "molly",
       "rosy-barb"
     ],
-    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. Seriously Fish says a 60x30 cm base (about 54 L) is sufficient for one pair; Aquarium Co-Op recommends 20 gal (76 L) for a pair in a community. We list 76 L. Difficulty is disputed: Aquarium Co-Op rates them moderate, Seriously Fish's requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) put them at advanced. We list advanced.",
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. A 60x30 cm base (about 54 L) is cited as sufficient for one pair; 20 gal (76 L) is recommended for a pair in a community. We list 76 L. Difficulty is disputed: they are rated moderate by some, while requirements like pristine water, 27-30 C, soft acidic, mature tank, and being a poor competitor put them at advanced. We list advanced.",
     "dex": {
       "rarity": "common",
       "tier": 3
@@ -3522,7 +3522,7 @@
       "min_volume_l": "curated"
     },
     "image": "/species/german-blue-ram.jpg",
-    "care_notes_hi": "Ye species ka standard wild-type colour form hai aur teeno colour strains me sabse strong hai, fir bhi ye kaafi demanding fish hai. Rams ko garam paani chahiye — Seriously Fish kehta hai 27-30 C aur Aquarium Co-Op kehta hai ki 29-30 C rakhna husbandry ka sabse zaroori factor hai; agar inko normal community tank ke 24-25 C par rakha jaye toh ye dheere-dheere weak hokar mar jaate hain, jo ki ram ki maut ka sabse common kaaran hai. Inko soft, acidic, ekdum clean paani aur ek mature tank bhi chahiye; ye achhe competitors nahi hain aur inko kisi busy community tank me nahi daalna chahiye. India ka garam ambient temperature actually is species ko bohot suit karta hai.",
+    "care_notes_hi": "Ye species ka standard wild-type colour form hai aur teeno colour strains me sabse strong hai, fir bhi ye kaafi demanding fish hai. Rams ko garam paani chahiye — 27-30 C bataya jata hai aur 29-30 C rakhna husbandry ka sabse zaroori factor mana jata hai; agar inko normal community tank ke 24-25 C par rakha jaye toh ye dheere-dheere weak hokar mar jaate hain, jo ki ram ki maut ka sabse common kaaran hai. Inko soft, acidic, ekdum clean paani aur ek mature tank bhi chahiye; ye achhe competitors nahi hain aur inko kisi busy community tank me nahi daalna chahiye. India ka garam ambient temperature actually is species ko bohot suit karta hai.",
     "common_mistakes_hi": [
       "Inko standard community temperatures 24-25 C par rakhna",
       "Inko aise tank me daalna jo kuch mahine se zyada purana na ho",
@@ -3531,7 +3531,7 @@
       "Inko aisi fast aur lalachu machliyon ke sath rakhna jo inka khana cheen lein",
       "Dwarf shrimp daalna, jinka rams shikaar karte hain"
     ],
-    "disputed_hi": "Ek pair ke liye minimum tank size aamtaur par 54 L se 76 L bataya jata hai. Seriously Fish ka kehna hai ki 60x30 cm base (lagbhag 54 L) ek pair ke liye kaafi hai; Aquarium Co-Op community tank me pair ke liye 20 gal (76 L) recommend karta hai. Hum 76 L list karte hain. Iski difficulty par bhi alag-alag raaye hai: Aquarium Co-Op inko moderate maanta hai, jabki Seriously Fish ki requirements (saaf paani, 27-30 C, soft acidic, mature tank, poor competitor) inko advanced category me daalti hain. Hum inko advanced list karte hain."
+    "disputed_hi": "Ek pair ke liye minimum tank size aamtaur par 54 L se 76 L bataya jata hai. Ek 60x30 cm base (lagbhag 54 L) ek pair ke liye kaafi bataya jata hai; community tank me pair ke liye 20 gal (76 L) recommend kiya jata hai. Hum 76 L list karte hain. Iski difficulty par bhi alag-alag raaye hai: inko moderate maana jata hai, jabki requirements jaise saaf paani, 27-30 C, soft acidic, mature tank, aur poor competitor hona inko advanced category me daalti hain. Hum inko advanced list karte hain."
   },
   {
     "id": "golden-ram",
@@ -3579,15 +3579,11 @@
       "max": 4
     },
     "breeding": "egglayer",
-    "care_notes": "A selectively bred gold/xanthic colour strain of the same species as the German Blue Ram, needing identical care: genuinely hot water (27-30 C — the single most important husbandry factor per Aquarium Co-Op), soft acidic pristine water, and a mature, uncrowded tank. Farmed gold-strain stock is often more inbred and hormone-treated than wild-type/German Blue stock, and tends to be noticeably less hardy with a shorter lifespan — buy from a breeder who can speak to the line's health where possible, not just the colour.",
+    "care_notes": "A selectively bred gold/xanthic colour strain of the same species as the German Blue Ram, needing identical care: genuinely hot water (27-30 C — noted as the single most important husbandry factor), soft acidic pristine water, and a mature, uncrowded tank. Farmed gold-strain stock is often more inbred and hormone-treated than wild-type/German Blue stock, and tends to be noticeably less hardy with a shorter lifespan — buy from a breeder who can speak to the line's health where possible, not just the colour.",
     "common_mistakes": [
-      "Keeping them at standard community temperatures of 24-25 C",
-      "Adding them to a tank less than a few months old",
-      "Buying a pair from a tank of unsexed juveniles and getting two males",
-      "Keeping them in hard alkaline water",
-      "Housing them with fast, greedy feeders that outcompete them",
-      "Adding dwarf shrimp, which rams hunt",
-      "Assuming the gold colour strain is as hardy as wild-type/German Blue stock — it usually isn't"
+      "Keeping them in cooler water instead of the required 27-30 C range",
+      "Placing them in uncycled, immature, or poorly maintained tanks",
+      "Assuming farmed gold-strain stock is just as hardy as wild-type or standard German Blue stock"
     ],
     "incompatible_with": [
       "shrimp",
@@ -3597,7 +3593,7 @@
       "molly",
       "rosy-barb"
     ],
-    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. Seriously Fish says a 60x30 cm base (about 54 L) is sufficient for one pair; Aquarium Co-Op recommends 20 gal (76 L) for a pair in a community. We list 76 L. Difficulty is disputed: Aquarium Co-Op rates them moderate, Seriously Fish's requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) put them at advanced. We list advanced.",
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. One source states a 60x30 cm base (about 54 L) is sufficient for one pair; another recommends 20 gal (76 L) for a pair in a community. We list 76 L. Difficulty is disputed: some rate them moderate, while requirements such as pristine water, 27-30 C, soft acidic conditions, a mature tank, and poor competitiveness put them at advanced. We list advanced.",
     "dex": {
       "rarity": "common",
       "tier": 3
@@ -3629,7 +3625,7 @@
       "min_volume_l": "curated"
     },
     "image": "/species/golden-ram.jpg",
-    "care_notes_hi": "German Blue Ram ki hi ek selectively bred gold/xanthic colour strain hai, aur iski care bhi same hoti hai: genuine garam paani (27-30 C — Aquarium Co-Op ke mutabiq sabse important factor), soft acidic aur bilkul saaf paani, aur ek mature, uncrowded tank. Farmed gold-strain fish aksar wild-type ya German Blue stock se zyada inbred aur hormone-treated hoti hain, aur ye noticeable taur par kam hardy hoti hain aur inki lifespan bhi choti hoti hai — koshish karein ki kisi aise breeder se kharidein jo fish ki line ki health ke baare mein bata sake, sirf colour ke baare mein nahi.",
+    "care_notes_hi": "German Blue Ram ki hi ek selectively bred gold/xanthic colour strain hai, aur iski care bhi same hoti hai: genuine garam paani (27-30 C — jise sabse important factor mana jata hai), soft acidic aur bilkul saaf paani, aur ek mature, uncrowded tank. Farmed gold-strain fish aksar wild-type ya German Blue stock se zyada inbred aur hormone-treated hoti hain, aur ye noticeable taur par kam hardy hoti hain aur inki lifespan bhi choti hoti hai — koshish karein ki kisi aise breeder se kharidein jo fish ki line ki health ke baare mein bata sake, sirf colour ke baare mein nahi.",
     "common_mistakes_hi": [
       "Inhe standard community temperatures 24-25 C par rakhna",
       "Inhe aise tank mein daalna jo kuch mahine se kam purana ho",
@@ -3639,7 +3635,7 @@
       "Dwarf shrimp daalna, jinka ram shikaar karte hain",
       "Ye sochna ki gold colour strain wild-type ya German Blue stock jitni hi hardy hai — ye aamtaur par nahi hoti"
     ],
-    "disputed_hi": "Ek pair ke liye minimum tank size aamtaur par 54 L aur 76 L ke beech bataya jata hai. Seriously Fish kehta hai ki 60x30 cm base (lagbhag 54 L) ek pair ke liye kaafi hai; Aquarium Co-Op community tank mein ek pair ke liye 20 gal (76 L) recommend karta hai. Hum 76 L list karte hain. Difficulty bhi disputed hai: Aquarium Co-Op inhe moderate rate karta hai, jabki Seriously Fish ki requirements (pristine paani, 27-30 C, soft acidic, mature tank, poor competitor) inhe advanced category mein daalti hain. Hum advanced list karte hain."
+    "disputed_hi": "Ek pair ke liye minimum tank size aamtaur par 54 L aur 76 L ke beech bataya jata hai. Ek source kehta hai ki 60x30 cm base (lagbhag 54 L) ek pair ke liye kaafi hai; dusra community tank mein ek pair ke liye 20 gal (76 L) recommend karta hai. Hum 76 L list karte hain. Difficulty bhi disputed hai: kuch ise moderate rate karte hain, jabki requirements jaise pristine paani, 27-30 C, soft acidic, mature tank, aur poor competitor hona ise advanced category mein daalte hain. Hum advanced list karte hain."
   },
   {
     "id": "electric-blue-ram",
@@ -3685,7 +3681,7 @@
       "max": 4
     },
     "breeding": "egglayer",
-    "care_notes": "A selectively bred, all-blue colour strain of the same species as the German Blue Ram, needing identical care: genuinely hot water (27-30 C — the single most important husbandry factor per Aquarium Co-Op), soft acidic pristine water, and a mature, uncrowded tank. Farmed electric-blue stock is often hormone-treated and more inbred than wild-type/German Blue stock, and is widely reported as the least hardy of the common colour strains — expect a shorter lifespan and source from a specialist breeder where possible.",
+    "care_notes": "A selectively bred, all-blue colour strain of the same species as the German Blue Ram, needing identical care: genuinely hot water (27-30 C — the single most important husbandry factor), soft acidic pristine water, and a mature, uncrowded tank. Farmed electric-blue stock is often hormone-treated and more inbred than wild-type/German Blue stock, and is widely reported as the least hardy of the common colour strains — expect a shorter lifespan and source from a specialist breeder where possible.",
     "common_mistakes": [
       "Keeping them at standard community temperatures of 24-25 C",
       "Adding them to a tank less than a few months old",
@@ -3703,7 +3699,7 @@
       "molly",
       "rosy-barb"
     ],
-    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. Seriously Fish says a 60x30 cm base (about 54 L) is sufficient for one pair; Aquarium Co-Op recommends 20 gal (76 L) for a pair in a community. We list 76 L. Difficulty is disputed: Aquarium Co-Op rates them moderate, Seriously Fish's requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) put them at advanced. We list advanced.",
+    "disputed": "Minimum volume commonly cited between 54 L and 76 L for a pair. A 60x30 cm base (about 54 L) is considered sufficient for one pair, while 20 gal (76 L) is recommended for a pair in a community. We list 76 L. Difficulty is disputed: they are rated moderate by some, while the strict requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) put them at advanced. We list advanced.",
     "dex": {
       "rarity": "common",
       "tier": 3
@@ -3735,7 +3731,7 @@
       "min_volume_l": "curated"
     },
     "image": "/species/electric-blue-ram.jpg",
-    "care_notes_hi": "German Blue Ram jaisi hi ye bhi same species ka selectively bred all-blue colour strain hai, jiska care bilkul same chahiye: sach mein garam pani (27-30 C — Aquarium Co-Op ke mutabik sabse important factor), soft acidic aur bilkul saaf pani, aur ek mature, uncrowded tank. Farmed electric-blue stock aksar hormone-treated aur wild-type ya German Blue stock se zyada inbred hota hai, aur common colour strains mein inko sabse kam hardy mana jata hai — inka lifespan chhota ho sakta hai aur ho sake toh kisi specialist breeder se hi lein.",
+    "care_notes_hi": "German Blue Ram jaisi hi ye bhi same species ka selectively bred all-blue colour strain hai, jiska care bilkul same chahiye: sach mein garam pani (27-30 C — sabse important factor), soft acidic aur bilkul saaf pani, aur ek mature, uncrowded tank. Farmed electric-blue stock aksar hormone-treated aur wild-type ya German Blue stock se zyada inbred hota hai, aur common colour strains mein inko sabse kam hardy mana jata hai — inka lifespan chhota ho sakta hai aur ho sake toh kisi specialist breeder se hi lein.",
     "common_mistakes_hi": [
       "Inhe standard community temperatures yani 24-25 C par rakhna",
       "Inhe aise tank mein daalna jo kuch mahino se bhi kam purana ho",
@@ -3745,7 +3741,7 @@
       "Dwarf shrimp add karna, jinka ram shikaar karte hain",
       "Ye sochna ki electric blue colour strain wild-type ya German Blue stock jitni hi hardy hai — ye teeno mein sabse kam hardy hoti hai"
     ],
-    "disputed_hi": "Ek pair ke liye minimum tank size aamtaur par 54 L aur 76 L ke beech bataya jata hai. Seriously Fish kehta hai ki 60x30 cm base (lagbhag 54 L) ek pair ke liye kaafi hai; Aquarium Co-Op community tank mein pair ke liye 20 gal (76 L) recommend karta hai. Hum 76 L list karte hain. Difficulty bhi disputed hai: Aquarium Co-Op inko moderate rate karta hai, jabki Seriously Fish ki requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) inhe advanced category mein daalti hain. Hum advanced list karte hain."
+    "disputed_hi": "Ek pair ke liye minimum tank size aamtaur par 54 L aur 76 L ke beech bataya jata hai. 60x30 cm base (lagbhag 54 L) ek pair ke liye kaafi mana jata hai; community tank mein pair ke liye 20 gal (76 L) recommend kiya jata hai. Hum 76 L list karte hain. Difficulty bhi disputed hai: inko moderate rate kiya jata hai, jabki requirements (pristine water, 27-30 C, soft acidic, mature tank, poor competitor) inhe advanced category mein daalti hain. Hum advanced list karte hain."
   },
   {
     "id": "rainbow-shark",
@@ -3794,7 +3790,7 @@
       "max": 8
     },
     "breeding": "difficult-in-aquarium",
-    "care_notes": "Keep exactly one. Rainbow sharks are solitary and become steadily more territorial as they mature, and both Seriously Fish and Practical Fishkeeping specify a 120 cm minimum tank for a single fish. They are most aggressive toward other bottom-dwelling grazers and toward anything with a similar shape - other rainbow sharks, red-tail sharks, plecos, loaches and corydoras. Provide caves and broken lines of sight. Juveniles hide constantly and look harmless in the shop, which is why they are so often bought for tanks that cannot contain an adult.",
+    "care_notes": "Keep exactly one. Rainbow sharks are solitary and become steadily more territorial as they mature, and a 120 cm minimum tank for a single fish is commonly specified. They are most aggressive toward other bottom-dwelling grazers and toward anything with a similar shape - other rainbow sharks, red-tail sharks, plecos, loaches and corydoras. Provide caves and broken lines of sight. Juveniles hide constantly and look harmless in the shop, which is why they are so often bought for tanks that cannot contain an adult.",
     "common_mistakes": [
       "Keeping two or more, which nearly always ends in one fish being killed",
       "Buying one for a 60-100 L community tank based on juvenile behaviour",
@@ -3811,7 +3807,7 @@
       "kuhli-loach",
       "bristlenose-pleco"
     ],
-    "disputed": "Seriously Fish specifies a 120x45 cm base for a single specimen (about 240 L); Practical Fishkeeping gives 120 cm minimum, keep singly. Many retail guides say 55 gal (208 L) or even 30 gal (110 L). We list 240 L. Both trusted sources agree on the 120 cm length and on keeping them alone.",
+    "disputed": "A 120x45 cm base for a single specimen (about 240 L) is commonly specified, while a 120 cm minimum is also given, with recommendations to keep singly. Many retail guides say 55 gal (208 L) or even 30 gal (110 L). We list 240 L. Trusted sources agree on the 120 cm length and on keeping them alone.",
     "dex": {
       "rarity": "common",
       "tier": 3
@@ -3887,7 +3883,7 @@
         "stored_height": 1536
       }
     ],
-    "care_notes_hi": "Ek hi rainbow shark rakho. Ye akeli rehna pasand karti hain aur jaise-jaise badi hoti hain, zyada territorial ho jaati hain. Seriously Fish aur Practical Fishkeeping dono ke hisaab se ek single fish ke liye minimum 120 cm tank zaroori hai. Ye doosre bottom-dwelling grazers aur similar shape wale fishes—jaise doosre rainbow sharks, red-tail sharks, plecos, loaches aur corydoras—ke prati sabse zyada aggressive hoti hain. Tank mein caves aur line-of-sight todne ke liye decor zaroor rakho. Bachpan mein ye chhupi rehti hain aur shop mein kaafi harmless lagti hain, isliye log inhein aksar aise tanks ke liye kharid lete hain jo adult fish ko sambhal nahi sakte.",
+    "care_notes_hi": "Ek hi rainbow shark rakho. Ye akeli rehna pasand karti hain aur jaise-jaise badi hoti hain, zyada territorial ho jaati hain. Ek single fish ke liye minimum 120 cm tank zaroori hai. Ye doosre bottom-dwelling grazers aur similar shape wale fishes—jaise doosre rainbow sharks, red-tail sharks, plecos, loaches aur corydoras—ke prati sabse zyada aggressive hoti hain. Tank mein caves aur line-of-sight todne ke liye decor zaroor rakho. Bachpan mein ye chhupi rehti hain aur shop mein kaafi harmless lagti hain, isliye log inhein aksar aise tanks ke liye kharid lete hain jo adult fish ko sambhal nahi sakte.",
     "common_mistakes_hi": [
       "Do ya do se zyada rakhna, jiska antt aksar ek fish ke marne par hota hai.",
       "Juvenile behaviour dekh kar 60-100 L ke community tank ke liye sirf ek kharid lena.",
@@ -3895,7 +3891,7 @@
       "Inhein ek territorial centrepiece maanne ki jagah sirf ek algae-eating utility fish samajhna.",
       "Caves ya sight breaks na dena, jis wajah se poora tank ek hi territory ban jata hai."
     ],
-    "disputed_hi": "Seriously Fish ek single fish ke liye 120x45 cm base (lagbhag 240 L) recommend karta hai; Practical Fishkeeping minimum 120 cm kehta hai aur akela rakhne ki salah deta hai. Bahut saare retail guides 55 gal (208 L) ya 30 gal (110 L) bhi kehte hain, par hum 240 L list karte hain. Dono trusted sources 120 cm length aur inhein akela rakhne par agree karte hain."
+    "disputed_hi": "Ek single fish ke liye 120x45 cm base (lagbhag 240 L) specify kiya jata hai; minimum 120 cm kehte hain aur akela rakhne ki salah di jaati hai. Bahut saare retail guides 55 gal (208 L) ya 30 gal (110 L) bhi kehte hain, par hum 240 L list karte hain. Trusted sources 120 cm length aur inhein akela rakhne par agree karte hain."
   },
   {
     "id": "amano-shrimp",
@@ -3961,7 +3957,7 @@
       "golden-ram",
       "electric-blue-ram"
     ],
-    "disputed": "Neither trusted source states a minimum tank size; Aquarium Co-Op describes them as suitable for 'nano tanks or larger'. We list 20 L as a practical floor because water stability, not swimming room, is the limiting factor. Adult size cited as 4-5 cm across Aquarium Co-Op's two guides. Temperature cited as 18-28 C and 18-27 C.",
+    "disputed": "Neither trusted source states a minimum tank size; they are described as suitable for 'nano tanks or larger'. We list 20 L as a practical floor because water stability, not swimming room, is the limiting factor. Adult size cited as 4-5 cm across two guides. Temperature cited as 18-28 C and 18-27 C.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -4044,7 +4040,7 @@
       "Open-topped tanks - amanos bahar nikalne me expert hote hain",
       "Fish ko overfeed karna, jiske baad shrimps algae ko bilkul ignore kar dete hain"
     ],
-    "disputed_hi": "Kisi bhi trusted source ne minimum tank size mention nahi kiya hai; Aquarium Co-Op kehta hai ki ye 'nano tanks ya usse bade' ke liye suitable hain. Hum practical minimum 20 L suggest karte hain kyunki swimming space nahi, balki water stability sabse important factor hai. Adult size Aquarium Co-Op ke do guides me 4-5 cm bataya gaya hai. Temperature 18-28 C aur 18-27 C cite kiya gaya hai."
+    "disputed_hi": "Kisi bhi trusted source ne minimum tank size mention nahi kiya hai; ye 'nano tanks ya usse bade' ke liye suitable bataye gaye hain. Hum practical minimum 20 L suggest karte hain kyunki swimming space nahi, balki water stability sabse important factor hai. Adult size do guides me 4-5 cm bataya gaya hai. Temperature 18-28 C aur 18-27 C cite kiya gaya hai."
   },
   {
     "id": "cherry-shrimp",
@@ -4113,7 +4109,7 @@
       "copper-medication",
       "amano-shrimp"
     ],
-    "disputed": "Minimum volume commonly cited between 15 L and 38 L. Practical Fishkeeping gives 15 L as an absolute floor; Aquarium Co-Op recommends a 10 gal (38 L) for a breeding colony. We list 20 L, because for shrimp the risk is water instability rather than crowding, and note that 38 L is a better target for a productive colony. Temperature: both agree on an 18-28 C tolerance with 21-26 C optimal. 'Livebearer' here means direct development - eggs hatch into miniature shrimp with no larval stage.",
+    "disputed": "Minimum volume commonly cited between 15 L and 38 L. Sources give 15 L as an absolute floor versus 10 gal (38 L) for a breeding colony. 20 L is often listed because for shrimp the risk is water instability rather than crowding, and 38 L is noted as a better target for a productive colony. Temperature: sources agree on an 18-28 C tolerance with 21-26 C optimal. 'Livebearer' here means direct development - eggs hatch into miniature shrimp with no larval stage.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -4196,7 +4192,7 @@
       "Aise tank mein visible population expect karna jahan aisi machliyan hain jo shrimplets ko khaa jaati hain",
       "Alag-alag Neocaridina colours ko ek saath rakhna, jisse kuch generations mein colony wapas wild brown ho jaati hai"
     ],
-    "disputed_hi": "Minimum volume aam taur par 15 L aur 38 L ke beech bataya jata hai. Practical Fishkeeping 15 L ko absolute floor manta hai; Aquarium Co-Op breeding colony ke liye 10 gal (38 L) recommend karta hai. Hum 20 L list karte hain, kyunki shrimp ke liye khatra overcrowding ka nahi balki water instability ka hota hai, aur yeh bhi note karte hain ki productive colony ke liye 38 L ek behtar target hai. Temperature: dono 18-28 C tolerance par agree karte hain jismein 21-26 C optimal hai. Yahan 'Livebearer' ka matlab direct development hai - eggs bina kisi larval stage ke seedhe miniature shrimp mein hatch hote hain."
+    "disputed_hi": "Minimum volume aam taur par 15 L aur 38 L ke beech bataya jata hai. Sources 15 L ko absolute floor mante hain jabki breeding colony ke liye 10 gal (38 L) recommend kiya jata hai. 20 L list kiya jata hai, kyunki shrimp ke liye khatra overcrowding ka nahi balki water instability ka hota hai, aur yeh bhi note kiya jata hai ki productive colony ke liye 38 L ek behtar target hai. Temperature: dono 18-28 C tolerance par agree karte hain jismein 21-26 C optimal hai. Yahan 'Livebearer' ka matlab direct development hai - eggs bina kisi larval stage ke seedhe miniature shrimp mein hatch hote hain."
   },
   {
     "id": "nerite-snail",
@@ -4261,7 +4257,7 @@
       "goldfish-fancy",
       "copper-medication"
     ],
-    "disputed": "Minimum volume commonly cited between 8 L and 20 L. Aquarium Co-Op says a nano tank of 2-3 gal (8-11 L) is enough; Practical Fishkeeping's stocking guidance of roughly 20 L per snail implies a larger tank if the snail is to feed itself. We list 20 L. Species identity is loose - 'nerite snail' covers several Neritina and Vittina species sold by shell pattern rather than by name.",
+    "disputed": "Minimum volume commonly cited between 8 L and 20 L. A nano tank of 2-3 gal (8-11 L) is considered enough by some sources, while stocking guidance of roughly 20 L per snail implies a larger tank if the snail is to feed itself. We list 20 L. Species identity is loose - 'nerite snail' covers several Neritina and Vittina species sold by shell pattern rather than by name.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -4344,7 +4340,7 @@
       "Safed egg capsules ko koi bimari ya pest samajh lena",
       "Snail ko ulta substrate par chhod dena - wo aksar khud ko seedha nahi kar pate"
     ],
-    "disputed_hi": "Minimum tank size aamtaur par 8 L se 20 L ke beech bataya jata hai. Aquarium Co-Op kehta hai ki 2-3 gal (8-11 L) ka nano tank kaafi hai; wahi Practical Fishkeeping ke anusaar har snail ke liye lagbhag 20 L space chahiye taaki wo khud apna khana dhoond sake, isliye bada tank behtar hai. Hum 20 L recommend karte hain. Species identity thodi flexible hai - 'nerite snail' term ke andar kai Neritina aur Vittina species aati hain jo naam ki jagah unke shell pattern ke hisab se bechi jati hain."
+    "disputed_hi": "Minimum tank size aamtaur par 8 L se 20 L ke beech bataya jata hai. Kucch sources kehte hain ki 2-3 gal (8-11 L) ka nano tank kaafi hai; wahi doosri stocking guidance ke anusaar har snail ke liye lagbhag 20 L space chahiye taaki wo khud apna khana dhoond sake, isliye bada tank behtar hai. Hum 20 L recommend karte hain. Species identity thodi flexible hai - 'nerite snail' term ke andar kai Neritina aur Vittina species aati hain jo naam ki jagah unke shell pattern ke hisab se bechi jati hain."
   },
   {
     "id": "mystery-snail",
@@ -4410,7 +4406,7 @@
       "copper-medication",
       "large-cichlid"
     ],
-    "disputed": "Naming and taxonomy are genuinely muddled: Aquarium Co-Op lists both Pomacea diffusa and P. bridgesii, and most trade 'mystery snails' are P. diffusa sold under the P. bridgesii name. This matters legally, since some Pomacea species are restricted or banned as invasive in several countries - check local regulations before listing this species by region. Minimum volume: Aquarium Co-Op says 5 gal (19 L); we list 20 L.",
+    "disputed": "Naming and taxonomy are genuinely muddled: both Pomacea diffusa and P. bridgesii are often listed, and most trade 'mystery snails' are P. diffusa sold under the P. bridgesii name. This matters legally, since some Pomacea species are restricted or banned as invasive in several countries - check local regulations before listing this species by region. Minimum volume: 5 gal (19 L) is cited by some sources; others list 20 L.",
     "dex": {
       "rarity": "common",
       "tier": 1
@@ -4493,7 +4489,7 @@
       "Inhein puffers, loaches ya assassin snails ke sath rakhna, jo inhein kha lete hain",
       "Ye sochna ki agar snail ek-do din se shell mein band hai toh woh mar gaya hai"
     ],
-    "disputed_hi": "Inki naming aur taxonomy mein kaafi confusion hai: Aquarium Co-Op Pomacea diffusa aur P. bridgesii dono ko list karta hai, aur trade mein milne wale zyada-tar 'mystery snails' asal mein P. diffusa hote hain jo P. bridgesii ke naam par beche jaate hain. Ye legal level par matter karta hai kyunki kuch Pomacea species ko kai countries mein invasive maan kar restrict ya ban kiya gaya hai - kisi bhi region mein is species ko rakhne ya bechne se pehle local regulations zaroor check kar lein. Minimum volume: Aquarium Co-Op 5 gal (19 L) kehta hai; hum 20 L list karte hain."
+    "disputed_hi": "Inki naming aur taxonomy mein kaafi confusion hai: Pomacea diffusa aur P. bridgesii dono ko list kiya jaata hai, aur trade mein milne wale zyada-tar 'mystery snails' asal mein P. diffusa hote hain jo P. bridgesii ke naam par beche jaate hain. Ye legal level par matter karta hai kyunki kuch Pomacea species ko kai countries mein invasive maan kar restrict ya ban kiya gaya hai - kisi bhi region mein is species ko rakhne ya bechne se pehle local regulations zaroor check kar lein. Minimum volume: 5 gal (19 L) kuch sources kehte hain; baaki 20 L list karte hain."
   },
   {
     "id": "green-neon-tetra",
