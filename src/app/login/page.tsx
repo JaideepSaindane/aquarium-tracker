@@ -234,7 +234,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
           />
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -6 }}>
             {knownPhone === true
-              ? "This number already has an account. Enter the PIN you set — it can't be changed here."
+              ? "An account already exists for this number. If you forgot the PIN, please tap \"Forgot PIN?\" below."
               : knownPhone === false
                 ? "New number. This is not an OTP — no code will be sent. Choose your own 4-digit PIN and remember it."
                 : "This is not an OTP — no code will be sent. New here? Set your own 4-digit PIN. Already signed up? Enter the one you set."}
