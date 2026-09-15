@@ -30,6 +30,11 @@ export async function requireAdminDashSession(): Promise<boolean> {
   const store = await cookies();
   const token = store.get(ADMIN_DASH_COOKIE)?.value;
   if (!token) return false;
-  const valid = await getRedis().get<string>(sessionKey(token));
-  return valid === "1";
+  // @upstash/redis auto-JSON-parses stored values, so the string "1" this
+  // wrote comes back as the number 1, not the string "1" — a strict `=== "1"`
+  // check here always failed, locking every real login out with a 403
+  // ("You don't have access to this page") straight after a correct
+  // password. Just check the key exists at all; its value never mattered.
+  const valid = await getRedis().get(sessionKey(token));
+  return valid != null;
 }
