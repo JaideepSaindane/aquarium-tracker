@@ -132,6 +132,12 @@ const en = {
     couldNotTell: "Couldn't tell for sure",
     worthChecking: "What I need to know",
     yourAnswer: "Your answer",
+    fishNameLabel: "Which fish? (optional)",
+    fishNamePlaceholder: "e.g. Betta, Neon tetra",
+    notSatisfied: "Didn't find a satisfactory answer?",
+    postOnCommunity: "Post on community",
+    communityDraft:
+      "Need help with my fish 🐟\nFish: {fish}\nSymptoms: {symptoms}\nHow many affected: {affected}\nHow long: {duration}\nWater test: {waterTest}\nHas anyone dealt with this?",
     getUpdatedAdvice: "Get updated advice",
     watchFor: "Watch for",
     getHelpUrgentlyIf: "Get help urgently if",

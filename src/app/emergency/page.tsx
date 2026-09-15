@@ -16,12 +16,16 @@ import { runTriage } from "@/lib/ai-client";
 import { TriageZod, type TriageReport } from "@/server/ai/schemas/triage";
 import { useLocale } from "@/i18n/use-locale";
 import { useTranslation } from "@/i18n/use-translation";
+import { useRouter } from "next/navigation";
+import { useCommunityDraft } from "@/store/use-community-draft";
 
 type Stage = "intake" | "loading" | "result" | "error";
 
 export default function EmergencyPage() {
   const { locale } = useLocale();
   const t = useTranslation();
+  const router = useRouter();
+  const setCommunityDraft = useCommunityDraft((s) => s.setDraft);
   const SYMPTOMS = [
     t.emergencyPage.symptoms.spots,
     t.emergencyPage.symptoms.fuzzyPatches,
@@ -50,6 +54,7 @@ export default function EmergencyPage() {
   const [waterTest, setWaterTest] = useState(WATER_TEST_OPTIONS[2]);
   const [tankId, setTankId] = useState<string>("");
   const [photo, setPhoto] = useState<File | null>(null);
+  const [fishNames, setFishNames] = useState("");
   const [report, setReport] = useState<TriageReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedIncident, setSavedIncident] = useState(false);
@@ -83,7 +88,7 @@ export default function EmergencyPage() {
     setStage("loading");
     setError(null);
     try {
-      const description = `Symptoms: ${Array.from(selectedSymptoms).join(", ")}.`;
+      const description = `Symptoms: ${Array.from(selectedSymptoms).join(", ")}.${fishNames.trim() ? ` Fish affected: ${fishNames.trim()}.` : ""}`;
       const result = await runTriage({
         photo: photo ?? undefined,
         description,
@@ -346,6 +351,28 @@ export default function EmergencyPage() {
           </p>
         )}
 
+        <Card style={{ marginBottom: 12, textAlign: "center" }}>
+          <p style={{ fontSize: "var(--font-body-sm-size)", color: "var(--color-ink-muted)", marginBottom: 8 }}>
+            {t.emergencyPage.notSatisfied}
+          </p>
+          <SecondaryButton
+            onClick={() => {
+              // Prefill a draft (symptoms + intake answers + photo) and open
+              // New Post for review — not posted publicly without a tap.
+              const body = t.emergencyPage.communityDraft
+                .replace("{fish}", fishNames.trim() || "-")
+                .replace("{symptoms}", Array.from(selectedSymptoms).join(", "))
+                .replace("{affected}", affected)
+                .replace("{duration}", duration)
+                .replace("{waterTest}", waterTest);
+              setCommunityDraft(body, photo);
+              router.push("/community/new");
+            }}
+          >
+            {t.emergencyPage.postOnCommunity}
+          </SecondaryButton>
+        </Card>
+
         <SecondaryButton
           onClick={() => {
             setStage("intake");
@@ -393,6 +420,15 @@ export default function EmergencyPage() {
             );
           })}
         </div>
+      </Card>
+
+      <Card style={{ marginBottom: 16 }}>
+        <Field
+          label={t.emergencyPage.fishNameLabel}
+          value={fishNames}
+          onChange={(e) => setFishNames(e.target.value)}
+          placeholder={t.emergencyPage.fishNamePlaceholder}
+        />
       </Card>
 
       <Card style={{ marginBottom: 16 }}>

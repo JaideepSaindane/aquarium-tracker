@@ -136,6 +136,12 @@ const hiLatn: Dictionary = {
     couldNotTell: "Pakka pata nahi chal saka",
     worthChecking: "Mujhe ye jaanna hai",
     yourAnswer: "Aapka jawab",
+    fishNameLabel: "Kaunsi fish? (optional)",
+    fishNamePlaceholder: "jaise Betta, Neon tetra",
+    notSatisfied: "Sahi jawab nahi mila?",
+    postOnCommunity: "Community par post karein",
+    communityDraft:
+      "Meri fish ke liye madad chahiye 🐟\nFish: {fish}\nLakshan: {symptoms}\nKitni fish affected: {affected}\nKab se: {duration}\nWater test: {waterTest}\nKisi ne aisa handle kiya hai?",
     getUpdatedAdvice: "Updated advice paayein",
     watchFor: "Ye dekhte rahein",
     getHelpUrgentlyIf: "Turant madad lein agar",

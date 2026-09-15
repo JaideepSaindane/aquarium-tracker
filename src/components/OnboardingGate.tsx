@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import { stampInstalledAtIfMissing } from "@/db/queries/settings";
-import { getProfile } from "@/db/queries/profile";
+import { getProfile, saveProfile } from "@/db/queries/profile";
 
 /**
  * "From first launch, the stage picker appears immediately" (specs/T-023,
@@ -37,24 +36,24 @@ import { getProfile } from "@/db/queries/profile";
  * Tanks appearing.
  */
 export function OnboardingGate({ children }: { children: ReactNode }) {
-  const router = useRouter();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     stampInstalledAtIfMissing();
-    getProfile().then((profile) => {
+    getProfile().then(async (profile) => {
       if (cancelled) return;
+      // New signups land straight on Home (Jaideep, 2026-09-15) — no welcome
+      // or "scan your tank" step on first open. Stamped so this runs once;
+      // Settings → Onboarding can still replay the flow on purpose.
       if (!profile?.onboardingCompletedAt) {
-        router.replace("/onboarding");
-        return; // stay withheld — we're navigating away, not rendering here
+        await saveProfile({ onboardingCompletedAt: new Date().toISOString() }).catch(() => {});
       }
-      setReady(true);
+      if (!cancelled) setReady(true);
     });
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!ready) {

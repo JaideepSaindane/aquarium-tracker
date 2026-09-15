@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCommunityDraft } from "@/store/use-community-draft";
 import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { Banner } from "@/components/Banner";
@@ -21,8 +22,14 @@ type PendingPhoto = { file: File; preview: string; isVideo: boolean };
 export default function NewCommunityPostPage() {
   const router = useRouter();
   const t = useTranslation();
-  const [body, setBody] = useState("");
-  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
+  // A draft handed over from elsewhere (Fish Doctor's "Post on community")
+  // prefills once, via lazy initial state so it's read before first paint.
+  const takeDraft = useCommunityDraft((s) => s.takeDraft);
+  const [draft] = useState(() => takeDraft());
+  const [body, setBody] = useState(draft.body ?? "");
+  const [photos, setPhotos] = useState<PendingPhoto[]>(() =>
+    draft.photo ? [{ file: draft.photo, preview: URL.createObjectURL(draft.photo), isVideo: false }] : []
+  );
   const [posting, setPosting] = useState(false);
   const [compressing, setCompressing] = useState(false);
   const [error, setError] = useState<string | null>(null);
