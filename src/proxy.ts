@@ -38,8 +38,25 @@ const ADMIN_DASH_PATHS = ["/admin", "/api/admin"];
 const ADMIN_DASH_PUBLIC_PATHS = ["/admin/login", "/api/admin/login"];
 const ADMIN_DASH_COOKIE = "admin_dash_session";
 
+// Read-only "view as user" (src/server/auth/view-as.ts). While this cookie is
+// set, requireUserId() resolves to the VIEWED account, so the check below is
+// the single choke point that keeps it read-only: every non-GET request is
+// refused, except ending the view itself and the auth machinery.
+const VIEW_AS_COOKIE = "admin_view_as";
+
 export default auth((req) => {
   const { pathname } = req.nextUrl;
+
+  const viewingAs = !!req.cookies.get(VIEW_AS_COOKIE)?.value;
+  if (viewingAs && req.method !== "GET" && req.method !== "HEAD") {
+    const allowed = pathname === "/api/view-as/exit" || pathname.startsWith("/api/auth");
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "read_only_view", detail: "You are viewing this account read-only. Actions are disabled." },
+        { status: 403 }
+      );
+    }
+  }
 
   if (ADMIN_DASH_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     if (ADMIN_DASH_PUBLIC_PATHS.some((p) => pathname === p)) return NextResponse.next();
@@ -52,6 +69,10 @@ export default auth((req) => {
   // back onto the sign-in page in history) — send home instead of showing a
   // sign-in form that looks like you were logged out.
   if (pathname === "/login" && req.auth) return NextResponse.redirect(new URL("/", req.nextUrl.origin));
+
+  // A view-as cookie stands in for a session, so an admin can inspect the
+  // account without signing into the app as themselves first.
+  if (viewingAs) return NextResponse.next();
 
   const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
   if (isPublic || req.auth) return NextResponse.next();

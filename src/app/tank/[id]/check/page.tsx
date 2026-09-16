@@ -175,19 +175,27 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     setReusedExistingPhoto(false);
   }
 
-  async function runScan(blob: Blob) {
+  /**
+   * `blob` is null for a Health Check run with no photo at all (Jaideep,
+   * 2026-09-16 — a tank saved without a photo previously couldn't run a
+   * check at all, which is why one real user visited this page four times
+   * and never got a scan). Onboarding's Tank Scan still needs the photo:
+   * identifying what's in the tank is the whole job there.
+   */
+  async function runScan(blob: Blob | null) {
     if (!tank) return;
+    if (!blob && fromCreate) return;
     setStage("scanning");
     setScanError(null);
     setScanErrorOffline(false);
     try {
       const tankRecord = await buildTankContext(id);
-      const photoFile = new File([blob], "upload.jpg", { type: "image/jpeg" });
+      const photoFile = blob ? new File([blob], "upload.jpg", { type: "image/jpeg" }) : undefined;
 
       if (fromCreate) {
         // Onboarding path — unchanged, still the Tank Scan contract.
         const result = await scanTank({
-          photo: photoFile,
+          photo: photoFile!,
           lengthCm: tank.lengthCm,
           widthCm: tank.widthCm,
           heightCm: tank.heightCm,
@@ -247,14 +255,17 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   }
 
   async function handleSave() {
-    if (!originalPath) return;
     if (!report && !healthReport) return;
+    // A no-photo Health Check has no image to point at. `scans.image_uri` is
+    // NOT NULL in both schemas, so an empty string is the sentinel rather
+    // than a migration — nothing renders this field, it's only ever stored.
+    if (!originalPath && report) return;
     setStage("saving");
 
     if (report) {
       await createScan({
         tankId: id,
-        imageUri: originalPath,
+        imageUri: originalPath!,
         modelName: "unknown",
         promptVersion: report.prompt_version,
         rawResponse: report,
@@ -264,11 +275,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
       const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : t.reportPage.noIssuesFlagged;
       const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.tankScanColon} ${findingSummary}` });
-      if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+      if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath! });
     } else if (healthReport) {
       await createScan({
         tankId: id,
-        imageUri: originalPath,
+        imageUri: originalPath ?? "",
         modelName: "unknown",
         promptVersion: healthReport.prompt_version,
         rawResponse: healthReport,
@@ -278,7 +289,8 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       const flagged = healthReport.checks.filter((c) => c.status !== "ok" && c.status !== "na");
       const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : t.checkPage.nothingFlagged;
       const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.healthCheckParen.replace("{status}", healthReport.overall_status)} ${summary}` });
-      if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+      // No photo to file in the Gallery when the check ran without one.
+      if (!reusedExistingPhoto && originalPath) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
     }
     setStage("saved");
   }
@@ -431,6 +443,14 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
           </div>
         )}
 
+        {/* Say plainly that this one ran without a photo, so a thin report
+            reads as "we had less to go on" rather than "your tank is fine". */}
+        {healthReport.photo_quality === "none" && (
+          <div style={{ marginBottom: 16 }}>
+            <Banner severity="improve">{t.checkPage.ranWithoutPhoto}</Banner>
+          </div>
+        )}
+
         <div style={{ marginBottom: 16 }}>
           <Banner severity={bannerSeverity}>{healthReport.summary}</Banner>
         </div>
@@ -539,6 +559,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
               <SecondaryButton onClick={() => libraryInputRef.current?.click()}>{t.scanPage.chooseFromLibrary}</SecondaryButton>
             </>
           )}
+          {/* No photo at all — a Health Check still has the whole tank
+              record to work from (stocking, equipment, parameters, log
+              entries). Only Health Check, never onboarding's Tank Scan,
+              which exists to identify what's in the photo. */}
+          {!fromCreate && <SecondaryButton onClick={() => void runScan(null)}>{t.checkPage.runWithoutPhoto}</SecondaryButton>}
           {fromCreate && <SecondaryButton onClick={() => router.replace(`/tank/${id}`)}>{t.checkPage.skipForNow}</SecondaryButton>}
         </div>
       )}
@@ -593,7 +618,9 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
             <Banner severity="fixNow">{scanError}</Banner>
           )}
           <div style={{ height: 8 }} />
-          <PrimaryButton onClick={() => uploadBlob && runScan(uploadBlob)}>{t.scanPage.tryAgain}</PrimaryButton>
+          {/* uploadBlob is null for a no-photo Health Check — retry that as
+              a no-photo run rather than leaving a dead button. */}
+          <PrimaryButton onClick={() => void runScan(uploadBlob)}>{t.scanPage.tryAgain}</PrimaryButton>
           <div style={{ height: 8 }} />
           <SecondaryButton onClick={retake}>{t.scanPage.retakePhoto}</SecondaryButton>
         </div>

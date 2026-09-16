@@ -144,6 +144,8 @@ export default function AdminAccountDetailPage() {
         ))}
       </div>
 
+      <ViewAsCard accountId={data.account.id} />
+
       {data.account.phone && <ResetPinCard accountId={data.account.id} phone={data.account.phone} />}
 
       {tab === "actions" && (
@@ -221,6 +223,49 @@ export default function AdminAccountDetailPage() {
 }
 
 /** Forgot-PIN reset: the admin verifies the user out of band, then sets a new 4-digit PIN here (also clears any lockout). */
+/**
+ * Opens the real app as this user, read-only, for 30 minutes (Jaideep,
+ * 2026-09-16: "Build a full Admin login-as is. But keep it read only. No
+ * actions should be enabled."). Every non-GET request is refused while the
+ * view-as cookie is set — see src/proxy.ts.
+ */
+function ViewAsCard({ accountId }: { accountId: string }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function start() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/accounts/${accountId}/view-as`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      window.location.href = "/";
+    } catch {
+      setError("Couldn't start the read-only view.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card style={{ marginBottom: 16 }}>
+      <p style={{ fontWeight: 700, marginBottom: 4 }}>Open their app (read only)</p>
+      <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginBottom: 8 }}>
+        See every screen exactly as they do, for 30 minutes. Nothing can be saved, changed or deleted while you&apos;re in
+        there. A banner at the top shows whose account it is, with an Exit button.
+      </p>
+      <button
+        type="button"
+        onClick={start}
+        disabled={busy}
+        style={{ padding: "8px 14px", borderRadius: "var(--radius-md)", border: "none", background: "var(--color-deep)", color: "#fff", fontWeight: 600, opacity: busy ? 0.5 : 1 }}
+      >
+        {busy ? "Opening..." : "View as this user"}
+      </button>
+      {error && <p style={{ marginTop: 8, fontSize: "var(--font-body-sm-size)", color: "var(--color-danger)" }}>{error}</p>}
+    </Card>
+  );
+}
+
 function ResetPinCard({ accountId, phone }: { accountId: string; phone: string }) {
   const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);

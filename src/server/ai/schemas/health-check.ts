@@ -8,7 +8,7 @@ import { str, strArr } from "./json-schema-helpers";
 // Built from Jaideep's own pasted framework spec — see the framework
 // document itself for the full reasoning behind each design choice below;
 // summarized in comments at the points that matter.
-export const PROMPT_VERSION = "health-check/v1";
+export const PROMPT_VERSION = "health-check/v2";
 
 const grounding = z.array(z.string()).default([]);
 const status = z.enum(["ok", "watch", "warning", "critical", "na"]);
@@ -32,7 +32,9 @@ export type HealthCheckCategory = (typeof HEALTH_CHECK_CATEGORIES)[number];
 // deriveOverallStatus() below, used server-side after parsing.
 export const HealthCheckZod = z.object({
   prompt_version: z.string(),
-  photo_quality: z.enum(["good", "limited", "insufficient"]),
+  // "none" = the check ran without a photo, from the tank's saved record
+  // alone (v2, 2026-09-16) — not a quality judgement, the absence of one.
+  photo_quality: z.enum(["good", "limited", "insufficient", "none"]),
   tank_type_inferred: z.enum(["freshwater", "saltwater", "planted", "unclear"]),
   summary: z.string(),
   checks: z

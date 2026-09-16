@@ -126,7 +126,8 @@ export async function runTriage(params: {
 }
 
 export async function runHealthCheck(params: {
-  photo: File;
+  /** Optional — without one the check runs from the tank's saved record. */
+  photo?: File;
   lengthCm: number;
   widthCm: number;
   heightCm: number;
@@ -136,7 +137,7 @@ export async function runHealthCheck(params: {
   locale?: string;
 }) {
   const form = new FormData();
-  form.set("photo", params.photo);
+  if (params.photo) form.set("photo", params.photo);
   form.set("length_cm", String(params.lengthCm));
   form.set("width_cm", String(params.widthCm));
   form.set("height_cm", String(params.heightCm));

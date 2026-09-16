@@ -14,7 +14,11 @@ const TEXT_INPUT = 'input:not([type="checkbox"]):not([type="radio"]):not([type="
  *   height is measured from `visualViewport` and published as the CSS var
  *   `--keyboard-inset`; sticky footers and modals offset themselves by it.
  * - `data-typing` on <html> while a text field has focus hides the tab dock.
- * - The focused field is scrolled to the middle of the visible area.
+ * - The focused field is scrolled to the middle of the visible area, unless
+ *   it (or an ancestor) sets `data-keyboard-align="start"` — that pins the
+ *   field to the top instead, which is what a search box wants: centring it
+ *   pushes its own results down behind the keyboard (Jaideep hit this on
+ *   Dex search, 2026-09-16).
  */
 export function KeyboardAware() {
   useEffect(() => {
@@ -38,7 +42,8 @@ export function KeyboardAware() {
       // Wait for the keyboard to finish opening before measuring/scrolling.
       window.setTimeout(() => {
         updateInset();
-        el.scrollIntoView({ block: "center", behavior: "smooth" });
+        const align = el.closest<HTMLElement>("[data-keyboard-align]")?.dataset.keyboardAlign;
+        el.scrollIntoView({ block: align === "start" ? "start" : "center", behavior: "smooth" });
       }, 350);
     }
 

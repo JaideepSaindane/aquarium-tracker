@@ -423,7 +423,17 @@ export default function DexPage() {
           )}
         </div>
 
-      <div style={{ marginBottom: 12 }}>
+      {/* Sticky + top-aligned while typing: everything above this (title,
+          "Find this fish", the scan buttons) used to stay put and push the
+          matches down behind the on-screen keyboard, so a search showed a
+          field and no results (Jaideep, 2026-09-16). data-keyboard-align
+          tells src/app/KeyboardAware.tsx to scroll this to the top of the
+          visible area instead of the middle, and sticky keeps the box in
+          view while scrolling the matches underneath it. */}
+      <div
+        data-keyboard-align="start"
+        style={{ marginBottom: 12, position: "sticky", top: 0, zIndex: 3, background: "var(--soft-bg)", paddingBlock: 8, scrollMarginTop: 8 }}
+      >
         <div style={{ display: "flex", gap: 8 }}>
           <input
             type="text"
