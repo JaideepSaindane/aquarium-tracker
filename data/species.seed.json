@@ -7544,7 +7544,8 @@
       "hardness_dgh": "null",
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
-      "iucn_status": "null"
+      "iucn_status": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -7569,7 +7570,7 @@
         "stored_height": 1536
       }
     ],
-    "min_volume_l": 300,
+    "min_volume_l": 400,
     "social_min_group": 5,
     "temperament": "peaceful",
     "swim_level": "mid",
@@ -20431,7 +20432,7 @@
     "description": "The oscar is a species of fish from the cichlid family known under a variety of common names, including Tiger Oscar, Velvet Cichlid, and Marble Cichlid. In tropical South America, where the species naturally resides, A. ocellatus specimens are often found for sale as a food fish in the local markets. The fish has been introduced to other areas, including India, China, Australia, and the United States. It is considered a popular aquarium fish in Europe and the U.S.",
     "adult_size_cm": 35,
     "native_range": "Brazil, Colombia, Ecuador, Guyana, French Guiana, Suriname, Peru, and Venezuela, and occur",
-    "min_volume_l": 250,
+    "min_volume_l": 300,
     "temp_c": {
       "min": 24,
       "max": 28
@@ -20456,7 +20457,7 @@
       "description": "wikipedia",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 70.0cm -> 1500L (no modifiers))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -28916,7 +28917,7 @@
     "adult_size_cm": 200,
     "iucn_status": "DD",
     "native_range": "the basin of the Amazon River",
-    "min_volume_l": 5000,
+    "min_volume_l": 10000,
     "temp_c": {
       "min": 24,
       "max": 30
@@ -28941,7 +28942,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 10.0cm -> 75L (no modifiers))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -28971,7 +28972,7 @@
       }
     ],
     "social_min_group": 1,
-    "temperament": "peaceful",
+    "temperament": "aggressive",
     "swim_level": "top",
     "diet": "carnivore",
     "difficulty": "advanced",
@@ -29843,7 +29844,7 @@
     "adult_size_cm": 40,
     "iucn_status": "NT",
     "native_range": "fresh and brackish waters in West and Central Africa",
-    "min_volume_l": 200,
+    "min_volume_l": 300,
     "temp_c": {
       "min": 24,
       "max": 28
@@ -29868,7 +29869,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 90.0cm -> 3000L (no modifiers))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -29898,7 +29899,7 @@
       }
     ],
     "social_min_group": 1,
-    "temperament": "peaceful",
+    "temperament": "semi-aggressive",
     "swim_level": "bottom",
     "diet": "carnivore",
     "difficulty": "intermediate",
@@ -29988,7 +29989,8 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -30013,7 +30015,7 @@
         "stored_height": 1536
       }
     ],
-    "min_volume_l": 1000,
+    "min_volume_l": 5000,
     "social_min_group": 1,
     "temperament": "aggressive",
     "swim_level": "top",
@@ -30102,7 +30104,8 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -30127,7 +30130,7 @@
         "stored_height": 1152
       }
     ],
-    "min_volume_l": 1000,
+    "min_volume_l": 2000,
     "social_min_group": 1,
     "temperament": "aggressive",
     "swim_level": "top",
@@ -30448,7 +30451,8 @@
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
-      "iucn_status": "null"
+      "iucn_status": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -30473,7 +30477,7 @@
         "stored_height": 1536
       }
     ],
-    "min_volume_l": 400,
+    "min_volume_l": 1000,
     "social_min_group": 1,
     "temperament": "peaceful",
     "swim_level": "bottom",
@@ -52858,7 +52862,8 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -52884,7 +52889,7 @@
       }
     ],
     "image": "/species/six-banded-distichodus.jpg",
-    "min_volume_l": 250,
+    "min_volume_l": 800,
     "care_notes": "A plant-eating African characin that will strip soft vegetation and grows fairly large; feed plenty of vegetable matter to reduce plant damage.",
     "common_mistakes": [
       "Keeping in a delicate planted tank — it eats most soft plants",
@@ -53128,7 +53133,7 @@
     "common_names": [
       "One-striped African Characin"
     ],
-    "temperament": "semi-aggressive",
+    "temperament": "peaceful",
     "swim_level": "mid",
     "diet": "herbivore",
     "difficulty": "intermediate",
@@ -53188,7 +53193,8 @@
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
-      "iucn_status": "null"
+      "iucn_status": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -53214,7 +53220,7 @@
       }
     ],
     "image": "/species/one-striped-african-characin.jpg",
-    "min_volume_l": 250,
+    "min_volume_l": 60,
     "care_notes": "A plant-eating African characin that will strip soft vegetation and grows fairly large; feed plenty of vegetable matter to reduce plant damage.",
     "common_mistakes": [
       "Keeping in a delicate planted tank — it eats most soft plants",
@@ -53232,7 +53238,7 @@
     "common_names": [
       "Ansorge's Neolebias"
     ],
-    "temperament": "semi-aggressive",
+    "temperament": "peaceful",
     "swim_level": "mid",
     "diet": "herbivore",
     "difficulty": "intermediate",
@@ -53292,7 +53298,8 @@
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
-      "iucn_status": "null"
+      "iucn_status": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -53318,7 +53325,7 @@
       }
     ],
     "image": "/species/ansorge-s-neolebias.jpg",
-    "min_volume_l": 250,
+    "min_volume_l": 40,
     "care_notes": "A plant-eating African characin that will strip soft vegetation and grows fairly large; feed plenty of vegetable matter to reduce plant damage.",
     "common_mistakes": [
       "Keeping in a delicate planted tank — it eats most soft plants",
@@ -54328,11 +54335,11 @@
     "common_names": [
       "Black Piranha"
     ],
-    "temperament": "peaceful",
+    "temperament": "aggressive",
     "swim_level": "mid",
-    "diet": "herbivore",
-    "difficulty": "intermediate",
-    "social_min_group": 5,
+    "diet": "carnivore",
+    "difficulty": "expert",
+    "social_min_group": 1,
     "category": "fish",
     "seed_group": "characins",
     "id": "black-piranha",
@@ -54396,7 +54403,8 @@
       "hardness_dgh": "null",
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
-      "iucn_status": "null"
+      "iucn_status": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -54422,17 +54430,17 @@
       }
     ],
     "image": "/species/black-piranha.jpg",
-    "min_volume_l": 300,
-    "care_notes": "A large, schooling, plant-eating characin that will strip a planted tank of soft-leaved plants; best kept in a group in a big tank with tough or artificial plants.",
+    "min_volume_l": 400,
+    "care_notes": "A large, predatory piranha that is best kept alone — unlike some piranhas it is intolerant of its own kind and will attack or kill tankmates. Needs a big, well-filtered tank, meaty foods, and careful handling during maintenance.",
     "common_mistakes": [
-      "Keeping in a delicate planted tank — it eats most soft plants",
-      "Undersized tank/group for a large schooling fish"
+      "Keeping it in a group or with tankmates — it will attack them",
+      "Putting hands in the tank carelessly during maintenance"
     ],
     "uncertainty_note": "Care ranges are typical for the family; this specific species hasn't been individually researched.",
-    "care_notes_hi": "Black Piranha ek bada aur schooling fish hai jo soft leaves wale plants ko poori tarah khatam kar deta hai; ise hamesha ek bade tank mein tough ya artificial plants ke sath group mein rakhna best hai.",
+    "care_notes_hi": "Black Piranha ek bada, shikari (predatory) piranha hai jise akele rakhna best hai — yeh apni hi species aur doosri machhliyon par hamla karke unhe maar sakta hai. Ise bade, achhe filter wale tank aur meaty food ki zaroorat hoti hai, aur maintenance ke waqt savdhani rakhein.",
     "common_mistakes_hi": [
-      "Ise delicate planted tank mein rakhna — yeh zyadatar soft plants ko kha jata hai",
-      "Ek bade schooling fish ke liye chhote size ka tank ya chhota group rakhna"
+      "Ise group mein ya doosri machhliyon ke sath rakhna — yeh unpar hamla karega",
+      "Maintenance ke waqt bina savdhani tank mein haath daalna"
     ]
   },
   {
@@ -82378,7 +82386,7 @@
     "adult_size_cm": 100,
     "iucn_status": "LC",
     "native_range": "large upland rivers, and is common in areas with rocky bottoms and irregular depths",
-    "min_volume_l": 100,
+    "min_volume_l": 2000,
     "temp_c": {
       "min": 23,
       "max": 27
@@ -82403,7 +82411,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 15.0cm -> 195L (aggressive x1.3))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -93832,7 +93840,7 @@
     "common_names": [
       "Bulldog Mormyrid"
     ],
-    "temperament": "peaceful",
+    "temperament": "semi-aggressive",
     "swim_level": "bottom",
     "diet": "carnivore",
     "difficulty": "advanced",
@@ -93873,7 +93881,7 @@
     "adult_size_cm": 32,
     "iucn_status": "LC",
     "native_range": "rivers and lakes in South-Eastern Africa",
-    "min_volume_l": 200,
+    "min_volume_l": 400,
     "temp_c": {
       "min": 24,
       "max": 28
@@ -93898,7 +93906,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 83.0cm -> 3000L (no modifiers))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -97233,7 +97241,7 @@
     "common_names": [
       "Guinean Bichir"
     ],
-    "temperament": "peaceful",
+    "temperament": "semi-aggressive",
     "swim_level": "bottom",
     "diet": "carnivore",
     "difficulty": "intermediate",
@@ -97273,7 +97281,7 @@
     "description": "The Guinean bichir is a ray-finned fish from rivers and other freshwater habitats in Western Africa, ranging from Guinea-Bissau to Nigeria. It reaches a maximum length of 72 cm (28 in), is greenish-brown to black in color, and has large, dark spots and blotches on its sides. On mature specimens, the bottom jaw may protrude very slightly. It is similar to some other bichirs with which it can be confused.",
     "adult_size_cm": 30,
     "iucn_status": "LC",
-    "min_volume_l": 200,
+    "min_volume_l": 300,
     "temp_c": {
       "min": 24,
       "max": 28
@@ -97298,7 +97306,7 @@
       "description": "wikipedia",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
-      "min_volume_l": "derived:tank-volume (size 72.0cm -> 1500L (no modifiers))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -98733,7 +98741,7 @@
     "adult_size_cm": 15,
     "iucn_status": "LC",
     "native_range": "areas of the Congo River in Africa, including rapids",
-    "min_volume_l": 80,
+    "min_volume_l": 150,
     "temp_c": {
       "min": 24,
       "max": 28
@@ -98758,7 +98766,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 60.0cm -> 1950L (aggressive x1.3))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -100105,7 +100113,8 @@
       "hardness_dgh": "null",
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
-      "native_range": "null"
+      "native_range": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -100131,7 +100140,7 @@
       }
     ],
     "image": "/species/gilled-lungfish.jpg",
-    "min_volume_l": 1000,
+    "min_volume_l": 500,
     "care_notes": "An obligate air-breathing lungfish that grows very large and is aggressive; needs a huge tank and is unsuitable for most home aquariums.",
     "common_mistakes": [
       "Underestimating its large size and aggression toward tankmates"
@@ -100548,7 +100557,8 @@
       "lifespan_years": "null",
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
-      "iucn_status": "null"
+      "iucn_status": "null",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -100574,7 +100584,7 @@
       }
     ],
     "image": "/species/longtail-knifefish.jpg",
-    "min_volume_l": 200,
+    "min_volume_l": 1000,
     "care_notes": "A nocturnal, weakly electric knifefish that navigates and communicates using electric fields, making it sensitive to stray electrical interference and poor water quality; territorial toward its own species.",
     "common_mistakes": [
       "Poor water quality, which stresses these sensitive fish badly",
@@ -100920,7 +100930,7 @@
       "Cornish Jack"
     ],
     "synonyms": [],
-    "temperament": "peaceful",
+    "temperament": "semi-aggressive",
     "swim_level": "bottom",
     "diet": "carnivore",
     "difficulty": "advanced",
@@ -100961,7 +100971,7 @@
     "adult_size_cm": 100,
     "iucn_status": "LC",
     "native_range": "quiet waters in much of Sub-Saharan Africa",
-    "min_volume_l": 200,
+    "min_volume_l": 1000,
     "temp_c": {
       "min": 24,
       "max": 28
@@ -100986,7 +100996,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 17.0cm -> 195L (aggressive x1.3))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -110729,7 +110739,8 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -110755,7 +110766,7 @@
       }
     ],
     "image": "/species/giraffe-catfish.jpg",
-    "min_volume_l": 150,
+    "min_volume_l": 800,
     "care_notes": "A nocturnal African predatory catfish that hides by day and hunts at night; territorial toward its own kind.",
     "common_mistakes": [
       "Housing multiple together in too small a tank, causing aggression"
@@ -111860,7 +111871,7 @@
     "adult_size_cm": 100,
     "iucn_status": "LC",
     "native_range": "southern Asia in the countries of Afghanistan, Pakistan, India, Nepal and Bangladesh with",
-    "min_volume_l": 100,
+    "min_volume_l": 2000,
     "temp_c": {
       "min": 23,
       "max": 27
@@ -111885,7 +111896,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 40.0cm -> 1040L (aggressive x1.3))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
@@ -133973,7 +133984,7 @@
       "min": 2.2,
       "max": 4
     },
-    "min_volume_l": 20,
+    "min_volume_l": 80,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -133986,7 +133997,7 @@
       "ph": "genus-inherited from Poecilia reticulata, Poecilia wingei, Poecilia sphenops",
       "hardness_dgh": "genus-inherited from Poecilia reticulata, Poecilia wingei, Poecilia sphenops",
       "lifespan_years": "genus-inherited from Poecilia reticulata, Poecilia wingei, Poecilia sphenops",
-      "min_volume_l": "derived:tank-volume (size 1.3cm -> 20L (no modifiers))"
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -155249,7 +155260,8 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)"
     },
     "images": [
       {
@@ -155275,7 +155287,7 @@
       }
     ],
     "image": "/species/devil-loach.jpg",
-    "min_volume_l": 60,
+    "min_volume_l": 30,
     "care_notes": "A small, uncommon loach best kept in a group with soft substrate to sift and hiding spots; not well documented in the hobby.",
     "common_mistakes": [
       "Coarse substrate that can damage barbels",
@@ -159821,7 +159833,7 @@
     "adult_size_cm": 7,
     "iucn_status": "DD",
     "native_range": "Laos, Cambodia, Thailand and Vietnam",
-    "min_volume_l": 80,
+    "min_volume_l": 60,
     "temp_c": {
       "min": 20,
       "max": 26
@@ -159846,7 +159858,7 @@
       "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
-      "min_volume_l": "derived:tank-volume (size 40.0cm -> 800L (no modifiers))",
+      "min_volume_l": "manual review 2026-09-17 (FishBase cross-check follow-up)",
       "temp_c": "null",
       "ph": "null",
       "hardness_dgh": "null",
