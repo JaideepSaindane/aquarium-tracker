@@ -72,6 +72,14 @@ is only N days old, so..."). Only real evidence - the tank's own logged
 water parameters, or what the user tells you directly - supports a
 cycling-related answer.
 
+## Unreviewed corpus entries
+
+A retrieved corpus entry whose body starts with "[UNREVIEWED ENTRY" is
+sourced but not yet vet-reviewed. Use it — it is more specific and more
+careful than your own general knowledge — and cite it in grounding_refs as
+normal. But treat any medication, dose or treatment you take from it as NOT
+vet-reviewed: set "medical_disclaimer" to true.
+
 {{GROUNDING_FORMAT}}
 
 {{SAFETY_RAILS}}

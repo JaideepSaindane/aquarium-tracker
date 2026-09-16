@@ -161,6 +161,14 @@ retrieved corpus entry. Water-testing and pure observation advice (no
 medication) never needs this flag. Never use the general-knowledge fallback
 to invent a specific medication dose without saying so via this flag.
 
+## Unreviewed corpus entries
+
+A retrieved corpus entry whose body starts with "[UNREVIEWED ENTRY" is
+sourced but not yet vet-reviewed. Use it — it is more specific and more
+careful than your own general knowledge — and cite it in grounding_refs as
+normal. But treat any medication, dose or treatment you take from it as NOT
+vet-reviewed: set "medical_disclaimer" to true.
+
 {{GROUNDING_FORMAT}}
 
 {{SAFETY_RAILS}}

@@ -241,7 +241,7 @@ export type CorpusEntry = CorpusIndexEntry & {
   body: string;
 };
 
-export type CorpusChunk = { id: string; text: string };
+export type CorpusChunk = { id: string; text: string; unreviewed?: boolean };
 
 let cachedIndex: CorpusIndexEntry[] | null = null;
 
@@ -302,18 +302,25 @@ export async function getCorpusEntry(id: string, locale: "en" | "hi-latn" = "en"
 }
 
 /**
- * Real (if simple) keyword retrieval: matches the query against each live
- * entry's id/title/aliases, ranks by match count, returns the top hits with
- * body text attached. Only `status: "live"` entries are eligible — anything
- * else has no named human reviewer yet (docs/05-content-guide.md §1, "an
- * entry with no reviewer is not eligible for retrieval — it does not ship"),
- * so it is correctly invisible to the AI even though it exists on disk and
- * the corpus reader can still show it.
+ * Real (if simple) keyword retrieval: matches the query against each
+ * eligible entry's id/title/aliases, ranks by match count, returns the top
+ * hits with body text attached.
+ *
+ * `status: "live"` entries have a named human reviewer and count as this
+ * app's own reviewed data. 2026-09-16 (Jaideep's call): `status: "sourced"`
+ * entries — 30 well-written disease/medication articles that were written,
+ * sourced, and then held back waiting on a vet — are now retrievable too,
+ * because leaving them dark meant disease answers fell back to the model's
+ * own general knowledge instead. They are marked `unreviewed` and their body
+ * is prefixed with an UNREVIEWED banner, which the ask/triage prompts treat
+ * as "not vet-reviewed": any answer leaning on one must set
+ * `medical_disclaimer`, so the loud amber warning always accompanies it.
+ * Nothing below `sourced` (draft/stale) is ever eligible.
  */
 export async function retrieveCorpus(query: string, limit = 4, locale: "en" | "hi-latn" = "en"): Promise<CorpusChunk[]> {
   const index = await loadCorpusIndex();
-  const live = index.filter((e) => e.status === "live");
-  if (live.length === 0) return [];
+  const eligible = index.filter((e) => e.status === "live" || e.status === "sourced");
+  if (eligible.length === 0) return [];
 
   const queryWords = query
     .toLowerCase()
@@ -321,7 +328,7 @@ export async function retrieveCorpus(query: string, limit = 4, locale: "en" | "h
     .filter((w) => w.length > 2);
   if (queryWords.length === 0) return [];
 
-  const scored = live
+  const scored = eligible
     .map((entry) => {
       const haystack = [entry.id, entry.title, ...entry.aliases].join(" ").toLowerCase();
       const score = queryWords.reduce((n, w) => n + (haystack.includes(w) ? 1 : 0), 0);
@@ -334,7 +341,12 @@ export async function retrieveCorpus(query: string, limit = 4, locale: "en" | "h
   const chunks: CorpusChunk[] = [];
   for (const { entry } of scored) {
     const full = await getCorpusEntry(entry.id, locale);
-    if (full) chunks.push({ id: full.id, text: full.body });
+    if (!full) continue;
+    const unreviewed = entry.status !== "live";
+    const text = unreviewed
+      ? `[UNREVIEWED ENTRY — sourced but not yet checked by a vet. You may use it, but any medication, dose or treatment advice taken from it counts as NOT vet-reviewed: set medical_disclaimer to true.]\n${full.body}`
+      : full.body;
+    chunks.push({ id: full.id, text, unreviewed });
   }
   return chunks;
 }
