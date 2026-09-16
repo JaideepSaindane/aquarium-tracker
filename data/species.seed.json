@@ -7531,7 +7531,7 @@
       "min": 8,
       "max": 10
     },
-    "adult_size_cm": 15,
+    "adult_size_cm": 30,
     "iucn_status": null,
     "provenance": {
       "wikipedia_title": "wikipedia",
@@ -7543,7 +7543,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "null"
     },
     "images": [
@@ -20429,7 +20429,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Oscar_(fish)",
     "wikidata_id": "Q3442",
     "description": "The oscar is a species of fish from the cichlid family known under a variety of common names, including Tiger Oscar, Velvet Cichlid, and Marble Cichlid. In tropical South America, where the species naturally resides, A. ocellatus specimens are often found for sale as a food fish in the local markets. The fish has been introduced to other areas, including India, China, Australia, and the United States. It is considered a popular aquarium fish in Europe and the U.S.",
-    "adult_size_cm": 70,
+    "adult_size_cm": 35,
     "native_range": "Brazil, Colombia, Ecuador, Guyana, French Guiana, Suriname, Peru, and Venezuela, and occur",
     "min_volume_l": 250,
     "temp_c": {
@@ -20454,7 +20454,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('grow to about 70 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 70.0cm -> 1500L (no modifiers))",
       "temp_c": "null",
@@ -28913,7 +28913,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Arapaima_gigas",
     "wikidata_id": "Q145409",
     "description": "Arapaima gigas, also known simply as Arapaima, pirarucu, or paiche, is a species of arapaima native to the basin of the Amazon River. Once believed to be the sole species in the genus, it is among the largest freshwater fish. It is the best-known species of Arapaimas.",
-    "adult_size_cm": 10,
+    "adult_size_cm": 200,
     "iucn_status": "DD",
     "native_range": "the basin of the Amazon River",
     "min_volume_l": 5000,
@@ -28938,7 +28938,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('reach 10cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 10.0cm -> 75L (no modifiers))",
@@ -29840,7 +29840,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Reedfish",
     "wikidata_id": "Q549760",
     "description": "The reedfish, ropefish, or snakefish, Erpetoichthys calabaricus, is a species of fish in the family Polypteridae alongside the bichirs. It is the only member of the genus Erpetoichthys. It is native to fresh and brackish waters in West and Central Africa. The reedfish possesses a pair of lungs in addition to gills, allowing it to survive in very oxygen-poor water. It is threatened by habitat loss through palm oil plantations, other agriculture, deforestation, and urban development.",
-    "adult_size_cm": 90,
+    "adult_size_cm": 40,
     "iucn_status": "NT",
     "native_range": "fresh and brackish waters in West and Central Africa",
     "min_volume_l": 200,
@@ -29865,7 +29865,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('up to 90 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 90.0cm -> 3000L (no modifiers))",
@@ -29976,7 +29976,7 @@
       "min": 10,
       "max": 20
     },
-    "adult_size_cm": 60,
+    "adult_size_cm": 180,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -29988,7 +29988,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -30090,7 +30090,7 @@
       "min": 10,
       "max": 20
     },
-    "adult_size_cm": 60,
+    "adult_size_cm": 150,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -30102,7 +30102,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -30434,7 +30434,7 @@
       "min": 8,
       "max": 15
     },
-    "adult_size_cm": 30,
+    "adult_size_cm": 60,
     "native_range": null,
     "iucn_status": null,
     "provenance": {
@@ -30446,7 +30446,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
       "iucn_status": "null"
     },
@@ -52846,7 +52846,7 @@
       "min": 8,
       "max": 12
     },
-    "adult_size_cm": 20,
+    "adult_size_cm": 60,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -52858,7 +52858,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -53178,7 +53178,7 @@
       "min": 8,
       "max": 12
     },
-    "adult_size_cm": 20,
+    "adult_size_cm": 6.5,
     "native_range": null,
     "iucn_status": null,
     "provenance": {
@@ -53186,7 +53186,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
       "iucn_status": "null"
     },
@@ -53282,7 +53282,7 @@
       "min": 8,
       "max": 12
     },
-    "adult_size_cm": 20,
+    "adult_size_cm": 3.5,
     "native_range": null,
     "iucn_status": null,
     "provenance": {
@@ -53290,7 +53290,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
       "iucn_status": "null"
     },
@@ -54383,7 +54383,7 @@
       "min": 8,
       "max": 10
     },
-    "adult_size_cm": 15,
+    "adult_size_cm": 35,
     "iucn_status": null,
     "provenance": {
       "wikipedia_title": "wikipedia",
@@ -54395,7 +54395,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "null"
     },
     "images": [
@@ -82375,7 +82375,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Hemibagrus_wyckioides",
     "wikidata_id": "Q3752870",
     "description": "Hemibagrus wyckioides, the Asian redtail catfish, is a species of catfish of the family Bagridae.",
-    "adult_size_cm": 15,
+    "adult_size_cm": 100,
     "iucn_status": "LC",
     "native_range": "large upland rivers, and is common in areas with rocky bottoms and irregular depths",
     "min_volume_l": 100,
@@ -82400,7 +82400,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('reaches about 15 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 15.0cm -> 195L (aggressive x1.3))",
@@ -93870,7 +93870,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Marcusenius_macrolepidotus",
     "wikidata_id": "Q5933507",
     "description": "Marcusenius macrolepidotus, commonly known as the bulldog, is a bony-tongued freshwater elephantfish from the genus Marcusenius and the family Mormyridae. They are typically found in rivers and lakes in South-Eastern Africa. The species was named after its distinctive feature of a mental lobe on its lower jaw that protrudes beyond the upper jaw, a characteristic similar to that of the bulldog dog breed. The Mormyridae family contains weakly electric fish, all of which have an electric discharge organ located near the tail. This electric discharge organ can be used for object/prey detection, exhibiting aggressive behaviors, and intraspecies communication. M. marcusenius typically appear in groups of fish called shoals, and are most active at night. Overnight, they spend time feeding on insects, algae, and fish. The species was discovered in 1852 by German naturalist Wilhelm Peters, who originally named the fish Morymus macrolepidotus. Since its discovery, the fish has been subject to multiple changes in scientific name, geographic distribution, and common names due to limited scientific research on the Marcusenius genus. However, after thorough comparison of allopatric populations of bulldogs in Africa, it has been determined that the original bulldogs are a separate four taxa based on genetics, morphology, and electric organ discharges.",
-    "adult_size_cm": 83,
+    "adult_size_cm": 32,
     "iucn_status": "LC",
     "native_range": "rivers and lakes in South-Eastern Africa",
     "min_volume_l": 200,
@@ -93895,7 +93895,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('up to 83 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 83.0cm -> 3000L (no modifiers))",
@@ -97271,7 +97271,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Guinean_bichir",
     "wikidata_id": "Q1099725",
     "description": "The Guinean bichir is a ray-finned fish from rivers and other freshwater habitats in Western Africa, ranging from Guinea-Bissau to Nigeria. It reaches a maximum length of 72 cm (28 in), is greenish-brown to black in color, and has large, dark spots and blotches on its sides. On mature specimens, the bottom jaw may protrude very slightly. It is similar to some other bichirs with which it can be confused.",
-    "adult_size_cm": 72,
+    "adult_size_cm": 30,
     "iucn_status": "LC",
     "min_volume_l": 200,
     "temp_c": {
@@ -97296,7 +97296,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('maximum length of 72 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "min_volume_l": "derived:tank-volume (size 72.0cm -> 1500L (no modifiers))",
       "temp_c": "null",
@@ -97514,7 +97514,7 @@
       "min": 10,
       "max": 20
     },
-    "adult_size_cm": 60,
+    "adult_size_cm": 100,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -97526,7 +97526,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -98730,7 +98730,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Congo_pufferfish",
     "wikidata_id": "Q901079",
     "description": "The Congo puffer or potato puffer is a freshwater pufferfish found in areas of the Congo River in Africa, including rapids.",
-    "adult_size_cm": 60,
+    "adult_size_cm": 15,
     "iucn_status": "LC",
     "native_range": "areas of the Congo River in Africa, including rapids",
     "min_volume_l": 80,
@@ -98755,7 +98755,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('60cm in length')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 60.0cm -> 1950L (aggressive x1.3))",
@@ -100092,7 +100092,7 @@
       "min": 15,
       "max": 20
     },
-    "adult_size_cm": 100,
+    "adult_size_cm": 45,
     "native_range": null,
     "provenance": {
       "wikipedia_title": "wikipedia",
@@ -100104,7 +100104,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null"
     },
     "images": [
@@ -100538,7 +100538,7 @@
       "min": 8,
       "max": 15
     },
-    "adult_size_cm": 30,
+    "adult_size_cm": 100,
     "native_range": null,
     "iucn_status": null,
     "provenance": {
@@ -100546,7 +100546,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "null",
       "iucn_status": "null"
     },
@@ -100958,7 +100958,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Cornish_jack",
     "wikidata_id": "Q185960",
     "description": "The Cornish jack, Mormyrops anguilloides, is a species of weakly electric fish in the family Mormyridae, native to quiet waters in much of Sub-Saharan Africa. The largest species in its family, the Cornish jack is a nocturnal group hunter of smaller fishes, using electricity to locate its prey and communicate with other members of its group. It is a commercial game fish valued for its size and taste.",
-    "adult_size_cm": 17,
+    "adult_size_cm": 100,
     "iucn_status": "LC",
     "native_range": "quiet waters in much of Sub-Saharan Africa",
     "min_volume_l": 200,
@@ -100983,7 +100983,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('17 cm long')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 17.0cm -> 195L (aggressive x1.3))",
@@ -101204,7 +101204,7 @@
       "min": 10,
       "max": 20
     },
-    "adult_size_cm": 60,
+    "adult_size_cm": 100,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -101216,7 +101216,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -110717,7 +110717,7 @@
       "min": 6,
       "max": 10
     },
-    "adult_size_cm": 15,
+    "adult_size_cm": 50,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -110729,7 +110729,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -111857,7 +111857,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Sperata_seenghala",
     "wikidata_id": "Q1928312",
     "description": "Sperata seenghala, the Giant river-catfish, is a species of bagrid catfish. It is known locally as Guizza, Guizza ayer, Auri, Ari, Pogal, Singhara and Seenghala, among other names. It is found in southern Asia in the countries of Afghanistan, Pakistan, India, Nepal and Bangladesh with reports of occurrence in Myanmar, Thailand and Yunnan, China. It can reach a length of 150 cm, though lengths up to 40 cm are more usual. It is commercially fished for human consumption as well as being a popular gamefish with a reputation for being a good fighter when hooked. It is carnivorous in diet. It can be distinguished from other Sperata species by its spatulate, blunt snout, relatively short barbels and mouth that is only 1/3 as wide as the head is long.",
-    "adult_size_cm": 40,
+    "adult_size_cm": 100,
     "iucn_status": "LC",
     "native_range": "southern Asia in the countries of Afghanistan, Pakistan, India, Nepal and Bangladesh with",
     "min_volume_l": 100,
@@ -111882,7 +111882,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('up to 40 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 40.0cm -> 1040L (aggressive x1.3))",
@@ -133954,7 +133954,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Poecilia_mexicana",
     "wikidata_id": "Q525111",
     "description": "Poecilia mexicana, commonly known as the Atlantic molly, is a species of poeciliid fish native to the Atlantic slope of Middle America. The species is highly variable in coloration, shape, and size. Atlantic mollies occur in fresh and brackish waters, shallow and slow-flowing or standing. They feed chiefly on algae and detritus. Two populations are found in caves and represent some of the best-studied cavefish. It hybridizes with other Poecilia species in its range; one such cross has resulted in the unisexual P. formosa.",
-    "adult_size_cm": 1.3,
+    "adult_size_cm": 10,
     "iucn_status": "LC",
     "native_range": "the Atlantic slope of Middle America",
     "temp_c": {
@@ -133979,7 +133979,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('13 mm SL')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "temp_c": "genus-inherited from Poecilia reticulata, Poecilia wingei, Poecilia sphenops",
@@ -134723,7 +134723,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Girardinus_falcatus",
     "wikidata_id": "Q3751974",
     "description": "Girardinus falcatus, the goldbelly topminnow, is a species of Cuban tropical fish. Another common name of the species is yellow belly. The fish is pale gold and has a bright blue iris. Males are smaller than females and constantly mate. Females can grow to 8.5 cm (3.3 in) standard length, males to less than half of that.",
-    "adult_size_cm": 8.5,
+    "adult_size_cm": 4,
     "iucn_status": "LC",
     "min_volume_l": 60,
     "temp_c": {
@@ -134748,7 +134748,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('grow to 8.5 cm')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "min_volume_l": "derived:tank-volume (size 8.5cm -> 75L (no modifiers))",
       "temp_c": "null",
@@ -145601,7 +145601,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Spectracanthicus_zuanoni",
     "wikidata_id": "Q21325281",
     "description": "Spectracanthicus zuanoni is a species of freshwater ray-finned fish belonging to the family Loricariidae, the suckermouth armoured catfishes, and the subfamily Hypostominae, the suckermouth catfishes. This catfish is endemic to Brazil where it occurs in the Xingu River basin in the state of Pará. It is usually found in areas up to 2 m deep with strong currents and rocky substrates, where it is often seen hiding beneath rocks. It is known to occur individually or in groups of three, with juveniles being found alongside other loricariid species, such as Ancistrus ranunculus, Baryancistrus xanthellus, Hopliancistrus tricornis, Parancistrus nudiventris, Peckoltia vittata, and its congener Spectracanthicus punctatissimus.",
-    "adult_size_cm": 200,
+    "adult_size_cm": 20,
     "native_range": "Brazil where it occurs in the Xingu River basin in the state of Pará",
     "min_volume_l": 150,
     "temp_c": {
@@ -145626,7 +145626,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('up to 2 m')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 200.0cm -> 6000L (no modifiers))",
       "temp_c": "null",
@@ -155237,7 +155237,7 @@
       "min": 3,
       "max": 6
     },
-    "adult_size_cm": 6,
+    "adult_size_cm": 2.5,
     "provenance": {
       "wikipedia_title": "wikipedia",
       "wikipedia_url": "wikipedia",
@@ -155249,7 +155249,7 @@
       "ph": "null",
       "hardness_dgh": "null",
       "lifespan_years": "null",
-      "adult_size_cm": "null"
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)"
     },
     "images": [
       {
@@ -159818,7 +159818,7 @@
     "wikipedia_url": "https://en.wikipedia.org/wiki/Homaloptera_confuzona",
     "wikidata_id": "Q3755806",
     "description": "Homaloptera confuzona is a species of hillstream loach in the genus Homaloptera found in Laos, Cambodia, Thailand and Vietnam. It lives in the lower Mekong drainage and coastal streams of Cambodia and eastern Thailand. Its maximum size is about 40 cm (16 in) SL.",
-    "adult_size_cm": 40,
+    "adult_size_cm": 7,
     "iucn_status": "DD",
     "native_range": "Laos, Cambodia, Thailand and Vietnam",
     "min_volume_l": 80,
@@ -159843,7 +159843,7 @@
       "wikipedia_url": "wikipedia",
       "wikidata_id": "wikipedia",
       "description": "wikipedia",
-      "adult_size_cm": "wikipedia:text ('40 cm (16 in) SL')",
+      "adult_size_cm": "fishbase-crosscheck-2026-09-16 + manual review (typical aquarium adult size)",
       "iucn_status": "wikidata:P141",
       "native_range": "wikipedia:text",
       "min_volume_l": "derived:tank-volume (size 40.0cm -> 800L (no modifiers))",
