@@ -261,7 +261,7 @@ function ViewAsCard({ accountId }: { accountId: string }) {
       >
         {busy ? "Opening..." : "View as this user"}
       </button>
-      {error && <p style={{ marginTop: 8, fontSize: "var(--font-body-sm-size)", color: "var(--color-danger)" }}>{error}</p>}
+      {error && <p style={{ marginTop: 8, fontSize: "var(--font-body-sm-size)", color: "var(--color-fix-now)" }}>{error}</p>}
     </Card>
   );
 }

@@ -12,6 +12,7 @@ import { GroundingLink } from "@/components/GroundingLink";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";
 import { LottiePlayer } from "@/components/LottiePlayer";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { getTank } from "@/db/queries/tanks";
 import { createScan } from "@/db/queries/scans";
 import { addLogEntry } from "@/db/queries/log-entries";
@@ -82,7 +83,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromCreate = searchParams.get("fromCreate") === "1";
-  const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { data: tank, loading: recordLoading, error: recordError } = useLiveQuery(() => getTank(id), [id]);
   const { locale } = useLocale();
   const t = useTranslation();
   const HEALTH_CATEGORY_META = healthCategoryMeta(t);
@@ -93,6 +94,8 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   const [uploadBlob, setUploadBlob] = useState<Blob | null>(null);
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const saveProgress = useRef<{ scan: boolean; entryId: string | null }>({ scan: false, entryId: null });
   const [scanErrorOffline, setScanErrorOffline] = useState(false);
   const [report, setReport] = useState<TankScanReport | null>(null);
   // Health Check (re-runs, !fromCreate) uses its own dedicated contract
@@ -185,6 +188,10 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
   async function runScan(blob: Blob | null) {
     if (!tank) return;
     if (!blob && fromCreate) return;
+    // A fresh result must save in full, not skip steps a previous failed
+    // save of a different result had already done.
+    saveProgress.current = { scan: false, entryId: null };
+    setSaveError(null);
     setStage("scanning");
     setScanError(null);
     setScanErrorOffline(false);
@@ -261,41 +268,60 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     // than a migration — nothing renders this field, it's only ever stored.
     if (!originalPath && report) return;
     setStage("saving");
+    setSaveError(null);
 
-    if (report) {
-      await createScan({
-        tankId: id,
-        imageUri: originalPath!,
-        modelName: "unknown",
-        promptVersion: report.prompt_version,
-        rawResponse: report,
-        findings: report.findings,
-        scores: report.scores,
-      });
-      const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
-      const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : t.reportPage.noIssuesFlagged;
-      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.tankScanColon} ${findingSummary}` });
-      if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath! });
-    } else if (healthReport) {
-      await createScan({
-        tankId: id,
-        imageUri: originalPath ?? "",
-        modelName: "unknown",
-        promptVersion: healthReport.prompt_version,
-        rawResponse: healthReport,
-        findings: healthReport.checks,
-        scores: { overall_status: healthReport.overall_status },
-      });
-      const flagged = healthReport.checks.filter((c) => c.status !== "ok" && c.status !== "na");
-      const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : t.checkPage.nothingFlagged;
-      const entryId = await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.healthCheckParen.replace("{status}", healthReport.overall_status)} ${summary}` });
-      // No photo to file in the Gallery when the check ran without one.
-      if (!reusedExistingPhoto && originalPath) await addPhoto({ tankId: id, logEntryId: entryId, localUri: originalPath });
+    // Three writes in a row. `saveProgress` remembers which already landed,
+    // so tapping Save again after a failure finishes the job — instead of
+    // the old behaviour (a blank screen stuck on "saving", result lost) or
+    // saving a duplicate scan and journal entry.
+    const done = saveProgress.current;
+    try {
+      if (report) {
+        if (!done.scan) {
+          await createScan({
+            tankId: id,
+            imageUri: originalPath!,
+            modelName: "unknown",
+            promptVersion: report.prompt_version,
+            rawResponse: report,
+            findings: report.findings,
+            scores: report.scores,
+          });
+          done.scan = true;
+        }
+        const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
+        const findingSummary = findings.length > 0 ? findings.map((f) => f.title).join("; ") : t.reportPage.noIssuesFlagged;
+        done.entryId ??= await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.tankScanColon} ${findingSummary}` });
+        if (!reusedExistingPhoto) await addPhoto({ tankId: id, logEntryId: done.entryId, localUri: originalPath! });
+      } else if (healthReport) {
+        if (!done.scan) {
+          await createScan({
+            tankId: id,
+            imageUri: originalPath ?? "",
+            modelName: "unknown",
+            promptVersion: healthReport.prompt_version,
+            rawResponse: healthReport,
+            findings: healthReport.checks,
+            scores: { overall_status: healthReport.overall_status },
+          });
+          done.scan = true;
+        }
+        const flagged = healthReport.checks.filter((c) => c.status !== "ok" && c.status !== "na");
+        const summary = flagged.length > 0 ? flagged.map((c) => `${HEALTH_CATEGORY_META[c.category]?.label ?? c.category}: ${c.status}`).join("; ") : t.checkPage.nothingFlagged;
+        done.entryId ??= await addLogEntry({ tankId: id, type: "journal", body: `${t.checkPage.healthCheckParen.replace("{status}", healthReport.overall_status)} ${summary}` });
+        // No photo to file in the Gallery when the check ran without one.
+        if (!reusedExistingPhoto && originalPath) await addPhoto({ tankId: id, logEntryId: done.entryId, localUri: originalPath });
+      }
+    } catch {
+      setSaveError(t.common.couldNotSaveTryAgain);
+      setStage("report");
+      return;
     }
+    saveProgress.current = { scan: false, entryId: null };
     setStage("saved");
   }
 
-  if (!tank) return <Screen>{t.common.loading}</Screen>;
+  if (!tank) return <MissingRecord kind="tank" loading={recordLoading} error={recordError} />;
 
   const backTarget = `/tank/${id}`;
   const screenTitle = fromCreate ? t.checkPage.scanYourTank : t.checkPage.healthCheck;
@@ -318,7 +344,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     );
   }
 
-  if (stage === "report" && report) {
+  if ((stage === "report" || stage === "saving") && report) {
     const algae = report.algae.filter((a) => a.type.toLowerCase() !== "none");
     const findings = report.findings.filter((f) => f.confidence >= QUESTION_THRESHOLD);
     const uncertain = report.findings.filter((f) => f.confidence < QUESTION_THRESHOLD);
@@ -332,8 +358,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={handleSave}>{t.checkPage.saveToJournal}</PrimaryButton>
-            <SecondaryButton onClick={retake}>{t.checkPage.checkAgain}</SecondaryButton>
+            {saveError && <Banner severity="fixNow">{saveError}</Banner>}
+            <PrimaryButton onClick={handleSave} disabled={stage === "saving"}>
+              {stage === "saving" ? t.settingsPage.saving : t.checkPage.saveToJournal}
+            </PrimaryButton>
+            <SecondaryButton onClick={retake} disabled={stage === "saving"}>{t.checkPage.checkAgain}</SecondaryButton>
           </>
         }
       >
@@ -411,7 +440,7 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
     );
   }
 
-  if (stage === "report" && healthReport) {
+  if ((stage === "report" || stage === "saving") && healthReport) {
     // Styled like the fish-add compatibility summary and the setup
     // planner's requirements card, per Jaideep's direct ask (2026-09-12):
     // one crisp report card (fixed category order, one line each, colored
@@ -428,8 +457,11 @@ export default function TankCheckPage({ params }: { params: Promise<{ id: string
       <Screen
         footer={
           <>
-            <PrimaryButton onClick={handleSave}>{t.checkPage.saveToJournal}</PrimaryButton>
-            <SecondaryButton onClick={retake}>{t.checkPage.checkAgain}</SecondaryButton>
+            {saveError && <Banner severity="fixNow">{saveError}</Banner>}
+            <PrimaryButton onClick={handleSave} disabled={stage === "saving"}>
+              {stage === "saving" ? t.settingsPage.saving : t.checkPage.saveToJournal}
+            </PrimaryButton>
+            <SecondaryButton onClick={retake} disabled={stage === "saving"}>{t.checkPage.checkAgain}</SecondaryButton>
           </>
         }
       >

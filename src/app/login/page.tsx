@@ -160,8 +160,17 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
       return;
     }
     setBusy(true);
-    const result = await signIn("credentials", { phone: phone.trim(), pin, redirect: false });
-    setBusy(false);
+    let result: Awaited<ReturnType<typeof signIn>>;
+    try {
+      result = await signIn("credentials", { phone: phone.trim(), pin, redirect: false });
+    } catch {
+      // Offline or the request never landed — without this the button
+      // stayed busy forever on the very first screen of the app.
+      setError("Couldn't connect. Check your internet and try again.");
+      return;
+    } finally {
+      setBusy(false);
+    }
     if (result?.error) {
       // Never show the library's raw error name (e.g. "Configuration").
       setError(

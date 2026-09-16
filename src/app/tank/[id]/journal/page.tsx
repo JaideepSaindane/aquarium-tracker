@@ -6,6 +6,7 @@ import { Screen } from "@/components/Screen";
 import { BackHeader } from "@/components/BackHeader";
 import { JournalPanel } from "@/components/JournalPanel";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { getTank } from "@/db/queries/tanks";
 import { useTranslation } from "@/i18n/use-translation";
 
@@ -13,9 +14,9 @@ export default function TankJournalPage({ params }: { params: Promise<{ id: stri
   const { id } = use(params);
   const t = useTranslation();
   const searchParams = useSearchParams();
-  const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { data: tank, loading: recordLoading, error: recordError } = useLiveQuery(() => getTank(id), [id]);
 
-  if (!tank) return <Screen>{t.common.loading}</Screen>;
+  if (!tank) return <MissingRecord kind="tank" loading={recordLoading} error={recordError} />;
 
   return (
     <Screen>

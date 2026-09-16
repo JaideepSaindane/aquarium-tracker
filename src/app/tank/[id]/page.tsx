@@ -17,6 +17,7 @@ import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { Status, type StatusVariant } from "@/components/Status";
 import { useLivestockScanSession } from "@/store/use-livestock-scan-session";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { getTank, deleteTank, updateTank } from "@/db/queries/tanks";
 import { listEquipmentForTank } from "@/db/queries/equipment";
 import { listLivestockForTank, removeLivestock, updateLivestockCount } from "@/db/queries/livestock";
@@ -84,7 +85,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
   const t = useTranslation();
   const setPendingLivestockScanFile = useLivestockScanSession((s) => s.setPendingFile);
-  const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { data: tank, loading: recordLoading, error: recordError } = useLiveQuery(() => getTank(id), [id]);
   const { data: equipmentList } = useLiveQuery(() => listEquipmentForTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(() => listSpecies(), []);
@@ -93,6 +94,7 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const { data: waterRows } = useLiveQuery(() => loadWaterData(id), [id]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [livestockExpanded, setLivestockExpanded] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);
@@ -104,12 +106,22 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
   const [addingPhoto, setAddingPhoto] = useState(false);
   const [addPhotoError, setAddPhotoError] = useState<string | null>(null);
 
-  if (!tank) return <Screen>{t.common.loading}</Screen>;
+  // `deleting`: the delete itself refetches this tank (now gone) a moment
+  // before navigating home — don't flash "this tank isn't here any more".
+  if (!tank) return <MissingRecord kind="tank" loading={recordLoading || deleting} error={recordError} />;
 
   async function handleConfirmDelete() {
     setDeleting(true);
-    await deleteTank(id);
-    router.replace("/");
+    setDeleteError(null);
+    try {
+      await deleteTank(id);
+      router.replace("/");
+    } catch {
+      // The dialog disables No/backdrop while deleting, so a failure used to
+      // lock the whole screen behind it for good. Unlock and say why.
+      setDeleteError(t.common.couldNotSaveTryAgain);
+      setDeleting(false);
+    }
   }
 
   // A tank saved with no photo (the picture step in the creation wizard is
@@ -481,8 +493,19 @@ export default function TankOverviewPage({ params }: { params: Promise<{ id: str
             <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 20 }}>
               {t.home.deleteTankBody.replace("{name}", tank.name)}
             </p>
+            {deleteError && (
+              <p role="alert" style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
+                {deleteError}
+              </p>
+            )}
             <div style={{ display: "flex", gap: 8 }}>
-              <SecondaryButton onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
+              <SecondaryButton
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteError(null);
+                }}
+                disabled={deleting}
+              >
                 {t.home.no}
               </SecondaryButton>
               <DangerButton onClick={handleConfirmDelete} disabled={deleting}>

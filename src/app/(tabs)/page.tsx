@@ -135,6 +135,7 @@ export default function TanksPage() {
   const [openMenuTankId, setOpenMenuTankId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const filteredTanks = (tanks ?? [])
@@ -152,9 +153,17 @@ export default function TanksPage() {
   async function handleConfirmDelete() {
     if (!deleteTargetId) return;
     setDeleting(true);
-    await deleteTank(deleteTargetId);
-    setDeleting(false);
-    setDeleteTargetId(null);
+    setDeleteError(null);
+    try {
+      await deleteTank(deleteTargetId);
+      setDeleteTargetId(null);
+    } catch {
+      // No/backdrop are disabled while deleting — a failure used to leave
+      // this dialog stuck on screen for good. Unlock it and say why.
+      setDeleteError(t.common.couldNotSaveTryAgain);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -614,8 +623,19 @@ export default function TanksPage() {
             <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 20 }}>
               {t.home.deleteTankBody.replace("{name}", deleteTarget.name)}
             </p>
+            {deleteError && (
+              <p role="alert" style={{ color: "var(--color-fix-now)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
+                {deleteError}
+              </p>
+            )}
             <div style={{ display: "flex", gap: 8 }}>
-              <SecondaryButton onClick={() => setDeleteTargetId(null)} disabled={deleting}>
+              <SecondaryButton
+                onClick={() => {
+                  setDeleteTargetId(null);
+                  setDeleteError(null);
+                }}
+                disabled={deleting}
+              >
                 {t.home.no}
               </SecondaryButton>
               <DangerButton onClick={handleConfirmDelete} disabled={deleting}>

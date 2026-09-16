@@ -14,6 +14,7 @@ import { PhotoPickerButton } from "@/components/PhotoPickerButton";
 import { SpeciesThumb } from "@/components/SpeciesThumb";
 import { DexUnlockToast } from "@/components/DexUnlockToast";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { getTank } from "@/db/queries/tanks";
 import { listSpecies, insertGeneratedSpecies } from "@/db/queries/species";
@@ -45,7 +46,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
   const { id } = use(params);
   const router = useRouter();
   const t = useTranslation();
-  const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { data: tank, loading: recordLoading, error: recordError } = useLiveQuery(() => getTank(id), [id]);
   const { data: allSpecies } = useLiveQuery(listSpecies, []);
   const { data: existingLivestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
   const speciesById = new Map((allSpecies ?? []).map((s) => [s.id, s]));
@@ -113,8 +114,17 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
     if (!selectedSpeciesId || !count || Number(count) < 1) return;
     const species = speciesById.get(selectedSpeciesId);
     setSaving(true);
-    await addLivestock({ tankId: id, speciesId: selectedSpeciesId, count: Number(count) });
-    const { isNewUnlock } = await unlockDexCard({ speciesId: selectedSpeciesId, unlockSource: "added_to_tank" });
+    setError(null);
+    try {
+      await addLivestock({ tankId: id, speciesId: selectedSpeciesId, count: Number(count) });
+    } catch {
+      // Used to leave the button on "Saving..." forever.
+      setError(t.common.couldNotSaveTryAgain);
+      setSaving(false);
+      return;
+    }
+    // The fish is saved; a Dex unlock failing is not worth surfacing.
+    const { isNewUnlock } = await unlockDexCard({ speciesId: selectedSpeciesId, unlockSource: "added_to_tank" }).catch(() => ({ isNewUnlock: false }));
     if (isNewUnlock) {
       setUnlockToast(firstName(species?.commonNames) ?? selectedSpeciesId);
     }
@@ -129,7 +139,7 @@ export default function LivestockScanPage({ params }: { params: Promise<{ id: st
     setSaving(false);
   }
 
-  if (!tank) return <Screen>{t.common.loading}</Screen>;
+  if (!tank) return <MissingRecord kind="tank" loading={recordLoading} error={recordError} />;
 
   const selectedSpecies = selectedSpeciesId ? speciesById.get(selectedSpeciesId) : null;
 

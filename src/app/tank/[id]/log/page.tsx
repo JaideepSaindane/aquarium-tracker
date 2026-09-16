@@ -66,6 +66,7 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
   const [showWaterChange, setShowWaterChange] = useState(false);
   const [waterChangePct, setWaterChangePct] = useState("25");
   const [maintMessage, setMaintMessage] = useState<string | null>(null);
+  const [readingsError, setReadingsError] = useState<string | null>(null);
 
   const [timers, setTimers] = useState<ActiveTimer[]>([]);
   const [now, setNow] = useState(() => Date.now());
@@ -107,12 +108,29 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
     setTimers((prev) => prev.filter((t) => t.id !== timerId));
   }
 
+  // Every handler below used to either hang on "Saving..." or silently do
+  // nothing if the network dropped (dead-end audit, 2026-09-16).
   async function handleSaveReadings() {
     const entries = Object.entries(values).filter(([, v]) => v.trim() !== "");
     if (entries.length === 0) return;
     setSaving(true);
+    setReadingsError(null);
     for (const [parameterId, v] of entries) {
-      await addMeasurement({ tankId: id, parameterId, value: Number(v), method, note: note.trim() || undefined });
+      try {
+        await addMeasurement({ tankId: id, parameterId, value: Number(v), method, note: note.trim() || undefined });
+      } catch {
+        // Readings save one at a time. Clear the ones that already made it
+        // (above) so tapping Save again only retries the rest — otherwise a
+        // retry would log those readings a second time.
+        setReadingsError(t.common.couldNotSaveTryAgain);
+        setSaving(false);
+        return;
+      }
+      setValues((prev) => {
+        const next = { ...prev };
+        delete next[parameterId];
+        return next;
+      });
     }
     setValues({});
     setNote("");
@@ -122,23 +140,39 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
   }
 
   async function handleMaintLog(type: "water_change" | "maintenance", body: string, waterChangedPct?: number) {
-    await addLogEntry({ tankId: id, type, body, waterChangedPct });
+    try {
+      await addLogEntry({ tankId: id, type, body, waterChangedPct });
+    } catch {
+      setMaintMessage(t.common.couldNotSaveTryAgain);
+      return;
+    }
     setMaintMessage(`${t.logPage.logged} ${body}`);
     setShowWaterChange(false);
   }
 
-  async function handleSaveTarget(param: (typeof params)[number], min: string, max: string) {
-    await setTankParameterTarget(
-      id,
-      { name: param.name, unit: param.unit, decimals: param.decimals, sortOrder: param.sortOrder },
-      min.trim() === "" ? null : Number(min),
-      max.trim() === "" ? null : Number(max)
-    );
+  async function handleSaveTarget(param: (typeof params)[number], min: string, max: string): Promise<boolean> {
+    try {
+      await setTankParameterTarget(
+        id,
+        { name: param.name, unit: param.unit, decimals: param.decimals, sortOrder: param.sortOrder },
+        min.trim() === "" ? null : Number(min),
+        max.trim() === "" ? null : Number(max)
+      );
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async function handleAddCustom() {
     if (!customName.trim() || !customUnit.trim()) return;
-    await addCustomParameter({ tankId: id, name: customName.trim(), unit: customUnit.trim() });
+    setReadingsError(null);
+    try {
+      await addCustomParameter({ tankId: id, name: customName.trim(), unit: customUnit.trim() });
+    } catch {
+      setReadingsError(t.common.couldNotSaveTryAgain);
+      return;
+    }
     setCustomName("");
     setCustomUnit("");
   }
@@ -266,6 +300,11 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
         </select>
         <Field label={t.logPage.noteOptional} value={note} onChange={(e) => setNote(e.target.value)} />
         <div style={{ height: 8 }} />
+        {readingsError && (
+          <div style={{ marginBottom: 8 }}>
+            <Banner severity="fixNow">{readingsError}</Banner>
+          </div>
+        )}
         <PrimaryButton onClick={handleSaveReadings} disabled={saving}>
           {saving ? t.settingsPage.saving : saved ? t.logPage.savedCheck : t.logPage.saveReadings}
         </PrimaryButton>
@@ -299,11 +338,14 @@ export default function TankLogPage({ params: routeParams }: { params: Promise<{
   );
 }
 
-function TargetEditor({ param, onSave }: { param: { targetMin: number | null; targetMax: number | null }; onSave: (min: string, max: string) => void }) {
+function TargetEditor({ param, onSave }: { param: { targetMin: number | null; targetMax: number | null }; onSave: (min: string, max: string) => Promise<boolean> }) {
   const t = useTranslation();
   const [min, setMin] = useState(param.targetMin != null ? String(param.targetMin) : "");
   const [max, setMax] = useState(param.targetMax != null ? String(param.targetMax) : "");
+  const [failed, setFailed] = useState(false);
   return (
+    <>
+    {failed && <p style={{ color: "var(--color-fix-now)", fontSize: 12, margin: "4px 0 0" }}>{t.common.couldNotSaveTryAgain}</p>}
     <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
       <input
         type="number"
@@ -319,9 +361,10 @@ function TargetEditor({ param, onSave }: { param: { targetMin: number | null; ta
         placeholder={t.logPage.max}
         style={{ width: 60, padding: 4, fontSize: 12 }}
       />
-      <button onClick={() => onSave(min, max)} style={{ fontSize: 12, background: "none", border: "1px solid var(--color-line)", borderRadius: 4 }}>
+      <button onClick={async () => setFailed(!(await onSave(min, max)))} style={{ fontSize: 12, background: "none", border: "1px solid var(--color-line)", borderRadius: 4 }}>
         {t.common.save}
       </button>
     </div>
+    </>
   );
 }

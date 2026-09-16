@@ -16,7 +16,8 @@ export const LocaleContext = createContext<{
   dictionary: dictionaries[defaultLocale],
 });
 
-function readStoredLocale(): Locale {
+/** Also read by non-React code (src/lib/ai-client.ts) to translate its own connection errors. */
+export function readStoredLocale(): Locale {
   if (typeof window === "undefined") return defaultLocale;
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);

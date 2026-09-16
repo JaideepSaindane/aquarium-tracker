@@ -8,6 +8,8 @@
 // feature anyone could reach.
 import { getDeviceId } from "./device-id";
 import { logAiInteraction } from "@/db/queries/ai-interactions";
+import { dictionaries } from "@/i18n/dictionaries";
+import { readStoredLocale } from "@/i18n/LocaleProvider";
 
 function headers(extra?: Record<string, string>): HeadersInit {
   return { "x-device-id": getDeviceId(), ...extra };
@@ -15,10 +17,49 @@ function headers(extra?: Record<string, string>): HeadersInit {
 
 export type AiCallResult<T> = { ok: true; data: T } | { ok: false; error: string; detail?: string; resetsAt?: string };
 
+function connectionError(): string {
+  return dictionaries[readStoredLocale()].common.couldNotConnect;
+}
+
+/**
+ * Every function in this file promises an `AiCallResult` and never throws —
+ * most screens rely on that and don't wrap these calls in try/catch. Before
+ * 2026-09-16 two ordinary situations broke the promise and left a spinner
+ * running forever (Jaideep: "check the entire app for any dead-ends"):
+ * the phone being offline (`fetch` rejects) and a slow AI call timing out
+ * (Vercel answers with an HTML error page, so `res.json()` throws). Both
+ * now come back as a normal `{ ok: false }` with a translated message.
+ */
+async function aiFetch(input: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(input, init);
+  } catch {
+    return new Response(JSON.stringify({ error: connectionError() }), { status: 503, headers: { "Content-Type": "application/json" } });
+  }
+}
+
 async function handleJsonResponse<T>(res: Response): Promise<AiCallResult<T>> {
-  const body = await res.json();
-  if (!res.ok) return { ok: false, error: body.error ?? "Request failed", detail: body.detail, resetsAt: body.resetsAt };
-  return { ok: true, data: body };
+  let body: Record<string, unknown>;
+  try {
+    body = await res.json();
+  } catch {
+    return { ok: false, error: connectionError() };
+  }
+  if (!res.ok) return { ok: false, error: (body.error as string) ?? connectionError(), detail: body.detail as string | undefined, resetsAt: body.resetsAt as string | undefined };
+  return { ok: true, data: body as T };
+}
+
+/**
+ * Logging an answer must never cost the user the answer. If this bookkeeping
+ * write fails (offline a moment later, or the read-only admin view refusing
+ * writes), the answer they already got is still shown.
+ */
+async function logSafely(input: Parameters<typeof logAiInteraction>[0]): Promise<string | undefined> {
+  try {
+    return await logAiInteraction(input);
+  } catch {
+    return undefined;
+  }
 }
 
 type ScanMeta = { provider: string; tokensIn: number; tokensOut: number; costUsd: number; latencyMs: number };
@@ -41,11 +82,11 @@ export async function scanTank(params: {
   form.set("city", params.city);
   if (params.tankRecord) form.set("tank_record", params.tankRecord);
 
-  const res = await fetch("/api/scan", { method: "POST", headers: headers(), body: form });
+  const res = await aiFetch("/api/scan", { method: "POST", headers: headers(), body: form });
   const result = await handleJsonResponse<{ report: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
 
   if (result.ok) {
-    await logAiInteraction({
+    await logSafely({
       tankId: params.tankId,
       kind: "scan",
       promptVersion: String(result.data.report.prompt_version),
@@ -61,7 +102,7 @@ export async function scanTank(params: {
 }
 
 export async function askQuestion(params: { question: string; tankContext: string; tankId?: string; locale?: string; speciesIds?: string[] }) {
-  const res = await fetch("/api/ask", {
+  const res = await aiFetch("/api/ask", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify({ question: params.question, tankContext: params.tankContext, locale: params.locale, speciesIds: params.speciesIds ?? [] }),
@@ -69,7 +110,7 @@ export async function askQuestion(params: { question: string; tankContext: strin
   const result = await handleJsonResponse<{ answer: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[]; interactionId?: string }>(res);
 
   if (result.ok) {
-    const interactionId = await logAiInteraction({
+    const interactionId = await logSafely({
       tankId: params.tankId,
       kind: "ask",
       promptVersion: String(result.data.answer.prompt_version),
@@ -105,11 +146,11 @@ export async function runTriage(params: {
   form.set("tank_age_days", params.tankAgeDays);
   if (params.locale) form.set("locale", params.locale);
 
-  const res = await fetch("/api/triage", { method: "POST", headers: headers(), body: form });
+  const res = await aiFetch("/api/triage", { method: "POST", headers: headers(), body: form });
   const result = await handleJsonResponse<{ triage: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
 
   if (result.ok) {
-    await logAiInteraction({
+    await logSafely({
       tankId: params.tankId,
       kind: "triage",
       promptVersion: String(result.data.triage.prompt_version),
@@ -145,11 +186,11 @@ export async function runHealthCheck(params: {
   if (params.tankRecord) form.set("tank_record", params.tankRecord);
   if (params.locale) form.set("locale", params.locale);
 
-  const res = await fetch("/api/health-check", { method: "POST", headers: headers(), body: form });
+  const res = await aiFetch("/api/health-check", { method: "POST", headers: headers(), body: form });
   const result = await handleJsonResponse<{ report: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
 
   if (result.ok) {
-    await logAiInteraction({
+    await logSafely({
       tankId: params.tankId,
       kind: "health_check",
       promptVersion: String(result.data.report.prompt_version),
@@ -172,7 +213,7 @@ export async function checkCompat(params: {
   newSpeciesIds: string[];
   tankId?: string;
 }) {
-  const res = await fetch("/api/compat", {
+  const res = await aiFetch("/api/compat", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify(params),
@@ -180,7 +221,7 @@ export async function checkCompat(params: {
   const result = await handleJsonResponse<{ compat: Record<string, unknown>; meta: ScanMeta | { cacheHit: boolean } }>(res);
 
   if (result.ok && "tokensIn" in result.data.meta) {
-    await logAiInteraction({
+    await logSafely({
       tankId: params.tankId,
       kind: "compatibility",
       promptVersion: String(result.data.compat.prompt_version),
@@ -196,7 +237,7 @@ export async function checkCompat(params: {
 }
 
 export async function generateSpecies(query: string) {
-  const res = await fetch("/api/species-gen", {
+  const res = await aiFetch("/api/species-gen", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify({ query }),
@@ -204,7 +245,7 @@ export async function generateSpecies(query: string) {
   const result = await handleJsonResponse<{ speciesGen: Record<string, unknown>; meta: ScanMeta | { cacheHit: boolean } }>(res);
 
   if (result.ok && "tokensIn" in result.data.meta) {
-    await logAiInteraction({
+    await logSafely({
       kind: "species_gen",
       promptVersion: String(result.data.speciesGen.prompt_version),
       userInput: query,
@@ -221,11 +262,11 @@ export async function generateSpecies(query: string) {
 export async function identifySpecies(photo: File | Blob) {
   const form = new FormData();
   form.set("photo", photo, "photo.jpg");
-  const res = await fetch("/api/species-id", { method: "POST", headers: headers(), body: form });
+  const res = await aiFetch("/api/species-id", { method: "POST", headers: headers(), body: form });
   const result = await handleJsonResponse<{ speciesId: Record<string, unknown>; meta: ScanMeta; invalidCandidates: string[] }>(res);
 
   if (result.ok) {
-    await logAiInteraction({
+    await logSafely({
       kind: "species_id",
       promptVersion: String(result.data.speciesId.prompt_version),
       response: result.data.speciesId,
@@ -240,7 +281,7 @@ export async function identifySpecies(photo: File | Blob) {
 
 /** T-027 AI-first planner: one expert read on the user's tank-type + real volume + fish wish list. */
 export async function getPlannerAdvice(params: { tankType: string; volumeL: number; city: string; wishList: string[] }) {
-  const res = await fetch("/api/planner", {
+  const res = await aiFetch("/api/planner", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify(params),
@@ -248,7 +289,7 @@ export async function getPlannerAdvice(params: { tankType: string; volumeL: numb
   const result = await handleJsonResponse<{ plan: Record<string, unknown>; meta: ScanMeta; unresolvableRefs: string[] }>(res);
 
   if (result.ok) {
-    await logAiInteraction({
+    await logSafely({
       kind: "planner",
       promptVersion: String(result.data.plan.prompt_version),
       userInput: `${params.tankType}/${params.volumeL}L: ${params.wishList.join(", ")}`,
@@ -269,7 +310,7 @@ export type QuotaStatus =
 
 /** Read-only — never counts against the quota. Lets the UI warn before the last question, not after (specs/T-019). */
 export async function peekQuotaStatus(kind: "scan" | "ask"): Promise<QuotaStatus | null> {
-  const res = await fetch(`/api/quota?kind=${kind}`, { headers: headers() });
+  const res = await aiFetch(`/api/quota?kind=${kind}`, { headers: headers() });
   if (!res.ok) return null;
   return res.json();
 }
@@ -281,7 +322,7 @@ function extractRefs(data: Record<string, unknown>): string[] {
 
 /** Un-metered, no interaction logging — a low-frequency convenience call, same tier as /api/compat. Used by Community's "Translate" link. */
 export async function translateText(text: string, targetLocale: "en" | "hi-latn"): Promise<AiCallResult<{ translated: string; detectedLanguage: string | null }>> {
-  const res = await fetch("/api/community/translate", {
+  const res = await aiFetch("/api/community/translate", {
     method: "POST",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify({ text, targetLocale }),

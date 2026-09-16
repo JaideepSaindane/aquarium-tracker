@@ -13,6 +13,7 @@ import { Banner } from "@/components/Banner";
 import { TankAvatar } from "@/components/TankAvatar";
 import { AgeBandField, startedOnFromAgeBand, ageBandFromStartedOn, type AgeBand } from "@/components/AgeBandField";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { getTank, updateTank, deleteTank } from "@/db/queries/tanks";
 import { listPlantsForTank, addPlant, removePlant } from "@/db/queries/plants";
 import { listEquipmentForTank, addEquipment, removeEquipment } from "@/db/queries/equipment";
@@ -50,7 +51,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
   const { id } = use(params);
   const router = useRouter();
   const t = useTranslation();
-  const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { data: tank, loading: recordLoading, error: recordError } = useLiveQuery(() => getTank(id), [id]);
   const { data: plants } = useLiveQuery(() => listPlantsForTank(id), [id]);
   const { data: equipmentList } = useLiveQuery(() => listEquipmentForTank(id), [id]);
 
@@ -171,8 +172,13 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
       setConfirmDelete(true);
       return;
     }
-    await deleteTank(id);
-    router.replace("/");
+    try {
+      await deleteTank(id);
+      router.replace("/");
+    } catch {
+      // Used to silently do nothing on failure — the tap just didn't work.
+      setError(t.common.couldNotSaveTryAgain);
+    }
   }
 
   async function handleAddPlant() {
@@ -196,7 +202,7 @@ export default function EditTankPage({ params }: { params: Promise<{ id: string 
     setShowAddEquipment(false);
   }
 
-  if (!tank) return <Screen>{t.common.loading}</Screen>;
+  if (!tank) return <MissingRecord kind="tank" loading={recordLoading} error={recordError} />;
 
   return (
     <Screen

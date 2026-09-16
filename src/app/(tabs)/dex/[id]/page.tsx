@@ -6,6 +6,7 @@ import { goBack } from "@/lib/nav-history";
 import { Screen } from "@/components/Screen";
 import { Chip } from "@/components/Chip";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { getSpecies } from "@/db/queries/species";
 import { getDexCard, unlockDexCard, removeDexCard } from "@/db/queries/dex";
 import { listTanks } from "@/db/queries/tanks";
@@ -113,7 +114,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
   const router = useRouter();
   const t = useTranslation();
   const { locale } = useLocale();
-  const { data: species } = useLiveQuery(() => getSpecies(id), [id]);
+  const { data: species, loading: recordLoading, error: recordError } = useLiveQuery(() => getSpecies(id), [id]);
   const { data: card } = useLiveQuery(() => getDexCard(id), [id]);
   const { data: tanks } = useLiveQuery(() => listTanks(), []);
   const { data: aliveLivestock } = useLiveQuery(() => listAllAliveLivestock(), []);
@@ -123,7 +124,7 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
   const [addingToTankId, setAddingToTankId] = useState<string | null>(null);
   const [savingToMyFish, setSavingToMyFish] = useState(false);
 
-  if (!species) return <Screen background="var(--soft-bg)">{t.common.loading}</Screen>;
+  if (!species) return <MissingRecord kind="species" loading={recordLoading} error={recordError} />;
 
   const commonNames = parseArray(species.commonNames);
   const name = commonNames[0] ?? species.id;
@@ -587,9 +588,27 @@ export default function DexDetailPage({ params }: { params: Promise<{ id: string
             </div>
 
             {visibleTanks.length === 0 ? (
-              <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)" }}>
-                {t.dexDetailPage.noTanksYetCreateOne}
-              </p>
+              <>
+                <p style={{ color: "var(--soft-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
+                  {t.dexDetailPage.noTanksYetCreateOne}
+                </p>
+                {/* Used to be only the sentence above — told you to create a
+                    tank and gave you no way to (dead-end audit, 2026-09-16). */}
+                <button
+                  onClick={() => router.push("/tank/new")}
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: "var(--radius-pill)",
+                    border: "none",
+                    background: "var(--soft-accent)",
+                    color: "#fff",
+                    fontWeight: 700,
+                  }}
+                >
+                  ＋ {t.home.addTank}
+                </button>
+              </>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {visibleTanks.map((tank) => (

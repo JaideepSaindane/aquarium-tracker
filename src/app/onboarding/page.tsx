@@ -62,6 +62,7 @@ export default function OnboardingPage() {
   const t = useTranslation();
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showIntro] = useState(() => typeof window === "undefined" || !hasIntroPlayedThisSession());
 
   useEffect(() => {
@@ -70,22 +71,25 @@ export default function OnboardingPage() {
     });
   }, []);
 
-  async function handleContinue() {
+  // Both buttons used to hang (Continue) or silently do nothing (Skip) if
+  // this save failed — on the first screen a brand-new user ever sees.
+  async function saveThen(go: () => void) {
     setSaving(true);
-    await saveProfile({
-      name: name.trim() || undefined,
-      onboardingCompletedAt: new Date().toISOString(),
-    });
-    router.push("/onboarding/scan");
+    setError(null);
+    try {
+      await saveProfile({
+        name: name.trim() || undefined,
+        onboardingCompletedAt: new Date().toISOString(),
+      });
+      go();
+    } catch {
+      setError(t.common.couldNotSaveTryAgain);
+      setSaving(false);
+    }
   }
 
-  async function handleSkip() {
-    await saveProfile({
-      name: name.trim() || undefined,
-      onboardingCompletedAt: new Date().toISOString(),
-    });
-    router.replace("/");
-  }
+  const handleContinue = () => saveThen(() => router.push("/onboarding/scan"));
+  const handleSkip = () => saveThen(() => router.replace("/"));
 
   return (
     <div
@@ -145,6 +149,11 @@ export default function OnboardingPage() {
         <FloatingField label={t.onboardingPage.name} value={name} onChange={setName} placeholder={t.onboardingPage.yourName} />
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginTop: 4 }}>
+          {error && (
+            <p role="alert" style={{ margin: 0, padding: "8px 14px", borderRadius: "var(--radius-md)", background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: "var(--font-body-sm-size)", textAlign: "center" }}>
+              {error}
+            </p>
+          )}
           <button
             type="button"
             onClick={handleContinue}

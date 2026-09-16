@@ -10,6 +10,7 @@ import { Chip } from "@/components/Chip";
 import { Field } from "@/components/Field";
 import { PrimaryButton, SecondaryButton, DangerButton } from "@/components/Button";
 import { useLiveQuery } from "@/db/live";
+import { MissingRecord } from "@/components/MissingRecord";
 import { downscaleForUpload } from "@/lib/image-quality/browser";
 import { getTank } from "@/db/queries/tanks";
 import { listLivestockForTank, listPlannedLivestockForTank, addLivestock, removeLivestock, recordDeath, updateLivestockCount, markLivestockArrived, listLivestockEvents } from "@/db/queries/livestock";
@@ -30,7 +31,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const t = useTranslation();
   const searchParams = useSearchParams();
-  const { data: tank } = useLiveQuery(() => getTank(id), [id]);
+  const { data: tank, loading: recordLoading, error: recordError } = useLiveQuery(() => getTank(id), [id]);
   const { data: livestock } = useLiveQuery(() => listLivestockForTank(id), [id]);
 
   // Captured once, the first time livestock loads, so the "already in this
@@ -144,7 +145,7 @@ export default function TankLivestockPage({ params }: { params: Promise<{ id: st
     setCandidates(null);
   }
 
-  if (!tank) return <Screen>{t.common.loading}</Screen>;
+  if (!tank) return <MissingRecord kind="tank" loading={recordLoading} error={recordError} />;
 
   const aliveLivestock = (livestock ?? []).filter((l) => l.status === "alive");
   const schoolingWarnings = checkSchoolingMinimums(aliveLivestock, speciesById);
