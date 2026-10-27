@@ -13,6 +13,7 @@ import { KeyboardAware } from "./KeyboardAware";
 import { UpdateBanner } from "@/components/UpdateBanner";
 import { InstalledBanner } from "@/components/InstalledBanner";
 import { ViewAsBanner } from "@/components/ViewAsBanner";
+import { DemoBanner } from "@/components/DemoBanner";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en">
       <body>
         <AuthSessionProvider>
+          <DemoBanner />
           <ThemeProvider>
             <UnitsProvider>
               <LocaleProvider>

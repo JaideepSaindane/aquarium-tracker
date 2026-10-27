@@ -19,12 +19,10 @@
 // demo account (account deletion deletes the account's Blob files).
 
 import { neon } from "@neondatabase/serverless";
-import bcrypt from "bcryptjs";
 import { randomUUID } from "node:crypto";
 
 const SOURCE_EMAIL = process.env.DEMO_SOURCE_EMAIL ?? "jaideep.saindane@gmail.com";
 const DEMO_PHONE = "0000000000"; // keep in sync with src/constants/app.ts
-const DEMO_PIN = process.env.DEMO_PIN ?? "1234";
 
 const sql = neon(process.env.DATABASE_URL);
 
@@ -34,13 +32,14 @@ if (!source) throw new Error(`No account with email ${SOURCE_EMAIL}`);
 let demo = (await sql`select id from users where phone = ${DEMO_PHONE}`)[0];
 if (demo && demo.id === source.id) throw new Error("Demo phone is attached to the source account — refusing.");
 
-const pinHash = await bcrypt.hash(DEMO_PIN, 10);
+// No PIN: the sign-in screen's one-tap "demo" provider (src/auth.ts) is
+// the only way in, and typing this number on the phone screen is refused.
 if (!demo) {
   demo = { id: randomUUID() };
-  await sql`insert into users (id, phone, pin_hash, name, created_at) values (${demo.id}, ${DEMO_PHONE}, ${pinHash}, 'Demo account', now())`;
+  await sql`insert into users (id, phone, name, created_at) values (${demo.id}, ${DEMO_PHONE}, 'Demo account', now())`;
   console.log("Created demo user", demo.id);
 } else {
-  await sql`update users set pin_hash = ${pinHash} where id = ${demo.id}`;
+  await sql`update users set pin_hash = null where id = ${demo.id}`;
   console.log("Refreshing existing demo user", demo.id);
 }
 
@@ -104,4 +103,4 @@ async function copyTable(table) {
 
 for (const t of TABLES) await copyTable(t);
 
-console.log(`Done. Sign in with "Demo account" and PIN ${DEMO_PIN}.`);
+console.log(`Done. Tap "Demo account" on the sign-in screen.`);

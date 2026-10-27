@@ -6,7 +6,8 @@ export const APP_NAME = "AquaAI";
 export const CONTACT_EMAIL = "jaideep.saindane@gmail.com";
 
 // Shared demo login for accelerator judges (2026-10-27). The sign-in
-// screen's "Demo account" button signs in with this reserved number; the
-// PIN is handed out separately. The account itself is a snapshot copy of
-// Jaideep's own account, made by scripts/create-demo-account.mjs.
+// screen's one-tap "Demo account" button signs in to the account holding
+// this reserved number (no PIN — src/auth.ts's "demo" provider). The
+// account itself is a snapshot copy of Jaideep's own account, made by
+// scripts/create-demo-account.mjs.
 export const DEMO_PHONE = "0000000000";

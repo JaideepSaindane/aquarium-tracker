@@ -9,6 +9,7 @@ import { newId, nowIso } from "@/db/id";
 import { isLockedOut, recordFailedAttempt, clearAttempts } from "@/server/auth/login-rate-limit";
 import { consumeLinkIntent } from "@/server/auth/link-intent";
 import { isDemoPhone } from "@/server/auth/demo-account";
+import { DEMO_PHONE } from "@/constants/app";
 
 // Throwing a plain Error from `authorize` surfaces to the client as the
 // generic "Configuration" error. CredentialsSignin subclasses carry a `code`
@@ -47,20 +48,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const pin = String(raw?.pin ?? "").trim();
         if (!/^\d{10,15}$/.test(phone) || !/^\d{4}$/.test(pin)) return null;
 
-        // The demo number's PIN is handed out on purpose, so a lockout
-        // protects nothing there — it would only let anyone typing wrong
-        // PINs lock every judge out for 15 minutes.
-        const demo = isDemoPhone(phone);
+        // The demo account signs in through the "demo" provider below,
+        // never by typing its reserved number here — that would otherwise
+        // auto-register (or log in to) it with whatever PIN was typed.
+        if (isDemoPhone(phone)) throw new WrongPin();
 
-        if (!demo && (await isLockedOut(phone))) {
+        if (await isLockedOut(phone)) {
           throw new LockedOut();
         }
 
         const existing = (await serverDb.select().from(users).where(eq(users.phone, phone)))[0];
-
-        // Never auto-register the demo number with whatever PIN is typed —
-        // it only exists once scripts/create-demo-account.mjs has made it.
-        if (!existing && demo) throw new WrongPin();
 
         if (!existing) {
           // First time this phone number has signed in — register it with
@@ -74,11 +71,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const valid = existing.pinHash ? await bcrypt.compare(pin, existing.pinHash) : false;
         if (!valid) {
-          if (!demo) await recordFailedAttempt(phone);
+          await recordFailedAttempt(phone);
           throw new WrongPin();
         }
         await clearAttempts(phone);
         return { id: existing.id, name: existing.name, email: existing.email };
+      },
+    }),
+    // One-tap "Demo account" for accelerator judges (2026-10-27, Jaideep:
+    // "we shouldn't keep a pin for the demo account") — no credentials at
+    // all; signs in to the account scripts/create-demo-account.mjs made.
+    Credentials({
+      id: "demo",
+      name: "Demo",
+      credentials: {},
+      async authorize() {
+        const demo = (await serverDb.select().from(users).where(eq(users.phone, DEMO_PHONE)))[0];
+        if (!demo) return null;
+        return { id: demo.id, name: demo.name, email: null, isDemo: true };
       },
     }),
   ],
@@ -145,11 +155,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async jwt({ token, user }) {
-      if (user?.id) token.userId = user.id;
+      if (user?.id) {
+        token.userId = user.id;
+        token.isDemo = !!(user as { isDemo?: boolean }).isDemo;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) session.user.id = token.userId as string;
+      if (session.user) {
+        session.user.id = token.userId as string;
+        session.user.isDemo = !!token.isDemo;
+      }
       return session;
     },
   },
