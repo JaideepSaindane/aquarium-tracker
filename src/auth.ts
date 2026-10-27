@@ -8,6 +8,7 @@ import { users, profile } from "@/server/db/schema";
 import { newId, nowIso } from "@/db/id";
 import { isLockedOut, recordFailedAttempt, clearAttempts } from "@/server/auth/login-rate-limit";
 import { consumeLinkIntent } from "@/server/auth/link-intent";
+import { isDemoPhone } from "@/server/auth/demo-account";
 
 // Throwing a plain Error from `authorize` surfaces to the client as the
 // generic "Configuration" error. CredentialsSignin subclasses carry a `code`
@@ -46,11 +47,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const pin = String(raw?.pin ?? "").trim();
         if (!/^\d{10,15}$/.test(phone) || !/^\d{4}$/.test(pin)) return null;
 
-        if (await isLockedOut(phone)) {
+        // The demo number's PIN is handed out on purpose, so a lockout
+        // protects nothing there — it would only let anyone typing wrong
+        // PINs lock every judge out for 15 minutes.
+        const demo = isDemoPhone(phone);
+
+        if (!demo && (await isLockedOut(phone))) {
           throw new LockedOut();
         }
 
         const existing = (await serverDb.select().from(users).where(eq(users.phone, phone)))[0];
+
+        // Never auto-register the demo number with whatever PIN is typed —
+        // it only exists once scripts/create-demo-account.mjs has made it.
+        if (!existing && demo) throw new WrongPin();
 
         if (!existing) {
           // First time this phone number has signed in — register it with
@@ -64,7 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const valid = existing.pinHash ? await bcrypt.compare(pin, existing.pinHash) : false;
         if (!valid) {
-          await recordFailedAttempt(phone);
+          if (!demo) await recordFailedAttempt(phone);
           throw new WrongPin();
         }
         await clearAttempts(phone);

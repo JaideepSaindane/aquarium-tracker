@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { del } from "@vercel/blob";
 import { serverDb } from "@/server/db/client";
 import { requireUserId } from "@/server/auth/require-user";
+import { isDemoUser } from "@/server/auth/demo-account";
 import {
   users,
   tanks,
@@ -50,6 +51,9 @@ import { nowIso } from "@/db/id";
 export async function POST() {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  // The shared demo account's photos are Jaideep's real photo files —
+  // deleting it would delete them out from under his own account.
+  if (await isDemoUser(userId)) return NextResponse.json({ error: "The demo account can't be deleted." }, { status: 403 });
 
   // Best-effort: delete this account's uploaded photos from Blob storage
   // before the rows naming them are gone. A failed blob delete (already

@@ -66,6 +66,9 @@ export default function SettingsPage() {
 
   const [hasPhoneLinked, setHasPhoneLinked] = useState<boolean | null>(null); // null = still checking
   const [hasGoogleLinked, setHasGoogleLinked] = useState<boolean | null>(null);
+  // The shared judges' demo account: no linking, no deleting (both are
+  // refused server-side too — see src/server/auth/demo-account.ts).
+  const [isDemo, setIsDemo] = useState(false);
   const [googleLinkError, setGoogleLinkError] = useState<string | null>(null);
   const [linkPhone, setLinkPhone] = useState("");
   const [linkPin, setLinkPin] = useState("");
@@ -81,6 +84,7 @@ export default function SettingsPage() {
         // fail closed: don't show either card if we couldn't check
         setHasPhoneLinked(info ? info.hasPhone : true);
         setHasGoogleLinked(info ? info.hasGoogle : true);
+        setIsDemo(!!info?.isDemo);
       })
       .catch(() => {
         setHasPhoneLinked(true);
@@ -289,7 +293,7 @@ export default function SettingsPage() {
           second, separate account instead of reaching the same data. This
           is a full-page redirect (Google's OAuth flow), not a fetch call —
           see /api/account/link-google. */}
-      {hasGoogleLinked === false && (
+      {hasGoogleLinked === false && !isDemo && (
         <Card style={{ marginBottom: 16 }}>
           <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.linkGoogleAccount}</h2>
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
@@ -400,6 +404,7 @@ export default function SettingsPage() {
           "email us to delete your data". Permanently deletes every tank,
           fish, log, photo, AI-chat history and Species Dex unlock tied to
           this account, server-side — irreversible, no undo. */}
+      {!isDemo && (
       <Card style={{ marginBottom: 16 }}>
         <h2 style={{ fontSize: "var(--font-heading-size)", marginBottom: 4 }}>{t.settingsPage.deleteMyAccount}</h2>
         <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-body-sm-size)", marginBottom: 12 }}>
@@ -443,6 +448,7 @@ export default function SettingsPage() {
           </div>
         )}
       </Card>
+      )}
 
       {/* Share / Privacy / About */}
       <Card style={{ marginBottom: 16 }}>

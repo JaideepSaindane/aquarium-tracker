@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { serverDb } from "@/server/db/client";
 import { users } from "@/server/db/schema";
 import { requireUserId } from "@/server/auth/require-user";
+import { DEMO_PHONE } from "@/constants/app";
 
 /**
  * Which sign-in methods the signed-in account already has linked —
@@ -15,5 +16,5 @@ export async function GET() {
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const row = (await serverDb.select().from(users).where(eq(users.id, userId)))[0];
   if (!row) return NextResponse.json({ error: "not found" }, { status: 404 });
-  return NextResponse.json({ hasPhone: !!row.phone, hasGoogle: !!row.googleId });
+  return NextResponse.json({ hasPhone: !!row.phone, hasGoogle: !!row.googleId, isDemo: row.phone === DEMO_PHONE });
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireUserId } from "@/server/auth/require-user";
+import { isDemoUser } from "@/server/auth/demo-account";
 import { setLinkIntent } from "@/server/auth/link-intent";
 
 /**
@@ -14,6 +15,7 @@ import { setLinkIntent } from "@/server/auth/link-intent";
 export async function GET(req: Request) {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (await isDemoUser(userId)) return NextResponse.json({ error: "The demo account's sign-in can't be changed." }, { status: 403 });
 
   await setLinkIntent(userId);
 

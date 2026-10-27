@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { serverDb } from "@/server/db/client";
 import { users } from "@/server/db/schema";
 import { requireUserId } from "@/server/auth/require-user";
+import { isDemoUser } from "@/server/auth/demo-account";
 
 /**
  * Links a phone+PIN to an already-signed-in account (in practice, a Google
@@ -21,6 +22,7 @@ import { requireUserId } from "@/server/auth/require-user";
 export async function POST(req: Request) {
   const userId = await requireUserId();
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (await isDemoUser(userId)) return NextResponse.json({ error: "The demo account's sign-in can't be changed." }, { status: 403 });
 
   const { phone: rawPhone, pin: rawPin } = await req.json();
   const phone = String(rawPhone ?? "").trim();

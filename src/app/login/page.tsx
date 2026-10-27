@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { Field } from "@/components/Field";
 import { Banner } from "@/components/Banner";
 import { PrimaryButton } from "@/components/Button";
-import { APP_NAME, CONTACT_EMAIL } from "@/constants/app";
+import { APP_NAME, CONTACT_EMAIL, DEMO_PHONE } from "@/constants/app";
 import { AquaIcon } from "@/components/icons/AquaIcon";
 import { IntroAnimation } from "@/components/IntroAnimation";
 import { markIntroPlayed } from "@/lib/intro-session";
@@ -83,8 +83,8 @@ function FloatingPillButton({
   );
 }
 
-/** Step 1: two floating pills, nothing else — the actual entry point for a signed-out visitor. */
-function ChooseMethodStep({ onGoogle, onPhone }: { onGoogle: () => void; onPhone: () => void }) {
+/** Step 1: the demo-account pill on top, then Google / phone — the actual entry point for a signed-out visitor. */
+function ChooseMethodStep({ onDemo, onGoogle, onPhone }: { onDemo: () => void; onGoogle: () => void; onPhone: () => void }) {
   return (
     <Backdrop>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 40 }}>
@@ -96,6 +96,18 @@ function ChooseMethodStep({ onGoogle, onPhone }: { onGoogle: () => void; onPhone
       </div>
 
       <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 4 }}>
+        {/* Shared judges' login (2026-10-27) — a snapshot copy of Jaideep's
+            own account, see scripts/create-demo-account.mjs. */}
+        <FloatingPillButton onClick={onDemo} tone="dark">
+          Demo account
+        </FloatingPillButton>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0", color: "rgba(255,255,255,0.75)", fontSize: "var(--font-caption-size)" }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.3)" }} />
+          or sign in
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.3)" }} />
+        </div>
+
         <FloatingPillButton onClick={onGoogle}>
           <GoogleLogo />
           Continue with Google
@@ -115,10 +127,10 @@ function ChooseMethodStep({ onGoogle, onPhone }: { onGoogle: () => void; onPhone
   );
 }
 
-/** Step 2 (phone path only): the same backdrop, a back arrow, and just the three fields. */
-function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
+/** Step 2 (phone path only): the same backdrop, a back arrow, and just the three fields. With `demo`, the number is fixed to the demo account's and only the PIN is asked for. */
+function PhoneStep({ onBack, from, demo = false }: { onBack: () => void; from: string; demo?: boolean }) {
   const router = useRouter();
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(demo ? DEMO_PHONE : "");
   const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -130,7 +142,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
 
   useEffect(() => {
     const digits = phone.trim();
-    if (!/^\d{10,15}$/.test(digits)) return;
+    if (demo || !/^\d{10,15}$/.test(digits)) return;
     let cancelled = false;
     const timer = window.setTimeout(() => {
       fetch("/api/phone-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: digits }) })
@@ -144,7 +156,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [phone]);
+  }, [phone, demo]);
 
   const knownPhone = /^\d{10,15}$/.test(phone.trim()) ? phoneExists : null;
 
@@ -175,7 +187,9 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
       // Never show the library's raw error name (e.g. "Configuration").
       setError(
         result.code === "wrong_pin"
-          ? "Incorrect PIN. Please enter the correct PIN."
+          ? demo
+            ? "Incorrect PIN. Please use the demo PIN you were given."
+            : "Incorrect PIN. Please enter the correct PIN."
           : result.code === "locked"
             ? "Too many wrong tries. Please try again in 15 minutes, or tap \"Forgot PIN?\"."
             : "Couldn't sign in. Please check your number and PIN and try again."
@@ -213,7 +227,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
         <AquaIcon name="tanks" size={40} />
         <h1 style={{ fontSize: "var(--font-title-size)", marginTop: 12, color: "#fff", textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>{APP_NAME}</h1>
         <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "var(--font-body-sm-size)", marginTop: 4, textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>
-          Sign in with your phone number
+          {demo ? "Demo account" : "Sign in with your phone number"}
         </p>
       </div>
 
@@ -231,9 +245,11 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
         }}
       >
         <form onSubmit={handlePhoneSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          {!demo && (
+            <Field label="Phone number" type="tel" inputMode="numeric" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          )}
           <Field
-            label={knownPhone === true ? "Enter your 4-digit PIN" : knownPhone === false ? "Set a 4-digit PIN" : "Your 4-digit PIN"}
+            label={demo ? "Demo PIN" : knownPhone === true ? "Enter your 4-digit PIN" : knownPhone === false ? "Set a 4-digit PIN" : "Your 4-digit PIN"}
             type="password"
             inputMode="numeric"
             maxLength={4}
@@ -242,7 +258,9 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
             onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
           />
           <p style={{ color: "var(--color-ink-muted)", fontSize: "var(--font-caption-size)", marginTop: -6 }}>
-            {knownPhone === true
+            {demo
+              ? "Enter the 4-digit demo PIN you were given."
+              : knownPhone === true
               ? "An account already exists for this number. If you forgot the PIN, please tap \"Forgot PIN?\" below."
               : knownPhone === false
                 ? "New number. This is not an OTP — no code will be sent. Choose your own 4-digit PIN and remember it."
@@ -252,7 +270,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
           <PrimaryButton type="submit" disabled={busy}>
             {busy ? "Checking..." : "Continue"}
           </PrimaryButton>
-          {knownPhone !== false && (
+          {!demo && knownPhone !== false && (
             <button
               type="button"
               onClick={() => setShowForgot((v) => !v)}
@@ -304,7 +322,7 @@ function PhoneStep({ onBack, from }: { onBack: () => void; from: string }) {
 function LoginFlow() {
   const searchParams = useSearchParams();
   const from = searchParams.get("from") ?? "/";
-  const [step, setStep] = useState<"intro" | "choose" | "phone">("intro");
+  const [step, setStep] = useState<"intro" | "choose" | "phone" | "demo">("intro");
 
   async function handleGoogle() {
     await signIn("google", { callbackUrl: from });
@@ -326,7 +344,11 @@ function LoginFlow() {
     return <PhoneStep onBack={() => setStep("choose")} from={from} />;
   }
 
-  return <ChooseMethodStep onGoogle={handleGoogle} onPhone={() => setStep("phone")} />;
+  if (step === "demo") {
+    return <PhoneStep demo onBack={() => setStep("choose")} from={from} />;
+  }
+
+  return <ChooseMethodStep onDemo={() => setStep("demo")} onGoogle={handleGoogle} onPhone={() => setStep("phone")} />;
 }
 
 export default function LoginPage() {
